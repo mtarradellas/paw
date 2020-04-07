@@ -13,7 +13,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
     public User findById(String id) {
-        return this.userDao.get(id);
+        return this.userDao.findById(id);
     }
     public List<User> list() {
         return this.userDao.list();

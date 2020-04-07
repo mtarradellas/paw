@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class UserDaoInMemoryImpl implements UserDao {
+public class UserDaoImpl implements UserDao {
     // Mock of a db. Just for show :)
     private Map<String, User> users = new ConcurrentHashMap<String, User>();
-    public UserDaoInMemoryImpl() {
+    public UserDaoImpl() {
         User user = new User();
         user.setId("1");
         user.setName("Leo");
@@ -29,7 +29,7 @@ public class UserDaoInMemoryImpl implements UserDao {
         User user3 = new User();
         user3.setId("3");
     }
-    public User get(String id) {
+    public User findById(String id) {
         return users.get(id);
     }
     public List<User> list() {
