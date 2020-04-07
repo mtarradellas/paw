@@ -2,6 +2,11 @@
 <html>
 <body>
 <%-- Comentario --%>
-<h2>Hello ${greeting}!</h2>
+<h1>PET SOCIETY</h1>
+<ul>
+    <c:forEach var="pet" items="${home_pet_list}">
+        <li><c:out value="${pet.name}" /></li>
+    </c:forEach>
+</ul>
 </body>
 </html>

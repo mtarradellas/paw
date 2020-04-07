@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class HelloWorldController {
+public class HomeController {
     @Autowired
     UserService userService;
     @RequestMapping("/")
-    public ModelAndView helloWorld() {
+    public ModelAndView getHome() {
         final ModelAndView mav = new ModelAndView("index");
-        mav.addObject("greeting", userService.list().get(0).getName());
+        mav.addObject("home_pet_list", userService.list());
         return mav;
     }
 }

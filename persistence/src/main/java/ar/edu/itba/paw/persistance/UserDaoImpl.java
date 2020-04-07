@@ -22,12 +22,14 @@ public class UserDaoImpl implements UserDao {
 
         User user2 = new User();
         user2.setId("2");
-        user2.setName("Alvaro");
+        user2.setName("Annabeth");
         user2.setPassword("12345");
         users.put("2", user2);
 
         User user3 = new User();
         user3.setId("3");
+        user3.setName("Percy");
+        users.put("3", user3);
     }
     public User findById(String id) {
         return users.get(id);
