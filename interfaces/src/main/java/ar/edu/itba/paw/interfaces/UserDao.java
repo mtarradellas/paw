@@ -2,11 +2,12 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.User;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface UserDao {
-    User findById(long id);
-    User findByUsername(String username);
-    List<User> list();
-    User save(User user);
+    Optional<User> findById(long id);
+    Optional<User> findByUsername(String username);
+    Stream<User> list();
+    Optional<User> save(User user);
 }
