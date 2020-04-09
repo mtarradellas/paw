@@ -3,14 +3,18 @@
 
 <t:basicLayout>
     <jsp:body>
-        <ul>
-            <c:forEach var="pet" items="${home_pet_list}">
-                <li>
-                    <ul>
+        <div class="shadow-lg p-3 mb-5 bg-white rounded">
+            <div class="card-deck">
+
+                <c:forEach var="pet" items="${home_pet_list}">
+                    <div class="col-auto mb-3">
+
                         <t:animalCard pet="${pet}"/>
-                    </ul>
-                </li>
-            </c:forEach>
-        </ul>
+
+                    </div>
+                </c:forEach>
+
+            </div>
+        </div>
     </jsp:body>
 </t:basicLayout>

@@ -1,5 +1,4 @@
-h1 {
-    color: blue;
-    font-family: verdana;
-    font-size: 300%;
+.animal-list-card img {
+    width: 100%;
+    height: 100%;
 }
