@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <link rel="stylesheet" href="<c:url value="/css/styles.css"/>"/>
+    <link rel="stylesheet" href="<c:url value="/resources/css/styles.css"/>"/>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/parts/header.jsp" />
