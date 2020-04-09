@@ -28,4 +28,9 @@ public class UserServiceImpl implements UserService {
     public List<User> list() {
         return this.userDao.list();
     }
+
+    @Override
+    public User save(User user) {
+        return this.userDao.save(user);
+    }
 }
