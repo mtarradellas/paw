@@ -19,7 +19,11 @@ public class UserDaoImpl implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("username"));
+    private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
+            rs.getLong("id"),
+            rs.getString("username"),
+            rs.getString("mail"),
+            rs.getString("phone"));
 
     @Autowired
     public UserDaoImpl(final DataSource dataSource) {
@@ -47,9 +51,9 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> save(User user){
-        List<User> users = jdbcTemplate.query("INSERT INTO users(id, username) VALUES (?, ?)", new Object[] {user.getId(), user.getUsername()}, USER_MAPPER);
-
-        return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
+        return jdbcTemplate.query("INSERT INTO users(id, username) VALUES (?, ?, ?, ?, ?)",
+                new Object[] {user.getId(), user.getUsername(), user.getPassword(), user.getMail(), user.getPhone()}, USER_MAPPER)
+                .stream().findFirst();
     };
 }
 

@@ -9,7 +9,10 @@
     <c:forEach var="user" items="${users_list}">
         <li>
             <ul>
+                <li><c:out value="${user.id}" /></li>
                 <li><c:out value="${user.username}" /></li>
+                <li><c:out value="${user.mail}" /></li>
+                <li><c:out value="${user.phone}" /></li>
             </ul>
         </li>
     </c:forEach>

@@ -40,7 +40,7 @@ public class HomeController {
         return mav;
     }
 
-    @RequestMapping(value = "/{id}")
+    @RequestMapping(value = "/user/{id}")
     public ModelAndView getIdUser(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("single_user");
         mav.addObject("single_user_example",

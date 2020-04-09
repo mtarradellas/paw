@@ -11,15 +11,17 @@ public class User {
 
     }
 
-    public User(long id, String username) {
-        this.id = id;
-        this.username = username;
-    }
-
     public User(long id, String username, String password, String mail, String phone) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.mail = mail;
+        this.phone = phone;
+    }
+
+    public User(long id, String username, String mail, String phone) {
+        this.id = id;
+        this.username = username;
         this.mail = mail;
         this.phone = phone;
     }
