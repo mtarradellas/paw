@@ -23,7 +23,13 @@ public class HomeController {
 
     @RequestMapping("/about")
     public ModelAndView getAbout() {
-        final ModelAndView mav = new ModelAndView("about");
+        return new ModelAndView("about");
+    }
+
+    @RequestMapping("/users")
+    public ModelAndView getUsers() {
+        final ModelAndView mav = new ModelAndView("users");
+        mav.addObject("users_list", userService.list());
         return mav;
     }
 }
