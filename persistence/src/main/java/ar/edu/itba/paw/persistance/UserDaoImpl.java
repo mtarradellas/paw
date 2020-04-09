@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -26,29 +28,28 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findById(long id) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[] {id}, USER_MAPPER);
-
-        return users.isEmpty() ? null : users.get(0);
+    public Optional<User> findById(long id) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[] {id}, USER_MAPPER)
+                .stream().findFirst();
     }
 
     @Override
-    public User findByUsername(String username) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE username = ?", new Object[] {username}, USER_MAPPER);
-
-        return users.isEmpty() ? null : users.get(0);
+    public Optional<User> findByUsername(String username) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE username = ?", new Object[] {username}, USER_MAPPER)
+                .stream().findFirst();
     }
 
     @Override
-    public List<User> list() {
-        return jdbcTemplate.query("SELECT * FROM users", USER_MAPPER);
+    public Stream<User> list() {
+        return jdbcTemplate.query("SELECT * FROM users", USER_MAPPER)
+                .stream();
     }
 
     @Override
-    public User save(User user){
+    public Optional<User> save(User user){
         List<User> users = jdbcTemplate.query("INSERT INTO users(id, username) VALUES (?, ?)", new Object[] {user.getId(), user.getUsername()}, USER_MAPPER);
 
-        return users.isEmpty() ? null : users.get((0));
+        return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     };
 }
 

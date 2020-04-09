@@ -6,7 +6,8 @@ import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -15,22 +16,22 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override
-    public User findById(long id) {
+    public Optional<User> findById(long id) {
         return this.userDao.findById(id);
     }
 
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return this.userDao.findByUsername(username);
     }
 
     @Override
-    public List<User> list() {
+    public Stream<User> list() {
         return this.userDao.list();
     }
 
     @Override
-    public User save(User user) {
+    public Optional<User> save(User user) {
         return this.userDao.save(user);
     }
 }

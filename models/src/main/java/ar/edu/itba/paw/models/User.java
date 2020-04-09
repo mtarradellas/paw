@@ -4,11 +4,8 @@ public class User {
     private long id;
     private String username;
     private String password;
-    private String location;
     private String mail;
     private String phone;
-    private String sex;
-    private String birthDate;
 
     public User() {
 
@@ -19,15 +16,12 @@ public class User {
         this.username = username;
     }
 
-    public User(long id, String username, String password, String location, String mail, String phone, String sex, String birthDate) {
+    public User(long id, String username, String password, String mail, String phone) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.location = location;
         this.mail = mail;
         this.phone = phone;
-        this.sex = sex;
-        this.birthDate = birthDate;
     }
 
     public long getId() {
@@ -54,14 +48,6 @@ public class User {
         this.password = password;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public String getMail() {
         return mail;
     }
@@ -78,19 +64,4 @@ public class User {
         this.phone = phone;
     }
 
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
-    }
 }
