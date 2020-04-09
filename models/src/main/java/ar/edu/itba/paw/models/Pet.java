@@ -14,6 +14,7 @@ public class Pet {
     private int price;
     private String location;
     //list of photos?
+    // Owner?
 
 
     public Pet() {}

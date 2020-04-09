@@ -1,8 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <html>
+<head>
+    <title>Pet Society</title>
+</head>
 <body>
-<%-- Comentario --%>
-<h1>PET SOCIETY</h1>
+<h1>Pet Society</h1>
 <ul>
     <c:forEach var="pet" items="${home_pet_list}">
         <li>

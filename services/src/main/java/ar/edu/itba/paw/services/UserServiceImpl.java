@@ -10,11 +10,21 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     @Autowired
     private UserDao userDao;
-    public User findById(String id) {
+
+    @Override
+    public User findById(long id) {
         return this.userDao.findById(id);
     }
+
+    @Override
+    public User findByUsername(String username) {
+        return this.userDao.findByUsername(username);
+    }
+
+    @Override
     public List<User> list() {
         return this.userDao.list();
     }

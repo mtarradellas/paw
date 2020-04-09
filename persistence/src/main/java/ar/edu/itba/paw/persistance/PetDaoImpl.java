@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PetDaoImpl implements PetDao {
     //mock db till we have an actual db
     private Map<String, Pet> pets = new ConcurrentHashMap<>();
+
     public PetDaoImpl() {
 
         Pet pet1 = new Pet();
@@ -44,12 +45,15 @@ public class PetDaoImpl implements PetDao {
         pets.put("2", pet2);
 
     }
+
     public Pet findById(String id) {
         return pets.get(id);
     }
+
     public List<Pet> list() {
         return new ArrayList<>(this.pets.values());
     }
+
     public Pet save(Pet pet){
         return this.pets.put(pet.getId(), pet);
     };

@@ -12,9 +12,11 @@ import java.util.List;
 public class PetServiceImpl implements PetService {
     @Autowired
     private PetDao petDao;
+
     public Pet findById(String id){
         return petDao.findById(id);
     }
+
     public List<Pet> list(){
         return petDao.list();
     }

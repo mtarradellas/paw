@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.models;
 
 public class User {
-    private String id;
-    private String name;
+    private long id;
+    private String username;
     private String password;
     private String location;
     private String mail;
@@ -14,9 +14,14 @@ public class User {
 
     }
 
-    public User(String id, String name, String password, String location, String mail, String phone, String sex, String birthDate) {
+    public User(long id, String username) {
         this.id = id;
-        this.name = name;
+        this.username = username;
+    }
+
+    public User(long id, String username, String password, String location, String mail, String phone, String sex, String birthDate) {
+        this.id = id;
+        this.username = username;
         this.password = password;
         this.location = location;
         this.mail = mail;
@@ -25,20 +30,20 @@ public class User {
         this.birthDate = birthDate;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

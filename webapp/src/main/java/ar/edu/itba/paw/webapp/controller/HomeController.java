@@ -13,10 +13,17 @@ public class HomeController {
     UserService userService;
     @Autowired
     PetService petService;
+
     @RequestMapping("/")
     public ModelAndView getHome() {
         final ModelAndView mav = new ModelAndView("index");
         mav.addObject("home_pet_list", petService.list());
+        return mav;
+    }
+
+    @RequestMapping("/about")
+    public ModelAndView getAbout() {
+        final ModelAndView mav = new ModelAndView("about");
         return mav;
     }
 }
