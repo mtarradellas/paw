@@ -6,7 +6,7 @@
          class="card-img-top" alt="" width="200" height="200">
     <div class="card-body">
         <p class="card-text">
-            Nombre: ${pet.name}<br>
+            Nombre: ${pet.petName}<br>
             Raza: ${pet.breed}<br>
             Precio: $${pet.price}
         </p>
