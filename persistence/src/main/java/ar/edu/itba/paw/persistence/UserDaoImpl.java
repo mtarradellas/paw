@@ -6,11 +6,13 @@ import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -18,6 +20,7 @@ import java.util.stream.Stream;
 public class UserDaoImpl implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
+    private SimpleJdbcInsert jdbcInsert;
 
     private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
             rs.getLong("id"),
@@ -29,6 +32,9 @@ public class UserDaoImpl implements UserDao {
     public UserDaoImpl(final DataSource dataSource) {
 
         jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("users")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -50,10 +56,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> save(User user){
-        return jdbcTemplate.query("INSERT INTO users(id, username) VALUES (?, ?, ?, ?, ?)",
-                new Object[] {user.getId(), user.getUsername(), user.getPassword(), user.getMail(), user.getPhone()}, USER_MAPPER)
-                .stream().findFirst();
+    public Optional<User> create(User user){
+        final Map<String, Object> values = new HashMap<String, Object>() {{
+            put("username", user.getUsername());
+            put("mail", user.getMail());
+            put("phone", user.getPhone());
+        }};
+        final Number key = jdbcInsert.executeAndReturnKey(values);
+        user.setId(key.longValue());
+        return Optional.of(user);
     };
 }
 
