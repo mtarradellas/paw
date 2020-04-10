@@ -39,6 +39,12 @@ public class HomeController {
         return mav;
     }
 
+    @RequestMapping("/contact")
+    public ModelAndView getContact() {
+        final ModelAndView mav = new ModelAndView("contact");
+        return mav;
+    }
+
     @RequestMapping(value = "/user/{id}")
     public ModelAndView getIdUser(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("single_user");
@@ -66,5 +72,4 @@ public class HomeController {
     public ModelAndView noSuchPet() {
         return new ModelAndView("404_pet");
     }
-
 }
