@@ -3,8 +3,8 @@ package ar.edu.itba.paw.models;
 import java.util.Date;
 
 public class Pet {
-    private String id;
-    private String name;
+    private long id;
+    private String petName;
     private Date birthDate;
     private String species;
     private String breed;
@@ -13,15 +13,17 @@ public class Pet {
     private Date uploadDate;
     private int price;
     private String location;
+    private String description;
+    private long ownerId;
     //list of photos?
-    // Owner?
+
 
 
     public Pet() {}
 
-    public Pet(String id, String name, Date birthDate, String species, String breed, String gender, boolean vaccinated, Date uploadDate, int price, String location) {
+    public Pet(long id, String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId ) {
         this.id = id;
-        this.name = name;
+        this.petName = petName;
         this.birthDate = birthDate;
         this.species = species;
         this.breed = breed;
@@ -30,22 +32,24 @@ public class Pet {
         this.uploadDate = uploadDate;
         this.price = price;
         this.location = location;
+        this.description = description;
+        this.ownerId = ownerId;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getPetName() {
+        return petName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPetName(String petName) {
+        this.petName = petName;
     }
 
     public Date getBirthDate() {
@@ -110,5 +114,21 @@ public class Pet {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
     }
 }
