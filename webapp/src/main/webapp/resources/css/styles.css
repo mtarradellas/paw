@@ -9,6 +9,19 @@ html,body {
     height: 100%;
 }
 
+.title-style{
+    font-family: verdana;
+    text-align: center;
+}
+
+.title-style h6{
+    opacity: 50%;
+}
+
+.card-color{
+    background: #dbe2ef;
+}
+
 .footer {
     background-color: #222831;
     padding: 10px;

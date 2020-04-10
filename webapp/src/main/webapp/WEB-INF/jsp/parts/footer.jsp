@@ -45,7 +45,7 @@
                     </li>
                     <li>
                         <p>
-                            <i class="fas fa-envelope mr-3"></i> pet_society@gmail.com</p>
+                            <i class="fas fa-envelope mr-3"></i> petsociety.contact@gmail.com</p>
                     </li>
 <%--                    <li>--%>
 <%--                        <p>--%>
