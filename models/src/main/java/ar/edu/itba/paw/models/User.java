@@ -7,14 +7,8 @@ public class User {
     private String mail;
     private String phone;
 
-    public User() {
-
-    }
-
-    public User(long id, String username, String password, String mail, String phone) {
-        this.id = id;
+    public User(String username, String mail, String phone) {
         this.username = username;
-        this.password = password;
         this.mail = mail;
         this.phone = phone;
     }
@@ -24,6 +18,21 @@ public class User {
         this.username = username;
         this.mail = mail;
         this.phone = phone;
+    }
+
+    public User(String username, String password, String mail, String phone) {
+        this.username = username;
+        this.mail = mail;
+        this.phone = phone;
+        this.password = password;
+    }
+
+    public User(long id, String username, String password, String mail, String phone) {
+        this.id = id;
+        this.username = username;
+        this.mail = mail;
+        this.phone = phone;
+        this.password = password;
     }
 
     public long getId() {
