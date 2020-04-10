@@ -1,3 +1,8 @@
+#home-link{
+    text-decoration: none;
+    color: white;
+}
+
 html,body {
     display: flex;
     flex-flow: column;
@@ -9,36 +14,30 @@ html,body {
     padding: 10px;
     flex-grow : 1;
     color: white;
+    font-family: verdana;
 }
 
-.footer-title{
-    font-family: verdana;
-    font-size: 10pt;
-    font-weight: bold;
+.footer-link a:visited{
+    color: rebeccapurple;
 }
 
 .footer-description{
     font-family: verdana;
-    font-size: 8pt;
+    font-size: 10pt;
     list-style-type:none
 }
 
 
 .header {
-
     background-color: #222831;
     color: white;
-}
-
-.header img {
-    float: left
 }
 
 .header h1 {
     font-family: verdana;
     font-size: 300%;
     position: relative;
-    top: 18px;
+    top: 7px;
     left: 10px;
 }
 

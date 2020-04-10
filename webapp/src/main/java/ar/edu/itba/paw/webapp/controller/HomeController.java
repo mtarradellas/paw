@@ -26,4 +26,10 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("about");
         return mav;
     }
+
+    @RequestMapping("/contact")
+    public ModelAndView getContact() {
+        final ModelAndView mav = new ModelAndView("contact");
+        return mav;
+    }
 }
