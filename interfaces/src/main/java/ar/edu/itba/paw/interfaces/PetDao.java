@@ -2,10 +2,11 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.Pet;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface PetDao {
-    Pet findById(String id);
-    List<Pet> list();
-    Pet save(Pet pet);
+    Optional<Pet> findById(long id);
+    Stream<Pet> list();
+    Optional<Pet> save(Pet pet);
 }

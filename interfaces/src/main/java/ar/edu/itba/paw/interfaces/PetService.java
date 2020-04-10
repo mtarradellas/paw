@@ -3,10 +3,15 @@ package ar.edu.itba.paw.interfaces;
 import ar.edu.itba.paw.models.Pet;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface PetService {
-    Pet findById(String id);
-    List<Pet> list();
+    Optional<Pet> findById(long id);
+    Stream<Pet> list();
+    Optional<Pet> save(Pet pet);
+
+
     //List<Pet> search(String keyWords);
     //List<Pet> filter(); como se pasarian los filtros?
 }

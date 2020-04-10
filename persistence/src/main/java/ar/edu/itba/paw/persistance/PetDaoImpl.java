@@ -3,58 +3,57 @@ package ar.edu.itba.paw.persistance;
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import javax.sql.DataSource;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 @Repository
 public class PetDaoImpl implements PetDao {
-    //mock db till we have an actual db
-    private Map<String, Pet> pets = new ConcurrentHashMap<>();
+    private JdbcTemplate jdbcTemplate;
 
-    public PetDaoImpl() {
+    private static final RowMapper<Pet> PET_MAPPER = (rs, rowNum) -> new Pet(
+            rs.getLong("id"),
+            rs.getString("petName"),
+            rs.getString("species"),
+            rs.getString("breed"),
+            rs.getString("location"),
+            rs.getBoolean("vaccinated"),
+            rs.getString("gender"),
+            rs.getString("description"),
+            rs.getDate("birthDate"),
+            rs.getDate("uploadDate"),
+            rs.getInt("price"),
+            rs.getLong("ownerId")
+    );
 
-        Pet pet1 = new Pet();
-        pet1.setId("1");
-        pet1.setName("Len");
-        pet1.setBirthDate(new Date(2020,1,1));
-        pet1.setSpecies("Dog");
-        pet1.setBreed("German Shepherd");
-        pet1.setGender("Male");
-        pet1.setLocation("Pilar");
-        pet1.setVaccinated(true);
-        pet1.setUploadDate(new Date(2020, 4, 8));
-        pet1.setPrice(2000);
-        pets.put("1", pet1);
+    @Autowired
+    public PetDaoImpl(final DataSource dataSource) {
 
-        Pet pet2 = new Pet();
-        pet2.setId("2");
-        pet2.setName("Fran");
-        pet2.setBirthDate(new Date(2020,2,1));
-        pet2.setSpecies("Dog");
-        pet2.setBreed("Collie");
-        pet2.setGender("Male");
-        pet2.setLocation("Pilar");
-        pet2.setVaccinated(true);
-        pet2.setUploadDate(new Date(2020, 4, 8));
-        pet2.setPrice(1000);
-        pets.put("2", pet2);
-
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public Pet findById(String id) {
-        return pets.get(id);
+    @Override
+    public Optional<Pet> findById(long id) {
+        return jdbcTemplate.query("SELECT * FROM pets WHERE id = ?", new Object[] {id}, PET_MAPPER)
+                .stream().findFirst();
     }
 
-    public List<Pet> list() {
-        return new ArrayList<>(this.pets.values());
+    @Override
+    public Stream<Pet> list() {
+        return jdbcTemplate.query("SELECT * FROM pets", PET_MAPPER)
+                .stream();
     }
 
-    public Pet save(Pet pet){
-        return this.pets.put(pet.getId(), pet);
+    @Override
+    public Optional<Pet> save(Pet pet){
+        return jdbcTemplate.query("INSERT INTO pets(id, petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                new Object[] {pet.getId(), pet.getPetName(), pet.getSpecies(), pet.getBreed(), pet.getLocation(), pet.isVaccinated(), pet.getGender(), pet.getDescription(), pet.getBirthDate(), pet.getUploadDate(), pet.getPrice(), pet.getOwnerId()}, PET_MAPPER)
+                .stream().findFirst();
     };
 }

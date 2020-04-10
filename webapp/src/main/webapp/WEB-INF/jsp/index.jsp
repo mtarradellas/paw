@@ -9,7 +9,7 @@
     <c:forEach var="pet" items="${home_pet_list}">
         <li>
             <ul>
-                <li><c:out value="${pet.name}" /></li>
+                <li><c:out value="${pet.petName}" /></li>
                 <li><c:out value="${pet.species}" /></li>
                 <li><c:out value="${pet.breed}" /></li>
                 <li><c:out value="${pet.gender}" /></li>
