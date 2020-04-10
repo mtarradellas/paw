@@ -9,5 +9,5 @@ public interface UserDao {
     Optional<User> findById(long id);
     Optional<User> findByUsername(String username);
     Stream<User> list();
-    Optional<User> save(User user);
+    Optional<User> create(User user);
 }
