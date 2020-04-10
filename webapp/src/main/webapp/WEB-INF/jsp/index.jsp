@@ -16,25 +16,24 @@
                             <div class="form-group">
                                 <label for="filter-specie">Especie</label>
                                 <select class="form-control" id="filter-specie">
-                                    <option value="specie-any">Cualquiera</option>
-                                    <option value="specie-dog">Perro</option>
-                                    <option value="specie-cat">Gato</option>
+                                    <option value="any">Cualquiera</option>
+                                    <option value="dog">Perro</option>
+                                    <option value="cat">Gato</option>
                                 </select>
 
                                 <label for="filter-breed">Raza</label>
                                 <select class="form-control disabled" id="filter-breed" disabled>
-                                    <option class="specie-any">Cualquiera</option>
-                                    <option class="specie-dog">Golden</option>
-                                    <option class="specie-dog">Collie</option>
-                                    <option class="specie-dog">Caniche</option>
-                                    <option class="specie-cat">Siamese</option>
+                                    <option class="specie-any" value="any">Cualquiera</option>
+                                    <option class="specie-dog" value="golden">Golden</option>
+                                    <option class="specie-dog" value="collie">Collie</option>
+                                    <option class="specie-cat" value="siamese">Siamese</option>
                                 </select>
 
                                 <label for="filter-gender">Sexo</label>
                                 <select class="form-control" id="filter-gender">
-                                    <option>Cualquiera</option>
-                                    <option>Macho</option>
-                                    <option>Hembra</option>
+                                    <option value="any">Cualquiera</option>
+                                    <option value="male">Macho</option>
+                                    <option value="female">Hembra</option>
                                 </select>
                             </div>
                             <h6 class="card-subtitle mb-2 text-muted">Ordenar</h6>
