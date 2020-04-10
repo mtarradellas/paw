@@ -7,6 +7,8 @@
         <link rel="stylesheet" href="<c:url value="/resources/css/styles.css"/>"/>
     </head>
     <body>
+        <script src="<c:url value="/resources/jquery/jquery-3.4.1.slim.min.js"/>"></script>
+
         <jsp:include page="/WEB-INF/jsp/parts/header.jsp" />
 
         <div id="body">
@@ -15,7 +17,6 @@
 
         <jsp:include page="/WEB-INF/jsp/parts/footer.jsp" />
 
-        <script src="<c:url value="/resources/jquery/jquery-3.4.1.slim.min.js"/>"></script>
         <script src="<c:url value="/resources/bootstrap-4.3.1/js/bootstrap.js"/>"></script>
 
     </body>

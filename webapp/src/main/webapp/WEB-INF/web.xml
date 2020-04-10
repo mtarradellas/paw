@@ -52,4 +52,9 @@ ml/ns/j2ee/web-app_2_4.xsd">
     <url-pattern>*.png</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.js</url-pattern>
+  </servlet-mapping>
+
 </web-app>
