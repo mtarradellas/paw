@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@tag description="Animal card" pageEncoding="UTF-8"%>
 <%@attribute name="pet" required="true" type="ar.edu.itba.paw.models.Pet"%>
 
@@ -6,9 +7,9 @@
          class="card-img-top" alt="">
     <div class="card-body">
         <p class="card-text">
-            Nombre: ${pet.name}<br>
-            Raza: ${pet.breed}<br>
-            Precio: $${pet.price}
+            Nombre: <c:out value="${pet.name}"/><br>
+            Raza: <c:out value="${pet.breed}"/><br>
+            Precio: $<c:out value="${pet.price}"/>
         </p>
     </div>
     <div class="card-body">

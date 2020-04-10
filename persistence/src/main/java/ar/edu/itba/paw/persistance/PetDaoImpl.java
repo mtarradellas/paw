@@ -44,6 +44,22 @@ public class PetDaoImpl implements PetDao {
         pet2.setPrice(1000);
         pets.put("2", pet2);
 
+        for(int i=3; i<10; i++){
+            pet2 = new Pet();
+            pet2.setId("2");
+            pet2.setName("Fran");
+            pet2.setBirthDate(new Date(2020,2,1));
+            pet2.setSpecies("Dog");
+            pet2.setBreed("Collie");
+            pet2.setGender("Male");
+            pet2.setLocation("Pilar");
+            pet2.setVaccinated(true);
+            pet2.setUploadDate(new Date(2020, 4, 8));
+            pet2.setPrice(1000);
+            pets.put(String.valueOf(i), pet2);
+
+        }
+
     }
 
     public Pet findById(String id) {
