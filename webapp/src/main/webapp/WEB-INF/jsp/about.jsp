@@ -1,10 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
 <html>
 <head>
-    <title>About Us</title>
+    <title>Pet Society</title>
 </head>
 <body>
-    <h1>About Us</h1>
+    <h1><spring:message code="aboutUs"/></h1>
     <h2>Pet Society</h2>
     <ul>
         <li>Pedro Vedoya</li>

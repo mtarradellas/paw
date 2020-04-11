@@ -1,17 +1,12 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: lkarpovich
-  Date: 10/4/20
-  Time: 10:49
-  To change this template use File | Settings | File Templates.
---%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
 <html>
 <head>
     <title>Pet Society</title>
 </head>
 <body>
-<h1>Pet</h1>
+<h1><spring:message code="pet"/></h1>
 <h3>${single_pet_example.petName}</h3>
 <p><c:out value="${single_pet_example.id}" /></p>
 <p><c:out value="${single_pet_example.species}" /></p>
