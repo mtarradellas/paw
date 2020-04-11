@@ -4,14 +4,14 @@ import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
+import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.ArrayList;
 
 @Controller
 public class HomeController {
@@ -58,6 +58,24 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("single_pet");
         mav.addObject("single_pet_example",
                 petService.findById(id).orElseThrow(PetNotFoundException::new));
+        return mav;
+    }
+
+    @RequestMapping(value = "/", method = { RequestMethod.GET})
+    public ModelAndView getIdPet(@RequestParam(name = "specie", required = false) String specie,
+                                 @RequestParam(name = "breed", required = false) String breed,
+                                 @RequestParam(name = "gender", required = false) String gender,
+                                 @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                 @RequestParam(name = "searchOrder", required = false) String searchOrder){
+        final ModelAndView mav = new ModelAndView("index");
+
+        if(specie != null || gender != null || searchCriteria != null){
+            mav.addObject("home_pet_list", petService.filteredList(specie, breed, gender, searchCriteria, searchOrder).toArray());
+        }
+        else {
+
+            mav.addObject("home_pet_list", petService.list().toArray());
+        }
         return mav;
     }
 

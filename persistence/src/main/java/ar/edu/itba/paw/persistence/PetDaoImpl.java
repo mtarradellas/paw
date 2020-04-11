@@ -55,6 +55,36 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
+    public Stream<Pet> filteredList(String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder) {
+        if(specieFilter == null) {
+            specieFilter = "%";
+            breedFilter = "%";
+        }
+        if(breedFilter == null) { breedFilter = "%";}
+        if(genderFilter == null) { genderFilter = "%"; }
+        if(searchCriteria == null) {
+            return jdbcTemplate.query(  "SELECT * " +
+                            "FROM pets " +
+                            "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? ",
+                    new Object[] {specieFilter, breedFilter, genderFilter},
+                    PET_MAPPER)
+                    .stream();
+        }
+        else {
+            if(searchOrder == null) { searchOrder = "asc";}
+            searchCriteria = searchCriteria + " " + searchOrder;
+            return jdbcTemplate.query(  "SELECT * " +
+                            "FROM pets " +
+                            "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? " +
+                            "ORDER BY ? ",
+                    new Object[] {specieFilter, breedFilter, genderFilter, searchCriteria},
+                    PET_MAPPER)
+                    .stream();
+        }
+
+    }
+
+    @Override
     public Pet create(String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
         final Map<String, Object> values = new HashMap<String, Object>() {{
             put("petName", petName);
