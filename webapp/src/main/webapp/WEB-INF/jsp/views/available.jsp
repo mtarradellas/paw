@@ -2,7 +2,7 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<t:basicLayout>
+<t:basicLayout title="Available">
     <jsp:body>
         <div class="shadow p-3 mb-5 rounded card-color">
             <h1 class="title-style"><spring:message code="available"/></h1>

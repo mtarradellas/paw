@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-
 @Controller
 public class HomeController {
     @Autowired
@@ -24,37 +22,37 @@ public class HomeController {
 
     @RequestMapping("/")
     public ModelAndView getHome() {
-        final ModelAndView mav = new ModelAndView("index");
+        final ModelAndView mav = new ModelAndView("views/index");
         mav.addObject("home_pet_list", petService.list().toArray());
         return mav;
     }
 
     @RequestMapping("/about")
     public ModelAndView getAbout() {
-        return new ModelAndView("about");
+        return new ModelAndView("views/about");
     }
 
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
-        return new ModelAndView("available");
+        return new ModelAndView("views/available");
     }
 
     @RequestMapping("/users")
     public ModelAndView getUsers() {
-        final ModelAndView mav = new ModelAndView("users");
+        final ModelAndView mav = new ModelAndView("views/users");
         mav.addObject("users_list", userService.list().toArray());
         return mav;
     }
 
     @RequestMapping("/contact")
     public ModelAndView getContact() {
-        final ModelAndView mav = new ModelAndView("contact");
+        final ModelAndView mav = new ModelAndView("views/contact");
         return mav;
     }
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView getIdUser(@PathVariable("id") long id) {
-        final ModelAndView mav = new ModelAndView("single_user");
+        final ModelAndView mav = new ModelAndView("views/single_user");
         mav.addObject("single_user_example",
                 userService.findById(id).orElseThrow(UserNotFoundException::new));
         return mav;
@@ -62,21 +60,23 @@ public class HomeController {
 
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {
-        final ModelAndView mav = new ModelAndView("single_pet");
-        mav.addObject("single_pet_example",
+        final ModelAndView mav = new ModelAndView("views/single_pet");
+        mav.addObject("pet",
                 petService.findById(id).orElseThrow(PetNotFoundException::new));
+        mav.addObject("ids",
+                new String[]{"id1", "id2", "id3"});
         return mav;
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchUser() {
-        return new ModelAndView("404_user");
+        return new ModelAndView("views/404_user");
     }
 
     @ExceptionHandler(PetNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchPet() {
-        return new ModelAndView("404_pet");
+        return new ModelAndView("views/404_pet");
     }
 }

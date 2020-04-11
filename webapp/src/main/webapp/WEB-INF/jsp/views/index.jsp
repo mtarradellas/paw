@@ -2,9 +2,9 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<t:basicLayout>
+<t:basicLayout title="Buscar mascotas">
     <jsp:body>
-        <div class="container-fluid home-container">
+        <div class="container-fluid">
             <div class="row">
 
                 <div class="col-md-2 search-tools">

@@ -2,8 +2,9 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<t:basicLayout>
+<t:basicLayout title="Contact">
     <jsp:body>
+
         <div class="shadow p-3 mb-5 rounded card-color">
             <h1 class="title-style"><spring:message code="contact.contactUs"/></h1>
         </div>
@@ -40,10 +41,14 @@
                 </div>
             </div>
         </div>
-        </div>
+
         <div class="content-disclaimer">
             <p><spring:message code="contact.disclaimer"/>
-            <a href="/available"><spring:message code="contact.disclaimer.link"/></a></p>
+            <a href="${pageContext.request.contextPath}/available"><spring:message code="contact.disclaimer.link"/></a></p>
+        </div>
+
+        <div class="p-4">
+            <a href="${pageContext.request.contextPath}/">Volver al inicio</a>
         </div>
 
     </jsp:body>
