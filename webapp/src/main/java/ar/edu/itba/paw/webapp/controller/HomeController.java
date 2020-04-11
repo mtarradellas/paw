@@ -32,6 +32,11 @@ public class HomeController {
         return new ModelAndView("views/about");
     }
 
+    @RequestMapping("/available")
+    public ModelAndView getAvailable() {
+        return new ModelAndView("views/available");
+    }
+
     @RequestMapping("/users")
     public ModelAndView getUsers() {
         final ModelAndView mav = new ModelAndView("views/users");

@@ -67,7 +67,7 @@ html,body {
 
 .footer-description{
     font-family: verdana;
-    font-size: 10pt;
+    font-size: 12pt;
     list-style-type:none
 }
 
@@ -85,3 +85,8 @@ html,body {
     left: 10px;
 }
 
+.content-disclaimer{
+    background: #f9f7f7;
+    font-family: verdana;
+    font-size: 10pt;
+}

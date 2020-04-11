@@ -1,10 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
 <html>
 <head>
-    <title>Pet Society</title>
+    <title><spring:message code="notFound"/></title>
 </head>
 <body>
-<h1>404 Not Found</h1>
-<h4>Pet Not Found :(</h4>
+    <h1><spring:message code="notFound"/></h1>
+    <h4><spring:message code="notFound.pet"/></h4>
 </body>
 </html>

@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.Pet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -15,7 +16,9 @@ import java.util.stream.Stream;
 
 @Repository
 public class PetDaoImpl implements PetDao {
+
     private JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     private static final RowMapper<Pet> PET_MAPPER = (rs, rowNum) -> new Pet(
             rs.getLong("id"),
@@ -36,6 +39,7 @@ public class PetDaoImpl implements PetDao {
     public PetDaoImpl(final DataSource dataSource) {
 
         jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcInsert = new SimpleJdbcInsert(dataSource);
     }
 
     @Override
@@ -51,9 +55,22 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Optional<Pet> save(Pet pet){
-        return jdbcTemplate.query("INSERT INTO pets(id, petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                new Object[] {pet.getId(), pet.getPetName(), pet.getSpecies(), pet.getBreed(), pet.getLocation(), pet.isVaccinated(), pet.getGender(), pet.getDescription(), pet.getBirthDate(), pet.getUploadDate(), pet.getPrice(), pet.getOwnerId()}, PET_MAPPER)
-                .stream().findFirst();
-    };
+    public Pet create(String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
+        final Map<String, Object> values = new HashMap<String, Object>() {{
+            put("petName", petName);
+            put("species", species);
+            put("breed", breed);
+            put("location", location);
+            put("vaccinated", vaccinated);
+            put("gender", gender);
+            put("description", description);
+            put("birthDate", birthDate);
+            put("uploadDate", uploadDate);
+            put("price", price);
+            put("ownerId", ownerId);
+        }};
+        final Number key = jdbcInsert.executeAndReturnKey(values);
+
+        return new Pet(key.longValue(), petName, species, breed,location,vaccinated,gender,description,birthDate,uploadDate,price,ownerId);
+    }
 }
