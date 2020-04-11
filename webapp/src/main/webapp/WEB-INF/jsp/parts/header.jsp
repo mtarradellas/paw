@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 
 <nav class="navbar navbar-expand-lg header">
@@ -14,8 +15,8 @@
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+            <input class="form-control mr-sm-2" type="search" placeholder="<spring:message code="search"/>" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><spring:message code="search"/></button>
         </form>
     </div>
 </nav>

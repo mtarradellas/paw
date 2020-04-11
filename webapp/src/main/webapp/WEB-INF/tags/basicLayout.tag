@@ -5,7 +5,7 @@
     <head>
         <link rel="stylesheet" href="<c:url value="/resources/bootstrap-4.3.1/css/bootstrap.css"/>"/>
         <link rel="stylesheet" href="<c:url value="/resources/css/styles.css"/>"/>
-
+        <title>Pet Society</title>
     </head>
     <body>
         <script src="<c:url value="/resources/jquery/jquery-3.4.1.slim.min.js"/>"></script>

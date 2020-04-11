@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
+
 @Controller
 public class HomeController {
     @Autowired
@@ -30,6 +32,11 @@ public class HomeController {
     @RequestMapping("/about")
     public ModelAndView getAbout() {
         return new ModelAndView("about");
+    }
+
+    @RequestMapping("/available")
+    public ModelAndView getAvailable() {
+        return new ModelAndView("available");
     }
 
     @RequestMapping("/users")
