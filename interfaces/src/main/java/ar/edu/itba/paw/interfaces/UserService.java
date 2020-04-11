@@ -2,10 +2,12 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.User;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface UserService {
-    User findById(long id);
-    User findByUsername(String username);
-    List<User> list();
+    Optional<User> findById(long id);
+    Optional<User> findByUsername(String username);
+    Stream<User> list();
+    Optional<User> create(String username, String mail, String phone);
 }
