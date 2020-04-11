@@ -3,9 +3,9 @@
  *  Event handling
  */
 
-$('#filter-specie').bind('change', event=>{
+$('#filter-specie').on('change', function(event){
 
-    const selectedSpecie = $('#filter-specie').val();
+    const selectedSpecie = $(this).val();
 
 
     const filterBreedSelector =  $('#filter-breed');
@@ -15,7 +15,7 @@ $('#filter-specie').bind('change', event=>{
         filterBreedSelector.attr('disabled', false);
     }
 
-    const breedOptions = $('#filter-breed > option');
+    const breedOptions = filterBreedSelector.find('option');
 
     breedOptions.not(".specie-"+selectedSpecie).hide();
     breedOptions.filter(".specie-"+selectedSpecie+",.specie-any").show();
@@ -24,9 +24,9 @@ $('#filter-specie').bind('change', event=>{
 });
 
 
-$('#search-criteria').bind('change', event=>{
+$('#search-criteria').on('change', function(event){
 
-    const selectedCriteria = $('#search-criteria').val();
+    const selectedCriteria = $(this).val();
 
     if(selectedCriteria === "any"){
         $('#search-order').attr('disabled', true);
@@ -52,15 +52,17 @@ function paramsToString(list){
     return string;
 }
 
-$('#search-tools-submit').bind('click', event=>{
+$('#search-tools-submit').on('click', function(evt){
     const queryParams = [];
 
     pushProperty(queryParams, 'specie', $('#filter-specie').val());
     pushProperty(queryParams, 'breed', $('#filter-breed').val());
     pushProperty(queryParams, 'gender', $('#filter-gender').val());
-    pushProperty(queryParams, 'searchCriteria', $('#search-criteria').val());
 
-    if($('#search-criteria').val() !== 'any')
+    const searchCriteriaSelector =  $('#search-criteria');
+    pushProperty(queryParams, 'searchCriteria', searchCriteriaSelector.val());
+
+    if(searchCriteriaSelector.val() !== 'any')
         pushProperty(queryParams, 'searchOrder', $('#search-order').val());
 
     const query = paramsToString(queryParams);
@@ -103,9 +105,9 @@ function getQueryParams(){
     };
 }
 
-$(document).ready(()=>{
+$(document).ready(function(event){
     const {specie, breed, gender, searchCriteria, searchOrder} = getQueryParams();
-    console.log(getQueryParams());
+
     $('#filter-specie').val(specie);
     $('#filter-gender').val(gender);
     $('#search-criteria').val(searchCriteria);

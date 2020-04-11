@@ -1,9 +1,8 @@
 
-$('.pet-photo-link').bind('click', function(evt){
-    const modalImage = $('#image-modal img');
+$('.pet-photo-link').on('click', function(evt){
+    const modal = $('#image-modal');
 
-    console.log(jQuery(".pet-photo", this));
-    modalImage.attr('src', jQuery(".pet-photo", this).attr('src'));
+    modal.find('img').attr('src', $(this).find('.pet-photo').attr('src'));
 
-    $('#image-modal').modal('show');
+    modal.modal('show');
 });
