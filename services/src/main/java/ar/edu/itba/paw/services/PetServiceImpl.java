@@ -28,6 +28,9 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public Stream<Pet> filteredList(String specie, String  breed, String gender, String searchCriteria, String searchOrder) {return petDao.filteredList(specie, breed, gender, searchCriteria, searchOrder);}
+
+    @Override
     public Pet create(String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
         return this.petDao.create(petName, species, breed,location,vaccinated,gender,description,birthDate,uploadDate,price,ownerId);
     }
