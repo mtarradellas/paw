@@ -44,6 +44,9 @@
                         </ul>
                     </div>
                 </div>
+                <div class="p-4">
+                    <a href="${pageContext.request.contextPath}/">Volver al inicio</a>
+                </div>
             </div>
         </div>
     </div>
