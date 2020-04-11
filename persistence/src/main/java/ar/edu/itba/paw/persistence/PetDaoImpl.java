@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 @Repository
 public class PetDaoImpl implements PetDao {
 
+    private static final String PET_TABLE = "pets";
+
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -39,7 +41,9 @@ public class PetDaoImpl implements PetDao {
     public PetDaoImpl(final DataSource dataSource) {
 
         jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcInsert = new SimpleJdbcInsert(dataSource);
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(PET_TABLE)
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
