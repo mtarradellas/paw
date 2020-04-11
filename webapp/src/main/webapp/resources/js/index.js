@@ -7,10 +7,12 @@ $('#filter-specie').bind('change', event=>{
 
     const selectedSpecie = $('#filter-specie').val();
 
+
+    const filterBreedSelector =  $('#filter-breed');
     if(selectedSpecie === "any"){
-        $('#filter-breed').attr('disabled', true);
+        filterBreedSelector.attr('disabled', true);
     }else{
-        $('#filter-breed').attr('disabled', false);
+        filterBreedSelector.attr('disabled', false);
     }
 
     const breedOptions = $('#filter-breed > option');
@@ -18,7 +20,7 @@ $('#filter-specie').bind('change', event=>{
     breedOptions.not(".specie-"+selectedSpecie).hide();
     breedOptions.filter(".specie-"+selectedSpecie+",.specie-any").show();
 
-    $('#filter-breed').val("any");
+    filterBreedSelector.val("any");
 });
 
 

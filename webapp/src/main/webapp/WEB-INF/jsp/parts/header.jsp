@@ -3,14 +3,14 @@
 
 
 <nav class="navbar navbar-expand-lg header">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="${pageContext.request.contextPath}/">
         <img src="<c:url value="/resources/images/logo.png"/>" alt="logo" height="70" width="70"/>
     </a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <h1><a href="/" id="home-link">PET SOCIETY</a></h1>
+                <h1><a href="${pageContext.request.contextPath}/" id="home-link">PET SOCIETY</a></h1>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">

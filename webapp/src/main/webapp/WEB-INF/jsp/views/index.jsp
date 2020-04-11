@@ -3,7 +3,7 @@
 
 <t:basicLayout>
     <jsp:body>
-        <div class="container-fluid home-container">
+        <div class="container-fluid page-content">
             <div class="row">
 
                 <div class="col-md-2 search-tools">

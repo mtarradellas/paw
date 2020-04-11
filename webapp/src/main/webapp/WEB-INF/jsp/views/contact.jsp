@@ -3,6 +3,7 @@
 
 <t:basicLayout>
     <jsp:body>
+
         <div class="shadow p-3 mb-5 rounded card-color">
             <h1 class="title-style">Como contactarse con nosotros:</h1>
         </div>

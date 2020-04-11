@@ -13,6 +13,6 @@
         </p>
     </div>
     <div class="card-body">
-        <a href="#" class="card-link">Ir a la página</a>
+        <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link">Ir a la página</a>
     </div>
 </div>
