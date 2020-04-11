@@ -25,7 +25,7 @@
                             <li><spring:message code="contact.age"/></li>
                             <li><spring:message code="contact.sex"/></li>
                             <li><spring:message code="contact.status"/></li>
-                            <li><spring:message code="contact.vaccined"/></li>
+                            <li><spring:message code="contact.vaccinated"/></li>
                             <li><spring:message code="contact.photo"/></li>
                             <li><spring:message code="contact.location"/></li>
                             <li><spring:message code="contact.ownerName"/></li>
