@@ -11,16 +11,20 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Repository
 public class UserDaoImpl implements UserDao {
 
+    private static final String USER_TABLE = "users";
+
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert jdbcInsert;
+    private final SimpleJdbcInsert jdbcInsert;
 
     private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
             rs.getLong("id"),
@@ -32,8 +36,8 @@ public class UserDaoImpl implements UserDao {
     public UserDaoImpl(final DataSource dataSource) {
 
         jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("users")
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(USER_TABLE)
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -56,15 +60,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> create(User user){
-        final Map<String, Object> values = new HashMap<String, Object>() {{
-            put("username", user.getUsername());
-            put("mail", user.getMail());
-            put("phone", user.getPhone());
-        }};
+    public User create(String username, String mail, String phone){
+        final Map<String, String> values = new HashMap<>();
+        values.put("username", username);
+        values.put("mail", mail);
+        values.put("phone", phone);
         final Number key = jdbcInsert.executeAndReturnKey(values);
-        user.setId(key.longValue());
-        return Optional.of(user);
+        return new User(key.longValue(), username, mail, phone);
     };
 }
 

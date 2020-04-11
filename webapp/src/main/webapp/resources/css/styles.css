@@ -1,3 +1,16 @@
+.home-container {
+    margin-bottom: 5rem;
+    margin-top: 5rem;
+}
+
+.animal-list-card {
+    max-width: 18rem;
+}
+
+.search-tools {
+    min-width: 20rem;
+}
+
 #home-link{
     text-decoration: none;
     color: white;
@@ -54,3 +67,8 @@ html,body {
     left: 10px;
 }
 
+.content-disclaimer{
+    background: #f9f7f7;
+    font-family: verdana;
+    font-size: 10pt;
+}

@@ -28,6 +28,7 @@
                             <li><spring:message code="contact.vaccinated"/></li>
                             <li><spring:message code="contact.photo"/></li>
                             <li><spring:message code="contact.location"/></li>
+                            <li><spring:message code="contact.description"/></li>
                             <li><spring:message code="contact.ownerName"/></li>
                         </ul>
                     </div>
@@ -39,6 +40,10 @@
                 </div>
             </div>
         </div>
+        </div>
+        <div class="content-disclaimer">
+            <p><spring:message code="contact.disclaimer"/>
+            <a href="/available"><spring:message code="contact.disclaimer.link"/></a></p>
         </div>
 
     </jsp:body>
