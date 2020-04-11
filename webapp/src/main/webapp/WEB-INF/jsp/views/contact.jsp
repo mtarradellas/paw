@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
-<t:basicLayout>
+<t:basicLayout title="Contact">
     <jsp:body>
 
         <div class="shadow p-3 mb-5 rounded card-color">
@@ -38,7 +38,8 @@
                 </div>
             </div>
         </div>
+        <div class="p-4">
+            <a href="${pageContext.request.contextPath}/">Volver al inicio</a>
         </div>
-
     </jsp:body>
 </t:basicLayout>

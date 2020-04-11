@@ -1,9 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
-<t:basicLayout>
+<t:basicLayout title="Buscar mascotas">
     <jsp:body>
-        <div class="container-fluid page-content">
+        <div class="container-fluid">
             <div class="row">
 
                 <div class="col-md-2 search-tools">

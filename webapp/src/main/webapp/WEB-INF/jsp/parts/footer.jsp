@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-md-4 col-lg-3 mr-auto my-md-4 my-0 mt-4 mb-1">
                 <h5 class="font-weight-bold text-uppercase mb-4">SUMAR MASCOTA</h5>
-                <a href="/contact" class="footer-description">Contactese con nosotros</a>
+                <a href="${pageContext.request.contextPath}/contact" class="footer-description">Contactese con nosotros</a>
 
             </div>
             <hr class="clearfix w-100 d-md-none">
