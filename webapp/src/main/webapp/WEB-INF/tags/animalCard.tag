@@ -7,7 +7,7 @@
          class="card-img-top" alt="">
     <div class="card-body">
         <p class="card-text">
-            Nombre: <c:out value="${pet.name}"/><br>
+            Nombre: <c:out value="${pet.petName}"/><br>
             Raza: <c:out value="${pet.breed}"/><br>
             Precio: $<c:out value="${pet.price}"/>
         </p>
