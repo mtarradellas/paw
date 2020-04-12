@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@tag description="Animal card" pageEncoding="UTF-8"%>
 <%@attribute name="pet" required="true" type="ar.edu.itba.paw.models.Pet"%>
 
@@ -7,12 +8,11 @@
          class="card-img-top" alt="">
     <div class="card-body">
         <p class="card-text">
-            Nombre: <c:out value="${pet.petName}"/><br>
-            Raza: <c:out value="${pet.breed}"/><br>
-            Precio: $<c:out value="${pet.price}"/>
+            <spring:message code="petCard.name"/> <c:out value="${pet.petName}"/><br>
+            <spring:message code="petCard.breed"/> <c:out value="${pet.breed}"/><br>
+            <spring:message code="petCard.price"/> $<c:out value="${pet.price}"/>
         </p>
-    </div>
-    <div class="card-body">
-        <a href="#" class="card-link">Ir a la página</a>
+        <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link"><spring:message code="petCard.goToPage"/></a>
+
     </div>
 </div>

@@ -1,16 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
 
 <footer class="page-footer font-small footer  pt-4">
     <div class="container text-center text-md-left">
         <div class="row">
             <div class="col-md-4 col-lg-3 mr-auto my-md-4 my-0 mt-4 mb-1">
-                <h5 class="font-weight-bold text-uppercase mb-4">SUMAR MASCOTA</h5>
-                <a href="/contact" class="footer-description">Contactese con nosotros</a>
+                <h5 class="font-weight-bold text-uppercase mb-4"><spring:message code="footer.addPet"/></h5>
+                <a href="${pageContext.request.contextPath}/contact" class="footer-description"><spring:message code="footer.contactUs"/></a>
 
             </div>
             <hr class="clearfix w-100 d-md-none">
             <div class="col-md-2 col-lg-2 mx-auto my-md-4 my-0 mt-4 mb-1">
-                <h5 class="font-weight-bold text-uppercase mb-4">NOSOTROS</h5>
+                <h5 class="font-weight-bold text-uppercase mb-4"><spring:message code="aboutUs"/></h5>
                 <ul class="list-unstyled footer-description">
                     <li>
                         <p>
@@ -36,8 +39,8 @@
 
             </div>
             <hr class="clearfix w-100 d-md-none">
-            <div class="col-md-4 col-lg-3 mx-auto my-md-4 my-0 mt-4 mb-1">
-                <h5 class="font-weight-bold text-uppercase mb-4">ENCUENTRENOS</h5>
+            <div class="col-md-4 col-lg-4 mx-auto my-md-4 my-0 mt-4 mb-1">
+                <h5 class="font-weight-bold text-uppercase mb-4"><spring:message code="footer.findUs"/></h5>
                 <ul class="list-unstyled">
                     <li>
                         <p>
@@ -45,7 +48,7 @@
                     </li>
                     <li>
                         <p>
-                            <i class="fas fa-envelope mr-3"></i> petsociety.contact@gmail.com</p>
+                            <i class="fas fa-envelope mr-3"></i>petsociety.contact@gmail.com</p>
                     </li>
 <%--                    <li>--%>
 <%--                        <p>--%>
