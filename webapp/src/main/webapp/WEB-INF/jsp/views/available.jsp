@@ -137,6 +137,9 @@
                 </div>
             </div>
         </div>
+        <div class="p-4">
+            <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
+        </div>
         </div>
 
     </jsp:body>

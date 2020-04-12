@@ -4,7 +4,6 @@
 
 <t:basicLayout title="Contact">
     <jsp:body>
-
         <div class="shadow p-3 mb-5 rounded card-color">
             <h1 class="title-style"><spring:message code="contact.contactUs"/></h1>
         </div>
@@ -48,7 +47,7 @@
         </div>
 
         <div class="p-4">
-            <a href="${pageContext.request.contextPath}/">Volver al inicio</a>
+            <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
         </div>
 
     </jsp:body>
