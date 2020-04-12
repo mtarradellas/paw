@@ -87,8 +87,8 @@ public class PetDaoImpl implements PetDao {
             if(searchCriteria.contains("specie")){
                 searchCriteria = "species";
             }
-            if(searchOrder == null) { searchOrder = "asc";}
-            else { searchOrder = "desc";}
+            if(searchOrder.contains("asc")) { searchOrder = "ASC";}
+            else { searchOrder = "DESC";}
 
             searchCriteria = searchCriteria + " " + searchOrder;
             String sql = "SELECT * " +
