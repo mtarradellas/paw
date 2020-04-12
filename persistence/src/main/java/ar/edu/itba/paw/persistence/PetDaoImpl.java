@@ -77,11 +77,13 @@ public class PetDaoImpl implements PetDao {
         else {
             if(searchOrder == null) { searchOrder = "asc";}
             searchCriteria = searchCriteria + " " + searchOrder;
-            return jdbcTemplate.query(  "SELECT * " +
-                            "FROM pets " +
-                            "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? " +
-                            "ORDER BY ? ",
-                    new Object[] {specieFilter, breedFilter, genderFilter, searchCriteria},
+            String sql = "SELECT * " +
+                    "FROM pets " +
+                    "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? " +
+                    "ORDER BY " +
+                    searchCriteria;
+            return jdbcTemplate.query( sql,
+                    new Object[] {specieFilter, breedFilter, genderFilter},
                     PET_MAPPER)
                     .stream();
         }
