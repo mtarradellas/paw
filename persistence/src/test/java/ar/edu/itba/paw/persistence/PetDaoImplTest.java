@@ -25,10 +25,9 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class PetDaoImplTest {
-
     private final String PETS_TABLE = "pets";
     private final String PET_NAME = "pet_test_name";
-    private final String SPECIES = "pettest_species";
+    private final String SPECIES = "pet_test_species";
     private final String BREED = "pet_test_breed";
     private final String LOCATION = "pet_test_location";
     private final Boolean VACCINATED = false;

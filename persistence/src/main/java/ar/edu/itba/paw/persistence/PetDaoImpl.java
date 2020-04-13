@@ -75,13 +75,29 @@ public class PetDaoImpl implements PetDao {
                     .stream();
         }
         else {
-            if(searchOrder == null) { searchOrder = "asc";}
+            if(searchCriteria.contains("upload")){
+                searchCriteria = "uploadDate";
+            }
+            if(searchCriteria.contains("gender")){
+                searchCriteria = "gender";
+            }
+            if(searchCriteria.contains("price")){
+                searchCriteria = "price";
+            }
+            if(searchCriteria.contains("specie")){
+                searchCriteria = "species";
+            }
+            if(searchOrder.contains("asc")) { searchOrder = "ASC";}
+            else { searchOrder = "DESC";}
+
             searchCriteria = searchCriteria + " " + searchOrder;
-            return jdbcTemplate.query(  "SELECT * " +
-                            "FROM pets " +
-                            "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? " +
-                            "ORDER BY ? ",
-                    new Object[] {specieFilter, breedFilter, genderFilter, searchCriteria},
+            String sql = "SELECT * " +
+                    "FROM pets " +
+                    "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? " +
+                    "ORDER BY " +
+                    searchCriteria;
+            return jdbcTemplate.query( sql,
+                    new Object[] {specieFilter, breedFilter, genderFilter},
                     PET_MAPPER)
                     .stream();
         }
