@@ -2,8 +2,8 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-
-<t:basicLayout title="Informacion sobre la mascota">
+<spring:message code="petTitle" var="titleVar"/>
+<t:basicLayout title="${titleVar}">
     <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

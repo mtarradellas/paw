@@ -2,7 +2,8 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<t:basicLayout title="Contact">
+<spring:message code="contactTitle" var="titleVar"/>
+<t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="shadow p-3 mb-5 rounded card-color">
             <h1 class="title-style"><spring:message code="contact.contactUs"/></h1>
