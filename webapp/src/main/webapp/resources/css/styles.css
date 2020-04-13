@@ -1,0 +1,92 @@
+#image-modal img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.page-content .section {
+    padding-top: 5rem;
+}
+
+.pet-photo {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.page-content {
+    margin-bottom: 5rem;
+    margin-top: 3rem;
+}
+
+#imageCarousel {
+    margin-bottom: 5rem;
+}
+
+.animal-list-card {
+    max-width: 18rem;
+}
+
+.search-tools {
+    min-width: 20rem;
+}
+
+#home-link{
+    text-decoration: none;
+    color: white;
+}
+
+html,body {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.title-style{
+    font-family: verdana;
+    text-align: center;
+}
+
+.title-style h6{
+    opacity: 50%;
+}
+
+.card-color{
+    background: #dbe2ef;
+}
+
+.footer {
+    background-color: #222831;
+    padding: 10px;
+    flex-grow : 1;
+    color: white;
+    font-family: verdana;
+}
+
+.footer-link a:visited{
+    color: rebeccapurple;
+}
+
+.footer-description{
+    font-family: verdana;
+    font-size: 12pt;
+    list-style-type:none
+}
+
+
+.header {
+    background-color: #222831;
+    color: white;
+}
+
+.header h1 {
+    font-family: verdana;
+    font-size: 300%;
+    position: relative;
+    top: 7px;
+    left: 10px;
+}
+
+.content-disclaimer{
+    background: #f9f7f7;
+    font-family: verdana;
+    font-size: 10pt;
+}
