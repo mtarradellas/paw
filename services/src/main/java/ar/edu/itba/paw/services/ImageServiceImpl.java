@@ -6,7 +6,7 @@ import ar.edu.itba.paw.models.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -14,8 +14,8 @@ public class ImageServiceImpl implements ImageService {
     private ImageDao imageDao;
 
     @Override
-    public Optional<Image> findById(Integer id) {
-        return this.imageDao.findById(id);
+    public Stream<Image> findByPetId(long id) {
+        return this.imageDao.findByPetId(id);
     }
 
 }

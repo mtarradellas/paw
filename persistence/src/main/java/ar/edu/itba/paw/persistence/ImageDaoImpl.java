@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public class ImageDaoImpl implements ImageDao {
@@ -27,13 +28,14 @@ public class ImageDaoImpl implements ImageDao {
                 .usingGeneratedKeyColumns("images_id");
     }
     private static final RowMapper<Image> IMAGE_MAPPER = (rs, rowNum) -> new Image(
-            rs.getInt("image_id"),
-            rs.getBytes("img")
+            rs.getInt("imageId"),
+            rs.getBytes("img"),
+            rs.getInt("petId")
     );
 
     @Override
-    public Optional<Image> findById(Integer id) {
-        return jdbcTemplate.query("SELECT * FROM images WHERE image_id = 1", IMAGE_MAPPER)
-                .stream().findFirst();
+    public Stream<Image> findByPetId(long id) {
+        return jdbcTemplate.query("SELECT * FROM images WHERE petId = ? ", new Object[] {id}, IMAGE_MAPPER)
+                .stream();
     }
 }

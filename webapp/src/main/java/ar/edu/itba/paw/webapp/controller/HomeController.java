@@ -58,8 +58,8 @@ public class HomeController {
     @RequestMapping("/test")
     public ModelAndView getImage() {
         final ModelAndView mav = new ModelAndView("test");
-        mav.addObject("test_image",
-            imageService.findById(1).orElseThrow(UserNotFoundException::new));
+        mav.addObject("test_pet_image",
+            petService.findById(2).orElseThrow(UserNotFoundException::new));
         return mav;
     }
 
@@ -76,8 +76,6 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/single_pet");
         mav.addObject("pet",
                 petService.findById(id).orElseThrow(PetNotFoundException::new));
-        mav.addObject("ids",
-                new String[]{"id1", "id2", "id3"});
         return mav;
     }
 
@@ -90,11 +88,11 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("index");
 
         if(specie != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(specie, breed, gender, searchCriteria, searchOrder).toArray());
+            mav.addObject("home_pet_list", petService.filteredList(specie, breed, gender, searchCriteria, searchOrder));
         }
         else {
 
-            mav.addObject("home_pet_list", petService.list().toArray());
+            mav.addObject("home_pet_list", petService.list());
         }
         return mav;
     }
