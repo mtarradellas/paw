@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
@@ -19,6 +20,8 @@ public class HomeController {
     UserService userService;
     @Autowired
     PetService petService;
+    @Autowired
+    ImageService imageService;
 
     @RequestMapping("/")
     public ModelAndView getHome() {
@@ -50,6 +53,7 @@ public class HomeController {
         return mav;
     }
 
+
     @RequestMapping(value = "/user/{id}")
     public ModelAndView getIdUser(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_user");
@@ -63,8 +67,6 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/single_pet");
         mav.addObject("pet",
                 petService.findById(id).orElseThrow(PetNotFoundException::new));
-        mav.addObject("ids",
-                new String[]{"id1", "id2", "id3"});
         return mav;
     }
 
@@ -77,11 +79,11 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("index");
 
         if(specie != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(specie, breed, gender, searchCriteria, searchOrder).toArray());
+            mav.addObject("home_pet_list", petService.filteredList(specie, breed, gender, searchCriteria, searchOrder));
         }
         else {
 
-            mav.addObject("home_pet_list", petService.list().toArray());
+            mav.addObject("home_pet_list", petService.list());
         }
         return mav;
     }
