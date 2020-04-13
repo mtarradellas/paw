@@ -3,7 +3,7 @@
  *  Event handling
  */
 
-$('#filter-specie').on('change', function(event){
+$('#filter-species').on('change', function(event){
 
     const selectedSpecie = $(this).val();
 
@@ -55,7 +55,7 @@ function paramsToString(list){
 $('#search-tools-submit').on('click', function(evt){
     const queryParams = [];
 
-    pushProperty(queryParams, 'specie', $('#filter-specie').val());
+    pushProperty(queryParams, 'species', $('#filter-species').val());
     pushProperty(queryParams, 'breed', $('#filter-breed').val());
     pushProperty(queryParams, 'gender', $('#filter-gender').val());
 
@@ -76,7 +76,7 @@ $('#search-tools-submit').on('click', function(evt){
 
 function getQueryParams(){
     const defaultValues = {
-        specie: 'any',
+        species: 'any',
         breed: 'any',
         gender: 'any',
         searchCriteria: 'any',
@@ -97,7 +97,7 @@ function getQueryParams(){
     });
 
     return {
-        specie: keyValues.specie || defaultValues.specie,
+        species: keyValues.species || defaultValues.species,
         breed: keyValues.breed || defaultValues.breed,
         gender: keyValues.gender || defaultValues.gender,
         searchCriteria: keyValues.searchCriteria || defaultValues.searchCriteria,
@@ -106,9 +106,9 @@ function getQueryParams(){
 }
 
 $(document).ready(function(event){
-    const {specie, breed, gender, searchCriteria, searchOrder} = getQueryParams();
+    const {species, breed, gender, searchCriteria, searchOrder} = getQueryParams();
 
-    $('#filter-specie').val(specie);
+    $('#filter-species').val(species);
     $('#filter-gender').val(gender);
     $('#search-criteria').val(searchCriteria);
 
@@ -117,7 +117,7 @@ $(document).ready(function(event){
     const searchOrderSelect = $('#search-order');
     searchOrderSelect.val(searchOrder);
 
-    if (specie !== 'any')
+    if (species !== 'any')
         breedSelect.attr('disabled', false);
 
 

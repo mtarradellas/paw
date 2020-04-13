@@ -13,10 +13,11 @@
                             <h5 class="card-title"><spring:message code="filter.options"/></h5>
                         </div>
                         <div class="card-body">
+
                             <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
                             <div class="form-group">
-                                <label for="filter-specie"><spring:message code="pet.species"/></label>
-                                <select class="form-control" id="filter-specie">
+                                <label for="filter-species"><spring:message code="pet.species"/></label>
+                                <select class="form-control" id="filter-species">
                                     <option value="any"><spring:message code="filter.any"/></option>
                                     <option value="dog"><spring:message code="pet.dog"/></option>
                                     <option value="cat"><spring:message code="pet.cat"/></option>
@@ -37,8 +38,11 @@
                                     <option value="female"><spring:message code="pet.female"/></option>
                                 </select>
                             </div>
+
                             <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
+
                             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
+
                             <select class="form-control" id="search-criteria">
                                 <option value="any"><spring:message code="filter.any"/></option>
                                 <option value="specie"><spring:message code="pet.species"/></option>
@@ -57,6 +61,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
                         <div class="card-deck row">

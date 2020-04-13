@@ -17,12 +17,11 @@
             </div>
         </div>
     </div>
-
     
     <div class="shadow p-3">
         <div class="p-2">
             <h2>Fotos</h2>
-            <t:photosList ids="${ids}"/>
+            <t:photosList images="${pet.images}"/>
         </div>
         <div class="p-2">
             <h2>Datos</h2>

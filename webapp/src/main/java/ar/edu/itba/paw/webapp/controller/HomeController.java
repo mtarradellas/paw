@@ -53,15 +53,6 @@ public class HomeController {
         return mav;
     }
 
-    ///
-
-    @RequestMapping("/test")
-    public ModelAndView getImage() {
-        final ModelAndView mav = new ModelAndView("test");
-        mav.addObject("test_pet_image",
-            petService.findById(2).orElseThrow(UserNotFoundException::new));
-        return mav;
-    }
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView getIdUser(@PathVariable("id") long id) {
