@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.PetDao;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Pet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class PetDaoImpl implements PetDao {
             rs.getInt("price"),
             rs.getLong("ownerId")
     );
+
+
 
     @Autowired
     public PetDaoImpl(final DataSource dataSource) {

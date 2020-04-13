@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
@@ -19,6 +20,8 @@ public class HomeController {
     UserService userService;
     @Autowired
     PetService petService;
+    @Autowired
+    ImageService imageService;
 
     @RequestMapping("/")
     public ModelAndView getHome() {
@@ -47,6 +50,16 @@ public class HomeController {
     @RequestMapping("/contact")
     public ModelAndView getContact() {
         final ModelAndView mav = new ModelAndView("views/contact");
+        return mav;
+    }
+
+    ///
+
+    @RequestMapping("/test")
+    public ModelAndView getImage() {
+        final ModelAndView mav = new ModelAndView("test");
+        mav.addObject("test_image",
+        imageService.findById(1).orElseThrow(UserNotFoundException::new).getImageData().toString());
         return mav;
     }
 
