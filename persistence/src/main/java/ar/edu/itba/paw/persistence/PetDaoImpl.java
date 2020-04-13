@@ -59,6 +59,17 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
+    public Stream<Pet> find(String findValue){
+        String sql = "SELECT * " +
+                "FROM pets " +
+                "WHERE species LIKE ? OR breed LIKE ? OR petName LIKE ? OR location LIKE ? OR price = ?";
+        return jdbcTemplate.query( sql,
+                new Object[] {findValue,findValue,findValue,findValue,Integer.parseInt(findValue)},
+                PET_MAPPER)
+                .stream();
+    }
+
+    @Override
     public Stream<Pet> filteredList(String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder) {
         if(specieFilter == null) {
             specieFilter = "%";
