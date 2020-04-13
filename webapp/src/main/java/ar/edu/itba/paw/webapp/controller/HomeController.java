@@ -59,7 +59,7 @@ public class HomeController {
     public ModelAndView getImage() {
         final ModelAndView mav = new ModelAndView("test");
         mav.addObject("test_image",
-        imageService.findById(1).orElseThrow(UserNotFoundException::new).getImageData().toString());
+            imageService.findById(1).orElseThrow(UserNotFoundException::new));
         return mav;
     }
 

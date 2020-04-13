@@ -11,7 +11,6 @@
     <title>Test Image</title>
 </head>
 <body>
-<h1>Id is: ${test_image}</h1>
-<h1>Id is: ${test_image}</h1>
+<h1>Id is: <img src="${test_image.url}" alt="test"/></h1>
 </body>
 </html>
