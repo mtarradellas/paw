@@ -2,35 +2,29 @@ package ar.edu.itba.paw.models;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
-import java.sql.Blob;
-import java.sql.SQLException;
-
 public class Image {
 
-    private Integer imageId;
+    private long imageId;
     private byte[] imageData;
+    private long petId;
     private String url;
 
-    public Image(Integer imageId, byte[] imageData) {
+    public Image(long imageId, byte[] imageData, long petId) {
         this.imageId = imageId;
         this.imageData = imageData;
+        this.petId = petId;
         this.url = "data:image/png;base64," + Base64.encode(imageData);
     }
-//
-//    public Image(int image_id, Blob img) throws SQLException {
-//        this.imageId = image_id;
-//        this.imageData = img.getBytes(1, (int) img.length());
-//    }
 
-    public Image(int image_id) {
+    public Image(long image_id) {
 
     }
 
-    public Integer getImageId() {
+    public long getImageId() {
         return imageId;
     }
 
-    public void setImageId(Integer imageId) {
+    public void setImageId(long imageId) {
         this.imageId = imageId;
     }
 
@@ -44,5 +38,9 @@ public class Image {
 
     public String getUrl() {
         return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

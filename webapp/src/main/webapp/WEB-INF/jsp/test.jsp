@@ -5,12 +5,23 @@
   Time: 17:20
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
-    <title>Test Image</title>
+    <title>Test PET W IMAGE</title>
 </head>
 <body>
-<h1>Id is: <img src="${test_image.url}" alt="test"/></h1>
+<h1><c:out value="${test_pet_image.petName}" /> </h1>
+<ul>
+    <c:forEach var="img" items="${test_pet_image.images}">
+        <li>
+            <ul>
+                <li><img src="${img.url}" alt="test"/></li>
+
+            </ul>
+        </li>
+    </c:forEach>
+</ul>
 </body>
 </html>
