@@ -5,6 +5,7 @@
 
 <c:set var="cprice" scope="application" value="${pet.price}"/>
 <spring:message code="${pet.species}.${pet.breed}" var="breed" />
+
 <div class="card animal-list-card">
     <img src="https://hips.hearstapps.com/ghk.h-cdn.co/assets/17/30/2560x1280/landscape-1500925839-golden-retriever-puppy.jpg?resize=1200:*"
          class="card-img-top" alt="">

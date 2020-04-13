@@ -73,11 +73,15 @@ public class HomeController {
                                  @RequestParam(name = "breed", required = false) String breed,
                                  @RequestParam(name = "gender", required = false) String gender,
                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
-                                 @RequestParam(name = "searchOrder", required = false) String searchOrder){
+                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
+                                 @RequestParam(name = "find", required = false) String findValue){
         final ModelAndView mav = new ModelAndView("index");
 
         if(specie != null || gender != null || searchCriteria != null){
             mav.addObject("home_pet_list", petService.filteredList(specie, breed, gender, searchCriteria, searchOrder).toArray());
+        }
+        else if(findValue != null){
+            mav.addObject("home_pet_list", petService.find(findValue).toArray());
         }
         else {
 

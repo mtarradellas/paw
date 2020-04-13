@@ -124,8 +124,4 @@ $(document).ready(function(event){
 
     if(searchCriteria !== 'any')
         searchOrderSelect.attr('disabled', false);
-
-
 });
-
-

@@ -1,8 +1,13 @@
 $('#search-button').on('click',function(evt){
-    let string = '?';
     const value = $('#search-value').val();
 
-    string+="search=" + value + '&';
+    if(value === ""){
+        location.href = window.location.href.split('?')[0];
+        return;
+    }
+    let string = '?';
+
+    string+="find=" + value + '&';
     const query = string;
 
     location.href = window.location.href.split('?')[0] + query;
@@ -15,7 +20,7 @@ $(document).ready(function(event){
     const field = window.location.href.split('?')[1];
     const search = field.split('=')[0];
 
-    if(search === "search"){
+    if(search === "find"){
         const query = field.split('=')[1];
         const searchVal = query.split('&')[0];
         $('#search-value').val(searchVal);
