@@ -12,8 +12,12 @@ $(document).ready(function(event){
     if(!window.location.href.includes('?'))
         return;
 
-    const query = window.location.href.split('=')[1];
-    const search = query.split('&')[0];
+    const field = window.location.href.split('?')[1];
+    const search = field.split('=')[0];
 
-    $('#search-value').val(search);
+    if(search === "search"){
+        const query = field.split('=')[1];
+        const searchVal = query.split('&')[0];
+        $('#search-value').val(searchVal);
+    }
 });
