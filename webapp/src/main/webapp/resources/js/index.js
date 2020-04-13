@@ -17,8 +17,8 @@ $('#filter-species').on('change', function(event){
 
     const breedOptions = filterBreedSelector.find('option');
 
-    breedOptions.not(".specie-"+selectedSpecie).hide();
-    breedOptions.filter(".specie-"+selectedSpecie+",.specie-any").show();
+    breedOptions.not(".species-"+selectedSpecie).hide();
+    breedOptions.filter(".species-"+selectedSpecie+",.species-any").show();
 
     filterBreedSelector.val("any");
 });
