@@ -26,11 +26,12 @@
             </div>
         </div>
     </div>
-
+    
     <div class="shadow p-3">
         <div class="p-2">
-            <h2><spring:message code="petCard.photos"/></h2>
-            <t:photosList ids="${ids}"/>
+            <h2>Fotos</h2>
+            <t:photosList images="${pet.images}"/>
+
         </div>
         <div class="p-2">
             <h2><spring:message code="data"/></h2>

@@ -14,8 +14,8 @@
         <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
             <div class="form-group">
-                <label for="filter-specie"><spring:message code="pet.species"/></label>
-                <select class="form-control" id="filter-specie">
+                <label for="filter-species"><spring:message code="pet.species"/></label>
+                <select class="form-control" id="filter-species">
                     <option value="any"><spring:message code="filter.any"/></option>
                     <option value="dog"><spring:message code="pet.dog"/></option>
                     <option value="cat"><spring:message code="pet.cat"/></option>
@@ -23,14 +23,14 @@
 
                 <label for="filter-breed"><spring:message code="pet.breed"/></label>
                 <select class="form-control disabled" id="filter-breed" disabled>
-                    <option class="specie-any" value="any"><spring:message code="filter.any"/></option>
+                    <option class="species-any" value="any"><spring:message code="filter.any"/></option>
 
                     <c:forEach items="${dogBreeds}" var="breed" varStatus="i">
-                        <option class="specie-dog" value="${breed.id}"><spring:message code="dog.${breed.name}"/></option>
+                        <option class="species-dog" value="${breed.id}"><spring:message code="dog.${breed.name}"/></option>
                     </c:forEach>
 
                     <c:forEach items="${catBreeds}" var="breed" varStatus="i">
-                        <option class="specie-cat" value="${breed.id}"><spring:message code="cat.${breed.name}"/></option>
+                        <option class="species-cat" value="${breed.id}"><spring:message code="cat.${breed.name}"/></option>
                     </c:forEach>
 
                 </select>
@@ -46,7 +46,7 @@
             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
             <select class="form-control" id="search-criteria">
                 <option value="any"><spring:message code="filter.any"/></option>
-                <option value="specie"><spring:message code="pet.species"/></option>
+                <option value="species"><spring:message code="pet.species"/></option>
                 <option value="gender"><spring:message code="pet.sex"/></option>
                 <option value="price"><spring:message code="pet.price"/></option>
                 <option value="upload-date"><spring:message code="pet.date"/></option>
