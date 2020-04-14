@@ -26,11 +26,11 @@
                     <option class="species-any" value="any"><spring:message code="filter.any"/></option>
 
                     <c:forEach items="${dogBreeds}" var="breed" varStatus="i">
-                        <option class="species-dog" value="${breed.id}"><spring:message code="dog.${breed.name}"/></option>
+                        <option class="species-dog" value="${breed.name}"><spring:message code="dog.${breed.name}"/></option>
                     </c:forEach>
 
                     <c:forEach items="${catBreeds}" var="breed" varStatus="i">
-                        <option class="species-cat" value="${breed.id}"><spring:message code="cat.${breed.name}"/></option>
+                        <option class="species-cat" value="${breed.name}"><spring:message code="cat.${breed.name}"/></option>
                     </c:forEach>
 
                 </select>
