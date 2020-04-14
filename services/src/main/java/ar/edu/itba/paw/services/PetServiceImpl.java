@@ -47,6 +47,15 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public List<Pet> find(String findValue){
+        List<Pet> pets = petDao.find(findValue).collect(Collectors.toList());
+        pets.forEach(pet ->{
+            pet.setImages(imageService.findByPetId(pet.getId()).collect(Collectors.toList()));
+        });
+        return pets;
+    }
+
+    @Override
     public Pet create(String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
         return this.petDao.create(petName, species, breed,location,vaccinated,gender,description,birthDate,uploadDate,price,ownerId);
     }
