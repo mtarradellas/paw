@@ -16,10 +16,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 import java.sql.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,7 +34,7 @@ public class PetDaoImplTest {
     private final String GENDER = "pet_test_gender";
     private final String DESCRIPTION = "pet_test_description";
     private final Date BIRTH_DATE = null;
-    private final Date UPLOAD_DATE = new Date(2001, 3, 2);
+    private  java.sql.Date UPLOAD_DATE ;
     private final int PRICE = 0;
     private final int OWNER_ID = 1;
 
@@ -55,6 +52,11 @@ public class PetDaoImplTest {
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(PETS_TABLE)
                 .usingGeneratedKeyColumns("id");
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2001);
+        cal.set(Calendar.MONTH, 2);
+        cal.set(Calendar.DATE, 2);
+        UPLOAD_DATE = new java.sql.Date(cal.getTimeInMillis());
     }
 
     @Test
