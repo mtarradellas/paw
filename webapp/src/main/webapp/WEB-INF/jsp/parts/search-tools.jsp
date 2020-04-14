@@ -47,6 +47,7 @@
             <select class="form-control" id="search-criteria">
                 <option value="any"><spring:message code="filter.any"/></option>
                 <option value="species"><spring:message code="pet.species"/></option>
+                <option value="breed"><spring:message code="pet.breed"/></option>
                 <option value="gender"><spring:message code="pet.sex"/></option>
                 <option value="price"><spring:message code="pet.price"/></option>
                 <option value="upload-date"><spring:message code="pet.date"/></option>
