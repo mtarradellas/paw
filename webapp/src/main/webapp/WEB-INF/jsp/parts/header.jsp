@@ -14,9 +14,9 @@
                 <h1><a href="${pageContext.request.contextPath}/" id="home-link">PET SOCIETY</a></h1>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="<spring:message code="search"/>" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><spring:message code="search"/></button>
-        </form>
+        <div class="form-inline my-2 my-lg-0">
+            <input id="search-value" class="form-control mr-sm-2" type="search" placeholder="<spring:message code="search"/>" aria-label="Search">
+            <button id="search-button" class="btn btn-outline-success my-2 my-sm-0" type="submit"><spring:message code="search"/></button>
+        </div>
     </div>
 </nav>

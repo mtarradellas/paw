@@ -2,7 +2,8 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<t:basicLayout title="Buscar mascotas">
+<spring:message code="indexTitle" var="titleVar"/>
+<t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="container-fluid">
             <div class="row">
