@@ -124,4 +124,10 @@ $(document).ready(function(event){
 
     if(searchCriteria !== 'any')
         searchOrderSelect.attr('disabled', false);
+
+    const breedOptions = breedSelect.find('option');
+
+    breedOptions.not(".species-"+species).hide();
+    breedOptions.filter(".species-"+species+",.species-any").show();
+
 });
