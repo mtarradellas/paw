@@ -50,6 +50,7 @@
                 <li class="list-group-item"><spring:message code="petCard.price"/> <c:out value="${price}"/></li>
                 <li class="list-group-item"><spring:message code="petCard.location"/> <c:out value="${pet.location}"/></li>
                 <li class="list-group-item"><spring:message code="petCard.description"/> <c:out value="${pet.description}"/></li>
+                <li class="list-group-item"><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></li>
             </ul>
         </div>
     </div>
