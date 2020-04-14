@@ -15,21 +15,15 @@
 
         <jsp:include page="/WEB-INF/jsp/parts/header.jsp" />
 
-        <div class="page-content">
-            <div class="p-4">
-                <h1><c:out value="${title}"/></h1>
-            </div>
-
-            <div id="body">
+        <div id="body" class="page-content">
                 <jsp:doBody/>
-            </div>
         </div>
 
         <jsp:include page="/WEB-INF/jsp/parts/footer.jsp" />
 
         <script src="<c:url value="/resources/bootstrap-4.3.1/js/bootstrap.js"/>"></script>
         <script crossorigin="anonymous" src="<c:url value="https://kit.fontawesome.com/865baf5b70.js"/>"></script>
-
+        <script src="<c:url value="/resources/js/header.js"/>"></script>
 
     </body>
 </html>
