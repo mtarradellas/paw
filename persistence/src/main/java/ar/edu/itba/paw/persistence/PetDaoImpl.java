@@ -66,6 +66,10 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> find(String findValue){
+        if(findValue.equals("")){
+            return list();
+        }
+
         int numValue = -1;
         boolean number = true;
         for(int i = 0; i < findValue.length();i++){
