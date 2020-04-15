@@ -2,8 +2,7 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<c:set var="dogBreeds" value="<%=ar.edu.itba.paw.models.constants.DogBreeds.values()%>"/>
-<c:set var="catBreeds" value="<%=ar.edu.itba.paw.models.constants.CatBreeds.values()%>"/>
+<c:set var="breeds" value="<%=ar.edu.itba.paw.models.constants.BreedTypes.values()%>"/>
 
 <spring:message code="availableTitle" var="titleVar"/>
 
@@ -18,14 +17,18 @@
                     <div class="card-body">
                         <spring:message code="pet.dogs"/>
                         <ul>
-                            <c:forEach items="${dogBreeds}" var="breed" varStatus="i">
-                                <li><spring:message code="dog.${breed.name}"/></li>
+                            <c:forEach items="${breeds}" var="breed" varStatus="i">
+                                <c:if test="${breed.speciesType.name eq 'dog'}">
+                                    <li><spring:message code="dog.${breed.name}"/></li>
+                                </c:if>
                             </c:forEach>
                         </ul>
                         <spring:message code="pet.cats"/>
                         <ul>
-                            <c:forEach items="${catBreeds}" var="breed" varStatus="i">
-                                <li ><spring:message code="cat.${breed.name}"/></li>
+                            <c:forEach items="${breeds}" var="breed" varStatus="i">
+                                <c:if test="${breed.speciesType.name eq 'cat'}">
+                                    <li ><spring:message code="cat.${breed.name}"/></li>
+                                </c:if>
                             </c:forEach>
                         </ul>
                     </div>
