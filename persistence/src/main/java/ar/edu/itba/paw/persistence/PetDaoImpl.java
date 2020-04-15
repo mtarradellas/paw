@@ -117,8 +117,11 @@ public class PetDaoImpl implements PetDao {
             if(searchCriteria.contains("price")){
                 searchCriteria = "price";
             }
-            if(searchCriteria.contains("specie")){
+            if(searchCriteria.contains("species")){
                 searchCriteria = "species";
+            }
+            if(searchCriteria.contains("breed")){
+                searchCriteria = "breed";
             }
             if(searchOrder.contains("asc")) { searchOrder = "ASC";}
             else { searchOrder = "DESC";}
