@@ -71,16 +71,22 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
-    public ModelAndView getIdPet(@RequestParam(name = "species", required = false) String specie,
+    public ModelAndView getIdPet(@RequestParam(name = "species", required = false) String species,
                                  @RequestParam(name = "breed", required = false) String breed,
                                  @RequestParam(name = "gender", required = false) String gender,
                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                  @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                  @RequestParam(name = "find", required = false) String findValue){
+
         final ModelAndView mav = new ModelAndView("index");
 
-        if(specie != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(specie, breed, gender, searchCriteria, searchOrder));
+        species = species == null || species.equals("any") ? null : species;
+        breed = breed == null || breed.equals("any") ? null : breed;
+        gender = gender == null || gender.equals("any") ? null : gender;
+        searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
+
+        if(species != null || gender != null || searchCriteria != null){
+            mav.addObject("home_pet_list", petService.filteredList(species, breed, gender, searchCriteria, searchOrder));
         }
         else if(findValue != null){
             mav.addObject("home_pet_list", petService.find(findValue).toArray());
