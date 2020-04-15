@@ -16,6 +16,8 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -74,8 +76,8 @@ public class PetDaoImplTest {
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());
-        assertEquals(BIRTH_DATE, pet.getBirthDate());
-        assertEquals(UPLOAD_DATE, pet.getUploadDate());
+        assertDate(BIRTH_DATE, pet.getBirthDate());
+        assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
@@ -119,8 +121,8 @@ public class PetDaoImplTest {
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());
-        assertEquals(BIRTH_DATE, pet.getBirthDate());
-        assertEquals(UPLOAD_DATE, pet.getUploadDate());
+        assertDate(BIRTH_DATE, pet.getBirthDate());
+        assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
@@ -170,8 +172,8 @@ public class PetDaoImplTest {
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());
-        assertEquals(BIRTH_DATE, pet.getBirthDate());
-        assertEquals(UPLOAD_DATE, pet.getUploadDate());
+        assertDate(BIRTH_DATE, pet.getBirthDate());
+        assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
     }
@@ -220,8 +222,8 @@ public class PetDaoImplTest {
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());
-        assertEquals(BIRTH_DATE, pet.getBirthDate());
-        assertEquals(UPLOAD_DATE, pet.getUploadDate());
+        assertDate(BIRTH_DATE, pet.getBirthDate());
+        assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
     }
@@ -270,10 +272,14 @@ public class PetDaoImplTest {
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());
-        assertEquals(BIRTH_DATE, pet.getBirthDate());
-        assertEquals(UPLOAD_DATE, pet.getUploadDate());
+        assertDate(BIRTH_DATE, pet.getBirthDate());
+        assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
     }
 
+    private void assertDate(Date expected, Date actual) {
+        assertTrue((expected == null && actual == null) ||
+                expected != null && actual != null && expected.toString().equals(actual.toString()));
+    }
 }
