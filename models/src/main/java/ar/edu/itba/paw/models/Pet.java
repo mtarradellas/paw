@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.models;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.sql.Date;
+import java.util.List;
 
 public class Pet {
     private long id;
@@ -15,9 +17,7 @@ public class Pet {
     private String location;
     private String description;
     private long ownerId;
-    //list of photos?
-
-
+    private List<Image> images;
 
     public Pet() {}
 
@@ -34,6 +34,7 @@ public class Pet {
         this.location = location;
         this.description = description;
         this.ownerId = ownerId;
+        this.images = new ArrayList<>();
     }
 
     public long getId() {
@@ -130,5 +131,13 @@ public class Pet {
 
     public void setOwnerId(long ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 }

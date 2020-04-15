@@ -44,7 +44,7 @@
                 <ul class="list-unstyled">
                     <li>
                         <p>
-                            <i class="fas fa-home mr-3"></i> ITBA, CABA, ARG</p>
+                            <i class="fas fa-home mr-3"></i>ITBA, CABA, ARG</p>
                     </li>
                     <li>
                         <p>

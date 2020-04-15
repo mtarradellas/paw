@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.PetDao;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Pet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.NumberUtils;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -37,6 +41,8 @@ public class PetDaoImpl implements PetDao {
             rs.getLong("ownerId")
     );
 
+
+
     @Autowired
     public PetDaoImpl(final DataSource dataSource) {
 
@@ -55,6 +61,28 @@ public class PetDaoImpl implements PetDao {
     @Override
     public Stream<Pet> list() {
         return jdbcTemplate.query("SELECT * FROM pets", PET_MAPPER)
+                .stream();
+    }
+
+    @Override
+    public Stream<Pet> find(String findValue){
+        int numValue = -1;
+        boolean number = true;
+        for(int i = 0; i < findValue.length();i++){
+            if(!Character.isDigit(findValue.charAt(i))){
+                number = false;
+            }
+        }
+        if(number){
+            numValue = Integer.parseInt(findValue);
+        }
+
+        String sql = "SELECT * " +
+                "FROM pets " +
+                "WHERE species LIKE ? OR breed LIKE ? OR petName LIKE ? OR location LIKE ? OR price = ?";
+        return jdbcTemplate.query( sql,
+                new Object[] {findValue.toLowerCase(),findValue.toLowerCase(),findValue,findValue,numValue},
+                PET_MAPPER)
                 .stream();
     }
 
