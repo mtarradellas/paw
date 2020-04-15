@@ -13,6 +13,7 @@ import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -65,6 +66,10 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> find(String findValue){
+        if(findValue.equals("")){
+            return list();
+        }
+
         int numValue = -1;
         boolean number = true;
         for(int i = 0; i < findValue.length();i++){
@@ -111,8 +116,11 @@ public class PetDaoImpl implements PetDao {
             if(searchCriteria.contains("price")){
                 searchCriteria = "price";
             }
-            if(searchCriteria.contains("specie")){
+            if(searchCriteria.contains("species")){
                 searchCriteria = "species";
+            }
+            if(searchCriteria.contains("breed")){
+                searchCriteria = "breed";
             }
             if(searchOrder.contains("asc")) { searchOrder = "ASC";}
             else { searchOrder = "DESC";}

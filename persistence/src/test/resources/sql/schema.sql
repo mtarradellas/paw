@@ -18,5 +18,3 @@ uploadDate DATE NOT NULL DEFAULT CURRENT_DATE,
 price INTEGER,
 ownerId INTEGER
 );
-
-
