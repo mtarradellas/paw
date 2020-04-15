@@ -80,11 +80,10 @@ public class HomeController {
 
         final ModelAndView mav = new ModelAndView("index");
 
-        mav.addObject("species", species);
-        mav.addObject("breed", breed);
-        mav.addObject("gender", gender);
-        mav.addObject("searchCriteria", searchCriteria);
-        mav.addObject("searchOrder", searchOrder);
+        species = species == null || species.equals("any") ? null : species;
+        breed = breed == null || breed.equals("any") ? null : breed;
+        gender = gender == null || gender.equals("any") ? null : gender;
+        searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
         if(species != null || gender != null || searchCriteria != null){
             mav.addObject("home_pet_list", petService.filteredList(species, breed, gender, searchCriteria, searchOrder));
