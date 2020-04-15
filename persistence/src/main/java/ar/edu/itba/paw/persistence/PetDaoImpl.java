@@ -80,12 +80,13 @@ public class PetDaoImpl implements PetDao {
         if(number){
             numValue = Integer.parseInt(findValue);
         }
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
 
         String sql = "SELECT * " +
                 "FROM pets " +
-                "WHERE species LIKE ? OR breed LIKE ? OR petName LIKE ? OR location LIKE ? OR price = ?";
+                "WHERE LOWER(species) LIKE ? OR LOWER(breed) LIKE ? OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ?";
         return jdbcTemplate.query( sql,
-                new Object[] {findValue.toLowerCase(),findValue.toLowerCase(),findValue,findValue,numValue},
+                new Object[] {modifiedValue,modifiedValue,modifiedValue,modifiedValue,numValue},
                 PET_MAPPER)
                 .stream();
     }
