@@ -28,7 +28,7 @@ public enum BreedTypes {
     TOKINESE(115, "tokinese", SpeciesTypes.CAT), TURKISH_ANGORA(116, "turkishAngora", SpeciesTypes.CAT), BOBTAIL(117, "bobtail", SpeciesTypes.CAT),
     JAP_BOBTAIL(118, "japBobtail", SpeciesTypes.CAT), MAU(119, "mau", SpeciesTypes.CAT), BALINESE(120, "balinese", SpeciesTypes.CAT),
     CURL(121, "curl", SpeciesTypes.CAT), TURKISH_VAN(122, "turkishVan", SpeciesTypes.CAT), SOMALI(123, "somali", SpeciesTypes.CAT),
-    WIREHAIR(124, "wirehair", SpeciesTypes.CAT), AEGEAN(125, "aegean", SpeciesTypes.CAT);
+    WIREHAIR(124, "wirehair", SpeciesTypes.CAT), AEGEAN(125, "aegean", SpeciesTypes.CAT), RAGDOLL(126, "ragdoll", SpeciesTypes.CAT);
 
     private int id;
     private String name;
