@@ -43,7 +43,7 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
-    public ModelAndView getIdPet(@RequestParam(name = "species", required = false) String species,
+    public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
                                  @RequestParam(name = "breed", required = false) String breed,
                                  @RequestParam(name = "gender", required = false) String gender,
                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
