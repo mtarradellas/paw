@@ -23,42 +23,14 @@ public class HomeController {
     @Autowired
     ImageService imageService;
 
-    @RequestMapping("/")
-    public ModelAndView getHome() {
-        final ModelAndView mav = new ModelAndView("views/index");
-        mav.addObject("home_pet_list", petService.list().toArray());
-        return mav;
-    }
-
-    @RequestMapping("/about")
-    public ModelAndView getAbout() {
-        return new ModelAndView("views/about");
-    }
-
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
         return new ModelAndView("views/available");
     }
 
-    @RequestMapping("/users")
-    public ModelAndView getUsers() {
-        final ModelAndView mav = new ModelAndView("views/users");
-        mav.addObject("users_list", userService.list().toArray());
-        return mav;
-    }
-
     @RequestMapping("/contact")
     public ModelAndView getContact() {
         final ModelAndView mav = new ModelAndView("views/contact");
-        return mav;
-    }
-
-
-    @RequestMapping(value = "/user/{id}")
-    public ModelAndView getIdUser(@PathVariable("id") long id) {
-        final ModelAndView mav = new ModelAndView("views/single_user");
-        mav.addObject("single_user_example",
-                userService.findById(id).orElseThrow(UserNotFoundException::new));
         return mav;
     }
 
