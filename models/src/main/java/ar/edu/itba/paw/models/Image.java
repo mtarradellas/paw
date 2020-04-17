@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+
+import java.util.Base64;
 
 public class Image {
 
@@ -13,7 +14,7 @@ public class Image {
         this.imageId = imageId;
         this.imageData = imageData;
         this.petId = petId;
-        this.url = "data:image/png;base64," + Base64.encode(imageData);
+        this.url = "data:image/png;base64," + Base64.getEncoder().encodeToString(imageData);
     }
 
     public Image(long image_id) {
