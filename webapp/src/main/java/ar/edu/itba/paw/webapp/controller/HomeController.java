@@ -23,6 +23,16 @@ public class HomeController {
     @Autowired
     ImageService imageService;
 
+    @RequestMapping("/register")
+    public ModelAndView getRegister(){
+        return new ModelAndView("views/register");
+    }
+
+    @RequestMapping("/login")
+    public ModelAndView getLogin(){
+        return new ModelAndView("views/login");
+    }
+
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
         return new ModelAndView("views/available");
