@@ -6,8 +6,8 @@
 <c:set var="cprice" scope="application" value="${pet.price}"/>
 <c:set var="cgender" scope="application" value="${pet.gender}"/>
 
-<spring:message code="${pet.species}.${pet.breed}" var="breed" />
-<spring:message code="pet.${pet.species}" var="species" />
+<%--<spring:message code="${pet.species}.${pet.breed}" var="breed" />--%>
+<%--<spring:message code="pet.${pet.species.en_US}" var="species" />--%>
 <spring:message code="argPrice" arguments="${cprice}" var="price"/>
 <spring:message code="pet.${cgender}" var="gender"/>
 
@@ -18,8 +18,8 @@
 
         <p class="card-text">
             <spring:message code="petCard.name"/> <c:out value="${pet.petName}"/><br>
-            <spring:message code="petCard.species"/> <c:out value="${species}"/><br>
-            <spring:message code="petCard.breed"/> <c:out value="${breed}"/><br>
+            <spring:message code="petCard.species"/> <c:out value="${pet.species.en_US}"/><br>
+            <spring:message code="petCard.breed"/> <c:out value="${pet.breed.en_US}"/><br>
             <spring:message code="petCard.price"/> <c:out value="${price}"/><br>
             <spring:message code="petCard.sex"/> <c:out value="${gender}"/>
         </p>

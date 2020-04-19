@@ -8,8 +8,8 @@ public class Pet {
     private long id;
     private String petName;
     private Date birthDate;
-    private String species;
-    private String breed;
+    private Species species;
+    private Breed breed;
     private String gender;
     private boolean vaccinated;
     private Date uploadDate;
@@ -19,14 +19,15 @@ public class Pet {
     private long ownerId;
     private List<Image> images;
 
+
     public Pet() {}
 
-    public Pet(long id, String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId ) {
+    public Pet(long id, String petName, Species species, Breed breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId ) {
         this.id = id;
         this.petName = petName;
-        this.birthDate = birthDate;
         this.species = species;
         this.breed = breed;
+        this.birthDate = birthDate;
         this.gender = gender;
         this.vaccinated = vaccinated;
         this.uploadDate = uploadDate;
@@ -61,19 +62,19 @@ public class Pet {
         this.birthDate = birthDate;
     }
 
-    public String getSpecies() {
+    public Species getSpecies() {
         return species;
     }
 
-    public void setSpecies(String species) {
+    public void setSpecies(Species species) {
         this.species = species;
     }
 
-    public String getBreed() {
+    public Breed getBreed() {
         return breed;
     }
 
-    public void setBreed(String breed) {
+    public void setBreed(Breed breed) {
         this.breed = breed;
     }
 
