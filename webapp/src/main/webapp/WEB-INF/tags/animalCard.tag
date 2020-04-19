@@ -6,12 +6,11 @@
 <c:set var="cprice" scope="application" value="${pet.price}"/>
 <c:set var="cgender" scope="application" value="${pet.gender}"/>
 
-<%--<spring:message code="${pet.species}.${pet.breed}" var="breed" />--%>
-<%--<spring:message code="pet.${pet.species.en_US}" var="species" />--%>
 <spring:message code="argPrice" arguments="${cprice}" var="price"/>
 <spring:message code="pet.${cgender}" var="gender"/>
 
 <div class="card animal-list-card">
+
     <img src="<c:out value="${pet.images[0].url}"/>"
          class="card-img-top" alt="">
     <div class="card-body">
