@@ -25,10 +25,10 @@ public class ImageDaoImpl implements ImageDao {
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(IMAGES_TABLE)
-                .usingGeneratedKeyColumns("images_id");
+                .usingGeneratedKeyColumns("id");
     }
     private static final RowMapper<Image> IMAGE_MAPPER = (rs, rowNum) -> new Image(
-            rs.getInt("imageId"),
+            rs.getInt("id"),
             rs.getBytes("img"),
             rs.getInt("petId")
     );

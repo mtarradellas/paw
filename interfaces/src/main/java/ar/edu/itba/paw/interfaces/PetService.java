@@ -12,6 +12,6 @@ public interface PetService {
     List<Pet> find(String findValue);
     List<Pet> list();
     List<Pet> filteredList(String specie, String  breed, String gender, String searchCriteria, String searchOrder);
-    Pet create(String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId);
+    //Pet create(String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId);
 
 }

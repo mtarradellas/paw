@@ -52,6 +52,14 @@ public class HomeController {
         return mav;
     }
 
+    @RequestMapping(value = "/test")
+    public ModelAndView getIdPet() {
+        final ModelAndView mav = new ModelAndView("views/test");
+        mav.addObject("pet",
+                petService.findById(1).orElseThrow(PetNotFoundException::new));
+        return mav;
+    }
+
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
                                  @RequestParam(name = "breed", required = false) String breed,
@@ -79,6 +87,7 @@ public class HomeController {
         }
         return mav;
     }
+
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)

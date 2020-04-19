@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.models;
 
-
 import java.util.Base64;
 
 public class Image {
