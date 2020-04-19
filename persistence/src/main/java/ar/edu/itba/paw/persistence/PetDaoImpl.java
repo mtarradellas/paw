@@ -94,9 +94,11 @@ public class PetDaoImpl implements PetDao {
                 "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
                 "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
                 "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                "WHERE LOWER(species) LIKE ? OR LOWER(breed) LIKE ? OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ?";
+                "WHERE LOWER(species.en_US) LIKE ? OR LOWER(species.es_AR) LIKE ? " +
+                "OR LOWER(breed.en_US) LIKE ? OR LOWER(breed.es_ar) LIKE ? " +
+                "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ?";
         return jdbcTemplate.query( sql,
-                new Object[] {modifiedValue,modifiedValue,modifiedValue,modifiedValue,numValue},
+                new Object[] {modifiedValue, modifiedValue, modifiedValue ,modifiedValue,modifiedValue,modifiedValue,numValue},
                 PET_MAPPER)
                 .stream();
     }
@@ -107,15 +109,17 @@ public class PetDaoImpl implements PetDao {
             specieFilter = "%";
             breedFilter = "%";
         }
+        else{ specieFilter = "%" + specieFilter + "%";}
         if(breedFilter == null) { breedFilter = "%";}
+        else{ breedFilter = "%" + breedFilter + "%";}
         if(genderFilter == null) { genderFilter = "%"; }
         if(searchCriteria == null) {
             return jdbcTemplate.query(  "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                             "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
                             "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
                             "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                            "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? ",
-                    new Object[] {specieFilter, breedFilter, genderFilter},
+                            "WHERE (lower(species.es_AR) LIKE ? OR lower(species.en_US) LIKE ? ) AND (lower(breeds.es_AR) LIKE ? OR lower(breeds.en_US) LIKE ? )AND lower(gender) LIKE ? ",
+                    new Object[] {specieFilter, specieFilter, breedFilter, breedFilter, genderFilter},
                     PET_MAPPER)
                     .stream();
         }
@@ -143,11 +147,11 @@ public class PetDaoImpl implements PetDao {
                     "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
                     "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
                     "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                    "WHERE species LIKE ? AND breed LIKE ? AND gender LIKE ? " +
+                    "WHERE (species.es_AR LIKE ? OR species.en_US LIKE ? ) AND (breeds.es_AR LIKE ? OR breeds.en_US LIKE ? )AND gender LIKE ? " +
                     "ORDER BY " +
                     searchCriteria;
             return jdbcTemplate.query( sql,
-                    new Object[] {specieFilter, breedFilter, genderFilter},
+                    new Object[] {specieFilter, specieFilter, breedFilter, breedFilter, genderFilter},
                     PET_MAPPER)
                     .stream();
         }
