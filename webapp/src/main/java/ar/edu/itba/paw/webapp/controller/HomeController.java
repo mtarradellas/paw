@@ -5,14 +5,11 @@ import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.ArrayList;
 
 @Controller
 public class HomeController {
@@ -39,6 +36,18 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/single_pet");
         mav.addObject("pet",
                 petService.findById(id).orElseThrow(PetNotFoundException::new));
+        return mav;
+    }
+
+    @RequestMapping(value = "/requests")
+    public ModelAndView getRequests() {
+        final ModelAndView mav = new ModelAndView("views/requests");
+        return mav;
+    }
+
+    @RequestMapping(value = "/interests")
+    public ModelAndView getInterested() {
+        final ModelAndView mav = new ModelAndView("views/interests");
         return mav;
     }
 

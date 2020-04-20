@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row">
 
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools.jsp" />
+                <jsp:include page="/WEB-INF/jsp/parts/search-tools-pet.jsp" />
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
@@ -16,8 +16,6 @@
                         <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/> </div>
                         </c:if>
                         <div class="card-deck row">
-
-
                             <c:forEach var="pet" items="${home_pet_list}">
                                 <div class="col-auto mb-3">
 
