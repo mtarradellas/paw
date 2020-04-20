@@ -21,8 +21,8 @@ public class PetMapExtractor implements ResultSetExtractor<Map<Pet, List<Image>>
             Pet pet = new Pet(
                     rs.getLong("id"),
                     rs.getString("petName"),
-                    new Species(rs.getLong("speciesId"), rs.getString("speciesEs"), rs.getString("speciesEn")),
-                    new Breed(rs.getLong("breedId"), rs.getLong("breedSpeciesId"), rs.getString("breedEs"), rs.getString("breedEn")),
+                    new Species(rs.getLong("speciesId"), rs.getString("speciesName")),
+                    new Breed(rs.getLong("breedId"), rs.getLong("breedSpeciesId"), rs.getString("breedName")),
                     rs.getString("location"),
                     rs.getBoolean("vaccinated"),
                     rs.getString("gender"),

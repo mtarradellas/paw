@@ -20,23 +20,23 @@ public class PetServiceImpl implements PetService {
     private PetDao petDao;
 
     @Override
-    public Optional<Pet> findById(long id){
-        return petDao.findById(id);
+    public Optional<Pet> findById(String language, long id){
+        return petDao.findById(language, id);
     }
 
     @Override
-    public List<Pet> list(){
-        return petDao.list().collect(Collectors.toList());
+    public List<Pet> list(String language){
+        return petDao.list(language).collect(Collectors.toList());
     }
 
     @Override
-    public List<Pet> filteredList(String specie, String  breed, String gender, String searchCriteria, String searchOrder) {
-        return petDao.filteredList(specie, breed, gender, searchCriteria, searchOrder).collect(Collectors.toList());
+    public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder) {
+        return petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder).collect(Collectors.toList());
     }
 
     @Override
-    public List<Pet> find(String findValue){
-        return petDao.find(findValue).collect(Collectors.toList());
+    public List<Pet> find(String language,String findValue){
+        return petDao.find(language, findValue).collect(Collectors.toList());
     }
 
 //    @Override

@@ -7,12 +7,14 @@ import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 @Controller
 public class HomeController {
@@ -37,16 +39,18 @@ public class HomeController {
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_pet");
+        Locale locale = LocaleContextHolder.getLocale();
         mav.addObject("pet",
-                petService.findById(id).orElseThrow(PetNotFoundException::new));
+                petService.findById(locale.getLanguage(),id).orElseThrow(PetNotFoundException::new));
         return mav;
     }
 
     @RequestMapping(value = "/test")
     public ModelAndView getIdPet() {
         final ModelAndView mav = new ModelAndView("views/test");
+        Locale locale = LocaleContextHolder.getLocale();
         mav.addObject("pet",
-                petService.findById(1).orElseThrow(PetNotFoundException::new));
+                petService.findById("es_AR",1).orElseThrow(PetNotFoundException::new));
         return mav;
     }
 
@@ -57,6 +61,7 @@ public class HomeController {
                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                  @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                  @RequestParam(name = "find", required = false) String findValue){
+        Locale locale = LocaleContextHolder.getLocale();
 
         final ModelAndView mav = new ModelAndView("index");
 
@@ -66,14 +71,14 @@ public class HomeController {
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
         if(species != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(species, breed, gender, searchCriteria, searchOrder));
+            mav.addObject("home_pet_list", petService.filteredList(locale.getLanguage(), species, breed, gender, searchCriteria, searchOrder));
         }
         else if(findValue != null){
-            mav.addObject("home_pet_list", petService.find(findValue).toArray());
+            mav.addObject("home_pet_list", petService.find(locale.getLanguage(),findValue).toArray());
         }
         else {
 
-            mav.addObject("home_pet_list", petService.list());
+            mav.addObject("home_pet_list", petService.list(locale.getLanguage()));
         }
         return mav;
     }

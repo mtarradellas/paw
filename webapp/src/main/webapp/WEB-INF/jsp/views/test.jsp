@@ -8,7 +8,7 @@
 <h1><c:out value="${pet.id}"/></h1>
 <h1><c:out value="${pet.petName}"/></h1>
 <h1><c:out value="${pet.location}"/></h1>
-<h1><c:out value="${pet.species.en_US}"/></h1>
-<h1><c:out value="${pet.breed.es_AR}"/></h1>
+<h1><c:out value="${pet.species.name}"/></h1>
+<h1><c:out value="${pet.breed.name}"/></h1>
 </body>
 </html>
