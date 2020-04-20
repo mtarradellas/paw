@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(String username, String mail, String phone) {
-        return this.userDao.create(username, mail, phone);
+    public User create(String username, String password, String mail, String phone) {
+        return this.userDao.create(username, password, mail, phone);
     }
 }

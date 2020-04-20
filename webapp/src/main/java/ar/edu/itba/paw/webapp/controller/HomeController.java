@@ -3,16 +3,24 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
+import ar.edu.itba.paw.webapp.form.UserForm;
 import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Locale;
 
 @Controller
 public class HomeController {
@@ -96,6 +104,24 @@ public class HomeController {
         return mav;
     }
 
+    @RequestMapping(value = "/create", method = { RequestMethod.POST })
+    public ModelAndView createUser(@Valid @ModelAttribute("form") final UserForm userForm, final BindingResult errors) {
+
+        if (errors.hasErrors()) {
+            return registerForm(userForm);
+        }
+
+        final User user = userService.create(userForm.getUsername(), userForm.getPassword(),
+                        userForm.getMail(), userForm.getPhone());
+        final ModelAndView mav = new ModelAndView("views/single_user");
+        mav.addObject("user", user);
+        return mav;
+    }
+
+    @RequestMapping(value ="/create", method = { RequestMethod.GET })
+    public ModelAndView registerForm(@ModelAttribute ("form") final UserForm userForm) {
+        return new ModelAndView("views/register");
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
