@@ -13,7 +13,7 @@
             <h1 class="align-content-center align"><b><spring:message code="notFound.user"/></b> </h1>
         </div>
         <div class="center">
-            <h3><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></h3>
+            <h4><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></h4>
         </div>
 
     </jsp:body>

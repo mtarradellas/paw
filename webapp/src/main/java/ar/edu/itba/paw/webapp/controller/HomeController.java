@@ -82,12 +82,13 @@ public class HomeController {
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchUser() {
-        return new ModelAndView("views/404_user");
+        return new ModelAndView("error-views/404_user");
     }
 
     @ExceptionHandler(PetNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchPet() {
-        return new ModelAndView("views/404_pet");
+        return new ModelAndView("error-views/404_pet");
     }
+
 }
