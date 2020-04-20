@@ -15,15 +15,18 @@
                 <h1><a class="nav-link" href="${pageContext.request.contextPath}/" id="home-link">PET SOCIETY</a></h1>
             </li>
             <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests">Requests</a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests"><spring:message code="header.requests"/></a></h4>
             </li>
             <li class="nav-item notify-container">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests">Interests</a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
                 <c:if test="${!(pendingRequests eq 0)}"><span class="notify-bubble">${pendingRequests}</span></c:if>
 
             </li>
             <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/">My Profile</a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/"><spring:message code="header.myProfile"/></a></h4>
+            </li>
+            <li class="nav-item">
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/contact"><spring:message code="header.addPet"/></a></h4>
             </li>
         </ul>
 

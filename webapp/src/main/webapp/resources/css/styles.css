@@ -13,8 +13,10 @@
 }
 
 .page-content {
-    margin-bottom: 3rem;
+    /*margin-bottom: 3rem;*/
     margin-top: 2rem;
+    min-height: 95%;
+    /*padding-bottom: 20rem;*/
 }
 
 #imageCarousel {
@@ -112,8 +114,8 @@ html,body {
 
 .notify-bubble {
     position: absolute;
-    top: 30%;
-    right: -35%;
+    top: 22px;
+    right: -35px;
     padding: 2px 5px 2px 5px;
     background-color: forestgreen;
     color: white;
@@ -124,4 +126,12 @@ html,body {
 .notify-container {
     position: relative;
     display: inline-block;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    text-align: center;
 }

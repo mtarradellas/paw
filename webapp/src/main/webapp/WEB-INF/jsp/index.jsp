@@ -13,7 +13,10 @@
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
                         <c:if test="${empty home_pet_list }">
-                        <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/> </div>
+                        <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                            <a href="${pageContext.request.contextPath}/"><spring:message code="showAll"/></a>
+                        </div>
+
                         </c:if>
                         <div class="card-deck row">
                             <c:forEach var="pet" items="${home_pet_list}">
