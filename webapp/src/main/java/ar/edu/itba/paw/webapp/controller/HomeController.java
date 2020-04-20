@@ -31,6 +31,16 @@ public class HomeController {
     @Autowired
     ImageService imageService;
 
+    @RequestMapping("/register")
+    public ModelAndView getRegister(){
+        return new ModelAndView("views/register");
+    }
+
+    @RequestMapping("/login")
+    public ModelAndView getLogin(){
+        return new ModelAndView("views/login");
+    }
+
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
         return new ModelAndView("views/available");
@@ -47,6 +57,22 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/single_pet");
         mav.addObject("pet",
                 petService.findById(id).orElseThrow(PetNotFoundException::new));
+        return mav;
+    }
+
+    @RequestMapping(value = "/test")
+    public ModelAndView getIdPet() {
+        final ModelAndView mav = new ModelAndView("views/test");
+        mav.addObject("pet",
+                petService.findById(1).orElseThrow(PetNotFoundException::new));
+        return mav;
+    }
+
+    @RequestMapping(value = "/user/{id}")
+    public ModelAndView user(@PathVariable("id") long id) {
+        final ModelAndView mav = new ModelAndView("views/single_user");
+        mav.addObject("user",
+                userService.findById(id).orElseThrow(UserNotFoundException::new));
         return mav;
     }
 
@@ -87,14 +113,14 @@ public class HomeController {
 
         final User user = userService.create(userForm.getUsername(), userForm.getPassword(),
                         userForm.getMail(), userForm.getPhone());
-        final ModelAndView mav = new ModelAndView("views/user");
+        final ModelAndView mav = new ModelAndView("views/single_user");
         mav.addObject("user", user);
         return mav;
     }
 
     @RequestMapping(value ="/create", method = { RequestMethod.GET })
     public ModelAndView registerForm(@ModelAttribute ("form") final UserForm userForm) {
-        return new ModelAndView("views/userform");
+        return new ModelAndView("views/register");
     }
 
     @ExceptionHandler(UserNotFoundException.class)

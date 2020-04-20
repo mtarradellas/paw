@@ -61,27 +61,27 @@ public class PetDaoImplTest {
         UPLOAD_DATE = new java.sql.Date(cal.getTimeInMillis());
     }
 
-    @Test
-    public void testCreatePet() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-
-        Pet pet = petDaoImpl.create(PET_NAME, SPECIES, BREED, LOCATION, VACCINATED, GENDER,
-                DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
-
-        assertNotNull(pet);
-        assertEquals(PET_NAME, pet.getPetName());
-        assertEquals(SPECIES, pet.getSpecies());
-        assertEquals(BREED, pet.getBreed());
-        assertEquals(LOCATION, pet.getLocation());
-        assertEquals(VACCINATED, pet.isVaccinated());
-        assertEquals(GENDER, pet.getGender());
-        assertEquals(DESCRIPTION, pet.getDescription());
-        assertDate(BIRTH_DATE, pet.getBirthDate());
-        assertDate(UPLOAD_DATE, pet.getUploadDate());
-        assertEquals(PRICE, pet.getPrice());
-        assertEquals(OWNER_ID, pet.getOwnerId());
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
-    }
+//    @Test
+//    public void testCreatePet() {
+//        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
+//
+//        Pet pet = petDaoImpl.create(PET_NAME, SPECIES, BREED, LOCATION, VACCINATED, GENDER,
+//                DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
+//
+//        assertNotNull(pet);
+//        assertEquals(PET_NAME, pet.getPetName());
+//        assertEquals(SPECIES, pet.getSpecies());
+//        assertEquals(BREED, pet.getBreed());
+//        assertEquals(LOCATION, pet.getLocation());
+//        assertEquals(VACCINATED, pet.isVaccinated());
+//        assertEquals(GENDER, pet.getGender());
+//        assertEquals(DESCRIPTION, pet.getDescription());
+//        assertDate(BIRTH_DATE, pet.getBirthDate());
+//        assertDate(UPLOAD_DATE, pet.getUploadDate());
+//        assertEquals(PRICE, pet.getPrice());
+//        assertEquals(OWNER_ID, pet.getOwnerId());
+//        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
+//    }
 
     @Test
     public void testFindByIdDoesNotExist() {
