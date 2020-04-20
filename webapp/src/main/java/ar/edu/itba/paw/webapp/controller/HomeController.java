@@ -5,7 +5,6 @@ import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 @Controller
@@ -32,8 +30,7 @@ public class HomeController {
 
     @RequestMapping("/contact")
     public ModelAndView getContact() {
-        final ModelAndView mav = new ModelAndView("views/contact");
-        return mav;
+        return new ModelAndView("views/contact");
     }
 
     @RequestMapping(value = "/pet/{id}")
@@ -41,16 +38,15 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/single_pet");
         Locale locale = LocaleContextHolder.getLocale();
         mav.addObject("pet",
-                petService.findById(locale.getLanguage(),id).orElseThrow(PetNotFoundException::new));
+                petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new));
         return mav;
     }
 
     @RequestMapping(value = "/test")
     public ModelAndView getIdPet() {
         final ModelAndView mav = new ModelAndView("views/test");
-        Locale locale = LocaleContextHolder.getLocale();
         mav.addObject("pet",
-                petService.findById("es_AR",1).orElseThrow(PetNotFoundException::new));
+                petService.findById(getLocale(),7).orElseThrow(PetNotFoundException::new));
         return mav;
     }
 
@@ -71,18 +67,24 @@ public class HomeController {
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
         if(species != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(locale.getLanguage(), species, breed, gender, searchCriteria, searchOrder));
+            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder));
         }
         else if(findValue != null){
-            mav.addObject("home_pet_list", petService.find(locale.getLanguage(),findValue).toArray());
+            mav.addObject("home_pet_list", petService.find(getLocale(),findValue).toArray());
         }
         else {
 
-            mav.addObject("home_pet_list", petService.list(locale.getLanguage()));
+            mav.addObject("home_pet_list", petService.list(getLocale()));
         }
         return mav;
     }
 
+    private String getLocale() {
+        Locale locale = LocaleContextHolder.getLocale();
+        String lang = locale.getLanguage() + "_" + locale.getCountry();
+        if (lang.startsWith("en")) return "en_US";
+        else return "es_AR";
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
