@@ -60,6 +60,14 @@ public class HomeController {
         return mav;
     }
 
+    @RequestMapping(value = "/user/{id}")
+    public ModelAndView user(@PathVariable("id") long id) {
+        final ModelAndView mav = new ModelAndView("views/single_user");
+        mav.addObject("user",
+                userService.findById(id).orElseThrow(UserNotFoundException::new));
+        return mav;
+    }
+
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
                                  @RequestParam(name = "breed", required = false) String breed,
