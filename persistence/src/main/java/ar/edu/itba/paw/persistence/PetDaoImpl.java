@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Pet;
 
 import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,20 +57,24 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Optional<Pet> findById(long id) {
-        return jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+        Map<Pet, List<Image>> imageMap = jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                 "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) WHERE pets.id = ?", new Object[] {id}, PET_MAPPER)
-                .stream().findFirst();
+                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn, img, images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petId = pets.id) " +
+                "WHERE pets.id = ?", new Object[] {id}, new PetMapExtractor());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream().findFirst();
     }
 
     @Override
     public Stream<Pet> list() {
-        return jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+        Map<Pet, List<Image>> imageMap = jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                 "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)", PET_MAPPER)
-                .stream();
+                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn, img, images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id)",
+                new PetMapExtractor());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream();
     }
 
     @Override
@@ -92,15 +97,16 @@ public class PetDaoImpl implements PetDao {
 
         String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                 "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
+                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn, img, images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
                 "WHERE LOWER(species.en_US) LIKE ? OR LOWER(species.es_AR) LIKE ? " +
-                "OR LOWER(breed.en_US) LIKE ? OR LOWER(breed.es_ar) LIKE ? " +
+                "OR LOWER(breeds.en_US) LIKE ? OR LOWER(breeds.es_ar) LIKE ? " +
                 "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ?";
-        return jdbcTemplate.query( sql,
+        Map<Pet, List<Image>> imageMap = jdbcTemplate.query( sql,
                 new Object[] {modifiedValue, modifiedValue, modifiedValue ,modifiedValue,modifiedValue,modifiedValue,numValue},
-                PET_MAPPER)
-                .stream();
+                new PetMapExtractor());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream();
     }
 
     @Override
@@ -114,14 +120,15 @@ public class PetDaoImpl implements PetDao {
         else{ breedFilter = "%" + breedFilter + "%";}
         if(genderFilter == null) { genderFilter = "%"; }
         if(searchCriteria == null) {
-            return jdbcTemplate.query(  "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+            Map<Pet, List<Image>> imageMap = jdbcTemplate.query(  "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                             "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                            "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                            "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
+                            "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn, img, images.id as imagesId, images.petId as petId " +
+                            "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join images on images.petid = pets.id)" +
                             "WHERE (lower(species.es_AR) LIKE ? OR lower(species.en_US) LIKE ? ) AND (lower(breeds.es_AR) LIKE ? OR lower(breeds.en_US) LIKE ? )AND lower(gender) LIKE ? ",
                     new Object[] {specieFilter, specieFilter, breedFilter, breedFilter, genderFilter},
-                    PET_MAPPER)
-                    .stream();
+                    new PetMapExtractor());
+            imageMap.forEach(Pet::setImages);
+            return imageMap.keySet().stream();
         }
         else {
             if(searchCriteria.contains("upload")){
@@ -145,15 +152,16 @@ public class PetDaoImpl implements PetDao {
             searchCriteria = searchCriteria + " " + searchOrder;
             String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                     "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                    "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
+                    "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn, img, images.id as imagesId, images.petId as petId " +
+                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join images on images.petid = pets.id) " +
                     "WHERE (species.es_AR LIKE ? OR species.en_US LIKE ? ) AND (breeds.es_AR LIKE ? OR breeds.en_US LIKE ? )AND gender LIKE ? " +
                     "ORDER BY " +
                     searchCriteria;
-            return jdbcTemplate.query( sql,
+            Map<Pet, List<Image>> imageMap = jdbcTemplate.query( sql,
                     new Object[] {specieFilter, specieFilter, breedFilter, breedFilter, genderFilter},
-                    PET_MAPPER)
-                    .stream();
+                    new PetMapExtractor());
+            imageMap.forEach(Pet::setImages);
+            return imageMap.keySet().stream();
         }
 
     }

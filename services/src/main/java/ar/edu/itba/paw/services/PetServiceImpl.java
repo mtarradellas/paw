@@ -18,41 +18,25 @@ import java.util.stream.Stream;
 public class PetServiceImpl implements PetService {
     @Autowired
     private PetDao petDao;
-    @Autowired
-    private ImageService imageService;
 
     @Override
     public Optional<Pet> findById(long id){
-        Optional<Pet> pet = petDao.findById(id);
-        pet.ifPresent(value -> value.setImages(imageService.findByPetId(value.getId()).collect(Collectors.toList())));
-        return pet;
+        return petDao.findById(id);
     }
 
     @Override
     public List<Pet> list(){
-        List<Pet> pets = petDao.list().collect(Collectors.toList());
-        pets.forEach(pet ->{
-            pet.setImages(imageService.findByPetId(pet.getId()).collect(Collectors.toList()));
-        });
-        return pets;
+        return petDao.list().collect(Collectors.toList());
     }
 
     @Override
     public List<Pet> filteredList(String specie, String  breed, String gender, String searchCriteria, String searchOrder) {
-        List<Pet> pets = petDao.filteredList(specie, breed, gender, searchCriteria, searchOrder).collect(Collectors.toList());
-        pets.forEach(pet ->{
-           pet.setImages(imageService.findByPetId(pet.getId()).collect(Collectors.toList()));
-        });
-        return pets;
+        return petDao.filteredList(specie, breed, gender, searchCriteria, searchOrder).collect(Collectors.toList());
     }
 
     @Override
     public List<Pet> find(String findValue){
-        List<Pet> pets = petDao.find(findValue).collect(Collectors.toList());
-        pets.forEach(pet ->{
-            pet.setImages(imageService.findByPetId(pet.getId()).collect(Collectors.toList()));
-        });
-        return pets;
+        return petDao.find(findValue).collect(Collectors.toList());
     }
 
 //    @Override
