@@ -2,7 +2,6 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.SpeciesDao;
 import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Species;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

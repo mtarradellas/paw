@@ -39,7 +39,6 @@ public class HomeController {
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_pet");
-        Locale locale = LocaleContextHolder.getLocale();
         mav.addObject("pet",
                 petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new));
         mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
@@ -63,7 +62,6 @@ public class HomeController {
                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                  @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                  @RequestParam(name = "find", required = false) String findValue){
-        Locale locale = LocaleContextHolder.getLocale();
 
         final ModelAndView mav = new ModelAndView("index");
 
