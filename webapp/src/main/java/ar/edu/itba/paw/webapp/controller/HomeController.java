@@ -5,14 +5,14 @@ import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
+import java.util.Locale;
 
 @Controller
 public class HomeController {
@@ -30,15 +30,23 @@ public class HomeController {
 
     @RequestMapping("/contact")
     public ModelAndView getContact() {
-        final ModelAndView mav = new ModelAndView("views/contact");
-        return mav;
+        return new ModelAndView("views/contact");
     }
 
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_pet");
+        Locale locale = LocaleContextHolder.getLocale();
         mav.addObject("pet",
-                petService.findById(id).orElseThrow(PetNotFoundException::new));
+                petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new));
+        return mav;
+    }
+
+    @RequestMapping(value = "/test")
+    public ModelAndView getIdPet() {
+        final ModelAndView mav = new ModelAndView("views/test");
+        mav.addObject("pet",
+                petService.findById(getLocale(),7).orElseThrow(PetNotFoundException::new));
         return mav;
     }
 
@@ -49,6 +57,7 @@ public class HomeController {
                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                  @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                  @RequestParam(name = "find", required = false) String findValue){
+        Locale locale = LocaleContextHolder.getLocale();
 
         final ModelAndView mav = new ModelAndView("index");
 
@@ -58,16 +67,23 @@ public class HomeController {
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
         if(species != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(species, breed, gender, searchCriteria, searchOrder));
+            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder));
         }
         else if(findValue != null){
-            mav.addObject("home_pet_list", petService.find(findValue).toArray());
+            mav.addObject("home_pet_list", petService.find(getLocale(),findValue).toArray());
         }
         else {
 
-            mav.addObject("home_pet_list", petService.list());
+            mav.addObject("home_pet_list", petService.list(getLocale()));
         }
         return mav;
+    }
+
+    private String getLocale() {
+        Locale locale = LocaleContextHolder.getLocale();
+        String lang = locale.getLanguage() + "_" + locale.getCountry();
+        if (lang.startsWith("en")) return "en_US";
+        else return "es_AR";
     }
 
     @ExceptionHandler(UserNotFoundException.class)
