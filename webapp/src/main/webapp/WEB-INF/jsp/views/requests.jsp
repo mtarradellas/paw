@@ -22,13 +22,13 @@
                         </div>
                         <div class="row p-1 bg-light resolved">
                             <div class=" col-sm-11">
-                                Your request for <a href="${pageContext.request.contextPath}/">Fido</a> was accepted!
+                                Your request for <a href="${pageContext.request.contextPath}/">Fido</a> was accepted by <a href="${pageContext.request.contextPath}/">John Johnson</a>!
                                 <small class="text-warning">  12.02.2020, 12:00</small>
                             </div>
                         </div>
                         <div class="row bg-light p-1 resolved">
                             <div class=" col-sm-11">
-                                Your request for <a href="${pageContext.request.contextPath}/">Bobby</a> was rejected
+                                Your request for <a href="${pageContext.request.contextPath}/">Bobby</a> was rejected by <a href="${pageContext.request.contextPath}/">Jack Jackson</a>!
                                 <small class="text-warning">  27.11.2014, 12:00</small>
                             </div>
                         </div>

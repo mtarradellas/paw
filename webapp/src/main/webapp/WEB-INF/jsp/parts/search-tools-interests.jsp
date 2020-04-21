@@ -48,7 +48,7 @@
             </select>
         </div>
         <div class="card-footer" id="search-tools-submit">
-            <button type="submit" class="btn btn-primary"><spring:message code="search"/></button>
+            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
         </div>
     </form>
 </div>
