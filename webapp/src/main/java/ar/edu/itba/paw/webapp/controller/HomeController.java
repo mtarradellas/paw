@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -22,6 +23,8 @@ public class HomeController {
     PetService petService;
     @Autowired
     ImageService imageService;
+    @Autowired
+    SpeciesService speciesService;
 
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
@@ -39,14 +42,17 @@ public class HomeController {
         Locale locale = LocaleContextHolder.getLocale();
         mav.addObject("pet",
                 petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new));
+        mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
+        mav.addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
         return mav;
     }
 
     @RequestMapping(value = "/test")
     public ModelAndView getIdPet() {
         final ModelAndView mav = new ModelAndView("views/test");
-        mav.addObject("pet",
-                petService.findById(getLocale(),7).orElseThrow(PetNotFoundException::new));
+
+        mav.addObject("species_list",
+                speciesService.speciesList("es_AR").toArray());
         return mav;
     }
 
@@ -76,6 +82,8 @@ public class HomeController {
 
             mav.addObject("home_pet_list", petService.list(getLocale()));
         }
+        mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
+        mav.addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
         return mav;
     }
 
