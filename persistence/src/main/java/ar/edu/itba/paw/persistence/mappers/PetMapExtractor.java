@@ -8,15 +8,12 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PetMapExtractor implements ResultSetExtractor<Map<Pet, List<Image>>> {
     @Override
     public Map<Pet, List<Image>> extractData(ResultSet rs) throws SQLException {
-        Map<Pet, List<Image>> imageMap = new HashMap<>();
+        Map<Pet, List<Image>> imageMap = new LinkedHashMap<>();
         while (rs.next()) {
             Pet pet = new Pet(
                     rs.getLong("id"),
