@@ -55,6 +55,18 @@ public class HomeController {
         return mav;
     }
 
+    @RequestMapping(value = "/requests")
+    public ModelAndView getRequests() {
+        final ModelAndView mav = new ModelAndView("views/requests");
+        return mav;
+    }
+
+    @RequestMapping(value = "/interests")
+    public ModelAndView getInterested() {
+        final ModelAndView mav = new ModelAndView("views/interests");
+        return mav;
+    }
+
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
                                  @RequestParam(name = "breed", required = false) String breed,
@@ -95,12 +107,13 @@ public class HomeController {
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchUser() {
-        return new ModelAndView("views/404_user");
+        return new ModelAndView("error-views/404_user");
     }
 
     @ExceptionHandler(PetNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchPet() {
-        return new ModelAndView("views/404_pet");
+        return new ModelAndView("error-views/404_pet");
     }
+
 }

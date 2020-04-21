@@ -8,10 +8,13 @@
 
 <t:basicLayout title="${titleVar}">
     <jsp:body>
-        <div class="shadow p-3 mb-5 rounded card-color">
-            <h1 class="title-style"><spring:message code="available"/></h1>
-        </div>
-        <div class="row mt-1">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="shadow p-3 bg-white rounded">
+                    <div class="shadow p-3 mb-5 rounded card-color">
+                        <h1 class="title-style"><spring:message code="available"/></h1>
+                    </div>
+                    <div class="row mt-1">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
@@ -35,9 +38,11 @@
                 </div>
             </div>
         </div>
-        <div class="p-4">
-            <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
-        </div>
+                    <div class="p-4">
+                        <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </jsp:body>
