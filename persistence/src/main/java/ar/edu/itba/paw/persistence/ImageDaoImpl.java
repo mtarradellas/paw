@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
@@ -25,10 +24,10 @@ public class ImageDaoImpl implements ImageDao {
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(IMAGES_TABLE)
-                .usingGeneratedKeyColumns("images_id");
+                .usingGeneratedKeyColumns("id");
     }
     private static final RowMapper<Image> IMAGE_MAPPER = (rs, rowNum) -> new Image(
-            rs.getInt("imageId"),
+            rs.getInt("id"),
             rs.getBytes("img"),
             rs.getInt("petId")
     );

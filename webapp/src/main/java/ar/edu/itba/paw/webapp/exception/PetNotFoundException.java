@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.exception;
 
 public class PetNotFoundException extends RuntimeException {
 
+    private static final long serialVersionUID = 7711783757526047305L;
+
     public PetNotFoundException() {
         super();
     }
