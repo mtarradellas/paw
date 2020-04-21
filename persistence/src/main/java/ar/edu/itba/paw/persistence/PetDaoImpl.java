@@ -1,24 +1,17 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.PetDao;
-import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Pet;
 
-import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
-import java.sql.Date;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 @Repository
