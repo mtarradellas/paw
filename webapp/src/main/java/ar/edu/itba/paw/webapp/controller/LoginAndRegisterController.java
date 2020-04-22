@@ -38,7 +38,7 @@ public class LoginAndRegisterController {
         return new ModelAndView("views/login");
     }
 
-    @RequestMapping(value = "/create", method = { RequestMethod.POST })
+    @RequestMapping(value = "/register", method = { RequestMethod.POST })
     public ModelAndView createUser(@Valid @ModelAttribute("form") final UserForm userForm, final BindingResult errors) {
 
         if (errors.hasErrors()) {
@@ -52,7 +52,7 @@ public class LoginAndRegisterController {
         return mav;
     }
 
-    @RequestMapping(value ="/create", method = { RequestMethod.GET })
+    @RequestMapping(value ="/register", method = { RequestMethod.GET })
     public ModelAndView registerForm(@ModelAttribute ("form") final UserForm userForm) {
         return new ModelAndView("views/register");
     }

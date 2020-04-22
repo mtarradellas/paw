@@ -7,17 +7,17 @@ import javax.validation.constraints.Size;
 
 public class UserForm {
 
-    @Size(min = 6, max = 50)
+    @Size(min = 4, max = 50)
     @Pattern(regexp = "^[a-zA-Z0-9]+$")
     private String username;
 
-    @Size(min = 6, max = 50)
+    @Size(min = 4, max = 50)
     private String password;
 
-    @Size(min = 6, max = 50)
+    @Size(min = 4, max = 50)
     private String repeatPassword;
 
-    @Size(min = 3)
+    @Size(min = 4)
     @Email
     private String mail;
 
