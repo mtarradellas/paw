@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.ImageService;
-import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.SpeciesService;
-import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,8 @@ public class HomeController {
     ImageService imageService;
     @Autowired
     SpeciesService speciesService;
+    @Autowired
+    RequestService requestService;
 
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
@@ -50,8 +49,8 @@ public class HomeController {
     public ModelAndView getIdPet() {
         final ModelAndView mav = new ModelAndView("views/test");
 
-        mav.addObject("species_list",
-                speciesService.speciesList("es_AR").toArray());
+        mav.addObject("request_list",
+                requestService.listByOwner("es_AR",1).toArray());
         return mav;
     }
 

@@ -5,9 +5,10 @@
     <title>test</title>
 </head>
 <body>
-<c:forEach items="${species_list}" var="s">
-<h1><c:out value="${s.id}"/></h1>
-<h1><c:out value="${s.name}"/></h1>
+<c:forEach items="${request_list}" var="r">
+<h1><c:out value="${r.id}"/></h1>
+<h1><c:out value="${r.ownerId}"/></h1>
+<h1><c:out value="${r.status.name}"/></h1>
 </c:forEach>
 
 </body>
