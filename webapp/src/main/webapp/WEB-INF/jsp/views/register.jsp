@@ -13,9 +13,7 @@
                     <div class="form-group">
                         <form:label path="username" for="username"><spring:message code="register.username"/>: </form:label>
                         <form:input type="text" id="username" path="username" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
-                        <div class="invalid-feedback">
-                                ${status.errorMessage}
-                        </div>
+                        <form:errors path="username" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
 
@@ -23,9 +21,7 @@
                     <div class="form-group">
                         <form:label path="password" for="password"><spring:message code="register.password"/>: </form:label>
                         <form:input type="password" id="password" path="password" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
-                        <div class="invalid-feedback">
-                                ${status.errorMessage}
-                        </div>
+                        <form:errors path="password" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
 
@@ -33,9 +29,8 @@
                     <div class="form-group">
                         <form:label path="repeatPassword" for="repeatPassword"><spring:message code="register.repeatPassword"/>: </form:label>
                         <form:input type="password" id="repeatPassword" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="repeatPassword"/>
-                        <div class="invalid-feedback">
-                                ${status.errorMessage}
-                        </div>
+                        <form:errors path="repeatPassword" element="div" cssClass="invalid-feedback"/>
+
                     </div>
                 </spring:bind>
 
@@ -43,9 +38,8 @@
                     <div class="form-group">
                         <form:label path="mail" for="mail"><spring:message code="register.email"/>: </form:label>
                         <form:input type="text" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
-                        <div class="invalid-feedback">
-                            ${status.errorMessage}
-                        </div>
+                        <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
+
                     </div>
                 </spring:bind>
 
@@ -53,13 +47,13 @@
                     <div class="form-group">
                         <form:label path="phone" for="phone"><spring:message code="register.phone"/>: </form:label>
                         <form:input type="text" id="phone" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="phone"/>
-                        <div class="invalid-feedback">
-                            ${status.errorMessage}
-                        </div>
+                        <form:errors path="phone" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
+
                 <div>
-                    <input type="submit" class="btn btn-primary"/>
+                    <spring:message code="register.submit" var="submitText"/>
+                    <input type="submit" class="btn btn-primary" name="${submitText}"/>
                 </div>
             </form:form>
         </div>

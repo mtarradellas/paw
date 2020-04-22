@@ -104,6 +104,26 @@ public class HomeController {
         return mav;
     }
 
+
+    @RequestMapping(value = "/login", method = { RequestMethod.POST })
+    public ModelAndView login(@Valid @ModelAttribute("form") final UserForm userForm, final BindingResult errors) {
+
+        if (errors.hasErrors()) {
+            return loginForm(userForm);
+        }
+
+        final User user = userService.create(userForm.getUsername(), userForm.getPassword(),
+                userForm.getMail(), userForm.getPhone());
+        final ModelAndView mav = new ModelAndView("views/single_user");
+        mav.addObject("user", user);
+        return mav;
+    }
+
+    @RequestMapping(value ="/login", method = { RequestMethod.GET })
+    public ModelAndView loginForm(@ModelAttribute ("form") final UserForm userForm) {
+        return new ModelAndView("views/login");
+    }
+
     @RequestMapping(value = "/create", method = { RequestMethod.POST })
     public ModelAndView createUser(@Valid @ModelAttribute("form") final UserForm userForm, final BindingResult errors) {
 

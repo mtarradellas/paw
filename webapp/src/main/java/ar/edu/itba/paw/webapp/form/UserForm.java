@@ -17,6 +17,7 @@ public class UserForm {
     @Size(min = 6, max = 50)
     private String repeatPassword;
 
+    @Size(min = 3)
     @Email
     private String mail;
 

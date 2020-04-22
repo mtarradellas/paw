@@ -1,18 +1,36 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<t:centeredLayout title="Login">
-    <h1>Login</h1>
-    <form method="POST" target="${pageContext.request.contextPath}/login">
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" name="username" class="form-control" id="username" placeholder="Enter username">
+
+<t:basicLayout title="Login">
+    <div class="container-fluid">
+        <div class="shadow p-4 login-register-container">
+            <h1><spring:message code="login.title"/></h1>
+            <form:form modelAttribute="form" action="${pageContext.request.contextPath}/login" method="post">
+
+                <spring:bind path="username">
+                    <div class="form-group">
+                        <form:label path="username" for="username"><spring:message code="register.username"/>: </form:label>
+                        <form:input type="text" id="username" path="username" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                        <form:errors path="username" element="div" cssClass="invalid-feedback"/>
+                    </div>
+                </spring:bind>
+
+                <spring:bind path="password">
+                    <div class="form-group">
+                        <form:label path="password" for="password"><spring:message code="register.password"/>: </form:label>
+                        <form:input type="password" id="password" path="password" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                        <form:errors path="password" element="div" cssClass="invalid-feedback"/>
+                    </div>
+                </spring:bind>
+
+                <div>
+                    <spring:message code="login.submit" var="submitText"/>
+                    <input type="submit" class="btn btn-primary" name="${submitText}"/>
+                </div>
+            </form:form>
         </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Password">
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-</t:centeredLayout>
+    </div>
+</t:basicLayout>
