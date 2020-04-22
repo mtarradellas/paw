@@ -1,23 +1,17 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.PetDao;
-import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Pet;
 
-import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
-import java.sql.Date;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 @Repository
@@ -27,22 +21,6 @@ public class PetDaoImpl implements PetDao {
 
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
-
-    private static final RowMapper<Pet> PET_MAPPER = (rs, rowNum) -> new Pet(
-            rs.getLong("id"),
-            rs.getString("petName"),
-            new Species(rs.getLong("speciesId"), rs.getString("speciesEs"), rs.getString("speciesEn")),
-            new Breed(rs.getLong("breedId"), rs.getLong("breedSpeciesId"), rs.getString("breedEs"), rs.getString("breedEn")),
-            rs.getString("location"),
-            rs.getBoolean("vaccinated"),
-            rs.getString("gender"),
-            rs.getString("description"),
-            rs.getDate("birthDate"),
-            rs.getDate("uploadDate"),
-            rs.getInt("price"),
-            rs.getLong("ownerId")
-    );
-
 
 
     @Autowired
@@ -55,27 +33,34 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Optional<Pet> findById(long id) {
-        return jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) WHERE pets.id = ?", new Object[] {id}, PET_MAPPER)
-                .stream().findFirst();
+    public Optional<Pet> findById(String language, long id) {
+
+        Map<Pet, List<Image>> imageMap = jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                " img, images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petId = pets.id) " +
+                "WHERE pets.id = ?", new Object[] {id}, new PetMapExtractor());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream().findFirst();
     }
 
     @Override
-    public Stream<Pet> list() {
-        return jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)", PET_MAPPER)
-                .stream();
+    public Stream<Pet> list(String language) {
+        Map<Pet, List<Image>> imageMap = jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                        "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                        "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                        " img, images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id)",
+                new PetMapExtractor());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream();
     }
 
     @Override
-    public Stream<Pet> find(String findValue){
+    public Stream<Pet> find(String language, String findValue){
         if(findValue.equals("")){
-            return list();
+            return list(language);
         }
 
         int numValue = -1;
@@ -91,20 +76,22 @@ public class PetDaoImpl implements PetDao {
         String modifiedValue = "%"+findValue.toLowerCase()+"%";
 
         String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                "WHERE LOWER(species.en_US) LIKE ? OR LOWER(species.es_AR) LIKE ? " +
-                "OR LOWER(breed.en_US) LIKE ? OR LOWER(breed.es_ar) LIKE ? " +
-                "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ?";
-        return jdbcTemplate.query( sql,
-                new Object[] {modifiedValue, modifiedValue, modifiedValue ,modifiedValue,modifiedValue,modifiedValue,numValue},
-                PET_MAPPER)
-                .stream();
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                " img, images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
+                "WHERE LOWER(species." + language +") LIKE ?  " +
+                "OR LOWER(breeds." + language + ") LIKE ? " +
+                "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ";
+        Map<Pet, List<Image>> imageMap = jdbcTemplate.query( sql,
+                new Object[] { modifiedValue ,modifiedValue,modifiedValue,modifiedValue,numValue},
+                new PetMapExtractor());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream();
     }
 
     @Override
-    public Stream<Pet> filteredList(String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder) {
+    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder) {
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
@@ -114,14 +101,18 @@ public class PetDaoImpl implements PetDao {
         else{ breedFilter = "%" + breedFilter + "%";}
         if(genderFilter == null) { genderFilter = "%"; }
         if(searchCriteria == null) {
-            return jdbcTemplate.query(  "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                            "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                            "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                            "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                            "WHERE (lower(species.es_AR) LIKE ? OR lower(species.en_US) LIKE ? ) AND (lower(breeds.es_AR) LIKE ? OR lower(breeds.en_US) LIKE ? )AND lower(gender) LIKE ? ",
-                    new Object[] {specieFilter, specieFilter, breedFilter, breedFilter, genderFilter},
-                    PET_MAPPER)
-                    .stream();
+            Map<Pet, List<Image>> imageMap = jdbcTemplate.query(  "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                            "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                            "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                            " img, images.id as imagesId, images.petId as petId " +
+                            "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
+                            "WHERE lower(species." + language +") LIKE ? " +
+                            " AND lower(breeds." + language +") LIKE ? " +
+                            "AND lower(gender) LIKE ? ",
+                    new Object[] {specieFilter, breedFilter, genderFilter},
+                    new PetMapExtractor());
+            imageMap.forEach(Pet::setImages);
+            return imageMap.keySet().stream();
         }
         else {
             if(searchCriteria.contains("upload")){
@@ -144,16 +135,20 @@ public class PetDaoImpl implements PetDao {
 
             searchCriteria = searchCriteria + " " + searchOrder;
             String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesID, species.es_ar as speciesEs, species.en_us as speciesEn, " +
-                    "breeds.id as breedID, breeds.speciesId as breedSpeciesID, breeds.es_ar as breedEs, breeds.en_us as breedEn " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                    "WHERE (species.es_AR LIKE ? OR species.en_US LIKE ? ) AND (breeds.es_AR LIKE ? OR breeds.en_US LIKE ? )AND gender LIKE ? " +
+                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                    " img, images.id as imagesId, images.petId as petId " +
+                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
+                    "WHERE lower(species." + language +") LIKE ? " +
+                    " AND lower(breeds." + language +") LIKE ? " +
+                    "AND lower(gender) LIKE ? " +
                     "ORDER BY " +
                     searchCriteria;
-            return jdbcTemplate.query( sql,
-                    new Object[] {specieFilter, specieFilter, breedFilter, breedFilter, genderFilter},
-                    PET_MAPPER)
-                    .stream();
+            Map<Pet, List<Image>> imageMap = jdbcTemplate.query( sql,
+                    new Object[] {specieFilter, breedFilter, genderFilter},
+                    new PetMapExtractor());
+            imageMap.forEach(Pet::setImages);
+            return imageMap.keySet().stream();
         }
 
     }

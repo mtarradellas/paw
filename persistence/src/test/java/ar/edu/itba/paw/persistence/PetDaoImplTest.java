@@ -1,23 +1,18 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.User;
-import org.hsqldb.jdbc.JDBCDriver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,7 +82,7 @@ public class PetDaoImplTest {
     public void testFindByIdDoesNotExist() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
 
-        Optional<Pet> testPet = petDaoImpl.findById(1L);
+        Optional<Pet> testPet = petDaoImpl.findById("es_AR",1L);
 
         assertFalse(testPet.isPresent());
     }
@@ -110,7 +105,7 @@ public class PetDaoImplTest {
         }};
         Number key = jdbcInsert.executeAndReturnKey(values);
 
-        Optional<Pet> testPet = petDaoImpl.findById(key.longValue());
+        Optional<Pet> testPet = petDaoImpl.findById("es_AR",key.longValue());
 
         assertTrue(testPet.isPresent());
         Pet pet = testPet.get();
@@ -160,7 +155,7 @@ public class PetDaoImplTest {
         }};
         jdbcInsert.executeAndReturnKey(other_values);
 
-        Stream<Pet> petStream = petDaoImpl.filteredList(SPECIES, null, null, "species", "asc");
+        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES, null, null, "species", "asc");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
@@ -210,7 +205,7 @@ public class PetDaoImplTest {
         }};
         jdbcInsert.executeAndReturnKey(other_values);
 
-        Stream<Pet> petStream = petDaoImpl.filteredList(SPECIES, BREED, null, "species", "asc");
+        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES, BREED, null, "species", "asc");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
@@ -260,7 +255,7 @@ public class PetDaoImplTest {
         }};
         Number other_key = jdbcInsert.executeAndReturnKey(other_values);
 
-        Stream<Pet> petStream = petDaoImpl.filteredList(null, null, GENDER, "species", "asc");
+        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",null, null, GENDER, "species", "asc");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());

@@ -18,8 +18,10 @@
 }
 
 .page-content {
-    margin-bottom: 5rem;
-    margin-top: 3rem;
+    /*margin-bottom: 3rem;*/
+    margin-top: 2rem;
+    min-height: 100%;
+    /*padding-bottom: 20rem;*/
 }
 
 #imageCarousel {
@@ -34,15 +36,11 @@
     min-width: 20rem;
 }
 
-#home-link{
-    text-decoration: none;
-    color: white;
-}
-
 html,body {
-    display: flex;
-    flex-flow: column;
+    /*display: flex;*/
+    /*flex-flow: column;*/
     height: 100%;
+    background: #E0E0E0;
 }
 
 .title-style{
@@ -61,7 +59,8 @@ html,body {
 .footer {
     background-color: #222831;
     padding: 10px;
-    flex-grow : 1;
+    margin-top: 3rem;
+    /*flex-grow : 1;*/
     color: white;
     font-family: verdana;
 }
@@ -90,8 +89,55 @@ html,body {
     left: 10px;
 }
 
+.header h4 {
+    font-family: verdana;
+    font-size: 125%;
+    position: relative;
+    top: 25px;
+    left: 35px;
+    display: block;
+}
+
+.float-up{
+    margin-top: 0;
+}
+
+.nav-link{
+    text-decoration: none;
+    color: white;
+    outline: 0;
+}
+
 .content-disclaimer{
-    background: #f9f7f7;
+    background: lightgrey;
     font-family: verdana;
     font-size: 10pt;
+}
+
+.resolved{
+ opacity: 50%;
+}
+
+.notify-bubble {
+    position: absolute;
+    top: 22px;
+    right: -35px;
+    padding: 2px 5px 2px 5px;
+    background-color: forestgreen;
+    color: white;
+    font-size: 0.65em;
+    border-radius: 50%;
+}
+
+.notify-container {
+    position: relative;
+    display: inline-block;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    text-align: center;
 }

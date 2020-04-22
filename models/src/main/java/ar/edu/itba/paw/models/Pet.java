@@ -38,6 +38,24 @@ public class Pet {
         this.images = new ArrayList<>();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        Pet pet = (Pet) o;
+        return id == pet.id
+                && ownerId == pet.ownerId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + (int) id;
+        hash = 31 * hash + (int) ownerId;
+        return hash;
+    }
+
     public long getId() {
         return id;
     }

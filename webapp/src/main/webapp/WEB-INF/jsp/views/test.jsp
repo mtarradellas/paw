@@ -5,10 +5,10 @@
     <title>test</title>
 </head>
 <body>
-<h1><c:out value="${pet.id}"/></h1>
-<h1><c:out value="${pet.petName}"/></h1>
-<h1><c:out value="${pet.location}"/></h1>
-<h1><c:out value="${pet.species.en_US}"/></h1>
-<h1><c:out value="${pet.breed.es_AR}"/></h1>
+<c:forEach items="${species_list}" var="s">
+<h1><c:out value="${s.id}"/></h1>
+<h1><c:out value="${s.name}"/></h1>
+</c:forEach>
+
 </body>
 </html>
