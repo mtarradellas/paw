@@ -6,8 +6,10 @@
 <t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="container-fluid">
-            <div class="row">
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" />
+            <jsp class="row">
+                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" >
+                    <jsp:param name="destination" value="interests"/>
+                </jsp:include>
                 <div class="col ">
                     <div class="shadow p-3 bg-white rounded">
                         <h2>Users interested in your pets:</h2>

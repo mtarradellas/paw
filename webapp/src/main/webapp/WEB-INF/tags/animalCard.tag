@@ -15,7 +15,9 @@
     <div class="card-body">
 
         <p class="card-text">
-            <spring:message code="petCard.name"/> <c:out value="${pet.petName}"/><br>
+            <c:if test="${not empty pet.petName}">
+                <spring:message code="petCard.name"/> <c:out value="${pet.petName}"/><br>
+            </c:if>
             <spring:message code="petCard.species"/> <c:out value="${pet.species.name}"/><br>
             <spring:message code="petCard.breed"/> <c:out value="${pet.breed.name}"/><br>
             <spring:message code="petCard.price"/> <spring:message code="argPrice" arguments="${pet.price}"/><br>

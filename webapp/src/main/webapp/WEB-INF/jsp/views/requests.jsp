@@ -7,7 +7,9 @@
     <jsp:body>
         <div class="container-fluid">
             <div class="row">
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" />
+                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" >
+                    <jsp:param name="destination" value="requests"/>
+                </jsp:include>
                 <div class="col ">
                     <div class="shadow p-3 bg-white rounded">
                         <h2>Pets you requested:</h2>
