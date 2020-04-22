@@ -20,27 +20,8 @@
             </div>
         </div>
     </div>
-    
-    <div class="p-2">
-        <h2><spring:message code="photos"/></h2>
-        <t:photosList images="${pet.images}"/>
-    </div>
 
-    <div class="p-2">
-        <h2><spring:message code="data"/></h2>
-        <ul class="list-group">
-            <li class="list-group-item"><spring:message code="petCard.name"/> <c:out value="${pet.petName}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.dob"/> <c:out value="${pet.birthDate}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.species"/> <c:out value="${cspecies}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.breed"/> <c:out value="${cbreed}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.sex"/> <c:out value="${gender}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.vaccinated"/> <c:out value="${vaccinated}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.price"/> <c:out value="${price}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.location"/> <c:out value="${pet.location}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.description"/> <c:out value="${pet.description}"/></li>
-            <li class="list-group-item"><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></li>
-        </ul>
-    <div class="shadow p-3">
+    <div class="p-3">
         <div class="p-2">
             <h2><spring:message code="photos"/></h2>
             <t:photosList images="${pet.images}"/>
