@@ -96,9 +96,8 @@ public class PetDaoImpl implements PetDao {
             specieFilter = "%";
             breedFilter = "%";
         }
-        else{ specieFilter = "%" + specieFilter + "%";}
         if(breedFilter == null) { breedFilter = "%";}
-        else{ breedFilter = "%" + breedFilter + "%";}
+
         if(genderFilter == null) { genderFilter = "%"; }
         if(searchCriteria == null) {
             Map<Pet, List<Image>> imageMap = jdbcTemplate.query(  "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
@@ -106,8 +105,8 @@ public class PetDaoImpl implements PetDao {
                             "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
                             " img, images.id as imagesId, images.petId as petId " +
                             "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                            "WHERE lower(species." + language +") LIKE ? " +
-                            " AND lower(breeds." + language +") LIKE ? " +
+                            "WHERE lower(species.id::text) LIKE ? " +
+                            " AND lower(breeds.id::text) LIKE ? " +
                             "AND lower(gender) LIKE ? ",
                     new Object[] {specieFilter, breedFilter, genderFilter},
                     new PetMapExtractor());
