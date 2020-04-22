@@ -58,13 +58,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User create(String username, String mail, String phone){
+    public User create(String username, String password, String mail, String phone){
         final Map<String, String> values = new HashMap<>();
         values.put("username", username);
+        values.put("password", password);
         values.put("mail", mail);
         values.put("phone", phone);
         final Number key = jdbcInsert.executeAndReturnKey(values);
-        return new User(key.longValue(), username, mail, phone);
+        return new User(key.longValue(), username, password, mail, phone);
     };
 }
 

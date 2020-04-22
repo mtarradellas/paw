@@ -24,6 +24,7 @@ public class UserDaoImplTest {
 
     private static final String USER_TABLE = "users";
     private static final String USERNAME = "user_test_name";
+    private static final String PASSWORD = "user_test_password";
     private static final String MAIL = "user_test_mail";
     private static final String PHONE = "user_test_phone";
 
@@ -48,7 +49,7 @@ public class UserDaoImplTest {
     public void testCreateUser() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
 
-        User user = userDaoImpl.create(USERNAME, MAIL, PHONE);
+        User user = userDaoImpl.create(USERNAME, PASSWORD, MAIL, PHONE);
 
         assertNotNull(user);
         assertEquals(USERNAME, user.getUsername());

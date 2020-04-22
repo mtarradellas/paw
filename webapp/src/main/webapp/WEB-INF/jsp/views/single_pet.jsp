@@ -4,7 +4,7 @@
 
 <spring:message code="petTitle" var="titleVar"/>
 
-<t:basicLayout title="${titleVar}">
+<t:centeredLayout title="${titleVar}">
     <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -20,8 +20,8 @@
             </div>
         </div>
     </div>
-    
-    <div class="shadow p-3">
+
+    <div class="p-3">
         <div class="p-2">
             <h2><spring:message code="photos"/></h2>
             <t:photosList images="${pet.images}"/>
@@ -53,4 +53,4 @@
     </div>
 
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
-</t:basicLayout>
+</t:centeredLayout>
