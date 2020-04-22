@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Species;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,9 +25,14 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = TestConfig.class)
 public class PetDaoImplTest {
     private final String PETS_TABLE = "pets";
+    private final String USERS_TABLE = "users";
+    private final String SPECIES_TABLE = "species";
+    private final String BREEDS_TABLE = "breeds";
+    private final String IMAGES_TABLE = "images";
+
     private final String PET_NAME = "pet_test_name";
-    private final String SPECIES = "pet_test_species";
-    private final String BREED = "pet_test_breed";
+    private final Species SPECIES = new Species(1, "pet_test_species");
+    private final Breed BREED = new Breed(1, 1, "pet_test_breed");
     private final String LOCATION = "pet_test_location";
     private final Boolean VACCINATED = false;
     private final String GENDER = "pet_test_gender";
@@ -33,55 +40,141 @@ public class PetDaoImplTest {
     private final Date BIRTH_DATE = null;
     private  java.sql.Date UPLOAD_DATE ;
     private final int PRICE = 0;
-    private final int OWNER_ID = 1;
+    private int OWNER_ID = 1;
+
+    private int OTHER_SPECIES_ID;
+    private int OTHER_BREED_ID;
 
     @Autowired
     private DataSource ds;
 
     private PetDaoImpl petDaoImpl;
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert jdbcInsert;
+
+    private SimpleJdbcInsert jdbcInsertPet;
+    private SimpleJdbcInsert jdbcInsertUser;
+    private SimpleJdbcInsert jdbcInsertSpecies;
+    private SimpleJdbcInsert jdbcInsertBreed;
+    private SimpleJdbcInsert jdbcInsertImage;
 
     @Before
     public void setUp() {
         petDaoImpl = new PetDaoImpl(ds);
         jdbcTemplate = new JdbcTemplate(ds);
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+
+        jdbcInsertPet = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(PETS_TABLE)
                 .usingGeneratedKeyColumns("id");
+        jdbcInsertUser = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(USERS_TABLE)
+                .usingGeneratedKeyColumns("id");
+        jdbcInsertSpecies = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(SPECIES_TABLE)
+                .usingGeneratedKeyColumns("id");
+        jdbcInsertBreed = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(BREEDS_TABLE)
+                .usingGeneratedKeyColumns("id");
+        jdbcInsertImage = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(IMAGES_TABLE)
+                .usingGeneratedKeyColumns("id");
+
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2001);
         cal.set(Calendar.MONTH, 2);
         cal.set(Calendar.DATE, 2);
         UPLOAD_DATE = new java.sql.Date(cal.getTimeInMillis());
+
+        /* Setup Pet creation context */
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, BREEDS_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, SPECIES_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS_TABLE);
+        final Map<String, Object> userValues = new HashMap<String, Object>() {{
+            put("username", "pet_test_username");
+            put("password", "pet_test_password");
+            put("mail", "pet_test_mail");
+            put("phone", "pet_test_phone");
+        }};
+        OWNER_ID = jdbcInsertUser.executeAndReturnKey(userValues).intValue();
+        final Map<String, Object> speciesValues = new HashMap<String, Object>() {{
+            put("es_ar", SPECIES.getName());
+            put("en_us", SPECIES.getName());
+        }};
+        SPECIES.setId(jdbcInsertSpecies.executeAndReturnKey(speciesValues).intValue());
+        BREED.setSpeciesId(SPECIES.getId());
+        final Map<String, Object> breedValues = new HashMap<String, Object>() {{
+            put("speciesId", BREED.getSpeciesId());
+            put("es_ar", BREED.getName());
+            put("en_us", BREED.getName());
+        }};
+        BREED.setId(jdbcInsertBreed.executeAndReturnKey(breedValues).intValue());
+        final Map<String, Object> otherSpeciesValues = new HashMap<String, Object>() {{
+            put("es_ar", "other");
+            put("en_us", "other");
+        }};
+        OTHER_SPECIES_ID = jdbcInsertSpecies.executeAndReturnKey(otherSpeciesValues).intValue();
+        final Map<String, Object> otherBreedValues = new HashMap<String, Object>() {{
+            put("speciesId", OTHER_SPECIES_ID);
+            put("es_ar", "other");
+            put("en_us", "other");
+        }};
+        OTHER_BREED_ID = jdbcInsertBreed.executeAndReturnKey(otherBreedValues).intValue();
     }
 
-//    @Test
-//    public void testCreatePet() {
-//        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-//
-//        Pet pet = petDaoImpl.create(PET_NAME, SPECIES, BREED, LOCATION, VACCINATED, GENDER,
-//                DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
-//
-//        assertNotNull(pet);
-//        assertEquals(PET_NAME, pet.getPetName());
-//        assertEquals(SPECIES, pet.getSpecies());
-//        assertEquals(BREED, pet.getBreed());
-//        assertEquals(LOCATION, pet.getLocation());
-//        assertEquals(VACCINATED, pet.isVaccinated());
-//        assertEquals(GENDER, pet.getGender());
-//        assertEquals(DESCRIPTION, pet.getDescription());
-//        assertDate(BIRTH_DATE, pet.getBirthDate());
-//        assertDate(UPLOAD_DATE, pet.getUploadDate());
-//        assertEquals(PRICE, pet.getPrice());
-//        assertEquals(OWNER_ID, pet.getOwnerId());
-//        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
-//    }
+    private long insertPet(String name, long species, long breed, String location, boolean vaccinated, String gender,
+                           String description, Date birthDate, Date uploadDate, int price, long ownerId) {
+        final Map<String, Object> petValues = new HashMap<String, Object>() {{
+            put("petName", name);
+            put("species", species);
+            put("breed", breed);
+            put("location", location);
+            put("vaccinated", vaccinated);
+            put("gender", gender);
+            put("description", description);
+            put("birthDate", birthDate);
+            put("uploadDate", uploadDate);
+            put("price", price);
+            put("ownerId", ownerId);
+        }};
+        long key = jdbcInsertPet.executeAndReturnKey(petValues).longValue();
+        final Map<String, Object> imageValues = new HashMap<String, Object>() {{
+            put("img", "img_test");
+            put("petId", key);
+        }};
+        jdbcInsertImage.execute(imageValues);
+        return key;
+    }
+
+    @Test
+    public void testCreatePet() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
+
+        /**/
+        Pet pet = petDaoImpl.create(PET_NAME, SPECIES, BREED, LOCATION, VACCINATED, GENDER,
+                DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
+
+
+        assertNotNull(pet);
+        assertEquals(PET_NAME, pet.getPetName());
+        assertEquals(SPECIES.getId(), pet.getSpecies().getId());
+        assertEquals(BREED.getId(), pet.getBreed().getId());
+        assertEquals(LOCATION, pet.getLocation());
+        assertEquals(VACCINATED, pet.isVaccinated());
+        assertEquals(GENDER, pet.getGender());
+        assertEquals(DESCRIPTION, pet.getDescription());
+        assertDate(BIRTH_DATE, pet.getBirthDate());
+        assertDate(UPLOAD_DATE, pet.getUploadDate());
+        assertEquals(PRICE, pet.getPrice());
+        assertEquals(OWNER_ID, pet.getOwnerId());
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
+    }
 
     @Test
     public void testFindByIdDoesNotExist() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
 
+        /**/
         Optional<Pet> testPet = petDaoImpl.findById("es_AR",1L);
 
         assertFalse(testPet.isPresent());
@@ -89,29 +182,19 @@ public class PetDaoImplTest {
 
     @Test
     public void testFindByIdExists() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-        final Map<String, Object> values = new HashMap<String, Object>() {{
-            put("petName", PET_NAME);
-            put("species", SPECIES);
-            put("breed", BREED);
-            put("location", LOCATION);
-            put("vaccinated", VACCINATED);
-            put("gender", GENDER);
-            put("description", DESCRIPTION);
-            put("birthDate", BIRTH_DATE);
-            put("uploadDate", UPLOAD_DATE);
-            put("price", PRICE);
-            put("ownerId", OWNER_ID);
-        }};
-        Number key = jdbcInsert.executeAndReturnKey(values);
+        long key = insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
+                    UPLOAD_DATE, PRICE, OWNER_ID);
 
-        Optional<Pet> testPet = petDaoImpl.findById("es_AR",key.longValue());
+        /**/
+        Optional<Pet> testPet = petDaoImpl.findById("es_ar", key);
 
         assertTrue(testPet.isPresent());
         Pet pet = testPet.get();
         assertEquals(PET_NAME, pet.getPetName());
-        assertEquals(SPECIES, pet.getSpecies());
-        assertEquals(BREED, pet.getBreed());
+        assertEquals(SPECIES.getId(), pet.getSpecies().getId());
+        assertEquals(BREED.getId(), pet.getBreed().getId());
         assertEquals(LOCATION, pet.getLocation());
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
@@ -125,44 +208,23 @@ public class PetDaoImplTest {
 
     @Test
     public void testFilteredListSpecies() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-        final Map<String, Object> values = new HashMap<String, Object>() {{
-            put("petName", PET_NAME);
-            put("species", SPECIES);
-            put("breed", BREED);
-            put("location", LOCATION);
-            put("vaccinated", VACCINATED);
-            put("gender", GENDER);
-            put("description", DESCRIPTION);
-            put("birthDate", BIRTH_DATE);
-            put("uploadDate", UPLOAD_DATE);
-            put("price", PRICE);
-            put("ownerId", OWNER_ID);
-        }};
-        jdbcInsert.executeAndReturnKey(values);
-        final Map<String, Object> other_values = new HashMap<String, Object>() {{
-            put("petName", "other_petname");
-            put("species", "other_species");
-            put("breed", "other_breed");
-            put("location", LOCATION);
-            put("vaccinated", VACCINATED);
-            put("gender", "other_gender");
-            put("description", DESCRIPTION);
-            put("birthDate", BIRTH_DATE);
-            put("uploadDate", UPLOAD_DATE);
-            put("price", PRICE);
-            put("ownerId", OWNER_ID);
-        }};
-        jdbcInsert.executeAndReturnKey(other_values);
+        insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
+                UPLOAD_DATE, PRICE, OWNER_ID);
+        insertPet(PET_NAME + "_other", OTHER_SPECIES_ID, OTHER_BREED_ID, LOCATION, VACCINATED,
+                    GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
 
-        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES, null, null, "species", "asc");
+        /**/
+        Stream<Pet> petStream = petDaoImpl.filteredList("es_ar", SPECIES.getName(), null,
+                                                null, "species", "asc");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
         Pet pet = petList.get(0);
         assertEquals(PET_NAME, pet.getPetName());
-        assertEquals(SPECIES, pet.getSpecies());
-        assertEquals(BREED, pet.getBreed());
+        assertEquals(SPECIES.getId(), pet.getSpecies().getId());
+        assertEquals(BREED.getId(), pet.getBreed().getId());
         assertEquals(LOCATION, pet.getLocation());
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
@@ -175,44 +237,23 @@ public class PetDaoImplTest {
 
     @Test
     public void testFilteredListBreed() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-        final Map<String, Object> values = new HashMap<String, Object>() {{
-            put("petName", PET_NAME);
-            put("species", SPECIES);
-            put("breed", BREED);
-            put("location", LOCATION);
-            put("vaccinated", VACCINATED);
-            put("gender", GENDER);
-            put("description", DESCRIPTION);
-            put("birthDate", BIRTH_DATE);
-            put("uploadDate", UPLOAD_DATE);
-            put("price", PRICE);
-            put("ownerId", OWNER_ID);
-        }};
-        jdbcInsert.executeAndReturnKey(values);
-        final Map<String, Object> other_values = new HashMap<String, Object>() {{
-            put("petName", "other_petname");
-            put("species", SPECIES);
-            put("breed", "other_breed");
-            put("location", LOCATION);
-            put("vaccinated", VACCINATED);
-            put("gender", "other_gender");
-            put("description", DESCRIPTION);
-            put("birthDate", BIRTH_DATE);
-            put("uploadDate", UPLOAD_DATE);
-            put("price", PRICE);
-            put("ownerId", OWNER_ID);
-        }};
-        jdbcInsert.executeAndReturnKey(other_values);
+        insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
+                UPLOAD_DATE, PRICE, OWNER_ID);
+        insertPet(PET_NAME + "_other", SPECIES.getId(), OTHER_BREED_ID, LOCATION, VACCINATED,
+                GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
 
-        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES, BREED, null, "species", "asc");
+        /**/
+        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES.getName(), BREED.getName(),
+                                                    null, "species", "asc");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
         Pet pet = petList.get(0);
         assertEquals(PET_NAME, pet.getPetName());
-        assertEquals(SPECIES, pet.getSpecies());
-        assertEquals(BREED, pet.getBreed());
+        assertEquals(SPECIES.getId(), pet.getSpecies().getId());
+        assertEquals(BREED.getId(), pet.getBreed().getId());
         assertEquals(LOCATION, pet.getLocation());
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
@@ -225,44 +266,22 @@ public class PetDaoImplTest {
 
     @Test
     public void testFilteredListGender() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-        final Map<String, Object> values = new HashMap<String, Object>() {{
-            put("petName", PET_NAME);
-            put("species", SPECIES);
-            put("breed", BREED);
-            put("location", LOCATION);
-            put("vaccinated", VACCINATED);
-            put("gender", GENDER);
-            put("description", DESCRIPTION);
-            put("birthDate", BIRTH_DATE);
-            put("uploadDate", UPLOAD_DATE);
-            put("price", PRICE);
-            put("ownerId", OWNER_ID);
-        }};
-        Number key = jdbcInsert.executeAndReturnKey(values);
-        final Map<String, Object> other_values = new HashMap<String, Object>() {{
-            put("petName", "other_petname");
-            put("species", "other_species");
-            put("breed", "other_breed");
-            put("location", LOCATION);
-            put("vaccinated", VACCINATED);
-            put("gender", "other_gender");
-            put("description", DESCRIPTION);
-            put("birthDate", BIRTH_DATE);
-            put("uploadDate", UPLOAD_DATE);
-            put("price", PRICE);
-            put("ownerId", OWNER_ID);
-        }};
-        Number other_key = jdbcInsert.executeAndReturnKey(other_values);
+        insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
+                UPLOAD_DATE, PRICE, OWNER_ID);
+        insertPet(PET_NAME + "_other", OTHER_SPECIES_ID, OTHER_BREED_ID, LOCATION, VACCINATED,
+                GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
 
+        /**/
         Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",null, null, GENDER, "species", "asc");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
         Pet pet = petList.get(0);
         assertEquals(PET_NAME, pet.getPetName());
-        assertEquals(SPECIES, pet.getSpecies());
-        assertEquals(BREED, pet.getBreed());
+        assertEquals(SPECIES.getId(), pet.getSpecies().getId());
+        assertEquals(BREED.getId(), pet.getBreed().getId());
         assertEquals(LOCATION, pet.getLocation());
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());

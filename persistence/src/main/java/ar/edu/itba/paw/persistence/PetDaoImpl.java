@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.PetDao;
+import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Pet;
 
+import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +13,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.sql.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
@@ -153,23 +159,23 @@ public class PetDaoImpl implements PetDao {
 
     }
 
-//    @Override
-//    public Pet create(String petName, long speciesId, long breedId, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
-//        final Map<String, Object> values = new HashMap<String, Object>() {{
-//            put("petName", petName);
-//            put("species", species);
-//            put("breed", breed);
-//            put("location", location);
-//            put("vaccinated", vaccinated);
-//            put("gender", gender);
-//            put("description", description);
-//            put("birthDate", birthDate);
-//            put("uploadDate", uploadDate);
-//            put("price", price);
-//            put("ownerId", ownerId);
-//        }};
-//        final Number key = jdbcInsert.executeAndReturnKey(values);
-//
-//        return new Pet(key.longValue(), petName, species, breed,location,vaccinated,gender,description,birthDate,uploadDate,price,ownerId);
-//    }
+    @Override
+    public Pet create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
+        final Map<String, Object> values = new HashMap<String, Object>() {{
+            put("petName", petName);
+            put("species", species.getId());
+            put("breed", breed.getId());
+            put("location", location);
+            put("vaccinated", vaccinated);
+            put("gender", gender);
+            put("description", description);
+            put("birthDate", birthDate);
+            put("uploadDate", uploadDate);
+            put("price", price);
+            put("ownerId", ownerId);
+        }};
+        final Number key = jdbcInsert.executeAndReturnKey(values);
+
+        return new Pet(key.longValue(), petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+    }
 }

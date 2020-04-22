@@ -2,10 +2,13 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Species;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,8 +38,11 @@ public class PetServiceImpl implements PetService {
         return petDao.find(language, findValue).collect(Collectors.toList());
     }
 
-//    @Override
-//    public Pet create(String petName, String species, String breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
-//        return this.petDao.create(petName, species, breed,location,vaccinated,gender,description,birthDate,uploadDate,price,ownerId);
-//    }
+    @Override
+    public Pet create(String language, String petName, String speciesName, String breedName, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
+//        Species species = speciesDao.findSpeciesByName(language, speciesName);
+//        Breed breed = speciesDao.findBreedByName(language, breedName);
+//        return petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+        return new Pet();
+    }
 }

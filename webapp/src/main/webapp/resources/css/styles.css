@@ -1,3 +1,8 @@
+.login-register-container {
+    max-width: 35rem;
+    margin: inherit;
+}
+
 #image-modal img {
     max-width: 100%;
     max-height: 100%;
