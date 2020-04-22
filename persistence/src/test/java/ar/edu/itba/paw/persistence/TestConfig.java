@@ -23,7 +23,7 @@ public class TestConfig {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(JDBCDriver.class);
-        ds.setUrl("jdbc:hsqldb:mem:paw;sql.syntax_mys=true");
+        ds.setUrl("jdbc:hsqldb:mem:paw;sql.syntax_pgs=true");
         ds.setUsername("ha");
         ds.setPassword("");
 
