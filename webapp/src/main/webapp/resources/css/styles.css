@@ -15,7 +15,7 @@
 .page-content {
     /*margin-bottom: 3rem;*/
     margin-top: 2rem;
-    min-height: 95%;
+    min-height: 100%;
     /*padding-bottom: 20rem;*/
 }
 
@@ -32,8 +32,8 @@
 }
 
 html,body {
-    display: flex;
-    flex-flow: column;
+    /*display: flex;*/
+    /*flex-flow: column;*/
     height: 100%;
     background: #E0E0E0;
 }
@@ -54,7 +54,8 @@ html,body {
 .footer {
     background-color: #222831;
     padding: 10px;
-    flex-grow : 1;
+    margin-top: 15px;
+    /*flex-grow : 1;*/
     color: white;
     font-family: verdana;
 }
