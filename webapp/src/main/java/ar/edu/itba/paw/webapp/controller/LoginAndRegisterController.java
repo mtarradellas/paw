@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 public class LoginAndRegisterController {
@@ -26,10 +27,12 @@ public class LoginAndRegisterController {
             return loginForm(userForm);
         }
 
-        final User user = userService.create(userForm.getUsername(), userForm.getPassword(),
-                userForm.getMail(), userForm.getPhone());
+        Optional<User> opUser = userService.findByUsername(userForm.getUsername());
+        if (!opUser.isPresent()) {
+            return loginForm(userForm);
+        }
         final ModelAndView mav = new ModelAndView("views/single_user");
-        mav.addObject("user", user);
+        mav.addObject("user", opUser.get());
         return mav;
     }
 
