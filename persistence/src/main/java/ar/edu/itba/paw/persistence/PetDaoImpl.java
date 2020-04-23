@@ -138,8 +138,8 @@ public class PetDaoImpl implements PetDao {
                     "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
                     " img, images.id as imagesId, images.petId as petId " +
                     "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                    "WHERE lower(species." + language +") LIKE ? " +
-                    " AND lower(breeds." + language +") LIKE ? " +
+                    "WHERE lower(species.id::text) LIKE ? " +
+                    " AND lower(breeds.id::text) LIKE ? " +
                     "AND lower(gender) LIKE ? " +
                     "ORDER BY " +
                     searchCriteria;
