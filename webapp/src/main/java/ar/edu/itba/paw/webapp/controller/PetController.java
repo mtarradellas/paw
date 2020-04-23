@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.ImageService;
+import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
@@ -30,6 +31,8 @@ public class PetController {
                                 @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String findValue){
+
+
 
         final ModelAndView mav = new ModelAndView("index");
 
