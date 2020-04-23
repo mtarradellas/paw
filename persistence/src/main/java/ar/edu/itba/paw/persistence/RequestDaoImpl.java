@@ -24,7 +24,7 @@ public class RequestDaoImpl implements RequestDao {
 
     private static final RowMapper<Request> REQUEST_MAPPER = (rs, rowNum) -> new Request(
             rs.getLong("id"),
-            rs.getLong("ownerId"),
+            rs.getString("ownerUsername"),
             new Status(rs.getInt("statusId"),rs.getString("statusName")),
             rs.getLong("petId"),
             rs.getDate("creationDate")
@@ -41,9 +41,8 @@ public class RequestDaoImpl implements RequestDao {
 
     @Override
     public Optional<Request> findById(long id, String language) {
-        return jdbcTemplate.query("SELECT requests.id as id, ownerId, petId, creationDate, " +
-                        "status.id as statusId , status." + language + " as statusName  " +
-                        "FROM requests inner join status on requests.status = status.id " +
+        return jdbcTemplate.query("SELECT requests.id as id, users.username as ownerUsername, petId, creationDate, status.id as statusId , status."+ language +" as statusName " +
+                        "FROM (requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id " +
                         "WHERE requests.id = ? "
                 , new Object[] {id}, REQUEST_MAPPER)
                 .stream().findFirst();
@@ -51,20 +50,18 @@ public class RequestDaoImpl implements RequestDao {
 
     @Override
     public Stream<Request> listByOwner(String language, long ownerId) {
-        return jdbcTemplate.query("SELECT requests.id as id, ownerId, petId, creationDate, " +
-                "status.id as statusId , status." + language + " as statusName  " +
-                "FROM requests inner join status on requests.status = status.id " +
-                "WHERE requests.ownerId = ? "
+        return jdbcTemplate.query("SELECT requests.id as id, users.username as ownerUsername, petId, creationDate, status.id as statusId, status."+ language +" as statusName " +
+                        "FROM (requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id " +
+                        "WHERE requests.ownerId = ? "
                 , new Object[] {ownerId}, REQUEST_MAPPER)
                 .stream();
     }
 
     @Override
     public Stream<Request> listByPetOwner(String language, long petOwnerId) {
-        return jdbcTemplate.query("SELECT requests.id as id, requests.ownerId, petId, creationDate, " +
-                "status.id as statusId , status." + language + " as statusName  " +
-                "FROM (requests inner join status on requests.status = status.id) inner join pets on requests.petId = pets.id " +
-                "WHERE pets.ownerId = ?"
+        return jdbcTemplate.query("SELECT requests.id as id, users.username as ownerUsername, petId, creationDate, status.id as statusId , status."+ language +" as statusName " +
+                        "FROM (requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id " +
+                        "WHERE pets.ownerId = ?"
                 , new Object[] {petOwnerId}, REQUEST_MAPPER)
                 .stream();
     }

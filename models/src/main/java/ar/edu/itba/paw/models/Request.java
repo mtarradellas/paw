@@ -4,14 +4,14 @@ import java.util.Date;
 
 public class Request {
     private long id;
-    private long ownerId;
+    private String ownerUsername;
     private Status status;
     private long petId;
     private Date creationDate;
 
-    public Request(long id, long ownerId, Status status, long petId, Date creationDate) {
+    public Request(long id, String ownerUsername, Status status, long petId, Date creationDate) {
         this.id = id;
-        this.ownerId = ownerId;
+        this.ownerUsername = ownerUsername;
         this.status = status;
         this.petId = petId;
         this.creationDate = creationDate;
@@ -25,12 +25,12 @@ public class Request {
         this.id = id;
     }
 
-    public long getOwnerId() {
-        return ownerId;
+    public String getOwnerUsername() {
+        return ownerUsername;
     }
 
-    public void setOwnerId(long ownerId) {
-        this.ownerId = ownerId;
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
     }
 
     public Status getStatus() {

@@ -7,7 +7,7 @@
 <body>
 <%--<c:forEach items="${request_list}" var="r">--%>
 <h1><c:out value="${request.id}"/></h1>
-<h1><c:out value="${request.ownerId}"/></h1>
+<h1><c:out value="${request.ownerUsername}"/></h1>
 <h1><c:out value="${request.status.name}"/></h1>
 <%--</c:forEach>--%>
 
