@@ -49,8 +49,8 @@ public class HomeController {
     public ModelAndView getIdPet() {
         final ModelAndView mav = new ModelAndView("views/test");
 
-        mav.addObject("request_list",
-                requestService.listByOwner("es_AR",1).toArray());
+        mav.addObject("request",
+                requestService.create(6,1,getLocale()).get());
         return mav;
     }
 

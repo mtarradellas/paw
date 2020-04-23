@@ -7,7 +7,6 @@ import ar.edu.itba.paw.models.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -16,6 +15,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Autowired
     private RequestDao requestDao;
+
+    private final int PENDING = 1;
 
     @Override
     public Optional<Request> findById(long id, String language) {
@@ -33,12 +34,12 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Request create(long ownerId, long petId, Date creationDate, String language) {
-        return null;
+    public Optional<Request> create(long ownerId, long petId, String language) {
+        return requestDao.create(ownerId, petId, PENDING, language);
     }
 
     @Override
-    public Request update(long id, int status, String language) {
-        return null;
+    public Optional<Request> updateStatus(long id, int status, String language) {
+        return requestDao.updateStatus(id, status, language);
     }
 }

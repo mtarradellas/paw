@@ -4,7 +4,6 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.RequestDao;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.Status;
-import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,8 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Repository
@@ -72,12 +70,30 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
-    public Request create(long ownerId, long petId, Date creationDate, String language) {
-        return null;
+    public Optional<Request> create(long ownerId, long petId, int status, String language) {
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2020);
+        cal.set(Calendar.MONTH, 2);
+        cal.set(Calendar.DATE, 2);
+
+        Date date = new java.sql.Date(cal.getTimeInMillis());
+        final Map<String, Object> values = new HashMap<>();
+        values.put("ownerId", ownerId);
+        values.put("petId", petId);
+        values.put("status", status);
+        values.put("creationDate", date);
+        final Number key = jdbcInsert.executeAndReturnKey(values);
+        return findById(key.longValue(),language);
+
     }
 
     @Override
-    public Request update(long id, int status, String language) {
-        return null;
+    public Optional<Request> updateStatus(long id, int status, String language) {
+
+        jdbcTemplate.update("UPDATE requests " +
+                "SET status = ? " +
+                "WHERE id = ? ",new Object[] {status, id});
+        return findById(id, language);
     }
 }
