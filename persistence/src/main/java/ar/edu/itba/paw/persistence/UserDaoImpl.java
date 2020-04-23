@@ -27,6 +27,7 @@ public class UserDaoImpl implements UserDao {
     private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
             rs.getLong("id"),
             rs.getString("username"),
+            rs.getString("password"),
             rs.getString("mail"),
             rs.getString("phone"));
 
