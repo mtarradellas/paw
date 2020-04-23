@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row">
 
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools-pet.jsp" />
+                <t:search-tools-pet breeds_list="${breeds_list}" species_list="${species_list}"/>
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">

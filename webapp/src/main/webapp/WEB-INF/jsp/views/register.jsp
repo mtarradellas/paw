@@ -5,7 +5,7 @@
 
 <t:basicLayout title="Register">
     <div class="container-fluid">
-        <div class="shadow p-4 login-register-container">
+        <div class="shadow p-4 login-register-container bg-white">
             <h1><spring:message code="register.title"/></h1>
             <form:form modelAttribute="registerForm" action="${pageContext.request.contextPath}/register" method="post">
 
