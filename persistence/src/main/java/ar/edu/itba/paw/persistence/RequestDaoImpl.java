@@ -36,9 +36,11 @@ public class RequestDaoImpl implements RequestDao {
     public RequestDaoImpl(final DataSource dataSource) {
 
         jdbcTemplate = new JdbcTemplate(dataSource);
+        String[] colNames = {"ownerId", "petId", "status"};
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(REQUESTS_TABLE)
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns("id")
+                .usingColumns(colNames);
     }
 
     @Override
@@ -74,17 +76,10 @@ public class RequestDaoImpl implements RequestDao {
     @Override
     public Optional<Request> create(long ownerId, long petId, int status, String language) {
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2020);
-        cal.set(Calendar.MONTH, 2);
-        cal.set(Calendar.DATE, 2);
-
-        Date date = new java.sql.Date(cal.getTimeInMillis());
         final Map<String, Object> values = new HashMap<>();
         values.put("ownerId", ownerId);
         values.put("petId", petId);
         values.put("status", status);
-        values.put("creationDate", date);
         final Number key = jdbcInsert.executeAndReturnKey(values);
         return findById(key.longValue(),language);
 
