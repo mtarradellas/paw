@@ -4,17 +4,37 @@ import java.util.Date;
 
 public class Request {
     private long id;
+    private long ownerId;
     private String ownerUsername;
     private Status status;
     private long petId;
+    private String petName;
     private Date creationDate;
 
-    public Request(long id, String ownerUsername, Status status, long petId, Date creationDate) {
+    public Request(long id,long ownerId, String ownerUsername, Status status, long petId, String petName, Date creationDate) {
         this.id = id;
+        this.ownerId = ownerId;
         this.ownerUsername = ownerUsername;
         this.status = status;
         this.petId = petId;
+        this.petName = petName;
         this.creationDate = creationDate;
+    }
+
+    public long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getPetName() {
+        return petName;
+    }
+
+    public void setPetName(String petName) {
+        this.petName = petName;
     }
 
     public long getId() {

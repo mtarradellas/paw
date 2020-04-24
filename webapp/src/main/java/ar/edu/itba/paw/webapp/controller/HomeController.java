@@ -50,7 +50,7 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/test");
 
         mav.addObject("request",
-                requestService.create(6,1,getLocale()).get());
+                requestService.findById(5,getLocale()).get());
         return mav;
     }
 
