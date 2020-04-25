@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 @Repository
 public class PetDaoImpl implements PetDao {
 
+    private static final int PETS_PER_PAGE = 4;
     private static final String PET_TABLE = "pets";
 
     private JdbcTemplate jdbcTemplate;
@@ -52,21 +53,26 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Stream<Pet> list(String language) {
-        Map<Pet, List<Image>> imageMap = jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                        "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                        "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                        " img, images.id as imagesId, images.petId as petId " +
-                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id)",
+    public Stream<Pet> list(String language, String page) {
+        String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1)) ;
+        String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                " img, images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join images on images.petid = pets.id) "
+                + "limit "+ PETS_PER_PAGE +" offset " + offset;
+
+        Map<Pet, List<Image>> imageMap = jdbcTemplate.query(sql,
                 new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
+        System.out.println(sql);
         return imageMap.keySet().stream();
     }
 
     @Override
-    public Stream<Pet> find(String language, String findValue){
+    public Stream<Pet> find(String language, String findValue, String page){
         if(findValue.equals("")){
-            return list(language);
+            return list(language,"1");
         }
 
         int numValue = -1;
@@ -88,7 +94,8 @@ public class PetDaoImpl implements PetDao {
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
                 "WHERE LOWER(species." + language +") LIKE ?  " +
                 "OR LOWER(breeds." + language + ") LIKE ? " +
-                "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ";
+                "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? " +
+                "limit "+ PETS_PER_PAGE + " offset "+ PETS_PER_PAGE*(Integer.parseInt(page)-1);
         Map<Pet, List<Image>> imageMap = jdbcTemplate.query( sql,
                 new Object[] { modifiedValue ,modifiedValue,modifiedValue,modifiedValue,numValue},
                 new PetMapExtractor());
@@ -97,7 +104,7 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder) {
+    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String page) {
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
@@ -113,7 +120,8 @@ public class PetDaoImpl implements PetDao {
                             "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
                             "WHERE lower(species.id::text) LIKE ? " +
                             " AND lower(breeds.id::text) LIKE ? " +
-                            "AND lower(gender) LIKE ? ",
+                            "AND lower(gender) LIKE ? " +
+                            "limit "+ PETS_PER_PAGE + " offset "+ PETS_PER_PAGE*(Integer.parseInt(page)-1),
                     new Object[] {specieFilter, breedFilter, genderFilter},
                     new PetMapExtractor());
             imageMap.forEach(Pet::setImages);
@@ -177,4 +185,62 @@ public class PetDaoImpl implements PetDao {
 
         return new Pet(key.longValue(), petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
     }
+
+    @Override
+    public String maxPages() {
+        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets",Integer.class);
+        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
+        return pets.toString();
+    }
+
+    @Override
+    public String maxSearchPages(String language, String findValue) {
+        if(findValue.equals("")){
+            return maxPages();
+        }
+
+        int numValue = -1;
+        boolean number = true;
+        for(int i = 0; i < findValue.length();i++){
+            if(!Character.isDigit(findValue.charAt(i))){
+                number = false;
+            }
+        }
+        if(number){
+            numValue = Integer.parseInt(findValue);
+        }
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
+
+        String sql = "select count(distinct pets.id)" +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
+                "WHERE LOWER(species." + language +") LIKE ?  " +
+                "OR LOWER(breeds." + language + ") LIKE ? " +
+                "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ";
+        Integer pets = jdbcTemplate.queryForObject(sql,new Object[] { modifiedValue ,modifiedValue,modifiedValue,modifiedValue,numValue} ,Integer.class);
+        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
+        return pets.toString();
+    }
+
+    @Override
+    public String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter) {
+        if(specieFilter == null) {
+            specieFilter = "%";
+            breedFilter = "%";
+        }
+        if(breedFilter == null) { breedFilter = "%";}
+
+        if(genderFilter == null) { genderFilter = "%"; }
+            Integer pets = jdbcTemplate.queryForObject(  "select count( distinct pets.id)"+
+                            "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
+                            "WHERE lower(species.id::text) LIKE ? " +
+                            " AND lower(breeds.id::text) LIKE ? " +
+                            "AND lower(gender) LIKE ? ",
+                    new Object[] {specieFilter, breedFilter, genderFilter},
+                    Integer.class);
+
+            pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
+            return pets.toString();
+    }
+
+
 }

@@ -30,11 +30,23 @@ public class PetController {
                                 @RequestParam(name = "gender", required = false) String gender,
                                 @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
-                                @RequestParam(name = "find", required = false) String findValue){
+                                @RequestParam(name = "find", required = false) String findValue,
+                                @RequestParam(name = "page", required = false) String page){
 
+        if(page == null){
+            page = "1";
+        }
 
 
         final ModelAndView mav = new ModelAndView("index");
+
+        mav.addObject("currentPage", page);
+        mav.addObject("species",species);
+        mav.addObject("breed",breed);
+        mav.addObject("gender",gender);
+        mav.addObject("searchCriteria",searchCriteria);
+        mav.addObject("searchOrder",searchOrder);
+        mav.addObject("find",findValue);
 
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
@@ -42,14 +54,21 @@ public class PetController {
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
         if(species != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder));
+            String maxPage = petService.getMaxFilterPages(getLocale(), species, breed, gender);
+            mav.addObject("maxPage", maxPage);
+            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder,page));
         }
         else if(findValue != null){
-            mav.addObject("home_pet_list", petService.find(getLocale(),findValue).toArray());
+            String maxPage = petService.getMaxSearchPages(getLocale(),findValue);
+            mav.addObject("maxPage", maxPage);
+            mav.addObject("home_pet_list", petService.find(getLocale(),findValue, page).toArray());
         }
         else {
-            mav.addObject("home_pet_list", petService.list(getLocale()));
+            String maxPage = petService.getMaxPages();
+            mav.addObject("maxPage", maxPage);
+            mav.addObject("home_pet_list", petService.list(getLocale(),page));
         }
+
         mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
         mav.addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
         return mav;
