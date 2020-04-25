@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <p>
-                            Facundo Astiz Meyer
+                            Facundo Astiz
                         </p>
                     </li>
                     <li>

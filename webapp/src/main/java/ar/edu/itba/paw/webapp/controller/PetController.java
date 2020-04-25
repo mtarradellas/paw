@@ -42,12 +42,6 @@ public class PetController {
         final ModelAndView mav = new ModelAndView("index");
 
         mav.addObject("currentPage", page);
-        mav.addObject("species",species);
-        mav.addObject("breed",breed);
-        mav.addObject("gender",gender);
-        mav.addObject("searchCriteria",searchCriteria);
-        mav.addObject("searchOrder",searchOrder);
-        mav.addObject("find",findValue);
 
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
