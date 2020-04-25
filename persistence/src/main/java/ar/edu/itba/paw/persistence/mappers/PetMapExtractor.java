@@ -10,10 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class PetMapExtractor implements ResultSetExtractor<Map<Pet, List<Image>>> {
+public class PetMapExtractor implements ResultSetExtractor<Map<Pet, List<Long>>> {
     @Override
-    public Map<Pet, List<Image>> extractData(ResultSet rs) throws SQLException {
-        Map<Pet, List<Image>> imageMap = new LinkedHashMap<>();
+    public Map<Pet, List<Long>> extractData(ResultSet rs) throws SQLException {
+        Map<Pet, List<Long>> imageIdMap = new LinkedHashMap<>();
         while (rs.next()) {
             Pet pet = new Pet(
                     rs.getLong("id"),
@@ -29,20 +29,18 @@ public class PetMapExtractor implements ResultSetExtractor<Map<Pet, List<Image>>
                     rs.getInt("price"),
                     rs.getLong("ownerId")
             );
-            Image image = new Image(
-                    rs.getInt("id"),
-                    rs.getBytes("img"),
-                    rs.getInt("petId")
+            Long imageId = new Long(
+                    rs.getLong("imagesId")
             );
-            List<Image> images = imageMap.get(pet);
+            List<Long> images = imageIdMap.get(pet);
             if (images == null) {
-                List<Image> newImages = new ArrayList<>();
-                newImages.add(image);
-                imageMap.put(pet, newImages);
+                List<Long> newImages = new ArrayList<>();
+                newImages.add(imageId);
+                imageIdMap.put(pet, newImages);
             } else {
-                images.add(image);
+                images.add(imageId);
             }
         }
-        return imageMap;
+        return imageIdMap;
     }
 }

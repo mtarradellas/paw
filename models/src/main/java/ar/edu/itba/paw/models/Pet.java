@@ -17,8 +17,7 @@ public class Pet {
     private String location;
     private String description;
     private long ownerId;
-    private List<Image> images;
-
+    private List<Long> images;
 
     public Pet() {}
 
@@ -152,11 +151,11 @@ public class Pet {
         this.ownerId = ownerId;
     }
 
-    public List<Image> getImages() {
+    public List<Long> getImages() {
         return images;
     }
 
-    public void setImages(List<Image> images) {
+    public void setImages(List<Long> images) {
         this.images = images;
     }
 }

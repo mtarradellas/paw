@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
@@ -31,10 +32,18 @@ public class ImageDaoImpl implements ImageDao {
             rs.getBytes("img"),
             rs.getInt("petId")
     );
+    private static final RowMapper<byte[]> IMAGE_DATA_MAPPER = (rs, rowNum) -> rs.getBytes("img");
 
     @Override
     public Stream<Image> findByPetId(long id) {
         return jdbcTemplate.query("SELECT * FROM images WHERE petId = ? ", new Object[] {id}, IMAGE_MAPPER)
                 .stream();
     }
+
+    @Override
+    public Optional<byte[]> getDataById(long id) {
+        return jdbcTemplate.query("SELECT img FROM images WHERE id = ? ", new Object[] {id}, IMAGE_DATA_MAPPER)
+                .stream().findFirst();
+    }
+
 }
