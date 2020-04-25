@@ -6,9 +6,9 @@
 
 <t:basicLayout title="Login">
     <div class="container-fluid">
-        <div class="shadow p-4 login-register-container">
+        <div class="shadow p-4 login-register-container bg-white">
             <h1><spring:message code="login.title"/></h1>
-            <form:form modelAttribute="form" action="${pageContext.request.contextPath}/login" method="post">
+            <form:form modelAttribute="registerForm" action="${pageContext.request.contextPath}/login" method="post">
 
                 <spring:bind path="username">
                     <div class="form-group">

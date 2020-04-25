@@ -1,12 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.ImageService;
+import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,6 +32,8 @@ public class PetController {
                                 @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String findValue){
+
+
 
         final ModelAndView mav = new ModelAndView("index");
 
@@ -60,6 +64,11 @@ public class PetController {
         mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
         mav.addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
         return mav;
+    }
+
+    @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
+        return imageService.getDataById(id).get();
     }
 
     protected String getLocale() {

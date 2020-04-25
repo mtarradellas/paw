@@ -1,10 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
-<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@tag description="Animal card" pageEncoding="UTF-8"%>
 
-<c:set var="breeds" value="<%=ar.edu.itba.paw.models.constants.BreedTypes.values()%>"/>
-<c:set var="species" value="<%=ar.edu.itba.paw.models.constants.SpeciesTypes.values()%>"/>
-
+<%@attribute name="breeds_list" required="true" type="ar.edu.itba.paw.models.Breed[]"%>
+<%@attribute name="species_list" required="true" type="ar.edu.itba.paw.models.Species[]"%>
 
 <div class="col-md-2 search-tools">
     <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/">
@@ -14,19 +14,19 @@
         <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
                 <div class="form-group">
-                    <label for="filter-species"><spring:message code="pet.species"/></label>
                     <select name="species" class="form-control" id="filter-species">
                         <option value="any"><spring:message code="filter.any"/></option>
-                        <c:forEach items="${species}" var="speciesValue">
-                            <option value="${speciesValue.name}"
-                                <c:if test="${(not empty param.species) && (param.species eq speciesValue.name)}">
-                                    selected
-                                </c:if>
+                        <c:forEach items="${species_list}" var="speciesValue">
+                            <option value="${speciesValue.id}"
+                                    <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesValue.id eq param.species)}">
+                                        selected
+                                    </c:if>
                             >
-                                <spring:message code="pet.${speciesValue.name}"/>
+                                ${speciesValue.name}
                             </option>
                         </c:forEach>
                     </select>
+                    <label for="filter-species"><spring:message code="pet.species"/></label>
 
                     <label for="filter-breed"><spring:message code="pet.breed"/></label>
                     <select name="breed" class="form-control" id="filter-breed"
@@ -36,12 +36,12 @@
                     >
                         <option class="species-any" value="any"><spring:message code="filter.any"/></option>
 
-                        <c:forEach items="${breeds}" var="breed">
-                            <option class="species-${breed.speciesType.name}" value="${breed.name}"
-                                    <c:if test="${(not empty param.species) && (param.species ne breed.speciesType.name)}">style="display: none;"</c:if>
-                                    <c:if test="${(not empty param.breed) && (param.breed eq breed.name)}">selected</c:if>
+                        <c:forEach items="${breeds_list}" var="breed">
+                            <option class="species-${breed.speciesId}" value="${breed.id}"
+                                    <c:if test="${(not empty param.species) && (param.species ne 'any') && (breed.speciesId ne param.species)}">style="display: none;"</c:if>
+                                    <c:if test="${(not empty param.breed) && (param.breed ne 'any') && (breed.id eq param.breed)}">selected</c:if>
                             >
-                                <spring:message code="${breed.speciesType.name}.${breed.name}"/>
+                                ${breed.name}
                             </option>
                         </c:forEach>
 

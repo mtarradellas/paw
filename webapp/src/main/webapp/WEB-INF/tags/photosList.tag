@@ -5,7 +5,7 @@
 <div>
     <c:forEach items="${images}" varStatus="status" var="image">
         <a href="#" class="pet-photo-link">
-            <img src="${image.url}" alt="Photo ${status.index}" class="img-thumbnail pet-photo">
+            <img src="${pageContext.request.contextPath}/img/${image}" alt="Photo ${status.index}" class="img-thumbnail pet-photo">
         </a>
     </c:forEach>
 </div>

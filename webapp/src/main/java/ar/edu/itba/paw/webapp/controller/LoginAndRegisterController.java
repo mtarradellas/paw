@@ -21,7 +21,7 @@ public class LoginAndRegisterController {
     UserService userService;
 
     @RequestMapping(value = "/login", method = { RequestMethod.POST })
-    public ModelAndView login(@Valid @ModelAttribute("form") final UserForm userForm, final BindingResult errors) {
+    public ModelAndView login(@Valid @ModelAttribute("registerForm") final UserForm userForm, final BindingResult errors) {
 
         if (errors.hasErrors()) {
             return loginForm(userForm);
@@ -31,18 +31,19 @@ public class LoginAndRegisterController {
         if (!opUser.isPresent()) {
             return loginForm(userForm);
         }
-        final ModelAndView mav = new ModelAndView("views/single_user");
-        mav.addObject("user", opUser.get());
+        User user = opUser.get();
+        final ModelAndView mav = new ModelAndView("redirect: /user/" + user.getId());
+        mav.addObject("user", user);
         return mav;
     }
 
     @RequestMapping(value ="/login", method = { RequestMethod.GET })
-    public ModelAndView loginForm(@ModelAttribute ("form") final UserForm userForm) {
+    public ModelAndView loginForm(@ModelAttribute ("registerForm") final UserForm userForm) {
         return new ModelAndView("views/login");
     }
 
     @RequestMapping(value = "/register", method = { RequestMethod.POST })
-    public ModelAndView createUser(@Valid @ModelAttribute("form") final UserForm userForm, final BindingResult errors) {
+    public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm, final BindingResult errors) {
 
         if (errors.hasErrors()) {
             return registerForm(userForm);
@@ -50,13 +51,13 @@ public class LoginAndRegisterController {
 
         final User user = userService.create(userForm.getUsername(), userForm.getPassword(),
                 userForm.getMail(), userForm.getPhone());
-        final ModelAndView mav = new ModelAndView("views/single_user");
+        final ModelAndView mav = new ModelAndView("redirect: /user/" + user.getId());
         mav.addObject("user", user);
         return mav;
     }
 
     @RequestMapping(value ="/register", method = { RequestMethod.GET })
-    public ModelAndView registerForm(@ModelAttribute ("form") final UserForm userForm) {
+    public ModelAndView registerForm(@ModelAttribute ("registerForm") final UserForm userForm) {
         return new ModelAndView("views/register");
     }
 }

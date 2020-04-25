@@ -23,6 +23,7 @@
 
             </li>
             <li class="nav-item">
+<%--                TODO: redirect to user page using stored userid--%>
                 <h4><a class="nav-link" href="${pageContext.request.contextPath}/"><spring:message code="header.myProfile"/></a></h4>
             </li>
             <li class="nav-item">
@@ -34,5 +35,11 @@
             <input id="search-value" name="find" class="form-control mr-sm-2" type="search" placeholder="<spring:message code="search"/>" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" ><spring:message code="search"/></button>
         </form>
+
+
     </div>
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0 pl-3">
+        <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/register">Sign Up</a> </li>
+        <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/login">Log In</a> </li>
+    </ul>
 </nav>
