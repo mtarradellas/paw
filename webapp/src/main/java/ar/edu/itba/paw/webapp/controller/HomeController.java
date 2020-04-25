@@ -38,7 +38,7 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/test");
 
         mav.addObject("pet_list",
-                petService.list("en_US"));
+                petService.list("en_US","all"));
         return mav;
     }
 
