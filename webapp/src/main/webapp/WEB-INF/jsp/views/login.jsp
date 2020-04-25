@@ -1,4 +1,33 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<html>
+<body>
+<c:url value="/login" var="loginUrl"/>
+<form action="${loginUrl}" method="post" enctype="application/x-www-form-urlencoded">
+    <div>
+        <label for="username">Username: </label>
+        <input type="text" id="username" name="username"/>
+    </div>
+
+    <div>
+        <label for="password">Password: </label>
+        <input type="password" id="password" name="password"/>
+    </div>
+
+    <div>
+        <label><input type="checkbox" id="rememberme" name="rememberme"/>Remember username</label>
+    </div>
+
+    <div>
+        <input type="submit" value="Login!"/>
+    </div>
+</form>
+</body>
+</html>
+
+<%--
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -34,3 +63,4 @@
         </div>
     </div>
 </t:basicLayout>
+--%>

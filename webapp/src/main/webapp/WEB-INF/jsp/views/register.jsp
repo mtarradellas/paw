@@ -25,12 +25,15 @@
                     </div>
                 </spring:bind>
 
+                <c:set var="classError"><form:errors element="div" cssClass="invalid-feedback"/></c:set>
+
                 <spring:bind path="repeatPassword">
                     <div class="form-group">
                         <form:label path="repeatPassword" for="repeatPassword"><spring:message code="register.repeatPassword"/>: </form:label>
-                        <form:input type="password" id="repeatPassword" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="repeatPassword"/>
+                        <form:input type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
+                                    path="repeatPassword"/>
                         <form:errors path="repeatPassword" element="div" cssClass="invalid-feedback"/>
-
+                        ${classError}
                     </div>
                 </spring:bind>
 
@@ -39,7 +42,6 @@
                         <form:label path="mail" for="mail"><spring:message code="register.email"/>: </form:label>
                         <form:input type="text" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
                         <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
-
                     </div>
                 </spring:bind>
 
