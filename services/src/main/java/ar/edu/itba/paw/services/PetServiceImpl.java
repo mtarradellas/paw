@@ -24,18 +24,18 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> list(String language){
-        return petDao.list(language).collect(Collectors.toList());
+    public List<Pet> list(String language,String page){
+        return petDao.list(language, page).collect(Collectors.toList());
     }
 
     @Override
-    public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder) {
-        return petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder).collect(Collectors.toList());
+    public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String page) {
+        return petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder,page).collect(Collectors.toList());
     }
 
     @Override
-    public List<Pet> find(String language,String findValue){
-        return petDao.find(language, findValue).collect(Collectors.toList());
+    public List<Pet> find(String language,String findValue, String page){
+        return petDao.find(language, findValue, page).collect(Collectors.toList());
     }
 
     @Override
@@ -45,4 +45,21 @@ public class PetServiceImpl implements PetService {
 //        return petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
         return new Pet();
     }
+
+    @Override
+    public String getMaxPages(){
+        return petDao.maxPages();
+    }
+
+    @Override
+    public String getMaxSearchPages(String language, String findValue) {
+        return petDao.maxSearchPages(language,findValue);
+    }
+
+    @Override
+    public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter) {
+        return petDao.maxFilterPages(language,specieFilter,breedFilter,genderFilter);
+    }
+
+
 }
