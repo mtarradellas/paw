@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.validation.Valid;
-import java.util.Optional;
 
 @Controller
 public class LoginAndRegisterController {
@@ -20,25 +18,8 @@ public class LoginAndRegisterController {
     @Autowired
     UserService userService;
 
-    @RequestMapping(value = "/login", method = { RequestMethod.POST })
-    public ModelAndView login(@Valid @ModelAttribute("registerForm") final UserForm userForm, final BindingResult errors) {
-
-        if (errors.hasErrors()) {
-            return loginForm(userForm);
-        }
-
-        Optional<User> opUser = userService.findByUsername(userForm.getUsername());
-        if (!opUser.isPresent()) {
-            return loginForm(userForm);
-        }
-        User user = opUser.get();
-        final ModelAndView mav = new ModelAndView("redirect: /user/" + user.getId());
-        mav.addObject("user", user);
-        return mav;
-    }
-
-    @RequestMapping(value ="/login", method = { RequestMethod.GET })
-    public ModelAndView loginForm(@ModelAttribute ("registerForm") final UserForm userForm) {
+    @RequestMapping("/login")
+    public ModelAndView login() {
         return new ModelAndView("views/login");
     }
 
@@ -59,5 +40,10 @@ public class LoginAndRegisterController {
     @RequestMapping(value ="/register", method = { RequestMethod.GET })
     public ModelAndView registerForm(@ModelAttribute ("registerForm") final UserForm userForm) {
         return new ModelAndView("views/register");
+    }
+
+    @RequestMapping("/403")
+    public ModelAndView forbidden() {
+        return new ModelAndView("error-views/404");
     }
 }
