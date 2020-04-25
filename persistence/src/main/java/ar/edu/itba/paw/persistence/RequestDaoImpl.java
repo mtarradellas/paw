@@ -86,11 +86,17 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
-    public Optional<Request> updateStatus(long id, int status, String language) {
-
+    public Optional<Request> updateStatus(long id, String status, String language) {
+        int newStatus =1;
+        if(status.contains("accepted")){
+            newStatus = 2;
+        }
+        if(status.contains("rejected")){
+            newStatus = 3;
+        }
         jdbcTemplate.update("UPDATE requests " +
                 "SET status = ? " +
-                "WHERE id = ? ",new Object[] {status, id});
+                "WHERE id = ? ",new Object[] {newStatus, id});
         return findById(id, language);
     }
 }

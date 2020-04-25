@@ -11,5 +11,5 @@ public interface RequestService {
     Stream<Request> listByOwner(String language, long ownerId);
     Stream<Request> listByPetOwner(String language, long petOwnerId);
     Optional<Request> create(long ownerId, long petId, String language);
-    Optional<Request> updateStatus(long id, int status, String language);
+    Optional<Request> updateStatus(long id, String status, String language);
 }
