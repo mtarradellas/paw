@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<c:set var="pendingRequests" scope="application" value="4"/>
 
 <nav class="navbar navbar-expand-lg header">
     <a class="navbar-brand" href="${pageContext.request.contextPath}/">
@@ -17,10 +16,8 @@
             <li class="nav-item">
                 <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests"><spring:message code="header.requests"/></a></h4>
             </li>
-            <li class="nav-item notify-container">
+            <li class="nav-item">
                 <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
-                <c:if test="${!(pendingRequests eq 0)}"><span class="notify-bubble">${pendingRequests}</span></c:if>
-
             </li>
             <li class="nav-item">
 <%--                TODO: redirect to user page using stored userid--%>

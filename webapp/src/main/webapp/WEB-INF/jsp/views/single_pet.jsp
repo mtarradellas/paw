@@ -48,6 +48,7 @@
                 <div class="p-2">
                     <c:out value="${pet.description}"/>
                 </div>
+                <h1>${requestExists}</h1>
                 <div class="p-2">
                     <h2><c:out value="${someInfo}"/></h2>
 

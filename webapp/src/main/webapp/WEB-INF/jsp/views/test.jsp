@@ -5,14 +5,11 @@
     <title>test</title>
 </head>
 <body>
-<c:forEach items="${pet_list}" var="pet">
-<h1><c:out value="${pet.id}"/></h1>
-<h1><c:out value="${pet.petName}"/></h1>
-    <c:forEach items="${pet.images}" var="i">
-        <h1><c:out value="${i}"/></h1>
-    </c:forEach>
-    <h1><c:out value="---------------"/></h1>
-</c:forEach>
-
+<%--<c:forEach items="${request_list}" var="r">--%>
+<h1><c:out value="${request.id}"/></h1>
+<h1><c:out value="${request.ownerUsername}"/></h1>
+<h1><c:out value="${request.petName}"/></h1>
+<h1><c:out value="${request.status.name}"/></h1>
+<%--</c:forEach>--%>
 </body>
 </html>

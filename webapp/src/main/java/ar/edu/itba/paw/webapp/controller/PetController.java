@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.ImageService;
-import ar.edu.itba.paw.interfaces.MailService;
-import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.SpeciesService;
+import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,6 +21,8 @@ public class PetController {
     ImageService imageService;
     @Autowired
     SpeciesService speciesService;
+    @Autowired
+    RequestService requestService;
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
@@ -72,6 +71,10 @@ public class PetController {
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_pet");
+
+        mav.addObject("currentUserID", "1");
+        mav.addObject("requestExists", requestService.requestExists(id,1,getLocale()));
+
         mav.addObject("pet",
                 petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new));
         mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
