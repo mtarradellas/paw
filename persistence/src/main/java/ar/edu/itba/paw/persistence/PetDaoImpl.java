@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 @Repository
 public class PetDaoImpl implements PetDao {
 
-    private static final int PETS_PER_PAGE = 10;
+    private static final int PETS_PER_PAGE = 12;
     private static final String PET_TABLE = "pets";
 
     private JdbcTemplate jdbcTemplate;
@@ -172,10 +172,10 @@ public class PetDaoImpl implements PetDao {
                 searchCriteria = "price";
             }
             if(searchCriteria.contains("species")){
-                searchCriteria = "species";
+                searchCriteria = "species." + language;
             }
             if(searchCriteria.contains("breed")){
-                searchCriteria = "breed";
+                searchCriteria = "breed." + language;
             }
             if(searchOrder.contains("asc")) { searchOrder = "ASC";}
             else { searchOrder = "DESC";}
