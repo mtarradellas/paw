@@ -10,7 +10,7 @@
 
 <div class="card animal-list-card">
 
-    <img src="<c:out value="${pet.images[0].url}"/>"
+    <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
          class="card-img-top" alt="">
     <div class="card-body">
 

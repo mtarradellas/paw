@@ -32,6 +32,9 @@
     <org.slf4j.version>1.7.5</org.slf4j.version>
     <logback.version>1.1.2</logback.version>
     <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
+    <spring.version>5.2.0.RELEASE</spring.version>
+    <javax.mail-api.version>1.5.5</javax.mail-api.version>
+    <javax.mail.version>1.4.7</javax.mail.version>
   </properties>
 
   <dependencyManagement>
@@ -161,6 +164,24 @@
         <artifactId>logback-ext-spring</artifactId>
         <version>${logback-ext-spring.version}</version>
         <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>javax.mail-api</artifactId>
+        <version>${javax.mail-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>${javax.mail.version}</version>
       </dependency>
 
     </dependencies>

@@ -1,12 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.ImageService;
+import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,9 +31,17 @@ public class PetController {
                                 @RequestParam(name = "gender", required = false) String gender,
                                 @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
-                                @RequestParam(name = "find", required = false) String findValue){
+                                @RequestParam(name = "find", required = false) String findValue,
+                                @RequestParam(name = "page", required = false) String page){
+
+        if(page == null){
+            page = "1";
+        }
+
 
         final ModelAndView mav = new ModelAndView("index");
+
+        mav.addObject("currentPage", page);
 
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
@@ -39,14 +49,21 @@ public class PetController {
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
         if(species != null || gender != null || searchCriteria != null){
-            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder));
+            String maxPage = petService.getMaxFilterPages(getLocale(), species, breed, gender);
+            mav.addObject("maxPage", maxPage);
+            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder,page));
         }
         else if(findValue != null){
-            mav.addObject("home_pet_list", petService.find(getLocale(),findValue).toArray());
+            String maxPage = petService.getMaxSearchPages(getLocale(),findValue);
+            mav.addObject("maxPage", maxPage);
+            mav.addObject("home_pet_list", petService.find(getLocale(),findValue, page).toArray());
         }
         else {
-            mav.addObject("home_pet_list", petService.list(getLocale()));
+            String maxPage = petService.getMaxPages();
+            mav.addObject("maxPage", maxPage);
+            mav.addObject("home_pet_list", petService.list(getLocale(),page));
         }
+
         mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
         mav.addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
         return mav;
@@ -60,6 +77,11 @@ public class PetController {
         mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
         mav.addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
         return mav;
+    }
+
+    @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
+        return imageService.getDataById(id).get();
     }
 
     protected String getLocale() {

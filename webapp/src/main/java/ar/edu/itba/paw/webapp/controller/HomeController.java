@@ -20,6 +20,8 @@ public class HomeController {
 
     @Autowired
     SpeciesService speciesService;
+    @Autowired
+    PetService petService;
 
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
@@ -35,8 +37,8 @@ public class HomeController {
     public ModelAndView getIdPet() {
         final ModelAndView mav = new ModelAndView("views/test");
 
-        mav.addObject("species_list",
-                speciesService.speciesList("es_AR").toArray());
+        mav.addObject("pet_list",
+                petService.list("en_US","all"));
         return mav;
     }
 
