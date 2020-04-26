@@ -15,6 +15,7 @@
                         <h2>Users interested in your pets:</h2>
                             <c:if test="${empty interests_list }">
                                 <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                    <a href="${pageContext.request.contextPath}/interests"><spring:message code="showAll"/></a>
                                 </div>
                             </c:if>
                             <c:forEach var="req" items="${interests_list}">

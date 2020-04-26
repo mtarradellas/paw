@@ -1,12 +1,16 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Optional;
 
 @Controller
 public class UserController extends ParentController {
@@ -72,18 +76,32 @@ public class UserController extends ParentController {
     public ModelAndView changeStatus(@RequestParam(name = "newStatus", required = false) String status,
                                      @PathVariable("id") long id) {
 
-
             if(status.equals("accept")){
-                requestService.updateStatus(id,"accepted",getLocale());
-
+                Optional<Request> newRequest = requestService.updateStatus(id,loggedUser().getId(),"accepted",getLocale());
+                if(newRequest.isPresent()){
+//                    Optional<User> user = ;
+//                    String mailBody = "User " +  + " has accepted your request for "+ newRequest.get().getPetName() + "." +
+//                            " Go to our web page to accept or reject his request!!";
+//                    mailService.sendMail( ,"A User showed interest in one of your pets!", mailBody);
+                }
             }else if (status.equals("reject")){
-                requestService.updateStatus(id,"rejected",getLocale());
+                requestService.updateStatus(id,loggedUser().getId(),"rejected",getLocale());
             }else{
-                return badRequest();
+//                return badRequest();
+
             }
 
         return getInterested(null,null,null);
 
+    }
+    @RequestMapping(value = "/test")
+    public ModelAndView getIdPet() {
+        final ModelAndView mav = new ModelAndView("views/test");
+
+        mav.addObject("request",
+                requestService.updateStatus(2,8,"accepted",getLocale()));
+
+        return mav;
     }
 
 

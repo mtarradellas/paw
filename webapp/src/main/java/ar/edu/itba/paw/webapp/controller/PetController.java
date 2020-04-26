@@ -1,11 +1,15 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Optional;
 
 @Controller
 public class PetController extends ParentController {
@@ -75,7 +79,13 @@ public class PetController extends ParentController {
     public ModelAndView requestPet(@PathVariable("id") long id) {
 
         if(!requestService.requestExists(id,loggedUser().getId(),getLocale())){
-            requestService.create(loggedUser().getId(),id,getLocale());
+            Optional<Request> newRequest =  requestService.create(loggedUser().getId(),id,getLocale());
+            if(newRequest.isPresent()){
+//                Optional<User> user = ;
+//                String mailBody = "User " + newRequest.get().getOwnerUsername() + " is interested in "+ newRequest.get().getPetName() + "." +
+//                        " Go to our web page to accept or reject his request!!";
+//                mailService.sendMail( ,"A User showed interest in one of your pets!", mailBody);
+            }
         }
         return getIdPet(id);
     }

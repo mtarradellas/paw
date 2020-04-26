@@ -39,8 +39,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Optional<Request> updateStatus(long id, String status, String language) {
-        return requestDao.updateStatus(id, status, language);
+    public Optional<Request> updateStatus(long id, long petOwnerId, String status, String language) {
+        return requestDao.updateStatus(id, petOwnerId, status, language);
     }
 
     @Override

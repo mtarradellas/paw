@@ -76,28 +76,43 @@ public class RequestDaoImpl implements RequestDao {
     @Override
     public Optional<Request> create(long ownerId, long petId, int status, String language) {
 
-        final Map<String, Object> values = new HashMap<>();
-        values.put("ownerId", ownerId);
-        values.put("petId", petId);
-        values.put("status", status);
-        final Number key = jdbcInsert.executeAndReturnKey(values);
-        return findById(key.longValue(), language);
+        Optional<Request> req = jdbcTemplate.query("SELECT ownerId, id FROM pets WHERE ownerId = ? AND id = ? "
+                , new Object[]{ownerId, petId}, REQUEST_MAPPER)
+                .stream().findFirst();
+        if(!req.isPresent()) {
 
+            final Map<String, Object> values = new HashMap<>();
+            values.put("ownerId", ownerId);
+            values.put("petId", petId);
+            values.put("status", status);
+            final Number key = jdbcInsert.executeAndReturnKey(values);
+            return findById(key.longValue(), language);
+        }
+        return Optional.empty();
     }
 
     @Override
-    public Optional<Request> updateStatus(long id, String status, String language) {
-        int newStatus = 1;
-        if (status.contains("accepted")) {
-            newStatus = 2;
+    public Optional<Request> updateStatus(long id, long petOwnerId, String status, String language) {
+        Optional<Request> req = jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
+                        "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
+                        "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                        "WHERE requests.id = ? AND pets.ownerId = ? AND status.id = 1 "
+                , new Object[]{id, petOwnerId}, REQUEST_MAPPER)
+                .stream().findFirst();
+        if(req.isPresent()){
+            int newStatus = 1;
+            if (status.contains("accepted")) {
+                newStatus = 2;
+            }
+            if (status.contains("rejected")) {
+                newStatus = 3;
+            }
+            jdbcTemplate.update("UPDATE requests " +
+                    "SET status = ? " +
+                    "WHERE id = ? ", new Object[]{newStatus, id});
+            return findById(id, language);
         }
-        if (status.contains("rejected")) {
-            newStatus = 3;
-        }
-        jdbcTemplate.update("UPDATE requests " +
-                "SET status = ? " +
-                "WHERE id = ? ", new Object[]{newStatus, id});
-        return findById(id, language);
+        return Optional.empty();
     }
 
 
@@ -128,10 +143,19 @@ public class RequestDaoImpl implements RequestDao {
         if (status == null) {
             status = "%";
         }
+        else if(status.contains("accepted")){
+            status = "Accepted";
+        }
+        else if(status.contains("pending")){
+            status = "Pending";
+        }
+        else {
+            status = "Rejected";
+        }
         String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                "WHERE " + userIdFilter +" = ? AND status." + language + " = ? ";
+                "WHERE " + userIdFilter +" = ? AND status." + language + " LIKE ? ";
         if (searchCriteria == null) {
             result = jdbcTemplate.query(sql, new Object[]{userId, status}, REQUEST_MAPPER).stream();
         } else {
@@ -147,8 +171,9 @@ public class RequestDaoImpl implements RequestDao {
                 searchOrder = "DESC";
             }
             searchCriteria = searchCriteria + " " + searchOrder;
+            sql = sql + "ORDER BY " + searchCriteria;
 
-            result = jdbcTemplate.query(sql + "ORDER BY " + searchCriteria, new Object[]{}, REQUEST_MAPPER).stream();
+            result = jdbcTemplate.query(sql , new Object[]{userId, status}, REQUEST_MAPPER).stream();
         }
 
         return result;

@@ -64,8 +64,8 @@ public class ParentController {
         return new ModelAndView("error-views/404_user");
     }
 
-    @RequestMapping(value = "/400")
-    public ModelAndView badRequest(){
-        return new ModelAndView("error-views/400");
-    }
+//    @RequestMapping(value = "/400")
+//    public ModelAndView badRequest(){
+//        return new ModelAndView("error-views/400");
+//    }
 }
