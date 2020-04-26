@@ -72,16 +72,24 @@ public class UserController extends ParentController {
     public ModelAndView changeStatus(@RequestParam(name = "newStatus", required = false) String status,
                                      @PathVariable("id") long id) {
 
-
             if(status.equals("accept")){
-                requestService.updateStatus(id,"accepted",getLocale());
+                requestService.updateStatus(id,loggedUser().getId(),"accepted",getLocale());
 
             }else if (status.equals("reject")){
-                requestService.updateStatus(id,"rejected",getLocale());
+                requestService.updateStatus(id,loggedUser().getId(),"rejected",getLocale());
             }
 
         return getInterested(null,null,null);
 
+    }
+    @RequestMapping(value = "/test")
+    public ModelAndView getIdPet() {
+        final ModelAndView mav = new ModelAndView("views/test");
+
+        mav.addObject("request",
+                requestService.updateStatus(2,8,"accepted",getLocale()));
+
+        return mav;
     }
 
 

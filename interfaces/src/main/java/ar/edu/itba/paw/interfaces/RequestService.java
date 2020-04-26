@@ -11,7 +11,7 @@ public interface RequestService {
     Stream<Request> listByOwner(String language, long ownerId);
     Stream<Request> listByPetOwner(String language, long petOwnerId);
     Optional<Request> create(long ownerId, long petId, String language);
-    Optional<Request> updateStatus(long id, String status, String language);
+    boolean updateStatus(long id, long petOwnerId, String status, String language);
     boolean requestExists(long petId, long ownerId, String language);
     Stream<Request> filterListByOwner(String language, long ownerId, String status, String searchCriteria, String searchOrder);
     Stream<Request> filterListByPetOwner(String language, long petOwnerId, String status, String searchCriteria, String searchOrder);

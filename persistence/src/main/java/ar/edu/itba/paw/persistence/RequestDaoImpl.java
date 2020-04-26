@@ -86,18 +86,27 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
-    public Optional<Request> updateStatus(long id, String status, String language) {
-        int newStatus = 1;
-        if (status.contains("accepted")) {
-            newStatus = 2;
+    public boolean updateStatus(long id, long petOwnerId, String status, String language) {
+        Optional<Request> req = jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
+                        "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
+                        "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                        "WHERE requests.id = ? AND pets.ownerId = ? AND status.id = 1 "
+                , new Object[]{id, petOwnerId}, REQUEST_MAPPER)
+                .stream().findFirst();
+        if(req.isPresent()){
+            int newStatus = 1;
+            if (status.contains("accepted")) {
+                newStatus = 2;
+            }
+            if (status.contains("rejected")) {
+                newStatus = 3;
+            }
+            jdbcTemplate.update("UPDATE requests " +
+                    "SET status = ? " +
+                    "WHERE id = ? ", new Object[]{newStatus, id});
+            return findById(id, language).isPresent();
         }
-        if (status.contains("rejected")) {
-            newStatus = 3;
-        }
-        jdbcTemplate.update("UPDATE requests " +
-                "SET status = ? " +
-                "WHERE id = ? ", new Object[]{newStatus, id});
-        return findById(id, language);
+        return false;
     }
 
 
