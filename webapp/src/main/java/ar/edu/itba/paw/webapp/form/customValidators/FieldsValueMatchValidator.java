@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.form.customValidators;
 
-import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.ConstraintValidator;

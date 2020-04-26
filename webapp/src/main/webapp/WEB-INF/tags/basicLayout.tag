@@ -1,6 +1,8 @@
 <%@tag description="Basic layout" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@attribute name="title" required="true" type="java.lang.String"%>
+<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+
 
 <html>
     <head>
@@ -19,7 +21,7 @@
     <body>
         <script src="<c:url value="/resources/jquery/jquery-3.4.1.slim.min.js"/>"></script>
 
-        <jsp:include page="/WEB-INF/jsp/parts/header.jsp" />
+        <t:header loggedUser="${loggedUser}"/>
 
         <div id="body" class="page-content">
                 <jsp:doBody/>
