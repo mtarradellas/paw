@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 public class LoginAndRegisterController extends ParentController {
@@ -18,6 +19,7 @@ public class LoginAndRegisterController extends ParentController {
         return new ModelAndView("views/login");
     }
 
+    /* TODO redirect to home already logged in*/
     @RequestMapping(value = "/register", method = { RequestMethod.POST })
     public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm, final BindingResult errors) {
 
@@ -25,11 +27,15 @@ public class LoginAndRegisterController extends ParentController {
             return registerForm(userForm);
         }
 
-        final User user = userService.create(userForm.getUsername(), userForm.getPassword(),
-                userForm.getMail(), userForm.getPhone());
-        final ModelAndView mav = new ModelAndView("redirect: /user/" + user.getId());
-        mav.addObject("user", user);
-        return mav;
+        Optional<User> opUser;
+        try {
+            opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
+                    userForm.getMail(), userForm.getPhone());
+        } catch (RuntimeException ex) {
+            return registerForm(userForm).addObject("invalidUser", true);
+        }
+
+        return new ModelAndView("redirect:/login");
     }
 
     @RequestMapping(value ="/register", method = { RequestMethod.GET })
