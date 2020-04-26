@@ -86,7 +86,7 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
-    public boolean updateStatus(long id, long petOwnerId, String status, String language) {
+    public Optional<Request> updateStatus(long id, long petOwnerId, String status, String language) {
         Optional<Request> req = jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
                         "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
@@ -104,9 +104,9 @@ public class RequestDaoImpl implements RequestDao {
             jdbcTemplate.update("UPDATE requests " +
                     "SET status = ? " +
                     "WHERE id = ? ", new Object[]{newStatus, id});
-            return findById(id, language).isPresent();
+            return findById(id, language);
         }
-        return false;
+        return Optional.empty();
     }
 
 
@@ -137,10 +137,19 @@ public class RequestDaoImpl implements RequestDao {
         if (status == null) {
             status = "%";
         }
+        else if(status.contains("accepted")){
+            status = "Accepted";
+        }
+        else if(status.contains("pending")){
+            status = "Pending";
+        }
+        else {
+            status = "Rejected";
+        }
         String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                "WHERE " + userIdFilter +" = ? AND status." + language + " = ? ";
+                "WHERE " + userIdFilter +" = ? AND status." + language + " LIKE ? ";
         if (searchCriteria == null) {
             result = jdbcTemplate.query(sql, new Object[]{userId, status}, REQUEST_MAPPER).stream();
         } else {
@@ -156,8 +165,9 @@ public class RequestDaoImpl implements RequestDao {
                 searchOrder = "DESC";
             }
             searchCriteria = searchCriteria + " " + searchOrder;
+            sql = sql + "ORDER BY " + searchCriteria;
 
-            result = jdbcTemplate.query(sql + "ORDER BY " + searchCriteria, new Object[]{}, REQUEST_MAPPER).stream();
+            result = jdbcTemplate.query(sql , new Object[]{userId, status}, REQUEST_MAPPER).stream();
         }
 
         return result;

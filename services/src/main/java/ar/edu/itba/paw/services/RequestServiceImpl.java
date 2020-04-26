@@ -39,7 +39,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean updateStatus(long id, long petOwnerId, String status, String language) {
+    public Optional<Request> updateStatus(long id, long petOwnerId, String status, String language) {
         return requestDao.updateStatus(id, petOwnerId, status, language);
     }
 
