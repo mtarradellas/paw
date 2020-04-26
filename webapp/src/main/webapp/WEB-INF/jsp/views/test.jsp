@@ -6,7 +6,8 @@
 </head>
 <body>
 <%--<c:forEach items="${request_list}" var="r">--%>
-<h1><c:out value="${request}"/></h1>
+<h1><c:out value="${contact.email}"/></h1>
+<h1><c:out value="${contact.username}"/></h1>
 
 <%--</c:forEach>--%>
 </body>

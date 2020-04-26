@@ -79,4 +79,14 @@ public class PetController extends ParentController {
         System.out.println("IMG ID: " + id );
         return imageService.getDataById(id).orElse(null);
     }
+
+    @RequestMapping(value = "/test")
+    public ModelAndView getIdPet() {
+        final ModelAndView mav = new ModelAndView("views/test");
+
+        mav.addObject("contact",
+                petService.getPetContact(4).get());
+
+        return mav;
+    }
 }
