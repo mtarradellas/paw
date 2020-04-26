@@ -7,9 +7,7 @@ import ar.edu.itba.paw.models.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -26,13 +24,13 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> listByOwner(String language, long ownerId) {
-        return requestDao.listByOwner(language, ownerId).collect(Collectors.toList());
+    public Stream<Request> listByOwner(String language, long ownerId) {
+        return requestDao.listByOwner(language, ownerId);
     }
 
     @Override
-    public List<Request> listByPetOwner(String language, long petOwnerId) {
-        return requestDao.listByPetOwner(language, petOwnerId).collect(Collectors.toList());
+    public Stream<Request> listByPetOwner(String language, long petOwnerId) {
+        return requestDao.listByPetOwner(language, petOwnerId);
     }
 
     @Override

@@ -84,7 +84,9 @@ public class PetController {
 
     @RequestMapping(value = "/pet/{id}", method = {RequestMethod.POST})
     public ModelAndView requestPet(@PathVariable("id") long id) {
-        requestService.create(1,id,getLocale());
+        if(!requestService.requestExists(id,1,getLocale())){
+            requestService.create(1,id,getLocale());
+        }
         return getIdPet(id);
     }
 

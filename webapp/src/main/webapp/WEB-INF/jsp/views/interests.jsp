@@ -18,29 +18,32 @@
                                 </div>
                             </c:if>
                             <c:forEach var="req" items="${requests}">
-
-                                <div class="row bg-light p-1">
-                                    <div class=" col-sm-10">
-                                        <spring:message code="request.isInterested" arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
-                                        <small class="text-warning">    ${req.creationDate}</small>
+                                <c:if test="${req.status.name eq 'Pending'}">
+                                    <div class="row bg-light p-1">
+                                        <div class=" col-sm-10">
+                                            <spring:message code="request.isInterested" arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                            <small class="text-warning">    ${req.creationDate}</small>
+                                        </div>
+                                        <div class="col-sm-2 ">
+                                            <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/interests-accept-reject/${req.id}"/>">
+                                                <button type="submit" name="status" value="accept" class="btn btn-success"><spring:message code="accept"/></button>
+                                                <button type="submit" name="status" value="reject" class="btn btn-danger" ><spring:message code="reject"/></button>
+                                            </form>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-2 ">
-                                        <button type="button" class="btn btn-success">Accept</button>
-                                        <button type="button" class="btn btn-danger">Reject</button>
+                                </c:if>
+                                <c:if test="${req.status.name ne 'Pending'}">
+                                    <div class="row bg-light p-1 resolved">
+                                        <div class=" col-sm-10">
+                                            <spring:message code="request.wasInterested" arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                            <small class="text-warning">    ${req.creationDate}</small>
+                                        </div>
+                                        <div class="col-sm-2 ">
+                                            <p>${req.status.name}</p>
+                                        </div>
                                     </div>
-                                </div>
+                                </c:if>
                             </c:forEach>
-
-
-<%--                        <div class="row bg-light p-1 resolved">--%>
-<%--                            <div class=" col-sm-10">--%>
-<%--                                <a href="${pageContext.request.contextPath}/">El Lenia</a> was interested in <a href="${pageContext.request.contextPath}/">Franco</a>--%>
-<%--                                <small class="text-warning">  22.01.2020, 00:02</small>--%>
-<%--                            </div>--%>
-<%--                            <div class="col-sm-2 ">--%>
-<%--                                <p>Accepted</p>--%>
-<%--                            </div>--%>
-<%--                        </div>--%>
                     </div>
                 </div>
             </div>
