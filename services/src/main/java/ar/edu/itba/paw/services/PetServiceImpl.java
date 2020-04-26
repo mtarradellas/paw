@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Species;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,11 @@ public class PetServiceImpl implements PetService {
     @Override
     public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter) {
         return petDao.maxFilterPages(language,specieFilter,breedFilter,genderFilter);
+    }
+
+    @Override
+    public Optional<Contact> getPetContact(long petId) {
+        return petDao.getPetContact(petId);
     }
 
 

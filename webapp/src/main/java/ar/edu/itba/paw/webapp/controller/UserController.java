@@ -94,15 +94,7 @@ public class UserController extends ParentController {
         return getInterested(null,null,null);
 
     }
-    @RequestMapping(value = "/test")
-    public ModelAndView getIdPet() {
-        final ModelAndView mav = new ModelAndView("views/test");
 
-        mav.addObject("request",
-                requestService.updateStatus(2,8,"accepted",getLocale()));
-
-        return mav;
-    }
 
 
 
