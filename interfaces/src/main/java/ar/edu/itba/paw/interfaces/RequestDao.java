@@ -12,5 +12,7 @@ public interface RequestDao {
     Optional<Request> create(long ownerId, long petId, int status, String language);
     Optional<Request> updateStatus(long id, String status, String language);
     Optional<Request> getRequestByOwnerAndPetId(long ownerId, long petId, String language);
+    Stream<Request> filterListByOwner(String language, long ownerId, String status, String searchCriteria, String searchOrder);
+    Stream<Request> filterListByPetOwner(String language, long petOwnerId, String status, String searchCriteria, String searchOrder);
     //cancel request
 }

@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Locale;
@@ -33,20 +30,57 @@ public class UserController {
 
     // TODO Add "user/{id}" & @PathVariable("id") long id
     @RequestMapping(value = "/requests")
-    public ModelAndView getRequests() {
+    public ModelAndView getRequests(@RequestParam(name = "status", required = false) String status,
+                                    @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                    @RequestParam(name = "searchOrder", required = false) String searchOrder) {
+
+        status = (status == null || status.equals("any") ? null : status);
+        searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
         final ModelAndView mav = new ModelAndView("views/requests");
-//        mav.addObject("user",
-//                userService.findById(id).orElseThrow(UserNotFoundException::new));
+
+        if(status != null || searchCriteria != null) {
+            //hardcodeado con user 1 porque no se de donde sacar el ownerid (user logeado)
+            mav.addObject("requests_list",
+                    requestService.filterListByOwner(getLocale(), 1, status, searchCriteria,searchOrder).toArray());
+        }
+        else{
+            //hardcodeado con user 1 porque no se de donde sacar el ownerid (user logeado)
+            mav.addObject("requests_list",
+                    requestService.listByOwner(getLocale(),1).toArray());
+        }
+
         return mav;
     }
 
     // TODO Add "user/{id}" & @PathVariable("id") long id
     @RequestMapping(value = "/interests")
-    public ModelAndView getInterested() {
-        final ModelAndView mav = new ModelAndView("views/interests");
-//        mav.addObject("user",
-//                userService.findById(id).orElseThrow(UserNotFoundException::new));
+    public ModelAndView getInterested(@RequestParam(name = "status", required = false) String status,
+                                      @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                      @RequestParam(name = "searchOrder", required = false) String searchOrder) {
+
+        status = (status == null || status.equals("any") ? null : status);
+        searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
+        final ModelAndView mav = new ModelAndView("views/requests");
+
+        if(status != null || searchCriteria != null) {
+            //hardcodeado con user 1 porque no se de donde sacar el petownerid (user logeado)
+            mav.addObject("interests_list",
+                    requestService.filterListByPetOwner(getLocale(), 1, status, searchCriteria, searchOrder).toArray());
+        }
+        else{
+            //hardcodeado con user 1 porque no se de donde sacar el petownerid (user logeado)
+            mav.addObject("interests_list",
+                    requestService.listByPetOwner(getLocale(),1).toArray());
+        }
+
         return mav;
+    }
+
+    protected String getLocale() {
+        Locale locale = LocaleContextHolder.getLocale();
+        String lang = locale.getLanguage() + "_" + locale.getCountry();
+        if (lang.startsWith("en")) return "en_US";
+        else return "es_AR";
     }
 
     @ExceptionHandler(UserNotFoundException.class)
