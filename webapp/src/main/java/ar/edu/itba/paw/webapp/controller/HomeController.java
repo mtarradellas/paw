@@ -35,6 +35,8 @@ public class HomeController {
         final ModelAndView mav = new ModelAndView("views/test");
         mav.addObject("request",
                 requestService.create(6,2,getLocale()).get());
+        mav.addObject("exists", requestService.requestExists(12,1,getLocale()));
+
         return mav;
     }
 

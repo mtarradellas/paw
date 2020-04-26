@@ -82,6 +82,12 @@ public class PetController {
         return mav;
     }
 
+    @RequestMapping(value = "/pet/{id}", method = {RequestMethod.POST})
+    public ModelAndView requestPet(@PathVariable("id") long id) {
+        requestService.create(1,id,getLocale());
+        return getIdPet(id);
+    }
+
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
         return imageService.getDataById(id).get();

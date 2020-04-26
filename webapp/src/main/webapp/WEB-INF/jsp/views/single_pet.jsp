@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="petName" value="${pet.petName}" />
+<c:set var="cprice" value="${pet.price}" />
 <c:if test="${pet.gender eq 'male'}"><spring:message var="pronoun" code="pet.him"/>  </c:if>
 <c:if test="${pet.gender eq 'female' }"><spring:message var="pronoun" code="pet.her"/>  </c:if>
 
@@ -31,24 +32,43 @@
 
             <div class="bg-light shadow p-3">
                 <div class="p-2">
-                    <div>
-                        <c:if test="${not empty pet.petName}">
-                            <h1><c:out value="${meet}" />
-                        </c:if>
-                        <c:if test="${empty pet.petName}">
-                            <h1><spring:message code="petCard.giveName" arguments="${pronoun}"/>
-                        </c:if>
-                        <button type="button" class="btn btn-success">
-                            <i class="fas fa-plus mr-2"></i>
-                            <spring:message code="petCard.showInterest"/></button></h1>
-                    </div>
-                    <t:photosList images="${pet.images}"/>
+                    <div class="row">
+                    <c:if test="${not empty pet.petName}">
+                        <h1>
+                            <c:out value="${meet}" />
+                        </h1>
+                    </c:if>
+                    <c:if test="${empty pet.petName}">
+                        <h1>
+                            <spring:message code="petCard.giveName" arguments="${pronoun}"/>
+                        </h1>
+                    </c:if>
+                    <c:if test="${(pet.ownerId ne currentUserID)}">
 
+                        <c:if test="${not requestExists}">
+                            <h1 class="mt-2 ml-4">
+                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}" />">
+                                    <button type="submit" name="action" class="btn btn-success">
+                                        <i class="fas fa-plus mr-2"></i>
+                                        <spring:message code="petCard.showInterest"/>
+                                    </button>
+                                </form>
+                            </h1>
+                        </c:if>
+                        <c:if test="${requestExists}">
+                            <h1 class="mt-2 ml-4">
+                                <button type="button" class="btn btn-success" disabled>
+                                    <spring:message code="petCard.alreadyRequested"/>
+                                </button>
+                            </h1>
+                        </c:if>
+                    </c:if>
+                    </div>
                 </div>
+                <t:photosList images="${pet.images}"/>
                 <div class="p-2">
                     <c:out value="${pet.description}"/>
                 </div>
-                <h1>${requestExists}</h1>
                 <div class="p-2">
                     <h2><c:out value="${someInfo}"/></h2>
 

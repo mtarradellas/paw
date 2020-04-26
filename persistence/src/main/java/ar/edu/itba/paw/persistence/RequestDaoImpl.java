@@ -100,7 +100,7 @@ public class RequestDaoImpl implements RequestDao {
         return findById(id, language);
     }
 
-    public Optional<Request> getRequestByOwnerAndPetId(long ownerId, long petId, String language){
+    public Optional<Request> getRequestByOwnerAndPetId(long petId , long ownerId, String language){
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
                         "creationDate, status.id as statusId , status."+ language +" as statusName, pets.petname as petName " +
                         "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +

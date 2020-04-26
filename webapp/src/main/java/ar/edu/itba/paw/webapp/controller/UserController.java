@@ -35,17 +35,15 @@ public class UserController {
     @RequestMapping(value = "/requests")
     public ModelAndView getRequests() {
         final ModelAndView mav = new ModelAndView("views/requests");
-//        mav.addObject("user",
-//                userService.findById(id).orElseThrow(UserNotFoundException::new));
+        mav.addObject("requests", requestService.listByPetOwner(getLocale(),1));
         return mav;
     }
 
-    // TODO Add "user/{id}" & @PathVariable("id") long id
     @RequestMapping(value = "/interests")
     public ModelAndView getInterested() {
         final ModelAndView mav = new ModelAndView("views/interests");
-//        mav.addObject("user",
-//                userService.findById(id).orElseThrow(UserNotFoundException::new));
+        mav.addObject("requests", requestService.listByPetOwner(getLocale(),1));
+
         return mav;
     }
 
@@ -53,6 +51,13 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchUser() {
         return new ModelAndView("error-views/404_user");
+    }
+
+    protected String getLocale() {
+        Locale locale = LocaleContextHolder.getLocale();
+        String lang = locale.getLanguage() + "_" + locale.getCountry();
+        if (lang.startsWith("en")) return "en_US";
+        else return "es_AR";
     }
 
 }
