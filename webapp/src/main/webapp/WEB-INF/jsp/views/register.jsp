@@ -53,7 +53,7 @@
                     </div>
                 </spring:bind>
 
-                <div>
+                <div class="p-2">
                     <spring:message code="register.submit" var="submitText"/>
                     <input type="submit" class="btn btn-primary" name="${submitText}"/>
                 </div>
