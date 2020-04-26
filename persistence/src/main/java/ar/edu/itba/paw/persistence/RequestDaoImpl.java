@@ -26,7 +26,7 @@ public class RequestDaoImpl implements RequestDao {
             rs.getLong("id"),
             rs.getLong("ownerId"),
             rs.getString("ownerUsername"),
-            new Status(rs.getInt("statusId"),rs.getString("statusName")),
+            new Status(rs.getInt("statusId"), rs.getString("statusName")),
             rs.getLong("petId"),
             rs.getString("petName"),
             rs.getDate("creationDate")
@@ -46,30 +46,30 @@ public class RequestDaoImpl implements RequestDao {
     @Override
     public Optional<Request> findById(long id, String language) {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
-                        "creationDate, status.id as statusId , status."+ language +" as statusName, pets.petname as petName " +
+                        "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
                         "WHERE requests.id = ? "
-                , new Object[] {id}, REQUEST_MAPPER)
+                , new Object[]{id}, REQUEST_MAPPER)
                 .stream().findFirst();
     }
 
     @Override
     public Stream<Request> listByOwner(String language, long ownerId) {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
-                        "creationDate, status.id as statusId , status."+ language +" as statusName, pets.petname as petName " +
+                        "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
                         "WHERE requests.ownerId = ? "
-                , new Object[] {ownerId}, REQUEST_MAPPER)
+                , new Object[]{ownerId}, REQUEST_MAPPER)
                 .stream();
     }
 
     @Override
     public Stream<Request> listByPetOwner(String language, long petOwnerId) {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
-                        "creationDate, status.id as statusId , status."+ language +" as statusName, pets.petname as petName " +
+                        "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
                         "WHERE pets.ownerId = ?"
-                , new Object[] {petOwnerId}, REQUEST_MAPPER)
+                , new Object[]{petOwnerId}, REQUEST_MAPPER)
                 .stream();
     }
 
@@ -81,31 +81,78 @@ public class RequestDaoImpl implements RequestDao {
         values.put("petId", petId);
         values.put("status", status);
         final Number key = jdbcInsert.executeAndReturnKey(values);
-        return findById(key.longValue(),language);
+        return findById(key.longValue(), language);
 
     }
 
     @Override
     public Optional<Request> updateStatus(long id, String status, String language) {
-        int newStatus =1;
-        if(status.contains("accepted")){
+        int newStatus = 1;
+        if (status.contains("accepted")) {
             newStatus = 2;
         }
-        if(status.contains("rejected")){
+        if (status.contains("rejected")) {
             newStatus = 3;
         }
         jdbcTemplate.update("UPDATE requests " +
                 "SET status = ? " +
-                "WHERE id = ? ",new Object[] {newStatus, id});
+                "WHERE id = ? ", new Object[]{newStatus, id});
         return findById(id, language);
     }
 
-    public Optional<Request> getRequestByOwnerAndPetId(long petId , long ownerId, String language){
+
+    public Optional<Request> getRequestByOwnerAndPetId(long ownerId, long petId, String language) {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
-                        "creationDate, status.id as statusId , status."+ language +" as statusName, pets.petname as petName " +
+                        "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
                         "WHERE requests.ownerId = ? AND petId = ?"
-                , new Object[] {ownerId, petId}, REQUEST_MAPPER)
+                , new Object[]{ownerId, petId}, REQUEST_MAPPER)
                 .stream().findFirst();
     }
-}
+
+    @Override
+    public Stream<Request> filterListByOwner(String language, long ownerId, String status, String searchCriteria, String searchOrder) {
+        //USERNAME???
+        String userIdFilter = "requests.ownerId";
+        return filterList(language,userIdFilter,ownerId,status,searchCriteria,searchOrder);
+    }
+
+    @Override
+    public Stream<Request> filterListByPetOwner(String language, long petOwnerId, String status, String searchCriteria, String searchOrder) {
+        String userIdFilter = "pets.ownerId";
+        return filterList(language,userIdFilter,petOwnerId,status,searchCriteria,searchOrder);
+    }
+
+    public Stream<Request> filterList (String language, String userIdFilter, long userId, String status, String searchCriteria, String searchOrder){
+        Stream<Request> result;
+        if (status == null) {
+            status = "%";
+        }
+        String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, status.id as statusId , status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join status on requests.status = status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                "WHERE " + userIdFilter +" = ? AND status." + language + " = ? ";
+        if (searchCriteria == null) {
+            result = jdbcTemplate.query(sql, new Object[]{userId, status}, REQUEST_MAPPER).stream();
+        } else {
+            if (searchCriteria.contains("date")) {
+                searchCriteria = "requests.creationDate";
+            }
+            if (searchCriteria.contains("petName")) {
+                searchCriteria = "pets.petName";
+            }
+            if (searchOrder.contains("asc")) {
+                searchOrder = "ASC";
+            } else {
+                searchOrder = "DESC";
+            }
+            searchCriteria = searchCriteria + " " + searchOrder;
+
+            result = jdbcTemplate.query(sql + "ORDER BY " + searchCriteria, new Object[]{}, REQUEST_MAPPER).stream();
+        }
+
+        return result;
+    }
+
+    }
+

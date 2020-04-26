@@ -36,8 +36,6 @@ public class PetController {
         if(page == null){
             page = "1";
         }
-
-
         final ModelAndView mav = new ModelAndView("index");
 
         mav.addObject("currentPage", page);

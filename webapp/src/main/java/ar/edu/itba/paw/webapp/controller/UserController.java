@@ -34,23 +34,53 @@ public class UserController {
     }
 
     // TODO Add "user/{id}" & @PathVariable("id") long id
-        @RequestMapping(value = "/requests")
-        public ModelAndView getRequests() {
-            final ModelAndView mav = new ModelAndView("views/requests");
-            mav.addObject("requests", requestService.listByPetOwner(getLocale(),1));
-            return mav;
-        }
+    @RequestMapping(value = "/requests")
+    public ModelAndView getRequests(@RequestParam(name = "status", required = false) String status,
+                                    @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                    @RequestParam(name = "searchOrder", required = false) String searchOrder) {
 
-    @RequestMapping(value = "/interests")
-    public ModelAndView getInterested() {
-        final ModelAndView mav = new ModelAndView("views/interests");
-        mav.addObject("requests", requestService.listByPetOwner(getLocale(),1).toArray());
+        status = (status == null || status.equals("any") ? null : status);
+        searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
+        final ModelAndView mav = new ModelAndView("views/requests");
+
+        if(status != null || searchCriteria != null) {
+            //hardcodeado con user 1 porque no se de donde sacar el ownerid (user logeado)
+            mav.addObject("requests_list",
+                    requestService.filterListByOwner(getLocale(), 1, status, searchCriteria,searchOrder).toArray());
+        }
+        else{
+            //hardcodeado con user 1 porque no se de donde sacar el ownerid (user logeado)
+            mav.addObject("requests_list",
+                    requestService.listByOwner(getLocale(),1).toArray());
+        }
 
         return mav;
     }
 
+    @RequestMapping(value = "/interests")
+    public ModelAndView getInterested(@RequestParam(name = "status", required = false) String status,
+                                      @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                      @RequestParam(name = "searchOrder", required = false) String searchOrder) {
+
+        status = (status == null || status.equals("any") ? null : status);
+        searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
+        final ModelAndView mav = new ModelAndView("views/interests");
+
+        System.out.println();
+
+        if(status != null || searchCriteria != null) {
+            mav.addObject("interests_list",
+                    requestService.filterListByPetOwner(getLocale(), 1, status, searchCriteria, searchOrder).toArray());
+        }
+        else{
+            mav.addObject("interests_list",
+                    requestService.listByPetOwner(getLocale(),1).toArray());
+        }
+        return mav;
+    }
+
     @RequestMapping(value = "/interests-accept-reject/{id}", method = {RequestMethod.POST})
-    public ModelAndView changeStatus(@RequestParam(name = "status", required = false) String status,
+    public ModelAndView changeStatus(@RequestParam(name = "newStatus", required = false) String status,
                                      @PathVariable("id") long id) {
 
 
@@ -61,7 +91,8 @@ public class UserController {
                 requestService.updateStatus(id,"rejected",getLocale());
             }
 
-        return getInterested();
+        return getInterested(null,null,null);
+
     }
 
     @ExceptionHandler(UserNotFoundException.class)

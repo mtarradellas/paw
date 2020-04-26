@@ -13,11 +13,11 @@
                 <div class="col ">
                     <div class="shadow p-3 bg-white rounded">
                         <h2>Users interested in your pets:</h2>
-                            <c:if test="${empty requests }">
+                            <c:if test="${empty interests_list }">
                                 <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                 </div>
                             </c:if>
-                            <c:forEach var="req" items="${requests}">
+                            <c:forEach var="req" items="${interests_list}">
                                 <c:if test="${req.status.name eq 'Pending'}">
                                     <div class="row bg-light p-1">
                                         <div class=" col-sm-10">
@@ -26,8 +26,8 @@
                                         </div>
                                         <div class="col-sm-2 ">
                                             <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/interests-accept-reject/${req.id}"/>">
-                                                <button type="submit" name="status" value="accept" class="btn btn-success"><spring:message code="accept"/></button>
-                                                <button type="submit" name="status" value="reject" class="btn btn-danger" ><spring:message code="reject"/></button>
+                                                <button type="submit" name="newStatus" value="accept" class="btn btn-success"><spring:message code="accept"/></button>
+                                                <button type="submit" name="newStatus" value="reject" class="btn btn-danger" ><spring:message code="reject"/></button>
                                             </form>
                                         </div>
                                     </div>

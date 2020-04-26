@@ -45,8 +45,18 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public boolean requestExists(long petId, long ownerId, String language){
-        Optional<Request> request = requestDao.getRequestByOwnerAndPetId(petId, ownerId, language);
+        Optional<Request> request = requestDao.getRequestByOwnerAndPetId(ownerId, petId, language);
         return request.isPresent();
+    }
+
+    @Override
+    public Stream<Request> filterListByOwner(String language, long ownerId, String status, String searchCriteria, String searchOrder) {
+        return requestDao.filterListByOwner(language, ownerId, status, searchCriteria, searchOrder);
+    }
+
+    @Override
+    public Stream<Request> filterListByPetOwner(String language, long petOwnerId, String status, String searchCriteria, String searchOrder) {
+        return requestDao.filterListByPetOwner(language, petOwnerId, status, searchCriteria, searchOrder);
     }
 
 }
