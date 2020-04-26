@@ -56,8 +56,13 @@ public class PetController extends ParentController {
     public ModelAndView getIdPet(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_pet");
 
-        mav.addObject("currentUserID", "1");
-        mav.addObject("requestExists", requestService.requestExists(id,1,getLocale()));
+        if(loggedUser() != null){
+            mav.addObject("requestExists", requestService.requestExists(id,loggedUser().getId(),getLocale()));
+            mav.addObject("currentUserID", loggedUser().getId());
+        }else{
+            mav.addObject("requestExists", false);
+            mav.addObject("currentUserID", -1);
+        }
 
         mav.addObject("pet",
                 petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new));
@@ -66,10 +71,11 @@ public class PetController extends ParentController {
         return mav;
     }
 
-    @RequestMapping(value = "/pet/{id}", method = {RequestMethod.POST})
+    @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
     public ModelAndView requestPet(@PathVariable("id") long id) {
-        if(!requestService.requestExists(id,1,getLocale())){
-            requestService.create(1,id,getLocale());
+
+        if(!requestService.requestExists(id,loggedUser().getId(),getLocale())){
+            requestService.create(loggedUser().getId(),id,getLocale());
         }
         return getIdPet(id);
     }

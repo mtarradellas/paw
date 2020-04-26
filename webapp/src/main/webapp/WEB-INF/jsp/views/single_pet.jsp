@@ -47,7 +47,7 @@
 
                         <c:if test="${not requestExists}">
                             <h1 class="mt-2 ml-4">
-                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}" />">
+                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
                                     <button type="submit" name="action" class="btn btn-success">
                                         <i class="fas fa-plus mr-2"></i>
                                         <spring:message code="petCard.showInterest"/>

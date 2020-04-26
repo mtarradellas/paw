@@ -59,11 +59,11 @@ public class UserController extends ParentController {
 
         if(status != null || searchCriteria != null) {
             mav.addObject("interests_list",
-                    requestService.filterListByPetOwner(getLocale(), 1, status, searchCriteria, searchOrder).toArray());
+                    requestService.filterListByPetOwner(getLocale(), loggedUser().getId(), status, searchCriteria, searchOrder).toArray());
         }
         else{
             mav.addObject("interests_list",
-                    requestService.listByPetOwner(getLocale(),1).toArray());
+                    requestService.listByPetOwner(getLocale(),loggedUser().getId()).toArray());
         }
         return mav;
     }
@@ -78,11 +78,14 @@ public class UserController extends ParentController {
 
             }else if (status.equals("reject")){
                 requestService.updateStatus(id,"rejected",getLocale());
+            }else{
+                return badRequest();
             }
 
         return getInterested(null,null,null);
 
     }
+
 
 
 }

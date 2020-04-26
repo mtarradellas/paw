@@ -36,4 +36,9 @@ public class LoginAndRegisterController extends ParentController {
     public ModelAndView registerForm(@ModelAttribute ("registerForm") final UserForm userForm) {
         return new ModelAndView("views/register");
     }
+
+    @RequestMapping(value = "/403")
+    public ModelAndView accessDenied(){
+        return new ModelAndView("error-views/403");
+    }
 }
