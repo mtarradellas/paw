@@ -76,13 +76,19 @@ public class RequestDaoImpl implements RequestDao {
     @Override
     public Optional<Request> create(long ownerId, long petId, int status, String language) {
 
-        final Map<String, Object> values = new HashMap<>();
-        values.put("ownerId", ownerId);
-        values.put("petId", petId);
-        values.put("status", status);
-        final Number key = jdbcInsert.executeAndReturnKey(values);
-        return findById(key.longValue(), language);
+        Optional<Request> req = jdbcTemplate.query("SELECT ownerId, id FROM pets WHERE ownerId = ? AND id = ? "
+                , new Object[]{ownerId, petId}, REQUEST_MAPPER)
+                .stream().findFirst();
+        if(!req.isPresent()) {
 
+            final Map<String, Object> values = new HashMap<>();
+            values.put("ownerId", ownerId);
+            values.put("petId", petId);
+            values.put("status", status);
+            final Number key = jdbcInsert.executeAndReturnKey(values);
+            return findById(key.longValue(), language);
+        }
+        return Optional.empty();
     }
 
     @Override
