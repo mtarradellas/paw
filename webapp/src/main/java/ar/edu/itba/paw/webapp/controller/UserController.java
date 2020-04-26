@@ -21,7 +21,6 @@ public class UserController extends ParentController {
         return mav;
     }
 
-    // TODO Add "user/{id}" & @PathVariable("id") long id
     @RequestMapping(value = "/requests")
     public ModelAndView getRequests() {
         final ModelAndView mav = new ModelAndView("views/requests");
@@ -30,7 +29,6 @@ public class UserController extends ParentController {
         return mav;
     }
 
-    // TODO Add "user/{id}" & @PathVariable("id") long id
     @RequestMapping(value = "/interests")
     public ModelAndView getInterested() {
         final ModelAndView mav = new ModelAndView("views/interests");
