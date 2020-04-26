@@ -1,28 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.*;
+
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Locale;
-
 @Controller
-public class PetController {
-
-    @Autowired
-    PetService petService;
-    @Autowired
-    ImageService imageService;
-    @Autowired
-    SpeciesService speciesService;
-    @Autowired
-    RequestService requestService;
+public class PetController extends ParentController {
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
@@ -90,20 +76,7 @@ public class PetController {
 
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
-        return imageService.getDataById(id).get();
+        System.out.println("IMG ID: " + id );
+        return imageService.getDataById(id).orElse(null);
     }
-
-    protected String getLocale() {
-        Locale locale = LocaleContextHolder.getLocale();
-        String lang = locale.getLanguage() + "_" + locale.getCountry();
-        if (lang.startsWith("en")) return "en_US";
-        else return "es_AR";
-    }
-
-    @ExceptionHandler(PetNotFoundException.class)
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ModelAndView noSuchPet() {
-        return new ModelAndView("error-views/404_pet");
-    }
-
 }

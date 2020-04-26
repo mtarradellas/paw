@@ -1,35 +1,24 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.MailService;
-import ar.edu.itba.paw.interfaces.RequestService;
-import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.models.Request;
+
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Locale;
-import java.util.Optional;
-
 @Controller
-public class UserController {
+public class UserController extends ParentController {
 
-    @Autowired
-    UserService userService;
-    @Autowired
-    RequestService requestService;
-    @Autowired
-    MailService mailService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_user");
         mav.addObject("user",
                 userService.findById(id).orElseThrow(UserNotFoundException::new));
+        LOGGER.debug("Loading user {} page", id);
         return mav;
     }
 
@@ -95,17 +84,6 @@ public class UserController {
 
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ModelAndView noSuchUser() {
-        return new ModelAndView("error-views/404_user");
-    }
-
-    protected String getLocale() {
-        Locale locale = LocaleContextHolder.getLocale();
-        String lang = locale.getLanguage() + "_" + locale.getCountry();
-        if (lang.startsWith("en")) return "en_US";
-        else return "es_AR";
-    }
 
 }
+
