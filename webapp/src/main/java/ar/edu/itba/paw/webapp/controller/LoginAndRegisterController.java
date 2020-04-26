@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.form.UserForm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,10 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 
 @Controller
-public class LoginAndRegisterController {
-
-    @Autowired
-    UserService userService;
+public class LoginAndRegisterController extends ParentController {
 
     @RequestMapping("/login")
     public ModelAndView login() {
@@ -40,10 +35,5 @@ public class LoginAndRegisterController {
     @RequestMapping(value ="/register", method = { RequestMethod.GET })
     public ModelAndView registerForm(@ModelAttribute ("registerForm") final UserForm userForm) {
         return new ModelAndView("views/register");
-    }
-
-    @RequestMapping("/403")
-    public ModelAndView forbidden() {
-        return new ModelAndView("error-views/404");
     }
 }
