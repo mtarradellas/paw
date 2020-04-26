@@ -1,66 +1,34 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
-<html>
-<body>
-<c:url value="/login" var="loginUrl"/>
-<form action="${loginUrl}" method="post" enctype="application/x-www-form-urlencoded">
-    <div>
-        <label for="username">Username: </label>
-        <input type="text" id="username" name="username"/>
-    </div>
-
-    <div>
-        <label for="password">Password: </label>
-        <input type="password" id="password" name="password"/>
-    </div>
-
-    <div>
-        <label><input type="checkbox" id="rememberme" name="rememberme"/>Remember username</label>
-    </div>
-
-    <div>
-        <input type="submit" value="Login!"/>
-    </div>
-</form>
-</body>
-</html>
-
-<%--
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<c:url value="/login" var="loginUrl"/>
 
 <t:basicLayout title="Login">
     <div class="container-fluid">
         <div class="shadow p-4 login-register-container bg-white">
             <h1><spring:message code="login.title"/></h1>
-            <form:form modelAttribute="registerForm" action="${pageContext.request.contextPath}/login" method="post">
+            <form action="${loginUrl}" method="post" enctype="application/x-www-form-urlencoded">
+                <div class="form-group">
+                    <label for="username"><spring:message code="login.username"/>:</label>
+                    <input type="text" class="form-control" name="username" id="username">
+                </div>
 
-                <spring:bind path="username">
-                    <div class="form-group">
-                        <form:label path="username" for="username"><spring:message code="register.username"/>: </form:label>
-                        <form:input type="text" id="username" path="username" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
-                        <form:errors path="username" element="div" cssClass="invalid-feedback"/>
-                    </div>
-                </spring:bind>
+                <div class="form-group">
+                    <label for="password"><spring:message code="login.password"/>:</label>
+                    <input type="password" class="form-control" name="password" id="password">
+                </div>
 
-                <spring:bind path="password">
-                    <div class="form-group">
-                        <form:label path="password" for="password"><spring:message code="register.password"/>: </form:label>
-                        <form:input type="password" id="password" path="password" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
-                        <form:errors path="password" element="div" cssClass="invalid-feedback"/>
-                    </div>
-                </spring:bind>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberme" name="rememberme">
+                    <label class="form-check-label" for="rememberme"><spring:message code="login.rememberMe"/></label>
+                </div>
 
-                <div>
+                <div class="p-2">
                     <spring:message code="login.submit" var="submitText"/>
                     <input type="submit" class="btn btn-primary" name="${submitText}"/>
                 </div>
-            </form:form>
+            </form>
         </div>
     </div>
 </t:basicLayout>
---%>
