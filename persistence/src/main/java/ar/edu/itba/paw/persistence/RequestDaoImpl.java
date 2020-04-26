@@ -138,6 +138,16 @@ public class RequestDaoImpl implements RequestDao {
         return filterList(language,userIdFilter,petOwnerId,status,searchCriteria,searchOrder);
     }
 
+    @Override
+    public boolean delete(long id, long ownerId) {
+        Integer count = jdbcTemplate.queryForObject("SELECT count(id) FROM requests WHERE id = ? and ownerId = ? "
+                , new Object[]{id, ownerId}, Integer.class);
+        if(count == 0){
+            return false;
+        }
+        return jdbcTemplate.update("DELETE FROM requests WHERE id =?",new Object[]{id}) == 1;
+    }
+
     public Stream<Request> filterList (String language, String userIdFilter, long userId, String status, String searchCriteria, String searchOrder){
         Stream<Request> result;
         if (status == null) {
@@ -179,5 +189,5 @@ public class RequestDaoImpl implements RequestDao {
         return result;
     }
 
-    }
+}
 
