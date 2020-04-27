@@ -134,6 +134,15 @@ public class UserController extends ParentController {
         return "";
     }
 
+    @RequestMapping(value = "/test")
+    public ModelAndView getIdPet() {
+        final ModelAndView mav = new ModelAndView("views/test");
+
+        mav.addObject("bool",
+                requestService.delete(2,1));
+
+        return mav;
+    }
 
 }
 

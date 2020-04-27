@@ -59,4 +59,9 @@ public class RequestServiceImpl implements RequestService {
         return requestDao.filterListByPetOwner(language, petOwnerId, status, searchCriteria, searchOrder);
     }
 
+    @Override
+    public boolean delete(long id, long ownerId) {
+        return requestDao.delete(id, ownerId);
+    }
+
 }

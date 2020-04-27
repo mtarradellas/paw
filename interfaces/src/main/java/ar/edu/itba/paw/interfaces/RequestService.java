@@ -15,4 +15,5 @@ public interface RequestService {
     boolean requestExists(long petId, long ownerId, String language);
     Stream<Request> filterListByOwner(String language, long ownerId, String status, String searchCriteria, String searchOrder);
     Stream<Request> filterListByPetOwner(String language, long petOwnerId, String status, String searchCriteria, String searchOrder);
+    boolean delete(long id, long ownerId);
 }
