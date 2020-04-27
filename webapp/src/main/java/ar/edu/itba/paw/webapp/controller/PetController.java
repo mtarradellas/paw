@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
@@ -26,6 +27,7 @@ public class PetController extends ParentController {
         if(page == null){
             page = "1";
         }
+
         final ModelAndView mav = new ModelAndView("index");
 
         mav.addObject("currentPage", page);
@@ -77,14 +79,15 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
     public ModelAndView requestPet(@PathVariable("id") long id) {
+        Long time1 = System.currentTimeMillis();
 
-        if(!requestService.requestExists(id,loggedUser().getId(),getLocale())){
+        long ownerId = petService.getOwnerId(id);
+
+        if( loggedUser()!= null && ownerId != loggedUser().getId() && !requestService.requestExists(id,loggedUser().getId(),getLocale())){
             Optional<Request> newRequest =  requestService.create(loggedUser().getId(),id,getLocale());
             if(newRequest.isPresent()){
-//                Optional<User> user = ;
-//                String mailBody = "User " + newRequest.get().getOwnerUsername() + " is interested in "+ newRequest.get().getPetName() + "." +
-//                        " Go to our web page to accept or reject his request!!";
-//                mailService.sendMail( ,"A User showed interest in one of your pets!", mailBody);
+                Optional<Contact> contact = petService.getPetContact(newRequest.get().getPetId());
+                contact.ifPresent(value -> mailService.sendMail(value.getEmail(), getMailMessage(getLocale(), "subject", newRequest.get()), getMailMessage(getLocale(), "body", newRequest.get())));
             }
         }
         return getIdPet(id);
@@ -104,5 +107,23 @@ public class PetController extends ParentController {
                 petService.getPetContact(4).get());
 
         return mav;
+    }
+
+    private String getMailMessage(String locale, String part, Request request){
+        switch(part){
+            case "subject":
+                if(locale.equals("en_US")){
+                    return "A user showed interest in one of your pets!";
+                }else{
+                    return "¡Un usuario mostró interés en una de tus mascotas!";
+                }
+            case "body":
+                if(locale.equals("en_US")){
+                    return "User " + request.getOwnerUsername() + " is interested in "+ request.getPetName() + ". Go to our web page to accept or reject his request!!";
+                }else{
+                    return "El usuario " + request.getOwnerUsername() + " está interesado/a en "+ request.getPetName() + "¡¡Vaya a nuestro sitio web para aceptar o rechazar su solicitud!!";
+                }
+        }
+        return "";
     }
 }

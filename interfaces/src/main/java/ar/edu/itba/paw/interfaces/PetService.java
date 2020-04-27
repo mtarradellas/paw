@@ -17,4 +17,5 @@ public interface PetService {
     String getMaxSearchPages(String language, String findValue);
     String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter);
     Optional<Contact> getPetContact(long petId);
+    long getOwnerId(long petId);
 }

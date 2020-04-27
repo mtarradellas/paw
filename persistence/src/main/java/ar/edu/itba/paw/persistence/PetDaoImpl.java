@@ -42,6 +42,11 @@ public class PetDaoImpl implements PetDao {
     private static final RowMapper<Contact> CONTACT_MAPPER = (rs, rowNum) -> new Contact(rs.getString("mail"), rs.getString("username"));
 
     @Override
+    public long getOwnerId(long petId){
+        return jdbcTemplate.queryForObject("select ownerid from pets where id = "+ petId,Long.class);
+    }
+
+    @Override
     public Optional<Pet> findById(String language, long id) {
 
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query("select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +

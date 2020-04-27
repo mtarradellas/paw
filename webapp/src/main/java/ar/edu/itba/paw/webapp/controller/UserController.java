@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -26,7 +27,6 @@ public class UserController extends ParentController {
         return mav;
     }
 
-    // TODO Add "user/{id}" & @PathVariable("id") long id
     @RequestMapping(value = "/requests")
     public ModelAndView getRequests(@RequestParam(name = "status", required = false) String status,
                                     @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
@@ -37,14 +37,12 @@ public class UserController extends ParentController {
         final ModelAndView mav = new ModelAndView("views/requests");
 
         if(status != null || searchCriteria != null) {
-            //hardcodeado con user 1 porque no se de donde sacar el ownerid (user logeado)
             mav.addObject("requests_list",
-                    requestService.filterListByOwner(getLocale(), 1, status, searchCriteria,searchOrder).toArray());
+                    requestService.filterListByOwner(getLocale(), loggedUser().getId(), status, searchCriteria,searchOrder).toArray());
         }
         else{
-            //hardcodeado con user 1 porque no se de donde sacar el ownerid (user logeado)
             mav.addObject("requests_list",
-                    requestService.listByOwner(getLocale(),1).toArray());
+                    requestService.listByOwner(getLocale(),loggedUser().getId()).toArray());
         }
 
         return mav;
@@ -58,8 +56,6 @@ public class UserController extends ParentController {
         status = (status == null || status.equals("any") ? null : status);
         searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
         final ModelAndView mav = new ModelAndView("views/interests");
-
-        System.out.println();
 
         if(status != null || searchCriteria != null) {
             mav.addObject("interests_list",
@@ -79,23 +75,55 @@ public class UserController extends ParentController {
             if(status.equals("accept")){
                 Optional<Request> newRequest = requestService.updateStatus(id,loggedUser().getId(),"accepted",getLocale());
                 if(newRequest.isPresent()){
-//                    Optional<User> user = ;
-//                    String mailBody = "User " +  + " has accepted your request for "+ newRequest.get().getPetName() + "." +
-//                            " Go to our web page to accept or reject his request!!";
-//                    mailService.sendMail( ,"A User showed interest in one of your pets!", mailBody);
+                    Optional<Contact> contact = petService.getPetContact(newRequest.get().getPetId());
+                    Optional<User> recipient = userService.findById(newRequest.get().getOwnerId());
+                    if(contact.isPresent() && recipient.isPresent()){
+                        mailService.sendMail(recipient.get().getMail(), getMailMessage(getLocale(), "subjectAccept", newRequest.get(), contact.get()),  getMailMessage(getLocale(), "bodyAccept", newRequest.get(), contact.get()));
+                    }
                 }
             }else if (status.equals("reject")){
-                requestService.updateStatus(id,loggedUser().getId(),"rejected",getLocale());
-            }else{
-//                return badRequest();
-
+                Optional<Request> newRequest = requestService.updateStatus(id,loggedUser().getId(),"rejected",getLocale());
+                if(newRequest.isPresent()){
+                    Optional<Contact> contact = petService.getPetContact(newRequest.get().getPetId());
+                    Optional<User> recipient = userService.findById(newRequest.get().getOwnerId());
+                    if(contact.isPresent() && recipient.isPresent()){
+                        mailService.sendMail(recipient.get().getMail(), getMailMessage(getLocale(), "subjectReject", newRequest.get(), contact.get()),  getMailMessage(getLocale(), "bodyReject", newRequest.get(), contact.get()));
+                    }
+                }
             }
 
         return getInterested(null,null,null);
-
     }
 
-
+    private String getMailMessage(String locale, String part, Request request, Contact contact){
+        switch(part){
+            case "subjectAccept":
+                if(locale.equals("en_US")){
+                    return "Hooray! Your request was accepted";
+                }else{
+                    return "¡Genial! Tu solicitud fue aceptada";
+                }
+            case "bodyAccept":
+                if(locale.equals("en_US")){
+                    return "User " + contact.getUsername() + " has accepted your request for "+ request.getPetName() + ". To begin the process for getting your new pet, please contact " + contact.getEmail() + " and ask about " + request.getPetName() + ".";
+                }else{
+                    return "El usuario " + contact.getUsername() + " ha aceptado tu solicitud de "+ request.getPetName() + ". Para iniciar el proceso de conseguir tu mascota, contáctese con " + contact.getEmail() + " y pregunte por " + request.getPetName() + ".";
+                }
+            case "subjectReject":
+                if(locale.equals("en_US")){
+                    return "We're sorry, your request was rejected";
+                }else{
+                    return "Lo sentimos, tu solicitud fue rechazada";
+                }
+            case "bodyReject":
+                if(locale.equals("en_US")){
+                    return "User " + contact.getUsername() + " has rejected your request for "+ request.getPetName() + ".";
+                }else{
+                    return "El usuario " + contact.getUsername() + " ha rechazado tu solicitud de "+ request.getPetName() + ".";
+                }
+        }
+        return "";
+    }
 
 
 }

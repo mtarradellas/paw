@@ -48,6 +48,11 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public long getOwnerId(long petId){
+        return petDao.getOwnerId(petId);
+    }
+
+    @Override
     public String getMaxPages(){
         return petDao.maxPages();
     }
