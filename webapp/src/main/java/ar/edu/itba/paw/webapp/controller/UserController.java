@@ -52,7 +52,9 @@ public class UserController extends ParentController {
     public ModelAndView cancelRequest(@RequestParam(name = "newStatus", required = false) String status,
                                       @PathVariable("id") long id) {
 
-        
+        if(loggedUser() != null){
+            requestService.delete(id, loggedUser().getId());
+        }
 
         return getRequests(null,null,null);
     }
