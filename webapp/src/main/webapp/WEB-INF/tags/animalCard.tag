@@ -7,11 +7,13 @@
 
 <spring:message code="argPrice" arguments="${cprice}" var="price"/>
 
-
 <div class="card animal-list-card">
+    <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link">
 
     <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
          class="card-img-top" alt="">
+
+    </a>
     <div class="card-body">
 
         <p class="card-text">
@@ -24,5 +26,8 @@
 
         <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link"><spring:message code="petCard.goToPage"/></a>
 
+    </div>
+    <div class="card-footer">
+        <h6><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></h6>
     </div>
 </div>
