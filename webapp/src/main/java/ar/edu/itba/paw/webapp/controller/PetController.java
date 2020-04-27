@@ -95,7 +95,6 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
-        System.out.println("IMG ID: " + id );
         return imageService.getDataById(id).orElse(null);
     }
 

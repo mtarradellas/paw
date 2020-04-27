@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.models.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -59,14 +60,17 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User create(String username, String password, String mail, String phone){
+    public Optional<User> create(String username, String password, String mail, String phone) {
         final Map<String, String> values = new HashMap<>();
         values.put("username", username);
         values.put("password", password);
         values.put("mail", mail);
         values.put("phone", phone);
-        final Number key = jdbcInsert.executeAndReturnKey(values);
-        return new User(key.longValue(), username, password, mail, phone);
-    };
+        Number key;
+
+        key = jdbcInsert.executeAndReturnKey(values);
+
+        return Optional.of(new User(key.longValue(), username, password, mail, phone));
+    }
 }
 

@@ -9,7 +9,9 @@ public class HomeController extends ParentController {
 
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
-        return new ModelAndView("views/available");
+        return new ModelAndView("views/available")
+                    .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
+                    .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
     }
 
     @RequestMapping("/contact")

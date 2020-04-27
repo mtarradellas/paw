@@ -2,7 +2,6 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<c:set var="breeds" value="<%=ar.edu.itba.paw.models.constants.BreedTypes.values()%>"/>
 
 <spring:message code="availableTitle" var="titleVar"/>
 
@@ -17,24 +16,18 @@
                     <div class="row mt-1">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-body">
-                        <spring:message code="pet.dogs"/>
-                        <ul>
-                            <c:forEach items="${breeds}" var="breed" varStatus="i">
-                                <c:if test="${breed.speciesType.name eq 'dog'}">
-                                    <li><spring:message code="dog.${breed.name}"/></li>
-                                </c:if>
-                            </c:forEach>
-                        </ul>
-                        <spring:message code="pet.cats"/>
-                        <ul>
-                            <c:forEach items="${breeds}" var="breed" varStatus="i">
-                                <c:if test="${breed.speciesType.name eq 'cat'}">
-                                    <li ><spring:message code="cat.${breed.name}"/></li>
-                                </c:if>
-                            </c:forEach>
-                        </ul>
-                    </div>
+                        <c:forEach items="${species_list}" var="species">
+                            <div class="card-body">
+                            ${species.name}
+                            <ul>
+                                <c:forEach items="${breeds_list}" var="breed" varStatus="i">
+                                    <c:if test="${breed.speciesId eq species.id}">
+                                        <li>${breed.name}</li>
+                                    </c:if>
+                                </c:forEach>
+                            </ul>
+                            </div>
+                        </c:forEach>
                 </div>
             </div>
         </div>

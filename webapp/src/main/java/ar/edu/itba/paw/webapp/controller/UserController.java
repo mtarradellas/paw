@@ -59,6 +59,7 @@ public class UserController extends ParentController {
         return getRequests(null,null,null);
     }
 
+
     @RequestMapping(value = "/interests")
     public ModelAndView getInterested(@RequestParam(name = "status", required = false) String status,
                                       @RequestParam(name = "searchCriteria", required = false) String searchCriteria,

@@ -42,7 +42,7 @@
                                 <c:if test="${not empty param.searchCriteria}">
                                     <c:param name="searchCriteria" value="${param.searchCriteria}"/>
                                 </c:if>
-                                <c:if test="${not empty searchOrder}">
+                                <c:if test="${not empty param.searchOrder}">
                                     <c:param name="searchOrder" value="${param.searchOrder}"/>
                                 </c:if>
                                 <c:if test="${not empty param.find}">
@@ -64,7 +64,7 @@
                                             <c:if test="${not empty param.species}">
                                                 <c:param name="species" value="${param.species}"/>
                                             </c:if>
-                                            <c:if test="${not empty breed}">
+                                            <c:if test="${not empty param.breed}">
                                                 <c:param name="breed" value="${param.breed}"/>
                                             </c:if>
                                             <c:if test="${not empty param.gender}">
@@ -87,23 +87,23 @@
                             <c:url value="/" var="next">
 
                                 <c:param name="page" value="${currentPage + 1}"/>
-                                <c:if test="${not empty species}">
-                                    <c:param name="species" value="${species}"/>
+                                <c:if test="${not empty param.species}">
+                                    <c:param name="species" value="${param.species}"/>
                                 </c:if>
-                                <c:if test="${not empty breed}">
-                                    <c:param name="breed" value="${breed}"/>
+                                <c:if test="${not empty param.breed}">
+                                    <c:param name="breed" value="${param.breed}"/>
                                 </c:if>
-                                <c:if test="${not empty gender}">
-                                    <c:param name="gender" value="${gender}"/>
+                                <c:if test="${not empty param.gender}">
+                                    <c:param name="gender" value="${param.gender}"/>
                                 </c:if>
-                                <c:if test="${not empty searchCriteria}">
-                                    <c:param name="searchCriteria" value="${searchCriteria}"/>
+                                <c:if test="${not empty param.searchCriteria}">
+                                    <c:param name="searchCriteria" value="${param.searchCriteria}"/>
                                 </c:if>
-                                <c:if test="${not empty searchOrder}">
-                                    <c:param name="searchOrder" value="${searchOrder}"/>
+                                <c:if test="${not empty param.searchOrder}">
+                                    <c:param name="searchOrder" value="${param.searchOrder}"/>
                                 </c:if>
-                                <c:if test="${not empty find}">
-                                    <c:param name="find" value="${find}"/>
+                                <c:if test="${not empty param.find}">
+                                    <c:param name="find" value="${param.find}"/>
                                 </c:if>
                             </c:url>
                             <c:if test="${currentPage + 1 <= maxPage}">
