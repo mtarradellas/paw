@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,14 @@ import java.util.stream.Stream;
 public class UserDaoImpl implements UserDao {
 
     private static final String USER_TABLE = "users";
+    private static final String TOKEN_TABLE = "tokens";
 
     private static final String DUPLICATE_USERNAME_ERROR = "Duplicate key exception: username already exists";
     private static final String DUPLICATE_MAIL_ERROR = "Duplicate key exception: mail already exists";
 
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+    private final SimpleJdbcInsert jdbcInsertToken;
 
     private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
             rs.getLong("id"),
@@ -34,12 +37,21 @@ public class UserDaoImpl implements UserDao {
             rs.getString("mail"),
             rs.getString("phone"));
 
+    private static final RowMapper<Token> TOKEN_MAPPER = (rs, rowNum) -> new Token(
+            rs.getLong("id"),
+            (UUID)rs.getObject("token"),
+            rs.getLong("userId"),
+            rs.getDate("expirationDate"));
+
     @Autowired
     public UserDaoImpl(final DataSource dataSource) {
 
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(USER_TABLE)
+                .usingGeneratedKeyColumns("id");
+        jdbcInsertToken = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TOKEN_TABLE)
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -62,18 +74,36 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean updatePassword(String newPassword) {//FALTA ID
-        return jdbcTemplate.update("UPDATE users SET password = ? WHERE id = ?", new Object[] {newPassword}) == 1;
+    public boolean updatePassword(String newPassword, long id) {
+        return jdbcTemplate.update("UPDATE users SET password = ? WHERE id = ?", new Object[] {newPassword, id}) == 1;
     }
 
     @Override
     public boolean createToken(UUID uuid, long userId, Date expirationDate) {
-        return false;
+        final Map<String, Object> values = new HashMap<>();
+        values.put("token", uuid);
+        values.put("userId", userId);
+        values.put("expirationDate", expirationDate);
+        return jdbcInsertToken.executeAndReturnKey(values).intValue() > 0 ;
+
+    }
+    @Override
+    public Optional<Token> getToken(UUID uuid) {
+        return jdbcTemplate.query("SELECT * FROM tokens", TOKEN_MAPPER)
+                .stream().findFirst();
+    }
+
+    @Override
+    public boolean deleteToken(UUID uuid) {
+        return jdbcTemplate.update("DELETE FROM tokens WHERE token = ?", new Object[] {uuid}) == 1;
     }
 
     @Override
     public Optional<User> findByToken(UUID uuid) {
-        return Optional.empty();
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone " +
+                "FROM users INNER JOIN tokens ON users.id = tokens.userid " +
+                "WHERE tokens.token = ? ", new Object[] {uuid}, USER_MAPPER)
+                .stream().findFirst();
     }
 
     @Override

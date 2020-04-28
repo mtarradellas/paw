@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,8 +50,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updatePassword(String newPassword) {
-        return userDao.updatePassword(newPassword);
+    public boolean updatePassword(String newPassword, long id) {
+        return userDao.updatePassword(encoder.encode(newPassword), id);
     }
 
     @Override
@@ -61,6 +62,16 @@ public class UserServiceImpl implements UserService {
         cal.add(Calendar.DATE, 1);
         tomorrow = cal.getTime();
         return userDao.createToken(uuid,userId,tomorrow);
+    }
+
+    @Override
+    public Optional<Token> getToken(UUID uuid) {
+        return userDao.getToken(uuid);
+    }
+
+    @Override
+    public boolean deleteToken(UUID uuid) {
+        return userDao.deleteToken(uuid);
     }
 
     @Override

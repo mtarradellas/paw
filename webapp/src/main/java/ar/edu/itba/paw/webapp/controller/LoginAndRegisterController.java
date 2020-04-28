@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import ar.edu.itba.paw.webapp.form.RequestMail;
@@ -89,10 +90,10 @@ public class LoginAndRegisterController extends ParentController {
         if(opUser.isPresent()){
 
             UUID uuid = UUID.randomUUID();
-            //chequear el return
             userService.createToken(uuid, opUser.get().getId());
             mailService.sendMail(opUser.get().getMail(),resetPasswordSubject(),resetPasswordBody(opUser.get(),uuid));
-            
+            return new ModelAndView("views/email_sent_for_password_reset");
+
         }
         return requestResetPassword(mailForm)
                 .addObject("invalid_mail", true);
@@ -104,13 +105,37 @@ public class LoginAndRegisterController extends ParentController {
     }
 
     @RequestMapping(value ="/password-reset", method = { RequestMethod.POST })
-    public ModelAndView resetPassword(@ModelAttribute ("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult errors) {
+    public ModelAndView resetPassword(@Valid @ModelAttribute ("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult errors) {
         if (errors.hasErrors()) {
             return resetPassword(resetPasswordForm);
         }
-        userService.updatePassword(resetPasswordForm.getPassword());
+
+        UUID uuid = UUID.fromString(resetPasswordForm.getToken());
+        Optional<Token> token = userService.getToken(uuid);
+        if(!token.isPresent()) {
+            return new ModelAndView("redirect:error-views/404");
+        }
+        if(new Date().after(token.get().getExpirationDate())){
+            return new ModelAndView("redirect:views/token_has_expired");
+        }
+        Optional<User> opUser = userService.findByToken(uuid);
+        if(!opUser.isPresent()){
+            return new ModelAndView("redirect:error-views/404");
+        }
+        userService.updatePassword(resetPasswordForm.getPassword(), opUser.get().getId());
         return new ModelAndView("redirect:/login");
     }
+
+    @RequestMapping(value ="/request-link-account", method = { RequestMethod.GET })
+    public ModelAndView requestLinkAccount(@ModelAttribute ("mailForm") final RequestMail mailForm) {
+        return new ModelAndView("views/request_password_reset");
+    }
+
+    @RequestMapping(value ="/request-link-account", method = { RequestMethod.POST })
+    public ModelAndView requestLinkAccount(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm, final BindingResult errors) {
+        return requestResetPassword(mailForm,errors);
+    }
+
 
     public Authentication authenticateUserAndSetSession(String username,HttpServletRequest request){
 

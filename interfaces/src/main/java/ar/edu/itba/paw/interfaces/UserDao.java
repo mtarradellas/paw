@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Date;
@@ -14,7 +15,9 @@ public interface UserDao {
     Stream<User> list();
     Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String mail);
-    boolean updatePassword(String newPassword);
+    boolean updatePassword(String newPassword, long id);
     boolean createToken(UUID uuid, long userId, Date expirationDate);
+    Optional<Token> getToken(UUID uuid);
+    boolean deleteToken(UUID uuid);
     Optional<User> findByToken(UUID uuid);
 }
