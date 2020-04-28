@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.exception.InvalidUserCreationException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import ar.edu.itba.paw.webapp.form.UserForm;
@@ -10,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
@@ -49,8 +49,10 @@ public class LoginAndRegisterController extends ParentController {
         try {
             opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail(), userForm.getPhone());
-        } catch (RuntimeException ex) {
-            return registerForm(userForm).addObject("userError", true);
+        } catch (InvalidUserCreationException ex) {
+            return registerForm(userForm)
+                    .addObject("duplicatedUsername", ex.isDuplicatedUsername())
+                    .addObject("duplicatedMail", ex.isDuplicatedMail());
         }
 
         if (opUser == null || !opUser.isPresent()) {

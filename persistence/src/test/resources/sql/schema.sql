@@ -1,10 +1,3 @@
-CREATE TABLE IF NOT EXISTS users (
-id SERIAL PRIMARY KEY,
-username VARCHAR(255) NOT NULL UNIQUE,
-password VARCHAR(255) NOT NULL,
-mail VARCHAR(255) NOT NULL,
-phone VARCHAR(255)
-);
 CREATE TABLE IF NOT EXISTS species (
 id SERIAL PRIMARY KEY,
 es_AR VARCHAR(255),
@@ -15,6 +8,13 @@ id SERIAL PRIMARY KEY,
 speciesId INTEGER REFERENCES species(id),
 es_AR VARCHAR(255),
 en_US VARCHAR(255)
+);
+CREATE TABLE IF NOT EXISTS users (
+id SERIAL PRIMARY KEY,
+username VARCHAR(255) NOT NULL UNIQUE,
+password VARCHAR(255) NOT NULL,
+mail VARCHAR(255) NOT NULL UNIQUE,
+phone VARCHAR(255)
 );
 CREATE TABLE IF NOT EXISTS pets (
 id SERIAL PRIMARY KEY,
@@ -32,6 +32,19 @@ ownerId INTEGER REFERENCES users(id)
 );
 CREATE TABLE IF NOT EXISTS images (
 id SERIAL PRIMARY KEY,
-img VARCHAR(255),
+img BYTEA,
 petId INTEGER REFERENCES pets(id)
+);
+CREATE TABLE IF NOT EXISTS status (
+id INTEGER primary key,
+en_US VARCHAR(255),
+es_AR VARCHAR(255)
+);
+CREATE TABLE IF NOT EXISTS requests (
+id SERIAL primary key,
+ownerId INTEGER references users(id),
+petId INTEGER references pets(id),
+status INTEGER references status(id),
+creationDate DATE DEFAULT CURRENT_DATE,
+CONSTRAINT norepeats UNIQUE(ownerId,petId)
 );

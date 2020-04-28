@@ -57,6 +57,8 @@ public class PetDaoImpl implements PetDao {
     public Stream<Pet> list(String language, String page) {
         String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
         List<String> ids = jdbcTemplate.query("select id from pets limit "+ PETS_PER_PAGE + " offset " + offset, (resultSet, i) -> resultSet.getString("id"));
+        if (ids.isEmpty()) return Stream.<Pet>builder().build();
+        
         String pagePets = String.join(",", ids);
 
         String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
