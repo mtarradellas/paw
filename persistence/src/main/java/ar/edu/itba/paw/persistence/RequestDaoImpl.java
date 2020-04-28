@@ -180,7 +180,7 @@ public class RequestDaoImpl implements RequestDao {
             else { /* Default criteria */
                 searchCriteria = "requests.creationDate";
             }
-            if (searchOrder.toLowerCase().contains("asc")) {
+            if (searchOrder == null || searchOrder.toLowerCase().contains("asc")) {
                 searchOrder = "ASC";
             } else {
                 searchOrder = "DESC";
