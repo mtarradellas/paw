@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
-import ar.edu.itba.paw.interfaces.exception.InvalidUserCreationException;
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +58,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public Optional<User> findByMail(String mail) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE mail = ?", new Object[] {mail}, USER_MAPPER)
+                .stream().findFirst();
+    }
+
+    @Override
     public Stream<User> list() {
         return jdbcTemplate.query("SELECT * FROM users", USER_MAPPER)
                 .stream();
     }
 
     @Override
-    public Optional<User> create(String username, String password, String mail, String phone) throws InvalidUserCreationException {
+    public Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException {
         final Map<String, String> values = new HashMap<>();
         values.put("username", username);
         values.put("password", password);
@@ -76,8 +82,8 @@ public class UserDaoImpl implements UserDao {
             key = jdbcInsert.executeAndReturnKey(values);
         } catch (DuplicateKeyException ex) {
             System.out.println(ex.getMessage());
-            if (ex.getMessage().contains("users_username_key")) throw new InvalidUserCreationException(DUPLICATE_USERNAME_ERROR, true, false);
-            if (ex.getMessage().contains("users_mail_key")) throw new InvalidUserCreationException(DUPLICATE_MAIL_ERROR, false, true);
+            if (ex.getMessage().contains("users_username_key")) throw new DuplicateUserException(DUPLICATE_USERNAME_ERROR, true, false);
+            if (ex.getMessage().contains("users_mail_key")) throw new DuplicateUserException(DUPLICATE_MAIL_ERROR, false, true);
             return Optional.empty();
         }
 

@@ -1,33 +1,33 @@
 package ar.edu.itba.paw.interfaces.exception;
 
-public class InvalidUserCreationException extends RuntimeException {
+public class DuplicateUserException extends RuntimeException {
 
     private boolean duplicatedUsername;
     private boolean duplicatedMail;
 
-    public InvalidUserCreationException() {
+    public DuplicateUserException() {
         super();
     }
 
-    public InvalidUserCreationException(String message, boolean duplicatedUsername, boolean duplicatedMail) {
+    public DuplicateUserException(String message, boolean duplicatedUsername, boolean duplicatedMail) {
         super(message);
         this.duplicatedUsername = duplicatedUsername;
         this.duplicatedMail = duplicatedMail;
     }
 
-    public InvalidUserCreationException(String message) {
+    public DuplicateUserException(String message) {
         super(message);
     }
 
-    public InvalidUserCreationException(String message, Throwable cause) {
+    public DuplicateUserException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public InvalidUserCreationException(Throwable cause) {
+    public DuplicateUserException(Throwable cause) {
         super(cause);
     }
 
-    protected InvalidUserCreationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected DuplicateUserException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

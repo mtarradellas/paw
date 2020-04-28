@@ -1,27 +1,25 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.exception.InvalidUserCreationException;
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -37,6 +35,11 @@ public class LoginAndRegisterController extends ParentController {
         return new ModelAndView("views/login");
     }
 
+    @RequestMapping(value ="/register", method = { RequestMethod.GET })
+    public ModelAndView registerForm(@ModelAttribute ("registerForm") final UserForm userForm) {
+        return new ModelAndView("views/register");
+    }
+
     @RequestMapping(value = "/register", method = { RequestMethod.POST })
     public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm,
                                    final BindingResult errors, HttpServletRequest request) {
@@ -49,7 +52,7 @@ public class LoginAndRegisterController extends ParentController {
         try {
             opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail(), userForm.getPhone());
-        } catch (InvalidUserCreationException ex) {
+        } catch (DuplicateUserException ex) {
             return registerForm(userForm)
                     .addObject("duplicatedUsername", ex.isDuplicatedUsername())
                     .addObject("duplicatedMail", ex.isDuplicatedMail());
@@ -64,10 +67,22 @@ public class LoginAndRegisterController extends ParentController {
         return new ModelAndView("redirect:/");
     }
 
-    @RequestMapping(value ="/register", method = { RequestMethod.GET })
-    public ModelAndView registerForm(@ModelAttribute ("registerForm") final UserForm userForm) {
-        return new ModelAndView("views/register");
+    @RequestMapping(value ="/request-password-reset", method = { RequestMethod.GET })
+    public ModelAndView requestResetPassword() {
+        return new ModelAndView("views/request_password_reset");
     }
+
+    @RequestMapping(value ="/password-reset", method = { RequestMethod.POST })
+    public ModelAndView requestResetPassword(@RequestParam (name = "mail", required = true) String mail) {
+        Optional<User> opUser = userService.findByMail(mail);
+        if(opUser.isPresent()){
+            return new ModelAndView("redirect:views/password_reset");
+        }
+        return new ModelAndView("views/request_password_reset");
+    }
+
+
+
 
     public Authentication authenticateUserAndSetSession(String username,HttpServletRequest request){
 
