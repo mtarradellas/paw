@@ -11,8 +11,10 @@
     <div class="container-fluid">
         <div class="shadow p-4 login-register-container bg-white">
             <h1>${requestPasswordReset}</h1>
-            <p><spring:message code="resetPassword.descriptionPassword" </p>
-            <form:form modelAttribute="requestMailForm" action="${pageContext.request.contextPath}/register" method="post" enctype="application/x-www-form-urlencoded">
+            <p><spring:message code="resetPassword.descriptionPassword"/></p>
+            <form:form modelAttribute="resetPasswordForm" action="${pageContext.request.contextPath}/password-reset" method="post" enctype="application/x-www-form-urlencoded">
+
+                <input name="token" type="hidden" value="${param.token}"/>
 
                 <spring:bind path="password">
                     <div class="form-group">
