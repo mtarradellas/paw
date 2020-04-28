@@ -8,12 +8,16 @@
         <div class="shadow p-4 login-register-container bg-white">
             <h1><spring:message code="register.title"/></h1>
             <form:form modelAttribute="registerForm" action="${pageContext.request.contextPath}/register" method="post" enctype="application/x-www-form-urlencoded">
-
                 <spring:bind path="username">
                     <div class="form-group">
                         <form:label path="username" for="username"><spring:message code="register.username"/>: </form:label>
-                        <form:input type="text" id="username" path="username" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                        <form:input type="text" id="username" path="username" cssClass="form-control ${status.error || duplicatedUsername ? 'is-invalid' : ''}"/>
                         <form:errors path="username" element="div" cssClass="invalid-feedback"/>
+                        <c:if test="${duplicatedUsername}">
+                            <div class="invalid-feedback">
+                                <spring:message code="register.usernameNotUnique"/>
+                            </div>
+                        </c:if>
                     </div>
                 </spring:bind>
 
@@ -40,8 +44,13 @@
                 <spring:bind path="mail">
                     <div class="form-group">
                         <form:label path="mail" for="mail"><spring:message code="register.email"/>: </form:label>
-                        <form:input type="text" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
+                        <form:input type="text" id="mail" cssClass="form-control ${status.error || duplicatedMail ? 'is-invalid' : ''}" path="mail"/>
                         <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
+                        <c:if test="${duplicatedMail}">
+                            <div class="invalid-feedback">
+                                <spring:message code="register.emailNotUnique"/>
+                            </div>
+                        </c:if>
                     </div>
                 </spring:bind>
 
@@ -55,7 +64,7 @@
 
                 <div class="p-2">
                     <spring:message code="register.submit" var="submitText"/>
-                    <input type="submit" class="btn btn-primary" name="${submitText}"/>
+                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form:form>
         </div>
