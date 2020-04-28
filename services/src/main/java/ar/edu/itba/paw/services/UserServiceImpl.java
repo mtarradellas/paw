@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exception.InvalidUserCreationException;
 import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> create(String username, String password, String mail, String phone) {
+    public Optional<User> create(String username, String password, String mail, String phone) throws InvalidUserCreationException {
         return this.userDao.create(username, encoder.encode(password), mail, phone);
     }
 }

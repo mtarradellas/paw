@@ -25,15 +25,10 @@
             <li class="nav-item">
                 <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests"><spring:message code="header.requests"/></a></h4>
             </li>
-<<<<<<< HEAD:webapp/src/main/webapp/WEB-INF/jsp/parts/header.jsp
-            <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
-=======
 
             <li class="nav-item notify-container">
                 <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
                 <c:if test="${!(pendingRequests eq 0)}"><span class="notify-bubble">${pendingRequests}</span></c:if>
->>>>>>> 137ba9515fe7c83409aa51225965281750d02d8e:webapp/src/main/webapp/WEB-INF/tags/header.tag
             </li>
 
             <li class="nav-item">
