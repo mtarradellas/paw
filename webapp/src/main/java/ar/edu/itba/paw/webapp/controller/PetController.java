@@ -77,8 +77,6 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
     public ModelAndView requestPet(@PathVariable("id") long id) {
-        Long time1 = System.currentTimeMillis();
-
         long ownerId = petService.getOwnerId(id);
 
         if( loggedUser()!= null && ownerId != loggedUser().getId() && !requestService.requestExists(id,loggedUser().getId(),getLocale())){

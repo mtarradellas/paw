@@ -236,7 +236,6 @@ public class PetDaoImpl implements PetDao {
 
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql + "WHERE  pets.id in (" + pagePets + ")",
                 new PetMapExtractor());
-        System.out.println(imageMap.size());
         imageMap.forEach(Pet::setImages);
         return imageMap.keySet().stream();
     }
