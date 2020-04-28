@@ -85,15 +85,10 @@ public class PetDaoImpl implements PetDao {
         }
 
         int numValue = -1;
-        boolean number = true;
-        for(int i = 0; i < findValue.length();i++){
-            if(!Character.isDigit(findValue.charAt(i))){
-                number = false;
-            }
-        }
-        if(number){
+        try {
             numValue = Integer.parseInt(findValue);
-        }
+        } catch (NumberFormatException ignored) {}
+
         String modifiedValue = "%"+findValue.toLowerCase()+"%";
 
         String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
@@ -169,22 +164,24 @@ public class PetDaoImpl implements PetDao {
             return imageMap.keySet().stream();
         }
         else {
-            if(searchCriteria.contains("upload")){
+            if(searchCriteria.toLowerCase().contains("upload")){
                 searchCriteria = "uploadDate";
             }
-            if(searchCriteria.contains("gender")){
+            else if(searchCriteria.equalsIgnoreCase("gender")){
                 searchCriteria = "gender";
             }
-            if(searchCriteria.contains("price")){
+            else if(searchCriteria.equalsIgnoreCase("price")){
                 searchCriteria = "price";
             }
-            if(searchCriteria.contains("species")){
+            else if(searchCriteria.equalsIgnoreCase("species")){
                 searchCriteria = "species." + language;
             }
-            if(searchCriteria.contains("breed")){
+            else if(searchCriteria.equalsIgnoreCase("breed")){
+                searchCriteria = "breeds." + language;
+            } else { /* Default criteria */
                 searchCriteria = "breeds." + language;
             }
-            if(searchOrder == null || searchOrder.contains("asc")) { searchOrder = "ASC";}
+            if(searchOrder == null || searchOrder.equalsIgnoreCase("asc")) { searchOrder = "ASC";}
             else { searchOrder = "DESC";}
 
             searchCriteria = searchCriteria + " " + searchOrder;
