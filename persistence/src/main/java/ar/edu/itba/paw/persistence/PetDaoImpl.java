@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.PetDao;
-import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.*;
 
-import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -41,6 +39,13 @@ public class PetDaoImpl implements PetDao {
                 .usingGeneratedKeyColumns("id");
     }
 
+    private static final RowMapper<Contact> CONTACT_MAPPER = (rs, rowNum) -> new Contact(rs.getString("mail"), rs.getString("username"));
+
+    @Override
+    public long getOwnerId(long petId){
+        return jdbcTemplate.queryForObject("select ownerid from pets where id = "+ petId,Long.class);
+    }
+
     @Override
     public Optional<Pet> findById(String language, long id) {
 
@@ -57,6 +62,8 @@ public class PetDaoImpl implements PetDao {
     public Stream<Pet> list(String language, String page) {
         String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
         List<String> ids = jdbcTemplate.query("select id from pets limit "+ PETS_PER_PAGE + " offset " + offset, (resultSet, i) -> resultSet.getString("id"));
+        if (ids.isEmpty()) return Stream.<Pet>builder().build();
+        
         String pagePets = String.join(",", ids);
 
         String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
@@ -175,9 +182,9 @@ public class PetDaoImpl implements PetDao {
                 searchCriteria = "species." + language;
             }
             if(searchCriteria.contains("breed")){
-                searchCriteria = "breed." + language;
+                searchCriteria = "breeds." + language;
             }
-            if(searchOrder.contains("asc")) { searchOrder = "ASC";}
+            if(searchOrder == null || searchOrder.contains("asc")) { searchOrder = "ASC";}
             else { searchOrder = "DESC";}
 
             searchCriteria = searchCriteria + " " + searchOrder;
@@ -291,6 +298,13 @@ public class PetDaoImpl implements PetDao {
 
             pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
             return pets.toString();
+    }
+
+    @Override
+    public Optional<Contact> getPetContact(long petId) {
+        return jdbcTemplate.query("SELECT users.mail AS mail, users.username AS username " +
+                "FROM pets INNER JOIN users ON users.id = pets.ownerId " +
+                "WHERE pets.id = ?", new Object[] {petId}, CONTACT_MAPPER).stream().findFirst();
     }
 
 

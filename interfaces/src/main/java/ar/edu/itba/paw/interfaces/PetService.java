@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces;
 
+import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
 
 import java.sql.Date;
@@ -15,4 +16,6 @@ public interface PetService {
     String getMaxPages();
     String getMaxSearchPages(String language, String findValue);
     String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter);
+    Optional<Contact> getPetContact(long petId);
+    long getOwnerId(long petId);
 }

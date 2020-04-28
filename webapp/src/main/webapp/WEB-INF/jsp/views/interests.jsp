@@ -6,70 +6,45 @@
 <t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="container-fluid">
-            <div class="row">
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" />
+            <jsp class="row">
+                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" >
+                    <jsp:param name="destination" value="interests"/>
+                </jsp:include>
                 <div class="col ">
                     <div class="shadow p-3 bg-white rounded">
                         <h2>Users interested in your pets:</h2>
-                        <div class="row bg-light p-1">
-                            <div class=" col-sm-10">
-                                <a href="${pageContext.request.contextPath}/">Pedro Vedoya</a> is interested in <a href="${pageContext.request.contextPath}/">Callie</a>
-                                <small class="text-warning">  27.11.2015, 15:00</small>
-                            </div>
-                            <div class="col-sm-2 ">
-                                <button type="button" class="btn btn-success">Accept</button>
-                                <button type="button" class="btn btn-danger">Reject</button>
-                            </div>
-                        </div>
-                        <div class="row bg-light p-1">
-                            <div class=" col-sm-10">
-                                <a href="${pageContext.request.contextPath}/">Manu Tarradellas</a> is interested in <a href="${pageContext.request.contextPath}/">Dying</a>
-                                <small class="text-warning">  21.01.2010, 10:20</small>
-                            </div>
-                            <div class="col-sm-2 ">
-                                <button type="button" class="btn btn-success">Accept</button>
-                                <button type="button" class="btn btn-danger">Reject</button>
-                            </div>
-                        </div>
-                        <div class="row bg-light p-1">
-                            <div class=" col-sm-10">
-                                <a href="${pageContext.request.contextPath}/">Facu Astiz</a> is interested in <a href="${pageContext.request.contextPath}/">Barry the Bee</a>
-                                <small class="text-warning">  02.11.2016, 20:34</small>
-                            </div>
-                            <div class="col-sm-2 ">
-                                <button type="button" class="btn btn-success">Accept</button>
-                                <button type="button" class="btn btn-danger">Reject</button>
-
-                            </div>
-                        </div>
-                        <div class="row bg-light p-1">
-                            <div class=" col-sm-10">
-                                <a href="${pageContext.request.contextPath}/">Lu Karpovich</a> is interested in <a href="${pageContext.request.contextPath}/">Basic Shit</a>
-                                <small class="text-warning">  12.12.2019, 21:32</small>
-                            </div>
-                            <div class="col-sm-2 ">
-                                <button type="button" class="btn btn-success">Accept</button>
-                                <button type="button" class="btn btn-danger">Reject</button>
-                            </div>
-                        </div>
-                        <div class="row bg-light p-1 resolved">
-                            <div class=" col-sm-10">
-                                <a href="${pageContext.request.contextPath}/">El Lenia</a> was interested in <a href="${pageContext.request.contextPath}/">Franco</a>
-                                <small class="text-warning">  22.01.2020, 00:02</small>
-                            </div>
-                            <div class="col-sm-2 ">
-                                <p>Accepted</p>
-                            </div>
-                        </div>
-                        <div class="row bg-light p-1 resolved">
-                            <div class=" col-sm-10">
-                                <a href="${pageContext.request.contextPath}/">Coronavirus</a> was interested in <a href="${pageContext.request.contextPath}/">China</a>
-                                <small class="text-warning">  27.12.2019, 10:00</small>
-                            </div>
-                            <div class="col-sm-2 ">
-                                <p>Rejected</p>
-                            </div>
-                        </div>
+                            <c:if test="${empty interests_list }">
+                                <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                    <a href="${pageContext.request.contextPath}/interests"><spring:message code="showAll"/></a>
+                                </div>
+                            </c:if>
+                            <c:forEach var="req" items="${interests_list}">
+                                <c:if test="${req.status.name eq 'Pending'}">
+                                    <div class="row bg-light p-1">
+                                        <div class=" col-sm-10">
+                                            <spring:message code="request.isInterested" arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                            <small class="text-warning">    ${req.creationDate}</small>
+                                        </div>
+                                        <div class="col-sm-2 ">
+                                            <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/interests-accept-reject/${req.id}"/>">
+                                                <button type="submit" name="newStatus" value="accept" class="btn btn-success"><spring:message code="accept"/></button>
+                                                <button type="submit" name="newStatus" value="reject" class="btn btn-danger" ><spring:message code="reject"/></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </c:if>
+                                <c:if test="${req.status.name ne 'Pending'}">
+                                    <div class="row bg-light p-1 resolved">
+                                        <div class=" col-sm-10">
+                                            <spring:message code="request.wasInterested" arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                            <small class="text-warning">    ${req.creationDate}</small>
+                                        </div>
+                                        <div class="col-sm-2 ">
+                                            <p>${req.status.name}</p>
+                                        </div>
+                                    </div>
+                                </c:if>
+                            </c:forEach>
                     </div>
                 </div>
             </div>

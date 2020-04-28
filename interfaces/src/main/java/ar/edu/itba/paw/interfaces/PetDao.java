@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Species;
 
@@ -17,4 +18,6 @@ public interface PetDao {
     String maxPages();
     String maxSearchPages(String language, String findValue);
     String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter);
+    Optional<Contact> getPetContact(long petId);
+    long getOwnerId(long petId);
 }

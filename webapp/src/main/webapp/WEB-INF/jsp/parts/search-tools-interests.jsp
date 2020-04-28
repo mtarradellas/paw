@@ -4,7 +4,7 @@
 
 
 <div class="col-md-2 search-tools">
-    <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/">
+    <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/${param.destination}">
         <div class="card-header">
             <h5 class="card-title"><spring:message code="filter.options"/></h5>
         </div>
@@ -26,9 +26,6 @@
                 <option value="date"
                         <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'date')}">selected</c:if>
                 ><spring:message code="request.date"/></option>
-                <option value="username"
-                        <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'username')}">selected</c:if>
-                ><spring:message code="request.username"/></option>
                 <option value="petName"
                         <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'petName')}">selected</c:if>
                 ><spring:message code="request.petName"/></option>

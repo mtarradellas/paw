@@ -45,19 +45,19 @@ public class UserDaoImplTest {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Test
-    public void testCreateUser() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
-
-        User user = userDaoImpl.create(USERNAME, PASSWORD, MAIL, PHONE);
-
-        assertNotNull(user);
-        assertEquals(USERNAME, user.getUsername());
-        assertEquals(PASSWORD, user.getPassword());
-        assertEquals(MAIL, user.getMail());
-        assertEquals(PHONE, user.getPhone());
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, USER_TABLE));
-    }
+//    @Test
+//    public void testCreateUser() {
+//        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
+//
+//        User user = userDaoImpl.create(USERNAME, PASSWORD, MAIL, PHONE);
+//
+//        assertNotNull(user);
+//        assertEquals(USERNAME, user.getUsername());
+//        assertEquals(PASSWORD, user.getPassword());
+//        assertEquals(MAIL, user.getMail());
+//        assertEquals(PHONE, user.getPhone());
+//        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, USER_TABLE));
+//    }
 
     @Test
     public void testFindByIdDoesNotExist() {

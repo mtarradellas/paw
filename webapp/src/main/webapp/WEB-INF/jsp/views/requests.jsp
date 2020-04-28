@@ -7,31 +7,49 @@
     <jsp:body>
         <div class="container-fluid">
             <div class="row">
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" />
+                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" >
+                    <jsp:param name="destination" value="requests"/>
+                </jsp:include>
                 <div class="col ">
                     <div class="shadow p-3 bg-white rounded">
                         <h2>Pets you requested:</h2>
-                        <div class="row bg-light p-1">
-                            <div class=" col-sm-11">
-                                You showed interest in <a href="${pageContext.request.contextPath}/">Callie</a>
-                                <small class="text-warning">  27.11.2014, 12:00</small>
+                        <c:if test="${empty requests_list }">
+                            <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
                             </div>
-                            <div class="col-sm-1 ">
-                                <button type="button" class="btn btn-danger">Cancel</button>
-                            </div>
-                        </div>
-                        <div class="row p-1 bg-light resolved">
-                            <div class=" col-sm-11">
-                                Your request for <a href="${pageContext.request.contextPath}/">Fido</a> was accepted by <a href="${pageContext.request.contextPath}/">John Johnson</a>!
-                                <small class="text-warning">  12.02.2020, 12:00</small>
-                            </div>
-                        </div>
-                        <div class="row bg-light p-1 resolved">
-                            <div class=" col-sm-11">
-                                Your request for <a href="${pageContext.request.contextPath}/">Bobby</a> was rejected by <a href="${pageContext.request.contextPath}/">Jack Jackson</a>!
-                                <small class="text-warning">  27.11.2014, 12:00</small>
-                            </div>
-                        </div>
+                        </c:if>
+                        <c:forEach var="req" items="${requests_list}">
+                            <c:if test="${req.status.name eq 'Pending'}">
+                                <div class="row bg-light p-1">
+                                    <div class=" col-sm-11">
+                                        <spring:message code="request.showedInterest" arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                        <small class="text-warning">    ${req.creationDate}</small>
+                                    </div>
+                                    <div class="col-sm-1 ">
+                                        <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/requests-cancel/${req.id}"/>">
+                                            <button  type="submit" name="newStatus" value="cancel" class="btn btn-danger"><spring:message code="cancel"/></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <c:if test="${req.status.name eq 'Accepted'}">
+                                <div class="row p-1 bg-light resolved">
+                                    <div class=" col-sm-11">
+                                        <spring:message code="request.wasAccepted" arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                        <small class="text-warning">    ${req.creationDate}</small>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <c:if test="${req.status.name eq 'Rejected'}">
+                                <div class="row p-1 bg-light resolved">
+                                    <div class=" col-sm-11">
+                                        <spring:message code="request.wasRejected" arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                        <small class="text-warning">    ${req.creationDate}</small>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:forEach>
+
                     </div>
                 </div>
             </div>

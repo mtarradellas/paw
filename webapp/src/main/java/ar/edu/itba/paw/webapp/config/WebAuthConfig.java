@@ -35,6 +35,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login", "/register").anonymous()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").authenticated()
+                .antMatchers("/pet/*/request","/interests","/requests").authenticated()
                 .antMatchers("/**").permitAll()
             .and().formLogin()
                 .loginPage("/login")
@@ -43,7 +44,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/", false)
             .and().rememberMe()
                 .rememberMeParameter("rememberme")
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(20))
+                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                 .key("E5826585E87659EAE6567BEC3F93D")
                 /* User OpenSSL para generar una clave 1024/2048/4k caracteres, guardarlo en src/main/resources
                 *  cargarlo y usarlo como key */
