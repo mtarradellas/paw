@@ -12,16 +12,18 @@
 
                 <spring:bind path="username">
                     <div class="form-group">
-                        <form:label path="username" for="username"><spring:message code="register.username"/>: </form:label>
-                        <form:input type="text" id="username" path="username" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                        <spring:message code="register.username" var="usernameTxt"/>
+                        <form:label path="username" for="username">${usernameTxt}: </form:label>
+                        <form:input type="text" placeholder="${usernameTxt}" id="username" path="username" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                         <form:errors path="username" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
 
                 <spring:bind path="password">
                     <div class="form-group">
-                        <form:label path="password" for="password"><spring:message code="register.password"/>: </form:label>
-                        <form:input type="password" id="password" path="password" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                        <spring:message code="register.password" var="passwordTxt"/>
+                        <form:label path="password" for="password">${passwordTxt}: </form:label>
+                        <form:input type="password" placeholder="${passwordTxt}" id="password" path="password" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                         <form:errors path="password" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
@@ -30,8 +32,9 @@
 
                 <spring:bind path="repeatPassword">
                     <div class="form-group">
-                        <form:label path="repeatPassword" for="repeatPassword"><spring:message code="register.repeatPassword"/>: </form:label>
-                        <form:input type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
+                        <spring:message code="register.repeatPassword" var="repeatPasswordTxt"/>
+                        <form:label path="repeatPassword" for="repeatPassword">${repeatPasswordTxt}: </form:label>
+                        <form:input placeholder="${repeatPasswordTxt}" type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
                                     path="repeatPassword"/>
                         <form:errors path="repeatPassword" element="div" cssClass="invalid-feedback"/>
                         ${classError}
@@ -40,16 +43,18 @@
 
                 <spring:bind path="mail">
                     <div class="form-group">
-                        <form:label path="mail" for="mail"><spring:message code="register.email"/>: </form:label>
-                        <form:input type="text" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
+                        <spring:message code="register.email" var="emailTxt"/>
+                        <form:label path="mail" for="mail">${emailTxt}: </form:label>
+                        <form:input type="text" placeholder="${emailTxt}" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
                         <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
 
                 <spring:bind path="phone">
                     <div class="form-group">
-                        <form:label path="phone" for="phone"><spring:message code="register.phone"/>: </form:label>
-                        <form:input type="text" id="phone" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="phone"/>
+                        <spring:message code="register.phone" var="phoneTxt"/>
+                        <form:label path="phone" for="phone">${phoneTxt}: </form:label>
+                        <form:input type="text" placeholder="${phoneTxt}" id="phone" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="phone"/>
                         <form:errors path="phone" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>

@@ -4,7 +4,7 @@
 
 <c:url value="/login" var="loginUrl"/>
 
-<spring:message var="loginTitle" message="login.title"/>
+<spring:message var="loginTitle" code="login.title"/>
 
 <t:basicLayout title="${loginTitle}">
     <div class="container-fluid">
@@ -12,13 +12,15 @@
             <h1>${loginTitle}</h1>
             <form action="${loginUrl}" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-group">
-                    <label for="username"><spring:message code="login.username"/>:</label>
-                    <input type="text" class="form-control" name="username" id="username">
+                    <spring:message code="login.username" var="usernameTxt"/>
+                    <label for="username">${usernameTxt}:</label>
+                    <input type="text" placeholder="${usernameTxt}" class="form-control" name="username" id="username">
                 </div>
 
                 <div class="form-group">
-                    <label for="password"><spring:message code="login.password"/>:</label>
-                    <input type="password" class="form-control" name="password" id="password">
+                    <spring:message code="login.password" var="passwordTxt"/>
+                    <label for="password">${passwordTxt}:</label>
+                    <input type="password" placeholder="${passwordTxt}" class="form-control" name="password" id="password">
                 </div>
 
                 <div class="form-check">
