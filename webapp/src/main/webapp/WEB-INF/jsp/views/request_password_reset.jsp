@@ -1,16 +1,31 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: lkarpovich
-  Date: 28/4/20
-  Time: 12:00
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <title>Reset Password</title>
-</head>
-<body>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-</body>
-</html>
+<spring:message var="requestPasswordReset" code="resetPassword.title"/>
+
+<t:basicLayout title="${requestPasswordReset}">
+    <div class="container-fluid">
+        <div class="shadow p-4 login-register-container bg-white">
+            <h1>${requestPasswordReset}</h1>
+            <p><spring:message code="resetPassword.descriptionEmail"/></p>
+            <form:form modelAttribute="mailForm" action="${pageContext.request.contextPath}/request-password-reset" method="post" enctype="application/x-www-form-urlencoded">
+                <spring:bind path="mail">
+                    <div class="form-group">
+                        <form:label path="mail" for="mail"><spring:message code="resetPassword.email"/>: </form:label>
+                        <form:input type="text" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
+                        <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
+                    </div>
+                </spring:bind>
+
+                <div class="p-2">
+                    <spring:message code="resetPassword.submit" var="submitText"/>
+                    <input type="submit" class="btn btn-primary" name="${submitText}"/>
+                </div>
+            </form:form>
+        </div>
+    </div>
+
+</t:basicLayout>
