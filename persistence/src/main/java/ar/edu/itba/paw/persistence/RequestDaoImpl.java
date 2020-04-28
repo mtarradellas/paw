@@ -76,11 +76,12 @@ public class RequestDaoImpl implements RequestDao {
     @Override
     public Optional<Request> create(long ownerId, long petId, int status, String language) {
 
+        /* Checks that owner of request is not also owner of pet */
         Optional<Request> req = jdbcTemplate.query("SELECT ownerId, id FROM pets WHERE ownerId = ? AND id = ? "
                 , new Object[]{ownerId, petId}, REQUEST_MAPPER)
                 .stream().findFirst();
-        if(!req.isPresent()) {
 
+        if(!req.isPresent()) {
             final Map<String, Object> values = new HashMap<>();
             values.put("ownerId", ownerId);
             values.put("petId", petId);
@@ -99,12 +100,13 @@ public class RequestDaoImpl implements RequestDao {
                         "WHERE requests.id = ? AND pets.ownerId = ? AND status.id = 1 "
                 , new Object[]{id, petOwnerId}, REQUEST_MAPPER)
                 .stream().findFirst();
+
         if(req.isPresent()){
             int newStatus = 1;
             if (status.contains("accepted")) {
                 newStatus = 2;
             }
-            if (status.contains("rejected")) {
+            else if (status.contains("rejected")) {
                 newStatus = 3;
             }
             jdbcTemplate.update("UPDATE requests " +
@@ -148,7 +150,7 @@ public class RequestDaoImpl implements RequestDao {
         return jdbcTemplate.update("DELETE FROM requests WHERE id =?",new Object[]{id}) == 1;
     }
 
-    public Stream<Request> filterList (String language, String userIdFilter, long userId, String status, String searchCriteria, String searchOrder){
+    private Stream<Request> filterList (String language, String userIdFilter, long userId, String status, String searchCriteria, String searchOrder){
         Stream<Request> result;
         if (status == null) {
             status = "%";
@@ -172,10 +174,13 @@ public class RequestDaoImpl implements RequestDao {
             if (searchCriteria.contains("date")) {
                 searchCriteria = "requests.creationDate";
             }
-            if (searchCriteria.contains("petName")) {
+            else if (searchCriteria.contains("petName")) {
                 searchCriteria = "pets.petName";
             }
-            if (searchOrder.contains("asc")) {
+            else { /* Default criteria */
+                searchCriteria = "requests.creationDate";
+            }
+            if (searchOrder.toLowerCase().contains("asc")) {
                 searchOrder = "ASC";
             } else {
                 searchOrder = "DESC";
