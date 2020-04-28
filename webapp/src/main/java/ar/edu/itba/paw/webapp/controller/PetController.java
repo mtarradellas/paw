@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 
 import ar.edu.itba.paw.models.Contact;
+import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -40,7 +42,8 @@ public class PetController extends ParentController {
         if(species != null || gender != null || searchCriteria != null){
             String maxPage = petService.getMaxFilterPages(getLocale(), species, breed, gender);
             mav.addObject("maxPage", maxPage);
-            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder,page));
+            List<Pet> petList = petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder,page);
+            mav.addObject("home_pet_list", petList);
         }
         else if(findValue != null){
             String maxPage = petService.getMaxSearchPages(getLocale(),findValue);
