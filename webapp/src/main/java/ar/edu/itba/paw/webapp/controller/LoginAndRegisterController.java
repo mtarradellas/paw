@@ -72,13 +72,15 @@ public class LoginAndRegisterController extends ParentController {
         return new ModelAndView("views/request_password_reset");
     }
 
-    @RequestMapping(value ="/password-reset", method = { RequestMethod.POST })
-    public ModelAndView requestResetPassword(@RequestParam (name = "mail", required = true) String mail) {
-        Optional<User> opUser = userService.findByMail(mail);
+    @RequestMapping(value ="/request-password-reset", method = { RequestMethod.POST })
+    public ModelAndView requestResetPassword(@Valid @ModelAttribute("Form") final UserForm mailForm) {
+        Optional<User> opUser = userService.findByMail("mail");
         if(opUser.isPresent()){
+
             return new ModelAndView("redirect:views/password_reset");
         }
-        return new ModelAndView("views/request_password_reset");
+        return new ModelAndView("views/request_password_reset")
+                .addObject("invalid_mail", true);
     }
 
 
