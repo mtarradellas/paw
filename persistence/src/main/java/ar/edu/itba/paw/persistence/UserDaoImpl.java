@@ -13,9 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Repository
@@ -61,6 +59,21 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> findByMail(String mail) {
         return jdbcTemplate.query("SELECT * FROM users WHERE mail = ?", new Object[] {mail}, USER_MAPPER)
                 .stream().findFirst();
+    }
+
+    @Override
+    public boolean updatePassword(String newPassword) {//FALTA ID
+        return jdbcTemplate.update("UPDATE users SET password = ? WHERE id = ?", new Object[] {newPassword}) == 1;
+    }
+
+    @Override
+    public boolean createToken(UUID uuid, long userId, Date expirationDate) {
+        return false;
+    }
+
+    @Override
+    public Optional<User> findByToken(UUID uuid) {
+        return Optional.empty();
     }
 
     @Override
