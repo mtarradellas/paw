@@ -13,14 +13,35 @@
 <%--            <a href="${pageContext.request.contextPath}/editUser/${user.id}"><spring:message code="editUser"/></button></h1>--%>
 
     </div>
+
     <div class="p-2">
-        <ul class="list-group">
-            <li class="list-group-item"><spring:message code="user.email"/> <c:out value="${user.mail}"/></li>
-            <li class="list-group-item"><spring:message code="user.phone"/> <c:out value="${user.phone}"/></li>
-        </ul>
+        <c:if test="${loggedUser.id eq user.id}">
+            <ul class="list-group">
+                <li class="list-group-item"><spring:message code="user.email"/> <c:out value="${user.mail}"/></li>
+                <li class="list-group-item"><spring:message code="user.phone"/> <c:out value="${user.phone}"/></li>
+            </ul>
+        </c:if>
         <div class="p-2">
-            <h2><spring:message code="userPets"/></h2>
-<%--            TODO: add list of pets this user owns --%>
+            <h2><spring:message code="pets"/></h2>
+            <div class="card-deck row">
+                <c:forEach var="pet" items="${userPets}">
+                    <div class="col-auto mb-3">
+
+                        <t:animalCard pet="${pet}"/>
+
+                    </div>
+                </c:forEach>
+                <c:if test="${empty userPets}">
+                    <div class="col-auto">
+                        <spring:message code="noPetsFound"/>
+                    </div>
+                </c:if>
+                <c:if test="${not empty userPets}">
+                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="'/user/${id}'"/>
+                </c:if>
+            </div>
+
+
         </div>
     </div>
 

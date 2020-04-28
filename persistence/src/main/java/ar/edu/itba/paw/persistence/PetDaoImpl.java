@@ -222,6 +222,26 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
+    public Stream<Pet> getByUserId(String language, long userId, String page){
+        String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
+        String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "  images.id as imagesId, images.petId as petId " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) ";
+        List<String> ids = jdbcTemplate.query(sql + "where ownerid = " + userId + " limit " + PETS_PER_PAGE + " offset " + offset, (resultSet, i) -> resultSet.getString("id"));
+        if (ids.isEmpty()) return Stream.<Pet>builder().build();
+
+        String pagePets = String.join(",", ids);
+
+        Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql + "WHERE  pets.id in (" + pagePets + ")",
+                new PetMapExtractor());
+        System.out.println(imageMap.size());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream();
+    }
+
+    @Override
     public Pet create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
         final Map<String, Object> values = new HashMap<String, Object>() {{
             put("petName", petName);
@@ -295,6 +315,13 @@ public class PetDaoImpl implements PetDao {
 
             pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
             return pets.toString();
+    }
+
+    @Override
+    public String getMaxUserPetsPages(long userId){
+        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = " + userId ,Integer.class);
+        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
+        return pets.toString();
     }
 
     @Override

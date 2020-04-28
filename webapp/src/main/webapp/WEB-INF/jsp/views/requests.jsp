@@ -15,7 +15,9 @@
                         <h2>Pets you requested:</h2>
                         <c:if test="${empty requests_list }">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
+                                <c:if test="${(not empty param.status) or (not empty param.searchCriteria) or (not empty param.searchOrder) }">
+                                    <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
+                                </c:if>
                             </div>
                         </c:if>
                         <c:forEach var="req" items="${requests_list}">

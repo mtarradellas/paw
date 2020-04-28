@@ -18,11 +18,23 @@ public class UserController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    String  page = "1";
+
     @RequestMapping(value = "/user/{id}")
-    public ModelAndView user(@PathVariable("id") long id) {
+    public ModelAndView user(@PathVariable("id") long id,
+                             @RequestParam(name = "page", required = false) String page) {
+
+        if(page == null){
+            page = "1";
+        }
+
         final ModelAndView mav = new ModelAndView("views/single_user");
+        mav.addObject("currentPage",page);
+        mav.addObject("maxPage",petService.getMaxUserPetsPages(id));
+
         mav.addObject("user",
                 userService.findById(id).orElseThrow(UserNotFoundException::new));
+        mav.addObject("userPets", petService.getByUserId(getLocale(),id,page));
         LOGGER.debug("Loading user {} page", id);
         return mav;
     }
