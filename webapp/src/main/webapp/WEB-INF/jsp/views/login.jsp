@@ -4,10 +4,12 @@
 
 <c:url value="/login" var="loginUrl"/>
 
-<t:basicLayout title="Login">
+<spring:message var="loginTitle" message="login.title"/>
+
+<t:basicLayout title="${loginTitle}">
     <div class="container-fluid">
         <div class="shadow p-4 login-register-container bg-white">
-            <h1><spring:message code="login.title"/></h1>
+            <h1>${loginTitle}</h1>
             <form action="${loginUrl}" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="form-group">
                     <label for="username"><spring:message code="login.username"/>:</label>

@@ -3,10 +3,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<t:basicLayout title="Register">
+<spring:message code="register.title" var="registerTitle"/>
+<t:basicLayout title="${registerTitle}">
     <div class="container-fluid">
         <div class="shadow p-4 login-register-container bg-white">
-            <h1><spring:message code="register.title"/></h1>
+            <h1>${registerTitle}</h1>
             <form:form modelAttribute="registerForm" action="${pageContext.request.contextPath}/register" method="post" enctype="application/x-www-form-urlencoded">
 
                 <spring:bind path="username">
