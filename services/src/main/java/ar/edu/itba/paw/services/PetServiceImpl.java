@@ -73,6 +73,11 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public String getMaxUserPetsPages(long userId){
+        return petDao.getMaxUserPetsPages(userId);
+    }
+
+    @Override
     public Optional<Contact> getPetContact(long petId) {
         return petDao.getPetContact(petId);
     }
