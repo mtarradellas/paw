@@ -36,11 +36,11 @@
                         <spring:message code="noPetsFound"/>
                     </div>
                 </c:if>
-                <c:if test="${not empty userPets}">
-                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="'/user/${id}'"/>
-                </c:if>
-            </div>
 
+            </div>
+            <c:if test="${not empty userPets}">
+                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="'/user/${id}'"/>
+            </c:if>
 
         </div>
     </div>
