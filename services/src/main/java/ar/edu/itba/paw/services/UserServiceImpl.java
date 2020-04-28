@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
@@ -43,5 +46,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByMail(String mail) {
         return userDao.findByMail(mail);
+    }
+
+    @Override
+    public boolean updatePassword(String newPassword) {
+        return userDao.updatePassword(newPassword);
+    }
+
+    @Override
+    public boolean createToken(UUID uuid, long userId) {
+        Date tomorrow = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(tomorrow);
+        cal.add(Calendar.DATE, 1);
+        tomorrow = cal.getTime();
+        return userDao.createToken(uuid,userId,tomorrow);
+    }
+
+    @Override
+    public Optional<User> findByToken(UUID uuid) {
+        return userDao.findByToken(uuid);
     }
 }
