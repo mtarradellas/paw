@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.form.customValidators.FieldsValueMatch;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Size;
 
@@ -12,6 +13,9 @@ import javax.validation.constraints.Size;
         )
 })
 public class ResetPasswordForm {
+    @NotBlank
+    private String token;
+
     @Size(min = 4, max = 50)
     private String password;
 
@@ -32,5 +36,13 @@ public class ResetPasswordForm {
 
     public void setRepeatPassword(String repeatPassword) {
         this.repeatPassword = repeatPassword;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

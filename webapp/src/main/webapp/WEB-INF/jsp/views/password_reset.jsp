@@ -14,7 +14,13 @@
             <p><spring:message code="resetPassword.descriptionPassword"/></p>
             <form:form modelAttribute="resetPasswordForm" action="${pageContext.request.contextPath}/password-reset" method="post" enctype="application/x-www-form-urlencoded">
 
-                <input name="token" type="hidden" value="${param.token}"/>
+                <spring:bind path="token">
+                    <div class="form-group">
+                        <form:input path="token" type="hidden" value="${param.token}" cssClass="${status.error}"/>
+                        <form:errors path="token" element="div" cssClass="invalid-feedback"/>
+                    </div>
+                </spring:bind>
+
 
                 <spring:bind path="password">
                     <div class="form-group">
