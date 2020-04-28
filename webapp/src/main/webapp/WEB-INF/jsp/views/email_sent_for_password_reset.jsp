@@ -4,7 +4,7 @@
 
 <c:url value="/login" var="loginUrl"/>
 
-<spring:message var="loginTitle" message="login.title"/>
+<spring:message var="loginTitle" code="login.title"/>
 
 <t:basicLayout title="${loginTitle}">
     <div class="container-fluid">
