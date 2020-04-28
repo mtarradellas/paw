@@ -1,10 +1,16 @@
 package ar.edu.itba.paw.webapp.controller;
 
+
+import ar.edu.itba.paw.models.Contact;
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Optional;
 
 @Controller
 public class PetController extends ParentController {
@@ -55,6 +61,15 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_pet");
+
+        if(loggedUser() != null){
+            mav.addObject("requestExists", requestService.requestExists(id,loggedUser().getId(),getLocale()));
+            mav.addObject("currentUserID", loggedUser().getId());
+        }else{
+            mav.addObject("requestExists", false);
+            mav.addObject("currentUserID", -1);
+        }
+
         mav.addObject("pet",
                 petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new));
         mav.addObject("species_list", speciesService.speciesList(getLocale()).toArray());
@@ -62,8 +77,43 @@ public class PetController extends ParentController {
         return mav;
     }
 
+    @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
+    public ModelAndView requestPet(@PathVariable("id") long id) {
+        Long time1 = System.currentTimeMillis();
+
+        long ownerId = petService.getOwnerId(id);
+
+        if( loggedUser()!= null && ownerId != loggedUser().getId() && !requestService.requestExists(id,loggedUser().getId(),getLocale())){
+            Optional<Request> newRequest =  requestService.create(loggedUser().getId(),id,getLocale());
+            if(newRequest.isPresent()){
+                Optional<Contact> contact = petService.getPetContact(newRequest.get().getPetId());
+                contact.ifPresent(value -> mailService.sendMail(value.getEmail(), getMailMessage(getLocale(), "subject", newRequest.get()), getMailMessage(getLocale(), "body", newRequest.get())));
+            }
+        }
+        return getIdPet(id);
+    }
+
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
         return imageService.getDataById(id).orElse(null);
     }
+
+    private String getMailMessage(String locale, String part, Request request){
+        switch(part){
+            case "subject":
+                if(locale.equals("en_US")){
+                    return "A user showed interest in one of your pets!";
+                }else{
+                    return "¡Un usuario mostró interés en una de tus mascotas!";
+                }
+            case "body":
+                if(locale.equals("en_US")){
+                    return "User " + request.getOwnerUsername() + " is interested in "+ request.getPetName() + ". Go to our web page to accept or reject his request!!";
+                }else{
+                    return "El usuario " + request.getOwnerUsername() + " está interesado/a en "+ request.getPetName() + "¡¡Vaya a nuestro sitio web para aceptar o rechazar su solicitud!!";
+                }
+        }
+        return "";
+    }
+
 }

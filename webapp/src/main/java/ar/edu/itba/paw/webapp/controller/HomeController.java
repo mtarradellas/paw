@@ -19,9 +19,6 @@ public class HomeController extends ParentController {
         return new ModelAndView("views/contact");
     }
 
-    @RequestMapping(value = "/test")
-    public ModelAndView getIdPet() {
-        final ModelAndView mav = new ModelAndView("views/test");
-        return mav;
-    }
+
+
 }

@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.PetDao;
-import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.*;
 
-import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -39,6 +37,13 @@ public class PetDaoImpl implements PetDao {
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(PET_TABLE)
                 .usingGeneratedKeyColumns("id");
+    }
+
+    private static final RowMapper<Contact> CONTACT_MAPPER = (rs, rowNum) -> new Contact(rs.getString("mail"), rs.getString("username"));
+
+    @Override
+    public long getOwnerId(long petId){
+        return jdbcTemplate.queryForObject("select ownerid from pets where id = "+ petId,Long.class);
     }
 
     @Override
@@ -293,6 +298,13 @@ public class PetDaoImpl implements PetDao {
 
             pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
             return pets.toString();
+    }
+
+    @Override
+    public Optional<Contact> getPetContact(long petId) {
+        return jdbcTemplate.query("SELECT users.mail AS mail, users.username AS username " +
+                "FROM pets INNER JOIN users ON users.id = pets.ownerId " +
+                "WHERE pets.id = ?", new Object[] {petId}, CONTACT_MAPPER).stream().findFirst();
     }
 
 

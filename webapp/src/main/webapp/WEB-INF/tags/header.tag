@@ -4,7 +4,6 @@
 <%@attribute name="loggedUser" required="true" type="ar.edu.itba.paw.models.User"%>
 
 
-<c:set var="pendingRequests" scope="application" value="4"/>
 
 <nav class="navbar navbar-expand-lg header">
     <a class="navbar-brand" href="${pageContext.request.contextPath}/">

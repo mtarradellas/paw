@@ -2,12 +2,15 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
@@ -16,12 +19,15 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 
 @Service
+@Configuration
+@EnableAsync
 public class MailServiceImpl implements MailService {
     @Autowired
     JavaMailSender mailSender;
 
 
     @Override
+    @Async
     public void sendMail(String recipient, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(recipient);

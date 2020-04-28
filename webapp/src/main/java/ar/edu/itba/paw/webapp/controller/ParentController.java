@@ -32,6 +32,8 @@ public class ParentController {
     ImageService imageService;
     @Autowired
     MailService mailService;
+    @Autowired
+    RequestService requestService;
 
     protected String getLocale() {
         Locale locale = LocaleContextHolder.getLocale();

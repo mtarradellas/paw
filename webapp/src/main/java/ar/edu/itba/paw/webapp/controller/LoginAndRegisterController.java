@@ -81,4 +81,9 @@ public class LoginAndRegisterController extends ParentController {
 
         return authentication;
     }
+
+    @RequestMapping(value = "/403")
+    public ModelAndView accessDenied() {
+        return new ModelAndView("error-views/403");
+    }
 }
