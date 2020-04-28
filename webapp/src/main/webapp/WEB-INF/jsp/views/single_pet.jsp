@@ -43,7 +43,7 @@
                             <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                         </h1>
                     </c:if>
-                    <c:if test="${(pet.ownerId ne currentUserID)}">
+                    <c:if test="${(pet.ownerId ne loggedUser.id)}">
 
                         <c:if test="${not requestExists}">
                             <h1 class="mt-2 ml-4">

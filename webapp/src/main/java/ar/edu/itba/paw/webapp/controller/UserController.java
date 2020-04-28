@@ -18,11 +18,14 @@ public class UserController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    String  page = "1"; // TODO
+
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id) {
         final ModelAndView mav = new ModelAndView("views/single_user");
         mav.addObject("user",
                 userService.findById(id).orElseThrow(UserNotFoundException::new));
+        mav.addObject("userPets", petService.getByUserId(getLocale(),id,page));
         LOGGER.debug("Loading user {} page", id);
         return mav;
     }

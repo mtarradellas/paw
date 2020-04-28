@@ -64,10 +64,8 @@ public class PetController extends ParentController {
 
         if(loggedUser() != null){
             mav.addObject("requestExists", requestService.requestExists(id,loggedUser().getId(),getLocale()));
-            mav.addObject("currentUserID", loggedUser().getId());
         }else{
             mav.addObject("requestExists", false);
-            mav.addObject("currentUserID", -1);
         }
 
         mav.addObject("pet",

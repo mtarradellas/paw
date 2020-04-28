@@ -13,14 +13,17 @@
 <%--            <a href="${pageContext.request.contextPath}/editUser/${user.id}"><spring:message code="editUser"/></button></h1>--%>
 
     </div>
+
     <div class="p-2">
-        <ul class="list-group">
-            <li class="list-group-item"><spring:message code="user.email"/> <c:out value="${user.mail}"/></li>
-            <li class="list-group-item"><spring:message code="user.phone"/> <c:out value="${user.phone}"/></li>
-        </ul>
+        <c:if test="${loggedUser.id eq user.id}">
+            <ul class="list-group">
+                <li class="list-group-item"><spring:message code="user.email"/> <c:out value="${user.mail}"/></li>
+                <li class="list-group-item"><spring:message code="user.phone"/> <c:out value="${user.phone}"/></li>
+            </ul>
+        </c:if>
         <div class="p-2">
             <h2><spring:message code="userPets"/></h2>
-<%--            TODO: add list of pets this user owns --%>
+
         </div>
     </div>
 
