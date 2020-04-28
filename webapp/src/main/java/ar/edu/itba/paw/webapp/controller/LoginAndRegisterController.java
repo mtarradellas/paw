@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
+import ar.edu.itba.paw.webapp.form.RequestMail;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -68,18 +69,21 @@ public class LoginAndRegisterController extends ParentController {
     }
 
     @RequestMapping(value ="/request-password-reset", method = { RequestMethod.GET })
-    public ModelAndView requestResetPassword() {
+    public ModelAndView requestResetPassword(@ModelAttribute ("mailForm") final RequestMail mailForm) {
         return new ModelAndView("views/request_password_reset");
     }
 
     @RequestMapping(value ="/request-password-reset", method = { RequestMethod.POST })
-    public ModelAndView requestResetPassword(@Valid @ModelAttribute("Form") final UserForm mailForm) {
-        Optional<User> opUser = userService.findByMail("mail");
+    public ModelAndView requestResetPassword(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm, final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return requestResetPassword(mailForm);
+        }
+        Optional<User> opUser = userService.findByMail(mailForm.getMail());
         if(opUser.isPresent()){
 
             return new ModelAndView("redirect:views/password_reset");
         }
-        return new ModelAndView("views/request_password_reset")
+        return requestResetPassword(mailForm)
                 .addObject("invalid_mail", true);
     }
 
