@@ -28,7 +28,7 @@
                                         <small class="text-warning">    ${req.creationDate}</small>
                                     </div>
                                     <div class="col-sm-1 ">
-                                        <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/requests-cancel/${req.id}"/>">
+                                        <form method="POST" class="m-0" action="<c:url value="/requests-cancel/${req.id}"/>">
                                             <button  type="submit" name="newStatus" value="cancel" class="btn btn-danger"><spring:message code="cancel"/></button>
                                         </form>
                                     </div>

@@ -28,7 +28,7 @@
                                             <small class="text-warning">    ${req.creationDate}</small>
                                         </div>
                                         <div class="col-sm-2 ">
-                                            <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/interests-accept-reject/${req.id}"/>">
+                                            <form method="POST" class="m-0" action="<c:url value="/interests-accept-reject/${req.id}"/>">
                                                 <button type="submit" name="newStatus" value="accept" class="btn btn-success"><spring:message code="accept"/></button>
                                                 <button type="submit" name="newStatus" value="reject" class="btn btn-danger" ><spring:message code="reject"/></button>
                                             </form>
