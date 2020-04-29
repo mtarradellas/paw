@@ -18,7 +18,7 @@
             </li>
 
             <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/contact"><spring:message code="header.addPet"/></a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/upload-pet"><spring:message code="header.addPet"/></a></h4>
             </li>
 
         <c:if test="${not empty loggedUser}">
