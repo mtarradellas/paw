@@ -2,7 +2,6 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
 <spring:message code="register.title" var="registerTitle"/>
 <t:basicLayout title="${registerTitle}">
     <div class="container-fluid">
@@ -22,7 +21,6 @@
                         </c:if>
                     </div>
                 </spring:bind>
-
                 <spring:bind path="password">
                     <div class="form-group">
                         <spring:message code="register.password" var="passwordTxt"/>
@@ -31,9 +29,7 @@
                         <form:errors path="password" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
-
                 <c:set var="classError"><form:errors element="div" cssClass="invalid-feedback"/></c:set>
-
                 <spring:bind path="repeatPassword">
                     <div class="form-group">
                         <spring:message code="register.repeatPassword" var="repeatPasswordTxt"/>
@@ -41,10 +37,9 @@
                         <form:input placeholder="${repeatPasswordTxt}" type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
                                     path="repeatPassword"/>
                         <form:errors path="repeatPassword" element="div" cssClass="invalid-feedback"/>
-                        ${classError}
+                            ${classError}
                     </div>
                 </spring:bind>
-
                 <spring:bind path="mail">
                     <div class="form-group">
                         <spring:message code="register.email" var="emailTxt"/>
@@ -58,7 +53,6 @@
                         </c:if>
                     </div>
                 </spring:bind>
-
                 <spring:bind path="phone">
                     <div class="form-group">
                         <spring:message code="register.phone" var="phoneTxt"/>
@@ -67,16 +61,13 @@
                         <form:errors path="phone" element="div" cssClass="invalid-feedback"/>
                     </div>
                 </spring:bind>
-
                 <div class="p-2">
                     <spring:message code="register.submit" var="submitText"/>
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form:form>
-            <spring:message code="login.forgotPassword" arguments="${pageContext.request.contextPath}/request-password-reset"/><br>
             <spring:message code="register.alreadyDone" arguments="${pageContext.request.contextPath}/login"/><br>
             <spring:message code="login.linkAccount" arguments="${pageContext.request.contextPath}/request-link-account"/>
         </div>
     </div>
-
 </t:basicLayout>
