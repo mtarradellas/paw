@@ -30,7 +30,7 @@
                             </div>
                         </c:if>
                         <c:forEach var="req" items="${requests_list}">
-                            <c:if test="${req.status.name eq 'Pending'}">
+                            <c:if test="${req.status.id eq 1}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-sm-11">
                                         <spring:message code="request.showedInterest" arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
@@ -43,7 +43,7 @@
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.name eq 'Accepted'}">
+                            <c:if test="${req.status.id eq 2}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-sm-11">
                                         <spring:message code="request.wasAccepted" arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
@@ -51,7 +51,7 @@
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.name eq 'Rejected'}">
+                            <c:if test="${req.status.id eq 3}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-sm-11">
                                         <spring:message code="request.wasRejected" arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>

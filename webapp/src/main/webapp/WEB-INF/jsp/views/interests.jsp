@@ -21,7 +21,7 @@
                                 </div>
                             </c:if>
                             <c:forEach var="req" items="${interests_list}">
-                                <c:if test="${req.status.name eq 'Pending'}">
+                                <c:if test="${req.status.id eq 1}">
                                     <div class="row bg-light p-1">
                                         <div class=" col-sm-10">
                                             <spring:message code="request.isInterested" arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
@@ -35,7 +35,7 @@
                                         </div>
                                     </div>
                                 </c:if>
-                                <c:if test="${req.status.name ne 'Pending'}">
+                                <c:if test="${req.status.id ne 1}">
                                     <div class="row bg-light p-1 resolved">
                                         <div class=" col-sm-10">
                                             <spring:message code="request.wasInterested" arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
