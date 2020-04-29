@@ -92,6 +92,26 @@ public class PetController extends ParentController {
         return new ModelAndView("redirect:/pet/" + id );
     }
 
+//    @RequestMapping(value = "/pet/{id}/reserve", method = {RequestMethod.POST})
+//    public ModelAndView reservePet(@PathVariable("id") long id) {
+//        long ownerId = petService.getOwnerId(id);
+//
+//        if( loggedUser()!= null && ownerId != loggedUser().getId() && !requestService.requestExists(id,loggedUser().getId(),getLocale())){
+////            requestService.reserve
+//        }
+//        return new ModelAndView("redirect:/pet/" + id );
+//    }
+//
+//    @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
+//    public ModelAndView removePet(@PathVariable("id") long id) {
+//        long ownerId = petService.getOwnerId(id);
+//
+//        if( loggedUser()!= null && ownerId != loggedUser().getId() && !requestService.requestExists(id,loggedUser().getId(),getLocale())){
+////            requestService.remove
+//        }
+//        return new ModelAndView("redirect:/pet/" + id );
+//    }
+
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
         return imageService.getDataById(id).orElse(null);

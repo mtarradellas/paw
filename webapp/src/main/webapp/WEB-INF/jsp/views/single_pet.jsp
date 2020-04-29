@@ -65,14 +65,14 @@
                         </c:if>
                         <c:if test="${(pet.ownerId eq loggedUser.id)}">
                             <h1 class="mt-2 ml-4">
-                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
+                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/reserve" />">
                                     <button type="submit" name="action" class="btn btn-success">
                                         <spring:message code="petCard.reserve"/>
                                     </button>
                                 </form>
                             </h1>
                             <h1 class="mt-2 ml-4">
-                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
+                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/remove" />">
                                     <button type="submit" name="action" class="btn btn-danger">
                                         <i class="fas fa-times mr-2"></i>
                                         <spring:message code="petCard.remove"/>
