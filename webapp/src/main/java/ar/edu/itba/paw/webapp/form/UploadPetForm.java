@@ -1,27 +1,34 @@
 package ar.edu.itba.paw.webapp.form;
 
 
-///TODO: put constraints
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 public class UploadPetForm {
 
     private byte[] photo;
 
+    @Size(min = 2, max = 50)
+    @Pattern(regexp = "^[a-zA-Z]+$")
     private String petName;
 
     private String speciesName;
 
     private String breedName;
 
+    @Size(min = 3, max = 50)
     private String location;
 
     private boolean vaccinated;
 
     private String gender;
 
+    @Size(max = 250)
     private String description;
 
     private String birthDate;
 
+    @Pattern(regexp = "^[1-9][0-9]+$")
     private int price;
 
     public byte[] getPhoto() {

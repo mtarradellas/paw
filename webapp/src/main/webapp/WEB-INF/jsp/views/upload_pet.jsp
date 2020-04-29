@@ -133,14 +133,17 @@
                         </div>
                     </div>
 
-                    <div class="p-2 row">
+                    <div class="p-3 row">
                         <spring:message code="uploadPetForm.submit" var="submitText"/>
                         <input type="submit" class="btn btn-primary" value="${submitText}"/>
                     </div>
                     </form:form>
 
-                </div>
 
+                </div>
+                <div class="p-3">
+                    <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
+                </div>
             </div>
         </div>
     </div>
