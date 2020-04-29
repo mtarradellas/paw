@@ -33,6 +33,7 @@
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form>
+            <spring:message code="login.forgotPassword" arguments="${pageContext.request.contextPath}/request-password-reset"/><br>
             <spring:message code="login.notRegistered" arguments="${pageContext.request.contextPath}/register"/>
         </div>
     </div>

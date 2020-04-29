@@ -14,8 +14,9 @@
             <form:form modelAttribute="mailForm" action="${pageContext.request.contextPath}/request-password-reset" method="post" enctype="application/x-www-form-urlencoded">
                 <spring:bind path="mail">
                     <div class="form-group">
-                        <form:label path="mail" for="mail"><spring:message code="resetPassword.email"/>: </form:label>
-                        <form:input type="text" id="mail" cssClass="form-control ${status.error || invalid_mail ? 'is-invalid' : ''}" path="mail"/>
+                        <spring:message code="resetPassword.email" var="emailTxt"/>
+                        <form:label path="mail" for="mail">${emailTxt}: </form:label>
+                        <form:input placeholder="${emailTxt}" type="text" id="mail" cssClass="form-control ${status.error || invalid_mail ? 'is-invalid' : ''}" path="mail"/>
                         <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
                         <c:if test="${invalid_mail}">
                             <div class="invalid-feedback">
