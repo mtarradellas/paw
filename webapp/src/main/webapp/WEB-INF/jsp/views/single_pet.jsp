@@ -33,36 +33,53 @@
             <div class="bg-light shadow p-3">
                 <div class="p-2">
                     <div class="row">
-                    <c:if test="${not empty pet.petName}">
-                        <h1>
-                            <c:out value="${meet}" />
-                        </h1>
-                    </c:if>
-                    <c:if test="${empty pet.petName}">
-                        <h1>
-                            <spring:message code="petCard.giveName" arguments="${pronoun}"/>
-                        </h1>
-                    </c:if>
-                    <c:if test="${(pet.ownerId ne loggedUser.id)}">
+                        <c:if test="${not empty pet.petName}">
+                            <h1>
+                                <c:out value="${meet}" />
+                            </h1>
+                        </c:if>
+                        <c:if test="${empty pet.petName}">
+                            <h1>
+                                <spring:message code="petCard.giveName" arguments="${pronoun}"/>
+                            </h1>
+                        </c:if>
+                        <c:if test="${(pet.ownerId ne loggedUser.id)}">
 
-                        <c:if test="${not requestExists}">
+                            <c:if test="${not requestExists}">
+                                <h1 class="mt-2 ml-4">
+                                    <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
+                                        <button type="submit" name="action" class="btn btn-success">
+                                            <i class="fas fa-plus mr-2"></i>
+                                            <spring:message code="petCard.showInterest"/>
+                                        </button>
+                                    </form>
+                                </h1>
+                            </c:if>
+                            <c:if test="${requestExists}">
+                                <h1 class="mt-2 ml-4">
+                                    <button type="button" class="btn btn-success" disabled>
+                                        <spring:message code="petCard.alreadyRequested"/>
+                                    </button>
+                                </h1>
+                            </c:if>
+                        </c:if>
+                        <c:if test="${(pet.ownerId eq loggedUser.id)}">
                             <h1 class="mt-2 ml-4">
                                 <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
                                     <button type="submit" name="action" class="btn btn-success">
-                                        <i class="fas fa-plus mr-2"></i>
-                                        <spring:message code="petCard.showInterest"/>
+                                        <spring:message code="petCard.reserve"/>
+                                    </button>
+                                </form>
+                            </h1>
+                            <h1 class="mt-2 ml-4">
+                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
+                                    <button type="submit" name="action" class="btn btn-danger">
+                                        <i class="fas fa-times mr-2"></i>
+                                        <spring:message code="petCard.remove"/>
                                     </button>
                                 </form>
                             </h1>
                         </c:if>
-                        <c:if test="${requestExists}">
-                            <h1 class="mt-2 ml-4">
-                                <button type="button" class="btn btn-success" disabled>
-                                    <spring:message code="petCard.alreadyRequested"/>
-                                </button>
-                            </h1>
-                        </c:if>
-                    </c:if>
                     </div>
                 </div>
                 <t:photosList images="${pet.images}"/>
