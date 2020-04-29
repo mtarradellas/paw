@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PetServiceImpl implements PetService {
+    static final long AVAILABLE_STATUS = 1;
+
     @Autowired
     private PetDao petDao;
 
@@ -48,7 +50,7 @@ public class PetServiceImpl implements PetService {
     public Pet create(String language, String petName, String speciesName, String breedName, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
 //        Species species = speciesDao.findSpeciesByName(language, speciesName);
 //        Breed breed = speciesDao.findBreedByName(language, breedName);
-//        return petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+//        return petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, AVAILABLE_STATUS);
         return new Pet();
     }
 

@@ -17,11 +17,12 @@ public class Pet {
     private String location;
     private String description;
     private long ownerId;
+    private Status status;
     private List<Long> images;
 
     public Pet() {}
 
-    public Pet(long id, String petName, Species species, Breed breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId ) {
+    public Pet(long id, String petName, Species species, Breed breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
         this.id = id;
         this.petName = petName;
         this.species = species;
@@ -34,6 +35,7 @@ public class Pet {
         this.location = location;
         this.description = description;
         this.ownerId = ownerId;
+        this.status = status;
         this.images = new ArrayList<>();
     }
 
@@ -149,6 +151,14 @@ public class Pet {
 
     public void setOwnerId(long ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public List<Long> getImages() {
