@@ -41,11 +41,20 @@ public class PetDaoImpl implements PetDao {
     }
 
     private static final RowMapper<Contact> CONTACT_MAPPER = (rs, rowNum) -> new Contact(rs.getString("mail"), rs.getString("username"));
+    private static final RowMapper<Status> STATUS_MAPPER = (rs, rowNum) -> new Status(rs.getInt("id"), rs.getString("statusName"));
 
     @Override
     public long getOwnerId(long petId){
         return jdbcTemplate.queryForObject("select ownerid from pets where id = ? AND pets.status NOT IN" + HIDDEN_PETS_STATUS,
                 new Object[] {petId}, Long.class);
+    }
+
+    @Override
+    public Optional<Status> findStatusById(String language, long id) {
+        String sql = "SELECT id, pet_status." + language + " AS statusName " +
+                "FROM pet_status " +
+                "WHERE pet_status.id = ?";
+        return jdbcTemplate.query(sql, new Object[] {id}, STATUS_MAPPER).stream().findFirst();
     }
 
     @Override
@@ -268,7 +277,8 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Pet create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
+    public Pet create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender,
+                      String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
         final Map<String, Object> values = new HashMap<String, Object>() {{
             put("petName", petName);
             put("species", species.getId());
@@ -281,10 +291,10 @@ public class PetDaoImpl implements PetDao {
             put("uploadDate", uploadDate);
             put("price", price);
             put("ownerId", ownerId);
-            put("status", status);
+            put("status", status.getId());
         }};
-        final Number key = jdbcInsert.executeAndReturnKey(values);
 
+        final Number key = jdbcInsert.executeAndReturnKey(values);
         return new Pet(key.longValue(), petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status);
     }
 

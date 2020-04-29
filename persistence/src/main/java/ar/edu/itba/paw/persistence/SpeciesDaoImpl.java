@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
@@ -50,6 +51,22 @@ public class SpeciesDaoImpl implements SpeciesDao {
                 "FROM breeds  " +
                 "ORDER BY breeds." + language +" ",  BREEDS_MAPPER)
                 .stream();
+    }
+
+    @Override
+    public Optional<Species> findSpeciesByName(String language, String name) {
+        String sql = "SELECT id, species." + language +" AS speciesName " +
+                     "FROM species " +
+                     "WHERE species." + language + " = ?";
+        return jdbcTemplate.query(sql, new Object[] {name}, SPECIES_MAPPER).stream().findFirst();
+    }
+
+    @Override
+    public Optional<Breed> findBreedByName(String language, String name) {
+        String sql = "SELECT id, speciesId, breeds." + language + " AS breedName " +
+                "FROM breeds " +
+                "WHERE breeds." + language + " = ?";
+        return jdbcTemplate.query(sql, new Object[] {name}, BREEDS_MAPPER).stream().findFirst();
     }
 
 

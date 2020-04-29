@@ -2,10 +2,9 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Contact;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.interfaces.SpeciesDao;
+import ar.edu.itba.paw.interfaces.SpeciesService;
+import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +19,8 @@ public class PetServiceImpl implements PetService {
 
     @Autowired
     private PetDao petDao;
+    @Autowired
+    private SpeciesDao speciesDao;
 
     @Override
     public Optional<Pet> findById(String language, long id){
@@ -47,11 +48,15 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Pet create(String language, String petName, String speciesName, String breedName, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
-//        Species species = speciesDao.findSpeciesByName(language, speciesName);
-//        Breed breed = speciesDao.findBreedByName(language, breedName);
-//        return petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, AVAILABLE_STATUS);
-        return new Pet();
+    public Optional<Pet> create(String language, String petName, String speciesName, String breedName, String location,
+                      boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
+        Optional<Species> opSpecies = speciesDao.findSpeciesByName(language, speciesName);
+        Optional<Breed> opBreed = speciesDao.findBreedByName(language, breedName);
+        Optional<Status> opStatus = petDao.findStatusById(language, AVAILABLE_STATUS);
+        if (!opSpecies.isPresent() || !opBreed.isPresent() || !opStatus.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(petDao.create(petName, opSpecies.get(), opBreed.get(), location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, opStatus.get()));
     }
 
     @Override
