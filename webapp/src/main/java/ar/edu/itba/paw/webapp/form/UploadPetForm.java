@@ -15,9 +15,9 @@ public class UploadPetForm {
     @Pattern(regexp = "^[a-zA-Z]+$")
     private String petName;
 
-    private String speciesName;
+    private long speciesId;
 
-    private String breedName;
+    private long breedId;
 
     @Size(min = 3, max = 50)
     private String location;
@@ -52,20 +52,20 @@ public class UploadPetForm {
         this.petName = petName;
     }
 
-    public String getSpeciesName() {
-        return speciesName;
+    public long getSpeciesId() {
+        return speciesId;
     }
 
-    public void setSpeciesName(String speciesName) {
-        this.speciesName = speciesName;
+    public void setSpeciesId(long speciesId) {
+        this.speciesId = speciesId;
     }
 
-    public String getBreedName() {
-        return breedName;
+    public long getBreedId() {
+        return breedId;
     }
 
-    public void setBreedName(String breedName) {
-        this.breedName = breedName;
+    public void setBreedId(long breedId) {
+        this.breedId = breedId;
     }
 
     public String getLocation() {
