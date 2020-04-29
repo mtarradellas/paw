@@ -143,7 +143,7 @@ public class LoginAndRegisterController extends ParentController {
         return new ModelAndView("error-views/403");
     }
     private String resetPasswordBody(User user, UUID uuid) {
-        String url = "password-reset";
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
         url += "?token=" + uuid;
         String body;
         if(getLocale().equals("en_US")) {
