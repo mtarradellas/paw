@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -135,4 +136,23 @@ public class PetController extends ParentController {
         return "";
     }
 
+    @RequestMapping(value = "/pet/{id}/sell", method = {RequestMethod.POST})
+    public ModelAndView petUpdateSold(@PathVariable("id") long id) {
+        User user = loggedUser();
+        /* TODO change sold status ID hardcoded*/
+        if (user != null && petService.updateStatus(id, user.getId(), 3)) {
+            return new ModelAndView("redirect:/pet/" + id);
+        }
+        return new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
+        User user = loggedUser();
+        /* TODO change removed status ID hardcoded*/
+        if (user != null && petService.updateStatus(id, user.getId(), 2)) {
+            return new ModelAndView("redirect:/pet/" + id);
+        }
+        return new ModelAndView("redirect:/403");
+    }
 }

@@ -365,4 +365,23 @@ public class PetDaoImpl implements PetDao {
                     "WHERE pets.id = ? AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
                 new Object[] {petId}, CONTACT_MAPPER).stream().findFirst();
     }
+
+    @Override
+    public void updateStatus(long id, long newStatus) {
+        String sql = "UPDATE pet_status " +
+                     "SET status = ? " +
+                     "WHERE id = ? ";
+
+        jdbcTemplate.update(sql, newStatus, id);
+    }
+
+    @Override
+    public boolean isPetOwner(long petId, long userId) {
+        String sql = "SELECT COUNT(id) " +
+                     "FROM pets " +
+                     "WHERE id = ? AND ownerId = ? ";
+
+        Integer owner = jdbcTemplate.queryForObject(sql, new Object[] {petId, userId}, Integer.class);
+        return owner == 1;
+    }
 }
