@@ -89,7 +89,7 @@ public class UserDaoImpl implements UserDao {
     }
     @Override
     public Optional<Token> getToken(UUID uuid) {
-        return jdbcTemplate.query("SELECT * FROM tokens", TOKEN_MAPPER)
+        return jdbcTemplate.query("SELECT * FROM tokens WHERE token = ? ", new Object[] {uuid},TOKEN_MAPPER)
                 .stream().findFirst();
     }
 

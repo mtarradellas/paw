@@ -13,7 +13,7 @@
             </svg>
             <p>
                 <spring:message code="resetPassword.expiredToken"/>
-                <c:url value="request_password_reset.jsp" var="requestPasswordResetUrl"/>
+                <c:url value="request-password-reset" var="requestPasswordResetUrl"/>
                 <a href="${requestPasswordResetUrl}"><spring:message code="resetPassword.requestAgainEmail"/></a>
             </p>
         </div>
