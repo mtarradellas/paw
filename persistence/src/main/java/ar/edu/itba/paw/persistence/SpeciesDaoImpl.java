@@ -69,5 +69,21 @@ public class SpeciesDaoImpl implements SpeciesDao {
         return jdbcTemplate.query(sql, new Object[] {name}, BREEDS_MAPPER).stream().findFirst();
     }
 
+    @Override
+    public Optional<Species> findSpeciesById(String language, long id) {
+        String sql = "SELECT id, species." + language +" AS speciesName " +
+                "FROM species " +
+                "WHERE species.id = ?";
+        return jdbcTemplate.query(sql, new Object[] {id}, SPECIES_MAPPER).stream().findFirst();
+    }
+
+    @Override
+    public Optional<Breed> findBreedById(String language, long id) {
+        String sql = "SELECT id, speciesId, breeds." + language + " AS breedName " +
+                "FROM breeds " +
+                "WHERE breeds.id = ?";
+        return jdbcTemplate.query(sql, new Object[] {id}, BREEDS_MAPPER).stream().findFirst();
+    }
+
 
 }

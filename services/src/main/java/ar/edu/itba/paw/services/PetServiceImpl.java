@@ -48,13 +48,10 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> create(String language, String petName, String speciesName, String breedName, String location,
+    public Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location,
                       boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
-        System.out.printf("DATA:\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%d\n%d\n",
-                language, petName, speciesName, breedName, location, vaccinated, gender, description, birthDate, uploadDate,
-                price, ownerId);
-        Optional<Species> opSpecies = speciesDao.findSpeciesByName(language, speciesName);
-        Optional<Breed> opBreed = speciesDao.findBreedByName(language, breedName);
+        Optional<Species> opSpecies = speciesDao.findSpeciesById(language, speciesId);
+        Optional<Breed> opBreed = speciesDao.findBreedById(language, breedId);
         Optional<Status> opStatus = petDao.findStatusById(language, AVAILABLE_STATUS);
         if (!opSpecies.isPresent() || !opBreed.isPresent() || !opStatus.isPresent()) {
             return Optional.empty();

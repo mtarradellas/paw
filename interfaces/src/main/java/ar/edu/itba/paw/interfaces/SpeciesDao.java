@@ -12,4 +12,6 @@ public interface SpeciesDao {
     Stream<Breed> breedsList(String language);
     Optional<Species> findSpeciesByName(String language, String name);
     Optional<Breed> findBreedByName(String language, String name);
+    Optional<Species> findSpeciesById(String language, long id);
+    Optional<Breed> findBreedById(String language, long id);
 }
