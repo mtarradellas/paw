@@ -65,7 +65,7 @@
                         </c:if>
                         <c:if test="${(pet.ownerId eq loggedUser.id)}">
                             <h1 class="mt-2 ml-4">
-                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/reserve" />">
+                                <form method="POST" class="m-0" action="<c:url value="/pet/${id}/sell-adopt" />">
                                     <button type="submit" name="action" class="btn btn-success">
                                         <spring:message code="petCard.reserve"/>
                                     </button>
