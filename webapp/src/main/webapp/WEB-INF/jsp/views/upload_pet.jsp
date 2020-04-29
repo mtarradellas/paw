@@ -13,7 +13,7 @@
 
             <div class="bg-light shadow p-3">
                 <div class="p-2">
-                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/register" method="post" enctype="application/x-www-form-urlencoded">
+                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/upload-pet" method="post" enctype="application/x-www-form-urlencoded">
                         <h1>${titleTxt}</h1>
 
                         <div class="form-row p-1">
@@ -58,12 +58,11 @@
                     </div>
                     <div class="form-row p-1">
                         <div class="col">
-                            <spring:bind path="speciesName">
+                            <spring:bind path="speciesId">
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.speciesName" var="speciesIdTxt"/>
                                     <form:label path="speciesId" for="speciesId">${speciesIdTxt}: </form:label>
                                     <form:select id="speciesId" path="speciesId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                        <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="species" items="${species_list}">
                                             <form:option value="${species.id}">${species.name}</form:option>
                                         </c:forEach>
@@ -76,7 +75,6 @@
                                     <spring:message code="uploadPetForm.breedName" var="breedIdTxt"/>
                                     <form:label path="breedId" for="breedId">${breedIdTxt}: </form:label>
                                     <form:select id="breedId" path="breedId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                        <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="breed" items="${breeds_list}">
                                             <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
                                         </c:forEach>
