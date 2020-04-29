@@ -167,7 +167,7 @@ public class RequestDaoImpl implements RequestDao {
         String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                "WHERE " + userIdFilter +" = ? AND request_status." + language + " LIKE ? ";
+                "WHERE " + userIdFilter +" = ? AND request_status.en_US  LIKE ? ";
         if (searchCriteria == null) {
             result = jdbcTemplate.query(sql, new Object[]{userId, status}, REQUEST_MAPPER).stream();
         } else {
