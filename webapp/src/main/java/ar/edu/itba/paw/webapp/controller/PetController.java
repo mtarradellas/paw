@@ -90,8 +90,29 @@ public class PetController extends ParentController {
                 contact.ifPresent(value -> mailService.sendMail(value.getEmail(), getMailMessage(getLocale(), "subject", newRequest.get()), getMailMessage(getLocale(), "body", newRequest.get())));
             }
         }
-        return getIdPet(id);
+        return new ModelAndView("redirect:/pet/" + id );
     }
+
+    @RequestMapping(value = "/pet/{id}/sell-adopt", method = {RequestMethod.POST})
+    public ModelAndView petUpdateSold(@PathVariable("id") long id) {
+        User user = loggedUser();
+        /* TODO change sold status ID hardcoded*/
+        if (user != null && petService.updateStatus(id, user.getId(), 3)) {
+            return new ModelAndView("redirect:/");
+        }
+        return new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
+        User user = loggedUser();
+        /* TODO change removed status ID hardcoded*/
+        if (user != null && petService.updateStatus(id, user.getId(), 2)) {
+            return new ModelAndView("redirect:/");
+        }
+        return new ModelAndView("redirect:/403");
+    }
+
 
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
@@ -116,23 +137,5 @@ public class PetController extends ParentController {
         return "";
     }
 
-    @RequestMapping(value = "/pet/{id}/sell", method = {RequestMethod.POST})
-    public ModelAndView petUpdateSold(@PathVariable("id") long id) {
-        User user = loggedUser();
-        /* TODO change sold status ID hardcoded*/
-        if (user != null && petService.updateStatus(id, user.getId(), 3)) {
-            return new ModelAndView("redirect:/pet/" + id);
-        }
-        return new ModelAndView("redirect:/403");
-    }
 
-    @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
-    public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
-        User user = loggedUser();
-        /* TODO change removed status ID hardcoded*/
-        if (user != null && petService.updateStatus(id, user.getId(), 2)) {
-            return new ModelAndView("redirect:/pet/" + id);
-        }
-        return new ModelAndView("redirect:/403");
-    }
 }

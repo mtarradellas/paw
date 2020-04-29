@@ -68,7 +68,7 @@ public class UserController extends ParentController {
             requestService.delete(id, loggedUser().getId());
         }
 
-        return getRequests(null,null,null);
+        return new ModelAndView("redirect:/requests" );
     }
 
 
@@ -116,7 +116,7 @@ public class UserController extends ParentController {
                 }
             }
 
-        return getInterested(null,null,null);
+        return new ModelAndView("redirect:/interests");
     }
 
     private String getMailMessage(String locale, String part, Request request, Contact contact){
