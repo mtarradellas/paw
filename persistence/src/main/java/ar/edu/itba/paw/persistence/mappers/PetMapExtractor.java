@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistence.mappers;
 
-import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.*;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -27,7 +24,8 @@ public class PetMapExtractor implements ResultSetExtractor<Map<Pet, List<Long>>>
                     rs.getDate("birthDate"),
                     rs.getDate("uploadDate"),
                     rs.getInt("price"),
-                    rs.getLong("ownerId")
+                    rs.getLong("ownerId"),
+                    new Status(rs.getInt("statusId"), rs.getString("statusName"))
             );
             Long imageId = new Long(
                     rs.getLong("imagesId")
