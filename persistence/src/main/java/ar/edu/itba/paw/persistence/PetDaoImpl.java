@@ -368,10 +368,9 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public void updateStatus(long id, long newStatus) {
-        String sql = "UPDATE pet_status " +
+        String sql = "UPDATE pets " +
                      "SET status = ? " +
                      "WHERE id = ? ";
-
         jdbcTemplate.update(sql, newStatus, id);
     }
 
@@ -380,7 +379,6 @@ public class PetDaoImpl implements PetDao {
         String sql = "SELECT COUNT(id) " +
                      "FROM pets " +
                      "WHERE id = ? AND ownerId = ? ";
-
         Integer owner = jdbcTemplate.queryForObject(sql, new Object[] {petId, userId}, Integer.class);
         return owner == 1;
     }
