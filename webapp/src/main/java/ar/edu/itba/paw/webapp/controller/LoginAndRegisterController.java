@@ -60,16 +60,18 @@ public class LoginAndRegisterController extends ParentController {
         if (opUser == null || !opUser.isPresent()) {
             return registerForm(userForm).addObject("generalError", true);
         }
-        // authenticateUserAndSetSession(opUser.get().getUsername(), request);
+
         UUID uuid = UUID.randomUUID();
         userService.createToken(uuid, opUser.get().getId());
         mailService.sendMail(opUser.get().getMail(),activateAccountSubject(),activateAccountBody(opUser.get(),uuid));
         return new ModelAndView("views/email_sent_for_password_reset");
     }
+
     @RequestMapping(value ="/account-activation", method = { RequestMethod.GET })
     public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString) {
         UUID uuid = UUID.fromString(tokenString);
         Optional<Token> token = userService.getToken(uuid);
+
         if(!token.isPresent() || new Date().after(token.get().getExpirationDate())){
             return new ModelAndView("views/token_has_expired");
         }
@@ -166,6 +168,7 @@ public class LoginAndRegisterController extends ParentController {
         else { subject = "Resetea tu contraseña"; }
         return subject;
     }
+
     private String activateAccountSubject() {
         String subject;
         if(getLocale().equals("en_US")) {
@@ -192,4 +195,6 @@ public class LoginAndRegisterController extends ParentController {
         }
         return body;
     }
+
 }
+
