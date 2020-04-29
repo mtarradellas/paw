@@ -13,11 +13,20 @@
                 <div class="col ">
                     <div class="shadow p-3 bg-white rounded">
                         <h2>Pets you requested:</h2>
-                        <c:if test="${empty requests_list }">
+                        <c:if test="${empty requests_list}">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <c:if test="${(not empty param.status) or (not empty param.searchCriteria) or (not empty param.searchOrder) }">
-                                    <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
-                                </c:if>
+                                <c:choose>
+                                    <c:when test="${(empty param.status || param.status eq 'any')
+                                        && (empty param.searchCriteria || param.searchCriteria eq 'any')
+                               }">
+                                        <c:url var="homeUrl" value="/"/>
+                                        <spring:message code="request.emptyRequests"/>
+                                        <a href="${homeUrl}"><spring:message code="request.goToHome"/></a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </c:if>
                         <c:forEach var="req" items="${requests_list}">
