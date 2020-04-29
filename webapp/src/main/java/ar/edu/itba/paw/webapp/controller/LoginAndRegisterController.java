@@ -112,17 +112,16 @@ public class LoginAndRegisterController extends ParentController {
 
         UUID uuid = UUID.fromString(resetPasswordForm.getToken());
         Optional<Token> token = userService.getToken(uuid);
-        if(!token.isPresent()) {
-            return new ModelAndView("redirect:error-views/404");
-        }
-        if(new Date().after(token.get().getExpirationDate())){
-            return new ModelAndView("redirect:views/token_has_expired");
+
+        if(!token.isPresent() || new Date().after(token.get().getExpirationDate())){
+            return new ModelAndView("views/token_has_expired");
         }
         Optional<User> opUser = userService.findByToken(uuid);
         if(!opUser.isPresent()){
-            return new ModelAndView("redirect:error-views/404");
+            return new ModelAndView("error-views/404");
         }
         userService.updatePassword(resetPasswordForm.getPassword(), opUser.get().getId());
+        userService.deleteToken(uuid);
         return new ModelAndView("redirect:/login");
     }
 
