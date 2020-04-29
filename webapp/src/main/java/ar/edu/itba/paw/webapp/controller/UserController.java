@@ -50,7 +50,7 @@ public class UserController extends ParentController {
 
         if(status != null || searchCriteria != null) {
             mav.addObject("requests_list",
-                    requestService.filterListByOwner(getLocale(), loggedUser().getId(), status, searchCriteria,searchOrder).toArray());
+                    requestService.filterListByOwner(getLocale(), loggedUser().getId(), status, searchCriteria, searchOrder).toArray());
         }
         else{
             mav.addObject("requests_list",

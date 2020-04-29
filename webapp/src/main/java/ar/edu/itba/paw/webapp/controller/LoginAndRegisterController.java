@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,9 +72,27 @@ public class LoginAndRegisterController extends ParentController {
             return registerForm(userForm).addObject("generalError", true);
         }
 
-        authenticateUserAndSetSession(opUser.get().getUsername(), request);
+       // authenticateUserAndSetSession(opUser.get().getUsername(), request);
+        UUID uuid = UUID.randomUUID();
+        userService.createToken(uuid, opUser.get().getId());
+        mailService.sendMail(opUser.get().getMail(),activateAccountSubject(),activateAccountBody(opUser.get(),uuid));
+        return new ModelAndView("views/email_sent_for_password_reset");
+    }
 
-        return new ModelAndView("redirect:/");
+    @RequestMapping(value ="/account-activation", method = { RequestMethod.GET })
+    public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString) {
+        UUID uuid = UUID.fromString(tokenString);
+        Optional<Token> token = userService.getToken(uuid);
+
+        if(!token.isPresent() || new Date().after(token.get().getExpirationDate())){
+            return new ModelAndView("views/token_has_expired");
+        }
+        Optional<User> opUser = userService.findByToken(uuid);
+        if(!opUser.isPresent()){
+            return new ModelAndView("error-views/404");
+        }
+        userService.deleteToken(uuid);
+        return new ModelAndView("redirect:/login");
     }
 
     @RequestMapping(value ="/request-password-reset", method = { RequestMethod.GET })
@@ -180,4 +199,32 @@ public class LoginAndRegisterController extends ParentController {
         else { subject = "Resetea tu contraseña"; }
         return subject;
     }
+
+    private String activateAccountSubject() {
+        String subject;
+        if(getLocale().equals("en_US")) {
+            subject = "Activate your account";
+        }
+        else { subject = "Activa tu cuenta"; }
+        return subject;
+    }
+    private String activateAccountBody(User user, UUID uuid) {
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
+        url += "?token=" + uuid;
+        String body;
+        if(getLocale().equals("en_US")) {
+            body = "Hello " + user.getUsername() +
+                    ",\nPlease click the link below to activate your account\n"
+                    + url +
+                    "\nSincerely,\nPet Society Team.";
+        }
+        else{
+            body = "Hola " + user.getUsername() +
+                    ",\nPor favor haz click en el siguiente link para activar tu cuenta\n"
+                    + url +
+                    "\nSinceramente,\nEl equipo de Pet Society.";
+        }
+        return body;
+    }
+
 }
