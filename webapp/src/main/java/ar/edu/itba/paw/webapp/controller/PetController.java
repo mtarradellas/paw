@@ -137,8 +137,6 @@ public class PetController extends ParentController {
     public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,
                                    final BindingResult errors, HttpServletRequest request) {
 
-        System.out.println("POSTINGNGGG");
-        System.out.println("DATE: " + petForm.getBirthDate());
 
         if (errors.hasErrors()) {
             return uploadPetForm(petForm);
@@ -147,10 +145,7 @@ public class PetController extends ParentController {
         Date currentDate = new java.sql.Date(System.currentTimeMillis());
         Date birthDate = java.sql.Date.valueOf(String.valueOf(petForm.getBirthDate()));
 
-        System.out.println("BD: " + birthDate);
-        System.out.println("CD: " + currentDate);
-
-        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesName(), petForm.getBreedName(),
+        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
                           petForm.getLocation(), petForm.isVaccinated(), petForm.getGender(), petForm.getDescription(),
                           birthDate, currentDate, petForm.getPrice(), loggedUser().getId());
 
