@@ -1,39 +1,45 @@
 package ar.edu.itba.paw.webapp.form;
 
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class UploadPetForm {
 
+    @NotNull
     private byte[] photo;
 
     @Size(min = 2, max = 50)
     @Pattern(regexp = "^[a-zA-Z]+$")
     private String petName;
 
-    private long speciesId;
+    @NotNull
+    private int speciesId;
 
-    private long breedId;
+    @NotNull
+    private int breedId;
 
     @Size(min = 3, max = 50)
     private String location;
 
+    @NotNull
     private boolean vaccinated;
 
+    @NotNull
     private String gender;
 
     @Size(max = 250)
     private String description;
 
-    @Past
-    @DateTimeFormat(pattern="dd/mm/yyyy")
+    @NotNull
     private String birthDate;
 
-    @Pattern(regexp = "^[1-9][0-9]+$")
+    @NotNull
     private int price;
 
     public byte[] getPhoto() {
@@ -52,19 +58,19 @@ public class UploadPetForm {
         this.petName = petName;
     }
 
-    public long getSpeciesId() {
+    public int getSpeciesId() {
         return speciesId;
     }
 
-    public void setSpeciesId(long speciesId) {
+    public void setSpeciesId(int speciesId) {
         this.speciesId = speciesId;
     }
 
-    public long getBreedId() {
+    public int getBreedId() {
         return breedId;
     }
 
-    public void setBreedId(long breedId) {
+    public void setBreedId(int breedId) {
         this.breedId = breedId;
     }
 
