@@ -89,7 +89,7 @@ public class PetController extends ParentController {
                 contact.ifPresent(value -> mailService.sendMail(value.getEmail(), getMailMessage(getLocale(), "subject", newRequest.get()), getMailMessage(getLocale(), "body", newRequest.get())));
             }
         }
-        return getIdPet(id);
+        return new ModelAndView("redirect:/pet/" + id );
     }
 
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
