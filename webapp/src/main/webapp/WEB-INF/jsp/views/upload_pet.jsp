@@ -60,28 +60,28 @@
                         <div class="col">
                             <spring:bind path="speciesName">
                                 <div class="form-group">
-                                    <spring:message code="uploadPetForm.speciesName" var="speciesNameTxt"/>
-                                    <form:label path="speciesName" for="speciesName">${speciesNameTxt}: </form:label>
-                                    <form:select id="speciesName" path="speciesName" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <spring:message code="uploadPetForm.speciesName" var="speciesIdTxt"/>
+                                    <form:label path="speciesId" for="speciesId">${speciesIdTxt}: </form:label>
+                                    <form:select id="speciesId" path="speciesId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="species" items="${species_list}">
                                             <form:option value="${species.id}">${species.name}</form:option>
                                         </c:forEach>
                                     </form:select>
-                                    <form:errors path="speciesName" element="div" cssClass="invalid-feedback"/>
+                                    <form:errors path="speciesId" element="div" cssClass="invalid-feedback"/>
                                 </div>
                             </spring:bind>
-                            <spring:bind path="breedName">
+                            <spring:bind path="breedId">
                                 <div class="form-group">
-                                    <spring:message code="uploadPetForm.breedName" var="breedNameTxt"/>
-                                    <form:label path="breedName" for="petName">${breedNameTxt}: </form:label>
-                                    <form:select id="breedName" path="breedName" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <spring:message code="uploadPetForm.breedName" var="breedIdTxt"/>
+                                    <form:label path="breedId" for="breedId">${breedIdTxt}: </form:label>
+                                    <form:select id="breedId" path="breedId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="breed" items="${breeds_list}">
                                             <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
                                         </c:forEach>
                                     </form:select>
-                                    <form:errors path="breedName" element="div" cssClass="invalid-feedback"/>
+                                    <form:errors path="breedId" element="div" cssClass="invalid-feedback"/>
                                 </div>
                             </spring:bind>
                             <spring:bind path="birthDate">
@@ -97,7 +97,7 @@
                             <spring:bind path="vaccinated">
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.vaccinated" var="vaccinatedTxt"/>
-                                    <form:label path="vaccinated" for="petName">${vaccinatedTxt}: </form:label>
+                                    <form:label path="vaccinated" for="vaccinated">${vaccinatedTxt}: </form:label>
                                     <form:select id="vaccinated" path="vaccinated" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="${true}"><spring:message code="boolean.Yes"/></form:option>
                                         <form:option value="${false}"><spring:message code="boolean.No"/></form:option>
@@ -109,7 +109,7 @@
                             <spring:bind path="gender">
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.gender" var="genderTxt"/>
-                                    <form:label path="gender" for="petName">${genderTxt}: </form:label>
+                                    <form:label path="gender" for="gender">${genderTxt}: </form:label>
                                     <form:select id="gender" path="gender" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="male"><spring:message code="uploadPetForm.male"/></form:option>
                                         <form:option value="female"><spring:message code="uploadPetForm.female"/></form:option>
