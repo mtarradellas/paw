@@ -84,5 +84,12 @@ public class PetServiceImpl implements PetService {
         return petDao.getPetContact(petId);
     }
 
-
+    @Override
+    public boolean updateStatus(long petId, long userId, long newStatus) {
+        if (petDao.isPetOwner(petId, userId)) {
+            petDao.updateStatus(petId, newStatus);
+            return true;
+        }
+        return false;
+    }
 }
