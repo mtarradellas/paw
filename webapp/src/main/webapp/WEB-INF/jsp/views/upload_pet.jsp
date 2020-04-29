@@ -112,6 +112,16 @@
                             </div>
                         </spring:bind>
 
+                        <spring:bind path="photo">
+                            <div class="form-group">
+                                <spring:message code="uploadPetForm.photo" var="photoTxt"/>
+                                <spring:message code="uploadPetForm.uploadPhoto" var="uploadPhotoTxt"/>
+                                <form:label path="photo" for="photo">${photoTxt}: </form:label>
+                                <form:input accept="image/*" type="file" id="photo" path="photo" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                <form:errors path="photo" element="div" cssClass="invalid-feedback"/>
+                            </div>
+                        </spring:bind>
+
                         <div class="p-2">
                             <spring:message code="uploadPetForm.submit" var="submitText"/>
                             <input type="submit" class="btn btn-primary" value="${submitText}"/>

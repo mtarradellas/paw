@@ -4,6 +4,8 @@ package ar.edu.itba.paw.webapp.form;
 ///TODO: put constraints
 public class UploadPetForm {
 
+    private byte[] photo;
+
     private String petName;
 
     private String speciesName;
@@ -21,6 +23,14 @@ public class UploadPetForm {
     private String birthDate;
 
     private int price;
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
 
     public String getPetName() {
         return petName;
