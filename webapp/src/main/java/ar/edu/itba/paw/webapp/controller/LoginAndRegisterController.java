@@ -71,8 +71,6 @@ public class LoginAndRegisterController extends ParentController {
         if (opUser == null || !opUser.isPresent()) {
             return registerForm(userForm).addObject("generalError", true);
         }
-
-       // authenticateUserAndSetSession(opUser.get().getUsername(), request);
         UUID uuid = UUID.randomUUID();
         userService.createToken(uuid, opUser.get().getId());
         mailService.sendMail(opUser.get().getMail(),activateAccountSubject(),activateAccountBody(opUser.get(),uuid));
