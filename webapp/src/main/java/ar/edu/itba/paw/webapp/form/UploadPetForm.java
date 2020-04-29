@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.webapp.form;
 
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -26,6 +29,8 @@ public class UploadPetForm {
     @Size(max = 250)
     private String description;
 
+    @Past
+    @DateTimeFormat(pattern="dd/mm/yyyy")
     private String birthDate;
 
     @Pattern(regexp = "^[1-9][0-9]+$")
