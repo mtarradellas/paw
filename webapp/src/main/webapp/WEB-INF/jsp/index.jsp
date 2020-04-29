@@ -8,16 +8,17 @@
         <div class="container-fluid">
             <div class="row">
 
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools.jsp" />
+                <t:search-tools-pet breeds_list="${breeds_list}" species_list="${species_list}"/>
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
                         <c:if test="${empty home_pet_list }">
-                        <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/> </div>
+                        <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                            <a href="${pageContext.request.contextPath}/"><spring:message code="showFirst"/></a>
+                        </div>
+
                         </c:if>
                         <div class="card-deck row">
-
-
                             <c:forEach var="pet" items="${home_pet_list}">
                                 <div class="col-auto mb-3">
 
@@ -25,10 +26,12 @@
 
                                 </div>
                             </c:forEach>
-
                         </div>
+
+                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
                     </div>
                 </div>
+
 
             </div>
 

@@ -25,17 +25,25 @@ public class ImageDaoImpl implements ImageDao {
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(IMAGES_TABLE)
-                .usingGeneratedKeyColumns("images_id");
+                .usingGeneratedKeyColumns("id");
     }
     private static final RowMapper<Image> IMAGE_MAPPER = (rs, rowNum) -> new Image(
-            rs.getInt("imageId"),
+            rs.getInt("id"),
             rs.getBytes("img"),
             rs.getInt("petId")
     );
+    private static final RowMapper<byte[]> IMAGE_DATA_MAPPER = (rs, rowNum) -> rs.getBytes("img");
 
     @Override
     public Stream<Image> findByPetId(long id) {
         return jdbcTemplate.query("SELECT * FROM images WHERE petId = ? ", new Object[] {id}, IMAGE_MAPPER)
                 .stream();
     }
+
+    @Override
+    public Optional<byte[]> getDataById(long id) {
+        return jdbcTemplate.query("SELECT img FROM images WHERE id = ? ", new Object[] {id}, IMAGE_DATA_MAPPER)
+                .stream().findFirst();
+    }
+
 }

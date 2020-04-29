@@ -1,0 +1,81 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<spring:message code="register.title" var="registerTitle"/>
+<t:basicLayout title="${registerTitle}">
+    <div class="container-fluid">
+        <div class="shadow p-4 login-register-container bg-white">
+            <h1>${registerTitle}</h1>
+            <form:form modelAttribute="registerForm" action="${pageContext.request.contextPath}/register" method="post" enctype="application/x-www-form-urlencoded">
+                <spring:bind path="username">
+                    <div class="form-group">
+                        <spring:message code="register.username" var="usernameTxt"/>
+                        <form:label path="username" for="username">${usernameTxt}: </form:label>
+                        <form:input placeholder="${usernameTxt}" type="text" id="username" path="username" cssClass="form-control ${status.error || duplicatedUsername ? 'is-invalid' : ''}"/>
+                        <form:errors path="username" element="div" cssClass="invalid-feedback"/>
+                        <c:if test="${duplicatedUsername}">
+                            <div class="invalid-feedback">
+                                <spring:message code="register.usernameNotUnique"/>
+                            </div>
+                        </c:if>
+                    </div>
+                </spring:bind>
+
+                <spring:bind path="password">
+                    <div class="form-group">
+                        <spring:message code="register.password" var="passwordTxt"/>
+                        <form:label path="password" for="password">${passwordTxt}: </form:label>
+                        <form:input type="password" placeholder="${passwordTxt}" id="password" path="password" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                        <form:errors path="password" element="div" cssClass="invalid-feedback"/>
+                    </div>
+                </spring:bind>
+
+                <c:set var="classError"><form:errors element="div" cssClass="invalid-feedback"/></c:set>
+
+                <spring:bind path="repeatPassword">
+                    <div class="form-group">
+                        <spring:message code="register.repeatPassword" var="repeatPasswordTxt"/>
+                        <form:label path="repeatPassword" for="repeatPassword">${repeatPasswordTxt}: </form:label>
+                        <form:input placeholder="${repeatPasswordTxt}" type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
+                                    path="repeatPassword"/>
+                        <form:errors path="repeatPassword" element="div" cssClass="invalid-feedback"/>
+                        ${classError}
+                    </div>
+                </spring:bind>
+
+                <spring:bind path="mail">
+                    <div class="form-group">
+                        <spring:message code="register.email" var="emailTxt"/>
+                        <form:label path="mail" for="mail">${emailTxt}: </form:label>
+                        <form:input placeholder="${emailTxt}" type="text" id="mail" cssClass="form-control ${status.error || duplicatedMail ? 'is-invalid' : ''}" path="mail"/>
+                        <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
+                        <c:if test="${duplicatedMail}">
+                            <div class="invalid-feedback">
+                                <spring:message code="register.emailNotUnique"/>
+                            </div>
+                        </c:if>
+                    </div>
+                </spring:bind>
+
+                <spring:bind path="phone">
+                    <div class="form-group">
+                        <spring:message code="register.phone" var="phoneTxt"/>
+                        <form:label path="phone" for="phone">${phoneTxt}: </form:label>
+                        <form:input type="text" placeholder="${phoneTxt}" id="phone" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="phone"/>
+                        <form:errors path="phone" element="div" cssClass="invalid-feedback"/>
+                    </div>
+                </spring:bind>
+
+                <div class="p-2">
+                    <spring:message code="register.submit" var="submitText"/>
+                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
+                </div>
+            </form:form>
+            <spring:message code="register.alreadyDone" arguments="${pageContext.request.contextPath}/login"/><br>
+            <spring:message code="login.linkAccount" arguments="${pageContext.request.contextPath}/request-link-account"/>
+        </div>
+    </div>
+
+</t:basicLayout>

@@ -35,3 +35,6 @@ projectFilesBackup
 
 # Custom paw projects (spring) 
 target/
+
+# VScode
+.vscode/

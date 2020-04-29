@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.webapp.exception;
 
 public class UserNotFoundException extends RuntimeException {
+
+    private static final long serialVersionUID = 729808258398722284L;
+
     public UserNotFoundException() {
         super();
     }
