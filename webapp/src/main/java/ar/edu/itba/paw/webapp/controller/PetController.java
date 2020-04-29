@@ -1,17 +1,23 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
+import ar.edu.itba.paw.webapp.form.UploadPetForm;
+import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,6 +124,30 @@ public class PetController extends ParentController {
     public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
         return imageService.getDataById(id).orElse(null);
     }
+
+    @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
+    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm userForm) {
+        return new ModelAndView("views/upload_pet")
+                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
+                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
+    }
+
+    @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
+    public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm userForm,
+                                   final BindingResult errors, HttpServletRequest request) {
+
+        if (errors.hasErrors()) {
+            return uploadPetForm(userForm);
+        }
+
+        //TODO: autenticar y subir a la base de datos o pasar a la view un error
+
+
+        //TODO: redireccionar a la view del pet?
+        return new ModelAndView("redirect:/");
+    }
+
+
 
     private String getMailMessage(String locale, String part, Request request){
         switch(part){
