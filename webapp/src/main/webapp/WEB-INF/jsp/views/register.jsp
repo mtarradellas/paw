@@ -9,13 +9,17 @@
         <div class="shadow p-4 login-register-container bg-white">
             <h1>${registerTitle}</h1>
             <form:form modelAttribute="registerForm" action="${pageContext.request.contextPath}/register" method="post" enctype="application/x-www-form-urlencoded">
-
                 <spring:bind path="username">
                     <div class="form-group">
                         <spring:message code="register.username" var="usernameTxt"/>
                         <form:label path="username" for="username">${usernameTxt}: </form:label>
-                        <form:input type="text" placeholder="${usernameTxt}" id="username" path="username" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                        <form:input placeholder="${usernameTxt}" type="text" id="username" path="username" cssClass="form-control ${status.error || duplicatedUsername ? 'is-invalid' : ''}"/>
                         <form:errors path="username" element="div" cssClass="invalid-feedback"/>
+                        <c:if test="${duplicatedUsername}">
+                            <div class="invalid-feedback">
+                                <spring:message code="register.usernameNotUnique"/>
+                            </div>
+                        </c:if>
                     </div>
                 </spring:bind>
 
@@ -45,8 +49,13 @@
                     <div class="form-group">
                         <spring:message code="register.email" var="emailTxt"/>
                         <form:label path="mail" for="mail">${emailTxt}: </form:label>
-                        <form:input type="text" placeholder="${emailTxt}" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
+                        <form:input placeholder="${emailTxt}" type="text" id="mail" cssClass="form-control ${status.error || duplicatedMail ? 'is-invalid' : ''}" path="mail"/>
                         <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
+                        <c:if test="${duplicatedMail}">
+                            <div class="invalid-feedback">
+                                <spring:message code="register.emailNotUnique"/>
+                            </div>
+                        </c:if>
                     </div>
                 </spring:bind>
 
@@ -61,9 +70,12 @@
 
                 <div class="p-2">
                     <spring:message code="register.submit" var="submitText"/>
-                    <input type="submit" class="btn btn-primary" name="${submitText}"/>
+                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form:form>
+            <spring:message code="login.forgotPassword" arguments="${pageContext.request.contextPath}/request-password-reset"/><br>
+            <spring:message code="register.alreadyDone" arguments="${pageContext.request.contextPath}/login"/><br>
+            <spring:message code="login.linkAccount" arguments="${pageContext.request.contextPath}/request-link-account"/>
         </div>
     </div>
 

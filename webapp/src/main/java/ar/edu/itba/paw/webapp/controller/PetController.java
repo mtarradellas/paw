@@ -2,14 +2,17 @@ package ar.edu.itba.paw.webapp.controller;
 
 
 import ar.edu.itba.paw.models.Contact;
+import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -40,7 +43,8 @@ public class PetController extends ParentController {
         if(species != null || gender != null || searchCriteria != null){
             String maxPage = petService.getMaxFilterPages(getLocale(), species, breed, gender);
             mav.addObject("maxPage", maxPage);
-            mav.addObject("home_pet_list", petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder,page));
+            List<Pet> petList = petService.filteredList(getLocale(), species, breed, gender, searchCriteria, searchOrder,page);
+            mav.addObject("home_pet_list", petList);
         }
         else if(findValue != null){
             String maxPage = petService.getMaxSearchPages(getLocale(),findValue);
@@ -64,10 +68,8 @@ public class PetController extends ParentController {
 
         if(loggedUser() != null){
             mav.addObject("requestExists", requestService.requestExists(id,loggedUser().getId(),getLocale()));
-            mav.addObject("currentUserID", loggedUser().getId());
         }else{
             mav.addObject("requestExists", false);
-            mav.addObject("currentUserID", -1);
         }
 
         mav.addObject("pet",
@@ -79,8 +81,6 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
     public ModelAndView requestPet(@PathVariable("id") long id) {
-        Long time1 = System.currentTimeMillis();
-
         long ownerId = petService.getOwnerId(id);
 
         if( loggedUser()!= null && ownerId != loggedUser().getId() && !requestService.requestExists(id,loggedUser().getId(),getLocale())){
@@ -116,4 +116,23 @@ public class PetController extends ParentController {
         return "";
     }
 
+    @RequestMapping(value = "/pet/{id}/sell", method = {RequestMethod.POST})
+    public ModelAndView petUpdateSold(@PathVariable("id") long id) {
+        User user = loggedUser();
+        /* TODO change sold status ID hardcoded*/
+        if (user != null && petService.updateStatus(id, user.getId(), 3)) {
+            return new ModelAndView("redirect:/pet/" + id);
+        }
+        return new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
+        User user = loggedUser();
+        /* TODO change removed status ID hardcoded*/
+        if (user != null && petService.updateStatus(id, user.getId(), 2)) {
+            return new ModelAndView("redirect:/pet/" + id);
+        }
+        return new ModelAndView("redirect:/403");
+    }
 }

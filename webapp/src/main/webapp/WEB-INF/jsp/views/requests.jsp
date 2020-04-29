@@ -13,9 +13,20 @@
                 <div class="col ">
                     <div class="shadow p-3 bg-white rounded">
                         <h2>Pets you requested:</h2>
-                        <c:if test="${empty requests_list }">
+                        <c:if test="${empty requests_list}">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
+                                <c:choose>
+                                    <c:when test="${(empty param.status || param.status eq 'any')
+                                        && (empty param.searchCriteria || param.searchCriteria eq 'any')
+                               }">
+                                        <c:url var="homeUrl" value="/"/>
+                                        <spring:message code="request.emptyRequests"/>
+                                        <a href="${homeUrl}"><spring:message code="request.goToHome"/></a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </c:if>
                         <c:forEach var="req" items="${requests_list}">
@@ -26,7 +37,7 @@
                                         <small class="text-warning">    ${req.creationDate}</small>
                                     </div>
                                     <div class="col-sm-1 ">
-                                        <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/requests-cancel/${req.id}"/>">
+                                        <form method="POST" class="m-0" action="<c:url value="/requests-cancel/${req.id}"/>">
                                             <button  type="submit" name="newStatus" value="cancel" class="btn btn-danger"><spring:message code="cancel"/></button>
                                         </form>
                                     </div>

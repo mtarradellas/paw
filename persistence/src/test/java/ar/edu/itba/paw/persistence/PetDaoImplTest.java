@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ public class PetDaoImplTest {
     private final String SPECIES_TABLE = "species";
     private final String BREEDS_TABLE = "breeds";
     private final String IMAGES_TABLE = "images";
+    private final String PET_STATUS_TABLE = "pet_status";
 
     private final String PET_NAME = "pet_test_name";
     private final Species SPECIES = new Species(1, "pet_test_species");
@@ -41,6 +43,7 @@ public class PetDaoImplTest {
     private  java.sql.Date UPLOAD_DATE ;
     private final int PRICE = 0;
     private int OWNER_ID = 1;
+    private final Status STATUS = new Status(1, "Available");
 
     private int OTHER_SPECIES_ID;
     private int OTHER_BREED_ID;
@@ -56,6 +59,7 @@ public class PetDaoImplTest {
     private SimpleJdbcInsert jdbcInsertSpecies;
     private SimpleJdbcInsert jdbcInsertBreed;
     private SimpleJdbcInsert jdbcInsertImage;
+    private SimpleJdbcInsert jdbcInsertPetStatus;
 
     @Before
     public void setUp() {
@@ -77,6 +81,8 @@ public class PetDaoImplTest {
         jdbcInsertImage = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(IMAGES_TABLE)
                 .usingGeneratedKeyColumns("id");
+        jdbcInsertPetStatus = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(PET_STATUS_TABLE);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2001);
@@ -120,10 +126,29 @@ public class PetDaoImplTest {
             put("en_us", "other");
         }};
         OTHER_BREED_ID = jdbcInsertBreed.executeAndReturnKey(otherBreedValues).intValue();
+        final Map<String, Object> available = new HashMap<String, Object>() {{
+            put("id", 1);
+            put("en_US", "Available");
+            put("es_AR", "Disponible");
+        }};
+        jdbcInsertPetStatus.execute(available);
+        final Map<String, Object> removed = new HashMap<String, Object>() {{
+            put("id", 2);
+            put("en_US", "Removed");
+            put("es_AR", "Removido");
+        }};
+        jdbcInsertPetStatus.execute(removed);
+        final Map<String, Object> sold = new HashMap<String, Object>() {{
+            put("id", 3);
+            put("en_US", "Sold");
+            put("es_AR", "Vendido");
+        }};
+        jdbcInsertPetStatus.execute(sold);
+
     }
 
     private long insertPet(String name, long species, long breed, String location, boolean vaccinated, String gender,
-                           String description, Date birthDate, Date uploadDate, int price, long ownerId) {
+                           String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
         final Map<String, Object> petValues = new HashMap<String, Object>() {{
             put("petName", name);
             put("species", species);
@@ -136,6 +161,7 @@ public class PetDaoImplTest {
             put("uploadDate", uploadDate);
             put("price", price);
             put("ownerId", ownerId);
+            put("status", status);
         }};
         long key = jdbcInsertPet.executeAndReturnKey(petValues).longValue();
         final Map<String, Object> imageValues = new HashMap<String, Object>() {{
@@ -152,7 +178,7 @@ public class PetDaoImplTest {
 
         /**/
         Pet pet = petDaoImpl.create(PET_NAME, SPECIES, BREED, LOCATION, VACCINATED, GENDER,
-                DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
+                DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
 
 
         assertNotNull(pet);
@@ -167,6 +193,7 @@ public class PetDaoImplTest {
         assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
+        assertEquals(STATUS.getId(), pet.getStatus().getId());
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
     }
 
@@ -185,7 +212,7 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         long key = insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
-                    UPLOAD_DATE, PRICE, OWNER_ID);
+                    UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
 
         /**/
         Optional<Pet> testPet = petDaoImpl.findById("es_ar", key);
@@ -203,6 +230,7 @@ public class PetDaoImplTest {
         assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
+        assertEquals(STATUS.getId(), pet.getStatus().getId());
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
     }
 
@@ -211,9 +239,9 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
-                UPLOAD_DATE, PRICE, OWNER_ID);
+                UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
         insertPet(PET_NAME + "_other", OTHER_SPECIES_ID, OTHER_BREED_ID, LOCATION, VACCINATED,
-                    GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
+                    GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
 
         /**/
         Stream<Pet> petStream = petDaoImpl.filteredList("es_ar", SPECIES.getName(), null,
@@ -233,6 +261,7 @@ public class PetDaoImplTest {
         assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
+        assertEquals(STATUS.getId(), pet.getStatus().getId());
     }
 
     @Test
@@ -240,9 +269,9 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
-                UPLOAD_DATE, PRICE, OWNER_ID);
+                UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
         insertPet(PET_NAME + "_other", SPECIES.getId(), OTHER_BREED_ID, LOCATION, VACCINATED,
-                GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
+                GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
 
         /**/
         Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES.getName(), BREED.getName(),
@@ -262,6 +291,7 @@ public class PetDaoImplTest {
         assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
+        assertEquals(STATUS.getId(), pet.getStatus().getId());
     }
 
     @Test
@@ -269,9 +299,9 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         insertPet(PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
-                UPLOAD_DATE, PRICE, OWNER_ID);
+                UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
         insertPet(PET_NAME + "_other", OTHER_SPECIES_ID, OTHER_BREED_ID, LOCATION, VACCINATED,
-                GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID);
+                GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
 
         /**/
         Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",null, null, GENDER, "species", "asc","1");
@@ -290,6 +320,7 @@ public class PetDaoImplTest {
         assertDate(UPLOAD_DATE, pet.getUploadDate());
         assertEquals(PRICE, pet.getPrice());
         assertEquals(OWNER_ID, pet.getOwnerId());
+        assertEquals(STATUS.getId(), pet.getStatus().getId());
     }
 
     private void assertDate(Date expected, Date actual) {

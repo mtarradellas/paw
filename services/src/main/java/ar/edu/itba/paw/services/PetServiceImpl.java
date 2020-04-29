@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PetServiceImpl implements PetService {
+    static final long AVAILABLE_STATUS = 1;
+
     @Autowired
     private PetDao petDao;
 
@@ -40,10 +42,15 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public List<Pet> getByUserId(String language, long ownerId, String page){
+        return petDao.getByUserId( language, ownerId, page).collect(Collectors.toList());
+    }
+
+    @Override
     public Pet create(String language, String petName, String speciesName, String breedName, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
 //        Species species = speciesDao.findSpeciesByName(language, speciesName);
 //        Breed breed = speciesDao.findBreedByName(language, breedName);
-//        return petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+//        return petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, AVAILABLE_STATUS);
         return new Pet();
     }
 
@@ -68,9 +75,21 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public String getMaxUserPetsPages(long userId){
+        return petDao.getMaxUserPetsPages(userId);
+    }
+
+    @Override
     public Optional<Contact> getPetContact(long petId) {
         return petDao.getPetContact(petId);
     }
 
-
+    @Override
+    public boolean updateStatus(long petId, long userId, long newStatus) {
+        if (petDao.isPetOwner(petId, userId)) {
+            petDao.updateStatus(petId, newStatus);
+            return true;
+        }
+        return false;
+    }
 }

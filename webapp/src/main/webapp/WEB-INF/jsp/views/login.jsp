@@ -30,9 +30,10 @@
 
                 <div class="p-2">
                     <spring:message code="login.submit" var="submitText"/>
-                    <input type="submit" class="btn btn-primary" name="${submitText}"/>
+                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form>
+            <spring:message code="login.notRegistered" arguments="${pageContext.request.contextPath}/register"/>
         </div>
     </div>
 </t:basicLayout>

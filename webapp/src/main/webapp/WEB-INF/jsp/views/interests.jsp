@@ -15,7 +15,9 @@
                         <h2>Users interested in your pets:</h2>
                             <c:if test="${empty interests_list }">
                                 <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                    <a href="${pageContext.request.contextPath}/interests"><spring:message code="showAll"/></a>
+                                    <c:if test="${(not empty param.status) or (not empty param.searchCriteria) or (not empty param.searchOrder) }">
+                                        <a href="${pageContext.request.contextPath}/interests"><spring:message code="showAll"/></a>
+                                    </c:if>
                                 </div>
                             </c:if>
                             <c:forEach var="req" items="${interests_list}">
@@ -26,7 +28,7 @@
                                             <small class="text-warning">    ${req.creationDate}</small>
                                         </div>
                                         <div class="col-sm-2 ">
-                                            <form method="POST" class="m-0" action="<c:url value="${pageContext.request.contextPath}/interests-accept-reject/${req.id}"/>">
+                                            <form method="POST" class="m-0" action="<c:url value="/interests-accept-reject/${req.id}"/>">
                                                 <button type="submit" name="newStatus" value="accept" class="btn btn-success"><spring:message code="accept"/></button>
                                                 <button type="submit" name="newStatus" value="reject" class="btn btn-danger" ><spring:message code="reject"/></button>
                                             </form>

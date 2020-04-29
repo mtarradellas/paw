@@ -43,7 +43,7 @@
                             <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                         </h1>
                     </c:if>
-                    <c:if test="${(pet.ownerId ne currentUserID)}">
+                    <c:if test="${(pet.ownerId ne loggedUser.id)}">
 
                         <c:if test="${not requestExists}">
                             <h1 class="mt-2 ml-4">
@@ -85,9 +85,11 @@
                     </ul>
 
                 </div>
+                <c:set var="ownerId" value="${pet.ownerId}"/>
+                <a href="${pageContext.request.contextPath}/user/${ownerId}" class="p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
 
                 <div class="p-4">
-                <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
+                    <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
                 </div>
             </div>
         </div>
