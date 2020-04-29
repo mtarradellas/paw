@@ -29,6 +29,7 @@
                                 <spring:message code="uploadPetForm.speciesName" var="speciesNameTxt"/>
                                 <form:label path="speciesName" for="speciesName">${speciesNameTxt}: </form:label>
                                 <form:select id="speciesName" path="speciesName" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                     <c:forEach var="species" items="${species_list}">
                                         <form:option value="${species.id}">${species.name}</form:option>
                                     </c:forEach>
@@ -42,8 +43,9 @@
                                 <spring:message code="uploadPetForm.breedName" var="breedNameTxt"/>
                                 <form:label path="breedName" for="petName">${breedNameTxt}: </form:label>
                                 <form:select id="breedName" path="breedName" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                     <c:forEach var="breed" items="${breeds_list}">
-                                        <form:option value="${breed.id}">${breed.name}</form:option>
+                                        <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
                                     </c:forEach>
                                 </form:select>
                                 <form:errors path="breedName" element="div" cssClass="invalid-feedback"/>
@@ -121,5 +123,5 @@
         </div>
     </div>
 
-    <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
+    <script src="<c:url value="/resources/js/upload_pet.js"/>"></script>
 </t:basicLayout>
