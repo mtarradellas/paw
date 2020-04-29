@@ -15,8 +15,13 @@
                 <spring:bind path="mail">
                     <div class="form-group">
                         <form:label path="mail" for="mail"><spring:message code="resetPassword.email"/>: </form:label>
-                        <form:input type="text" id="mail" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="mail"/>
+                        <form:input type="text" id="mail" cssClass="form-control ${status.error || invalid_mail ? 'is-invalid' : ''}" path="mail"/>
                         <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
+                        <c:if test="${invalid_mail}">
+                            <div class="invalid-feedback">
+                                <spring:message code="resetPassword.invalidEmail"/>
+                            </div>
+                        </c:if>
                     </div>
                 </spring:bind>
 
