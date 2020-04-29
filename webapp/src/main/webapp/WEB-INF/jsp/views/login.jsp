@@ -29,7 +29,7 @@
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form>
-            <spring:message code="register.alreadyDone" arguments="${pageContext.request.contextPath}/login"/>
+            <spring:message code="login.notRegistered" arguments="${pageContext.request.contextPath}/register"/>
         </div>
     </div>
 </t:basicLayout>
