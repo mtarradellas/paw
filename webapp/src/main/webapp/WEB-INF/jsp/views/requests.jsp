@@ -24,7 +24,7 @@
                                         <a href="${homeUrl}"><spring:message code="request.goToHome"/></a>
                                     </c:when>
                                     <c:otherwise>
-                                        <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
+                                        <a href="${pageContext.request.contextPath}/requests"><spring:message code="removeFilters"/></a>
                                     </c:otherwise>
                                 </c:choose>
                             </div>

@@ -16,7 +16,7 @@
                             <c:if test="${empty interests_list }">
                                 <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                     <c:if test="${(not empty param.status) or (not empty param.searchCriteria) or (not empty param.searchOrder) }">
-                                        <a href="${pageContext.request.contextPath}/interests"><spring:message code="showAll"/></a>
+                                        <a href="${pageContext.request.contextPath}/interests"><spring:message code="removeFilters"/></a>
                                     </c:if>
                                 </div>
                             </c:if>
