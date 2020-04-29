@@ -65,7 +65,7 @@
                                     <form:select id="speciesName" path="speciesName" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="species" items="${species_list}">
-                                            <form:option value="${species.name}">${species.name}</form:option>
+                                            <form:option value="${species.id}">${species.name}</form:option>
                                         </c:forEach>
                                     </form:select>
                                     <form:errors path="speciesName" element="div" cssClass="invalid-feedback"/>
@@ -78,7 +78,7 @@
                                     <form:select id="breedName" path="breedName" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="empty"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="breed" items="${breeds_list}">
-                                            <form:option cssClass="species-${breed.speciesId}" value="${breed.name}">${breed.name}</form:option>
+                                            <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
                                         </c:forEach>
                                     </form:select>
                                     <form:errors path="breedName" element="div" cssClass="invalid-feedback"/>
