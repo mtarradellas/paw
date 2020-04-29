@@ -28,7 +28,7 @@
 
                 <div class="p-2">
                     <spring:message code="resetPassword.submit" var="submitText"/>
-                    <input type="submit" class="btn btn-primary" name="${submitText}"/>
+                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form:form>
         </div>
