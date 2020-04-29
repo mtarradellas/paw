@@ -2,13 +2,17 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exception.InvalidUserCreationException;
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
@@ -36,7 +40,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> create(String username, String password, String mail, String phone) throws InvalidUserCreationException {
+    public Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException {
         return this.userDao.create(username, encoder.encode(password), mail, phone);
+    }
+
+    @Override
+    public Optional<User> findByMail(String mail) {
+        return userDao.findByMail(mail);
+    }
+
+    @Override
+    public boolean updatePassword(String newPassword, long id) {
+        return userDao.updatePassword(encoder.encode(newPassword), id);
+    }
+
+    @Override
+    public boolean createToken(UUID uuid, long userId) {
+        Date tomorrow = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(tomorrow);
+        cal.add(Calendar.DATE, 1);
+        tomorrow = cal.getTime();
+        return userDao.createToken(uuid,userId,tomorrow);
+    }
+
+    @Override
+    public Optional<Token> getToken(UUID uuid) {
+        return userDao.getToken(uuid);
+    }
+
+    @Override
+    public boolean deleteToken(UUID uuid) {
+        return userDao.deleteToken(uuid);
+    }
+
+    @Override
+    public Optional<User> findByToken(UUID uuid) {
+        return userDao.findByToken(uuid);
     }
 }

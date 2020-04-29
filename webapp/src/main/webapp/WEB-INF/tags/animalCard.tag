@@ -9,13 +9,11 @@
 
 <div class="card animal-list-card">
     <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link">
-
-    <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
-         class="card-img-top" alt="">
-
+        <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
+             class="card-img-top" alt="">
     </a>
-    <div class="card-body">
 
+    <div class="card-body">
         <p class="card-text">
             <c:if test="${not empty pet.petName}">
                 <spring:message code="petCard.name"/> <c:out value="${pet.petName}"/><br>
@@ -27,7 +25,6 @@
         </p>
 
         <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link"><spring:message code="petCard.goToPage"/></a>
-
     </div>
     <div class="card-footer">
         <h6><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></h6>
