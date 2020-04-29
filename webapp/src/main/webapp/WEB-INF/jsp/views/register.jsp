@@ -67,6 +67,9 @@
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form:form>
+            <spring:message code="login.forgotPassword" arguments="${pageContext.request.contextPath}/request-password-reset"/><br>
+            <spring:message code="register.alreadyDone" arguments="${pageContext.request.contextPath}/login"/><br>
+            <spring:message code="login.linkAccount" arguments="${pageContext.request.contextPath}/request-link-account"/>
         </div>
     </div>
 

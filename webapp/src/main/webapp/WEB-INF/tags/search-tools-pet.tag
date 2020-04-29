@@ -18,8 +18,9 @@
                 <select name="species" class="form-control" id="filter-species">
                         <option value="any"><spring:message code="filter.any"/></option>
                         <c:forEach items="${species_list}" var="speciesValue">
+                            <c:set var="speciesId">${speciesValue.id}</c:set>
                             <option value="${speciesValue.id}"
-                                    <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesValue.id eq param.species)}">
+                                    <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesId eq param.species)}">
                                         selected
                                     </c:if>
                             >
@@ -37,9 +38,11 @@
                     <option class="species-any" value="any"><spring:message code="filter.any"/></option>
 
                     <c:forEach items="${breeds_list}" var="breed">
+                        <c:set var="breedId">${breed.id}</c:set>
+                        <c:set var="speciesId">${breed.speciesId}</c:set>
                         <option class="species-${breed.speciesId}" value="${breed.id}"
-                                <c:if test="${(not empty param.species) && (param.species ne 'any') && (breed.speciesId ne param.species)}">style="display: none;"</c:if>
-                                <c:if test="${(not empty param.breed) && (param.breed ne 'any') && (breed.id eq param.breed)}">selected</c:if>
+                                <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesId ne param.species)}">style="display: none;"</c:if>
+                                <c:if test="${(not empty param.breed) && (param.breed ne 'any') && (breedId eq param.breed)}">selected</c:if>
                         >
                                 ${breed.name}
                         </option>
