@@ -14,7 +14,7 @@
             <div class="bg-light shadow p-3">
                 <h1>${titleTxt}</h1>
                 <div class="p-2">
-                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/register" method="post" enctype="application/x-www-form-urlencoded">
+                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/upload-pet" method="post" enctype="application/x-www-form-urlencoded">
                         <spring:bind path="petName">
                             <div class="form-group">
                                 <spring:message code="uploadPetForm.petName" var="petNameTxt"/>

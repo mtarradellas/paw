@@ -2,10 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
-import ar.edu.itba.paw.models.Contact;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
@@ -18,6 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,15 +134,37 @@ public class PetController extends ParentController {
     }
 
     @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
-    public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm userForm,
+    public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,
                                    final BindingResult errors, HttpServletRequest request) {
 
+        System.out.println("POSTINGNGGG");
+        System.out.println("DATE: " + petForm.getBirthDate());
+
         if (errors.hasErrors()) {
-            return uploadPetForm(userForm);
+            return uploadPetForm(petForm);
         }
 
-        //TODO: autenticar y subir a la base de datos o pasar a la view un error
+        Date currentDate = new java.sql.Date(System.currentTimeMillis());
+        Date birthDate = java.sql.Date.valueOf(String.valueOf(petForm.getBirthDate()));
 
+        System.out.println("BD: " + birthDate);
+        System.out.println("CD: " + currentDate);
+
+        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesName(), petForm.getBreedName(),
+                          petForm.getLocation(), petForm.isVaccinated(), petForm.getGender(), petForm.getDescription(),
+                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId());
+
+        if (!opPet.isPresent()) {
+            System.out.println("pet not created");
+            return uploadPetForm(petForm).addObject("error", true);
+        }
+
+        Optional<Image> opImage = imageService.create(opPet.get().getId(), petForm.getPhoto(), loggedUser().getId());
+
+        if (!opImage.isPresent()) {
+            System.out.println("img not created");
+            return uploadPetForm(petForm).addObject("error", true);
+        }
 
         //TODO: redireccionar a la view del pet?
         return new ModelAndView("redirect:/");
