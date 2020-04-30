@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 public class PetDaoImpl implements PetDao {
 
     private static final int PETS_PER_PAGE = 12;
+    private static final int PETS_IN_USER_PAGE = 4;
     private static final String PET_TABLE = "pets";
     private static final String HIDDEN_PETS_STATUS = " (2, 3) "; // Pets Removed or Sold are hidden from usual queries
 
@@ -354,7 +355,7 @@ public class PetDaoImpl implements PetDao {
     public String getMaxUserPetsPages(long userId){
         Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? " +
                                                         "AND pets.status NOT IN " + HIDDEN_PETS_STATUS, new Object[] {userId}, Integer.class);
-        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
+        pets = (int) Math.ceil((double) pets / PETS_IN_USER_PAGE);
         return pets.toString();
     }
 
