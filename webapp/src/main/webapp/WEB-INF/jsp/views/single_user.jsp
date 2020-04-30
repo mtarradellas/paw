@@ -23,7 +23,15 @@
         </c:if>
         <div class="p-2">
             <h2><spring:message code="pets"/></h2>
+            <c:if test="${not empty userPets}">
+                <div class="m-2 ">
+                    <c:if test="${maxPage ne 1}">
+                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
+                    </c:if>
+                </div>
+            </c:if>
             <div class="card-deck row">
+
                 <c:forEach var="pet" items="${userPets}">
                     <div class="col-auto mb-3">
 
@@ -39,7 +47,11 @@
 
             </div>
             <c:if test="${not empty userPets}">
-                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="'/user/${id}'"/>
+                <div class="m-2 ">
+                    <c:if test="${maxPage ne 1}">
+                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
+                    </c:if>
+                </div>
             </c:if>
 
         </div>
