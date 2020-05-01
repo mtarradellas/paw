@@ -4,10 +4,8 @@ import ar.edu.itba.paw.webapp.form.customValidators.BreedIdMatch;
 import ar.edu.itba.paw.webapp.form.customValidators.SpeciesIdMatch;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
 import java.util.Date;
 
 public class UploadPetForm {
@@ -30,17 +28,19 @@ public class UploadPetForm {
     @NotNull
     private Boolean vaccinated;
 
-    @NotNull
+    @Pattern(regexp="^(male)|(female)$")
     private String gender;
 
     @Size(max = 250)
     private String description;
 
+    @NotNull
     @Past
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
 
     @NotNull
+    @Min(value=0)
     private Integer price;
 
     public byte[] getPhoto() {
