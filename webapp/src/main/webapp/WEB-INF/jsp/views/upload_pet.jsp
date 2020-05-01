@@ -50,7 +50,7 @@
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
                                         <form:label path="price" for="price">${priceTxt}: </form:label>
-                                        <form:input placeholder="${priceTxt}" type="text" id="price" path="price" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                        <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="price" element="div" cssClass="invalid-feedback"/>
                                     </div>
                                 </spring:bind>
@@ -62,7 +62,8 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.speciesName" var="speciesIdTxt"/>
                                     <form:label path="speciesId" for="speciesId">${speciesIdTxt}: </form:label>
-                                    <form:select id="speciesId" path="speciesId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="speciesId" path="speciesId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                        <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="species" items="${species_list}">
                                             <form:option value="${species.id}">${species.name}</form:option>
                                         </c:forEach>
@@ -74,7 +75,8 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.breedName" var="breedIdTxt"/>
                                     <form:label path="breedId" for="breedId">${breedIdTxt}: </form:label>
-                                    <form:select id="breedId" path="breedId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="breedId" path="breedId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                        <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="breed" items="${breeds_list}">
                                             <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
                                         </c:forEach>
@@ -108,7 +110,7 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.gender" var="genderTxt"/>
                                     <form:label path="gender" for="gender">${genderTxt}: </form:label>
-                                    <form:select id="gender" path="gender" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="gender" path="gender" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="male"><spring:message code="uploadPetForm.male"/></form:option>
                                         <form:option value="female"><spring:message code="uploadPetForm.female"/></form:option>
                                     </form:select>
@@ -123,8 +125,8 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.photo" var="photoTxt"/>
                                     <spring:message code="uploadPetForm.uploadPhoto" var="uploadPhotoTxt"/>
-                                    <form:label path="photo" for="photo">${photoTxt}: </form:label>
-                                    <form:input accept="image/*" type="file" id="photo" path="photo" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                    <form:label path="photo" for="photo">${photoTxt}: </form:label><br>
+                                    <form:input accept="image/*" type="file" id="photo" path="photo" cssClass="${status.error ? 'is-invalid' : ''}"/>
                                     <form:errors path="photo" element="div" cssClass="invalid-feedback"/>
                                 </div>
                             </spring:bind>
