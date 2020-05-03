@@ -13,8 +13,11 @@ import java.util.Optional;
 
 @Controller
 public class UserController extends ParentController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     String  page = "1";
+
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
                              @RequestParam(name = "page", required = false) String page) {
