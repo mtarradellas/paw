@@ -142,17 +142,12 @@ html,body {
     text-align: center;
 }
 
-/*.button {*/
-/*    text-decoration: none;*/
-/*    background-color: #EEEEEE;*/
-/*    color: #333333;*/
-/*    padding: 2px 6px 2px 6px;*/
-/*    border-top: 1px solid #CCCCCC;*/
-/*    border-right: 1px solid #333333;*/
-/*    border-bottom: 1px solid #333333;*/
-/*    border-left: 1px solid #CCCCCC;*/
-/*}*/
+.map {
+    height: 400px;
+    width: 100%;
+}
 
-/*.pn {*/
-/*    color: black;*/
-/*}*/
+.locate {
+    top: 6em;
+    left: .5em;
+}

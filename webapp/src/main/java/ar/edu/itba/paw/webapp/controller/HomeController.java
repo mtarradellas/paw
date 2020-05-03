@@ -7,6 +7,12 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HomeController extends ParentController {
 
+    @RequestMapping("/maps")
+    public ModelAndView getMaps() {
+        return new ModelAndView("views/maps");
+    }
+
+
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
         return new ModelAndView("views/available")

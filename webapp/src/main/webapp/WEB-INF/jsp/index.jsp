@@ -5,6 +5,7 @@
 <spring:message code="indexTitle" var="titleVar"/>
 <t:basicLayout title="${titleVar}">
     <jsp:body>
+        <h1><a href="${pageContext.request.contextPath}/maps">MAAAAAPS</a></h1>
         <div class="container-fluid">
             <div class="row">
 
