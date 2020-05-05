@@ -8,12 +8,12 @@
 <spring:message var="titleTxt" code="uploadPetForm.title"/>
 
 <t:basicLayout title="${titleTxt}">
-    <div class="row ">
+    <div class="row">
         <div class=" col-md-10 offset-md-1">
 
             <div class="bg-light shadow p-3">
                 <div class="p-2">
-                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/upload-pet" method="post" enctype="application/x-www-form-urlencoded">
+                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/upload-pet" method="post" enctype="multipart/form-data">
                         <h1>${titleTxt}</h1>
 
                         <div class="form-row p-1">
@@ -122,18 +122,23 @@
                     <div class="form-row p-1">
                         <div class="col">
                             <spring:bind path="photo">
-                                <div class="form-group">
+                                <spring:message code="uploadPetForm.uploadPhoto" var="uploadPhotoTxt"/>
+                                <form:label path="photo" for="photo">${uploadPhotoTxt}:</form:label>
+                                <div>
                                     <spring:message code="uploadPetForm.photo" var="photoTxt"/>
-                                    <spring:message code="uploadPetForm.uploadPhoto" var="uploadPhotoTxt"/>
-                                    <form:label path="photo" for="photo">${photoTxt}: </form:label><br>
-                                    <form:input accept="image/*" type="file" id="photo" path="photo" cssClass="${status.error ? 'is-invalid' : ''}"/>
-                                    <form:errors path="photo" element="div" cssClass="invalid-feedback"/>
-                                </div>
+
+                                <form:input path="photo" accept="image/*" type="file"
+                                            class="${status.error ? 'is-invalid' : ''}"
+                                            id="photo"
+                                />
+                            </div>
+                            <form:errors path="photo" element="div" cssClass="invalid-feedback"
+                                               cssStyle="${status.error ? 'display: block' : ''}"/>
                             </spring:bind>
                         </div>
                     </div>
 
-                    <div class="p-3 row">
+                    <div class="m-1 p-3 row">
                         <spring:message code="uploadPetForm.submit" var="submitText"/>
                         <input type="submit" class="btn btn-primary" value="${submitText}"/>
                     </div>

@@ -1,8 +1,11 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.customValidators.BreedIdMatch;
-import ar.edu.itba.paw.webapp.form.customValidators.SpeciesIdMatch;
+import ar.edu.itba.paw.webapp.validators.BreedIdMatch;
+import ar.edu.itba.paw.webapp.validators.FileSize;
+import ar.edu.itba.paw.webapp.validators.ImageDimensions;
+import ar.edu.itba.paw.webapp.validators.SpeciesIdMatch;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
 
@@ -10,7 +13,10 @@ import java.util.Date;
 
 public class UploadPetForm {
 
-    private byte[] photo;
+    @NotNull
+    @FileSize
+    @ImageDimensions
+    private MultipartFile photo;
 
     @Size(min = 2, max = 50)
     @Pattern(regexp = "^[a-zA-Z]+$")
@@ -43,11 +49,11 @@ public class UploadPetForm {
     @Min(value=0)
     private Integer price;
 
-    public byte[] getPhoto() {
+    public MultipartFile getPhoto() {
         return photo;
     }
 
-    public void setPhoto(byte[] photo) {
+    public void setPhoto(MultipartFile photo) {
         this.photo = photo;
     }
 

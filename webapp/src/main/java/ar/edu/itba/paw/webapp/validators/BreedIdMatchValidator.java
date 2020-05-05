@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form.customValidators;
+package ar.edu.itba.paw.webapp.validators;
 
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.Breed;
