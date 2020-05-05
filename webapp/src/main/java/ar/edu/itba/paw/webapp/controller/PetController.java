@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -143,10 +144,10 @@ public class PetController extends ParentController {
         }
 
         Date currentDate = new java.sql.Date(System.currentTimeMillis());
-        Date birthDate = java.sql.Date.valueOf(String.valueOf(petForm.getBirthDate()));
+        Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                          petForm.getLocation(), petForm.isVaccinated(), petForm.getGender(), petForm.getDescription(),
+                          petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
                           birthDate, currentDate, petForm.getPrice(), loggedUser().getId());
 
         if (!opPet.isPresent()) {
@@ -154,7 +155,15 @@ public class PetController extends ParentController {
             return uploadPetForm(petForm).addObject("error", true);
         }
 
-        Optional<Image> opImage = imageService.create(opPet.get().getId(), petForm.getPhoto(), loggedUser().getId());
+        byte[] imgBytes;
+        try {
+            imgBytes = petForm.getPhoto().getBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return uploadPetForm(petForm).addObject("error", true);
+        }
+
+        Optional<Image> opImage = imageService.create(opPet.get().getId(), imgBytes, loggedUser().getId());
 
         if (!opImage.isPresent()) {
             System.out.println("img not created");
