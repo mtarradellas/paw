@@ -1,52 +1,59 @@
 package ar.edu.itba.paw.webapp.form;
 
-
-import org.hibernate.validator.constraints.NotBlank;
+import ar.edu.itba.paw.webapp.validators.BreedIdMatch;
+import ar.edu.itba.paw.webapp.validators.FileSize;
+import ar.edu.itba.paw.webapp.validators.ImageDimensions;
+import ar.edu.itba.paw.webapp.validators.SpeciesIdMatch;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
+import java.util.Date;
 
 public class UploadPetForm {
 
     @NotNull
-    private byte[] photo;
+    @FileSize
+    @ImageDimensions
+    private MultipartFile photo;
 
     @Size(min = 2, max = 50)
     @Pattern(regexp = "^[a-zA-Z]+$")
     private String petName;
 
-    @NotNull
-    private int speciesId;
+    @SpeciesIdMatch
+    private Integer speciesId;
 
-    @NotNull
-    private int breedId;
+    @BreedIdMatch
+    private Integer breedId;
 
     @Size(min = 3, max = 50)
     private String location;
 
     @NotNull
-    private boolean vaccinated;
+    private Boolean vaccinated;
 
-    @NotNull
+    @Pattern(regexp="^(male)|(female)$")
     private String gender;
 
     @Size(max = 250)
     private String description;
 
     @NotNull
-    private String birthDate;
+    @Past
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date birthDate;
 
     @NotNull
-    private int price;
+    @Min(value=0)
+    private Integer price;
 
-    public byte[] getPhoto() {
+    public MultipartFile getPhoto() {
         return photo;
     }
 
-    public void setPhoto(byte[] photo) {
+    public void setPhoto(MultipartFile photo) {
         this.photo = photo;
     }
 
@@ -58,19 +65,19 @@ public class UploadPetForm {
         this.petName = petName;
     }
 
-    public int getSpeciesId() {
+    public Integer getSpeciesId() {
         return speciesId;
     }
 
-    public void setSpeciesId(int speciesId) {
+    public void setSpeciesId(Integer speciesId) {
         this.speciesId = speciesId;
     }
 
-    public int getBreedId() {
+    public Integer getBreedId() {
         return breedId;
     }
 
-    public void setBreedId(int breedId) {
+    public void setBreedId(Integer breedId) {
         this.breedId = breedId;
     }
 
@@ -82,11 +89,11 @@ public class UploadPetForm {
         this.location = location;
     }
 
-    public boolean isVaccinated() {
+    public Boolean getVaccinated() {
         return vaccinated;
     }
 
-    public void setVaccinated(boolean vaccinated) {
+    public void setVaccinated(Boolean vaccinated) {
         this.vaccinated = vaccinated;
     }
 
@@ -106,19 +113,19 @@ public class UploadPetForm {
         this.description = description;
     }
 
-    public String getBirthDate() {
+    public Date getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(String birthDate) {
+    public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 }

@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form.customValidators;
+package ar.edu.itba.paw.webapp.validators;
 
 import org.springframework.beans.BeanWrapperImpl;
 

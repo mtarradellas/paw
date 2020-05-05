@@ -9,7 +9,7 @@ function hideOrShow(event){
     breedOptions.not(".species-"+selectedSpecie).hide();
     breedOptions.filter(".species-"+selectedSpecie+",.species-any").show();
 
-    filterBreedSelector.val("119");
+    filterBreedSelector.val("-1");
 }
 
 
@@ -18,5 +18,3 @@ function hideOrShow(event){
  */
 
 $('#speciesId').on('change', hideOrShow);
-
-$(document).ready(hideOrShow)

@@ -8,12 +8,12 @@
 <spring:message var="titleTxt" code="uploadPetForm.title"/>
 
 <t:basicLayout title="${titleTxt}">
-    <div class="row ">
+    <div class="row">
         <div class=" col-md-10 offset-md-1">
 
             <div class="bg-light shadow p-3">
                 <div class="p-2">
-                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/upload-pet" method="post" enctype="application/x-www-form-urlencoded">
+                    <form:form modelAttribute="uploadPetForm" action="${pageContext.request.contextPath}/upload-pet" method="post" enctype="multipart/form-data">
                         <h1>${titleTxt}</h1>
 
                         <div class="form-row p-1">
@@ -50,7 +50,7 @@
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
                                         <form:label path="price" for="price">${priceTxt}: </form:label>
-                                        <form:input placeholder="${priceTxt}" type="text" id="price" path="price" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                        <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="price" element="div" cssClass="invalid-feedback"/>
                                     </div>
                                 </spring:bind>
@@ -62,7 +62,8 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.speciesName" var="speciesIdTxt"/>
                                     <form:label path="speciesId" for="speciesId">${speciesIdTxt}: </form:label>
-                                    <form:select id="speciesId" path="speciesId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="speciesId" path="speciesId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                        <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="species" items="${species_list}">
                                             <form:option value="${species.id}">${species.name}</form:option>
                                         </c:forEach>
@@ -74,7 +75,8 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.breedName" var="breedIdTxt"/>
                                     <form:label path="breedId" for="breedId">${breedIdTxt}: </form:label>
-                                    <form:select id="breedId" path="breedId" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="breedId" path="breedId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                        <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="breed" items="${breeds_list}">
                                             <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
                                         </c:forEach>
@@ -108,7 +110,7 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.gender" var="genderTxt"/>
                                     <form:label path="gender" for="gender">${genderTxt}: </form:label>
-                                    <form:select id="gender" path="gender" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="gender" path="gender" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="male"><spring:message code="uploadPetForm.male"/></form:option>
                                         <form:option value="female"><spring:message code="uploadPetForm.female"/></form:option>
                                     </form:select>
@@ -120,18 +122,23 @@
                     <div class="form-row p-1">
                         <div class="col">
                             <spring:bind path="photo">
-                                <div class="form-group">
+                                <spring:message code="uploadPetForm.uploadPhoto" var="uploadPhotoTxt"/>
+                                <form:label path="photo" for="photo">${uploadPhotoTxt}:</form:label>
+                                <div>
                                     <spring:message code="uploadPetForm.photo" var="photoTxt"/>
-                                    <spring:message code="uploadPetForm.uploadPhoto" var="uploadPhotoTxt"/>
-                                    <form:label path="photo" for="photo">${photoTxt}: </form:label>
-                                    <form:input accept="image/*" type="file" id="photo" path="photo" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
-                                    <form:errors path="photo" element="div" cssClass="invalid-feedback"/>
-                                </div>
+
+                                <form:input path="photo" accept="image/*" type="file"
+                                            class="${status.error ? 'is-invalid' : ''}"
+                                            id="photo"
+                                />
+                            </div>
+                            <form:errors path="photo" element="div" cssClass="invalid-feedback"
+                                               cssStyle="${status.error ? 'display: block' : ''}"/>
                             </spring:bind>
                         </div>
                     </div>
 
-                    <div class="p-3 row">
+                    <div class="m-1 p-3 row">
                         <spring:message code="uploadPetForm.submit" var="submitText"/>
                         <input type="submit" class="btn btn-primary" value="${submitText}"/>
                     </div>
