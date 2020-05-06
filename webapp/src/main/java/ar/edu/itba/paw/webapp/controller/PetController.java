@@ -151,8 +151,7 @@ public class PetController extends ParentController {
                           birthDate, currentDate, petForm.getPrice(), loggedUser().getId());
 
         if (!opPet.isPresent()) {
-            System.out.println("pet not created");
-            return uploadPetForm(petForm).addObject("error", true);
+            return uploadPetForm(petForm).addObject("pet_error", true);
         }
 
         byte[] imgBytes;
@@ -160,18 +159,16 @@ public class PetController extends ParentController {
             imgBytes = petForm.getPhoto().getBytes();
         } catch (IOException e) {
             e.printStackTrace();
-            return uploadPetForm(petForm).addObject("error", true);
+            return uploadPetForm(petForm).addObject("img_error", true);
         }
 
         Optional<Image> opImage = imageService.create(opPet.get().getId(), imgBytes, loggedUser().getId());
 
         if (!opImage.isPresent()) {
-            System.out.println("img not created");
-            return uploadPetForm(petForm).addObject("error", true);
+            return uploadPetForm(petForm).addObject("img_error", true);
         }
 
-        //TODO: redireccionar a la view del pet?
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
 
 
