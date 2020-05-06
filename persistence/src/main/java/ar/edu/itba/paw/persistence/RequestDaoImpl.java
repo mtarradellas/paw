@@ -19,6 +19,8 @@ public class RequestDaoImpl implements RequestDao {
 
     private static final String REQUESTS_TABLE = "requests";
 
+    private static final int ADMIN_SHOWCASE_ITEMS= 25;
+
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -70,6 +72,16 @@ public class RequestDaoImpl implements RequestDao {
                         "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
                         "WHERE pets.ownerId = ?"
                 , new Object[]{petOwnerId}, REQUEST_MAPPER)
+                .stream();
+    }
+
+    @Override
+    public Stream<Request> adminRequestList(String language, String page){
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, REQUEST_MAPPER)
                 .stream();
     }
 
@@ -194,5 +206,13 @@ public class RequestDaoImpl implements RequestDao {
         return result;
     }
 
+    @Override
+    public String getAdminRequestPages(String language){
+        Integer requests = jdbcTemplate.queryForObject("select count(*) from requests" ,
+                Integer.class);
+
+        requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+        return requests.toString();
+    }
 }
 

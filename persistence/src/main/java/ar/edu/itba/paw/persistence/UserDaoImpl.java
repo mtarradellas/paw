@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 @Repository
 public class UserDaoImpl implements UserDao {
 
+    private static final int ADMIN_SHOWCASE_ITEMS= 25;
+
     private static final String USER_TABLE = "users";
     private static final String TOKEN_TABLE = "tokens";
 
@@ -110,6 +112,22 @@ public class UserDaoImpl implements UserDao {
     public Stream<User> list() {
         return jdbcTemplate.query("SELECT * FROM users", USER_MAPPER)
                 .stream();
+    }
+
+    @Override
+    public Stream<User> adminUserList(String page){
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        return jdbcTemplate.query("SELECT * FROM users limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, USER_MAPPER)
+                .stream();
+    }
+
+    @Override
+    public String getAdminUserPages(){
+        Integer users = jdbcTemplate.queryForObject("select count(*) from users" ,
+                Integer.class);
+
+        users = (int) Math.ceil((double) users / ADMIN_SHOWCASE_ITEMS);
+        return users.toString();
     }
 
     @Override

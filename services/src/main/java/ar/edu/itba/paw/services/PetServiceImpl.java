@@ -47,6 +47,10 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public List<Pet> adminPetList(String language, String page){
+        return petDao.adminPetList(language, page).collect(Collectors.toList());
+    }
+    @Override
     public Pet create(String language, String petName, String speciesName, String breedName, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
 //        Species species = speciesDao.findSpeciesByName(language, speciesName);
 //        Breed breed = speciesDao.findBreedByName(language, breedName);
@@ -77,6 +81,12 @@ public class PetServiceImpl implements PetService {
     @Override
     public String getMaxUserPetsPages(long userId){
         return petDao.getMaxUserPetsPages(userId);
+    }
+
+    @Override
+    public String getAdminPetPages(){
+        return petDao.getAdminPetPages();
+
     }
 
     @Override

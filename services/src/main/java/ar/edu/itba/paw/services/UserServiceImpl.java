@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -37,6 +35,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Stream<User> list() {
         return this.userDao.list();
+    }
+
+    @Override
+    public List<User> adminUserList(String page){
+        return userDao.adminUserList(page).collect(Collectors.toList());
     }
 
     @Override
@@ -77,5 +80,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByToken(UUID uuid) {
         return userDao.findByToken(uuid);
+    }
+
+    @Override
+    public String getAdminUserPages(){
+        return userDao.getAdminUserPages();
     }
 }

@@ -26,7 +26,7 @@
             <c:if test="${not empty userPets}">
                 <div class="m-2 ">
                     <c:if test="${maxPage ne 1}">
-                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
+                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/user/' + user.id}" />
                     </c:if>
                 </div>
             </c:if>
@@ -49,7 +49,7 @@
             <c:if test="${not empty userPets}">
                 <div class="m-2 ">
                     <c:if test="${maxPage ne 1}">
-                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
+                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/user/' + user.id}" />
                     </c:if>
                 </div>
             </c:if>
