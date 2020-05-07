@@ -11,7 +11,7 @@ public interface PetService {
     Optional<Pet> findById(String language, long id);
     List<Pet> find(String language,String findValue, String page);
     List<Pet> list(String language, String page);
-    List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String page);
+    List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
     List<Pet> getByUserId(String language, long userId, String page);
     Pet create(String language, String petName, String speciesName, String breedName, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId);
     boolean sellPet(long petId, long userId);
