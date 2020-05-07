@@ -50,8 +50,25 @@
 
                 </select>
 
-                <label for="filter-gender"><spring:message code="pet.sex"/></label>
-                <select name="gender" class="form-control" id="filter-gender">
+                <label for="price-filter"><spring:message code="pet.price"/></label>
+                <div class="row" id="price-filter">
+                    <div class="col pr-0">
+                        <spring:message var="minPriceTxt" code="searchTool.minPrice"/>
+                        <input id="min-price" placeholder="${minPriceTxt}" class="form-control" name="minPrice" type="number"
+                            value="${param.minPrice}"
+                        >
+                    </div>
+                    <div class="col pl-0">
+                        <spring:message var="maxPriceTxt" code="searchTool.maxPrice"/>
+                        <input id="max-price" placeholder="${maxPriceTxt}" class="form-control ml-1" name="maxPrice" type="number"
+                               value="${param.maxPrice}"
+                        >
+                    </div>
+                </div>
+
+
+                <label for="filter-price"><spring:message code="pet.sex"/></label>
+                <select name="price" class="form-control" id="filter-price">
                     <option value="any"><spring:message code="filter.any"/></option>
                     <option value="male"
                             <c:if test="${(not empty param.gender) && (param.gender eq 'male')}">selected</c:if>
