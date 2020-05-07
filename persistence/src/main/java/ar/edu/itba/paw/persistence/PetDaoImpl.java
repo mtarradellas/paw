@@ -143,38 +143,42 @@ public class PetDaoImpl implements PetDao {
             breedFilter = "%";
         }
         if(breedFilter == null) { breedFilter = "%";}
-
         if(genderFilter == null) { genderFilter = "%"; }
 
+        //Query to get the petids for the current page
         String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
+        String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "pet_status.id as statusId, pet_status." + language + " as statusName " +
+                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
+                "WHERE (lower(species.id::text) LIKE ? " +
+                "AND lower(breeds.id::text) LIKE ? " +
+                "AND lower(gender) LIKE ? ) " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
+                " limit "+ PETS_PER_PAGE + " offset " + offset;
+
+        List<String> ids = jdbcTemplate.query(sql, new Object[] { specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
+        if(ids.size() == 0){
+            return Stream.empty();
+        }
+        String pagePets = String.join(",", ids);
+
+        //query to get the pets for the current page
+        String sqlWithPages = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id as imagesId, images.petId as petId, " +
+                "pet_status.id as statusId, pet_status." + language + " as statusName " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
+                "WHERE (pets.id in (" + pagePets + ") AND lower(species.id::text) LIKE ? " +
+                " AND lower(breeds.id::text) LIKE ? " +
+                "AND lower(gender) LIKE ? ) " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
+
         if(searchCriteria == null) {
-            String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
-                    "WHERE (lower(species.id::text) LIKE ? " +
-                    "AND lower(breeds.id::text) LIKE ? " +
-                    "AND lower(gender) LIKE ? ) " +
-                    "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
-                    " limit "+ PETS_PER_PAGE + " offset " + offset;
 
-            List<String> ids = jdbcTemplate.query(sql, new Object[] { specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
-            if(ids.size() == 0){
-                return Stream.empty();
-            }
-            String pagePets = String.join(",", ids);
-
-            Map<Pet, List<Long>> imageMap = jdbcTemplate.query(  "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                            "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                            "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                            "images.id as imagesId, images.petId as petId, " +
-                            "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                            "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
-                            "WHERE (pets.id in (" + pagePets + ") AND lower(species.id::text) LIKE ? " +
-                            " AND lower(breeds.id::text) LIKE ? " +
-                            "AND lower(gender) LIKE ? ) " +
-                            "AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
+            Map<Pet, List<Long>> imageMap = jdbcTemplate.query(  sqlWithPages,
                     new Object[] {specieFilter, breedFilter, genderFilter},
                     new PetMapExtractor());
             imageMap.forEach(Pet::setImages);
@@ -202,38 +206,9 @@ public class PetDaoImpl implements PetDao {
             else { searchOrder = "DESC";}
 
             searchCriteria = searchCriteria + " " + searchOrder;
-            String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
-                    "WHERE lower(species.id::text) LIKE ? " +
-                    "AND lower(breeds.id::text) LIKE ? " +
-                    "AND lower(gender) LIKE ?  " +
-                    "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
-                    "ORDER BY " +
-                     searchCriteria +
-                    " limit "+ PETS_PER_PAGE + " offset " + offset;
 
-            List<String> ids = jdbcTemplate.query(sql, new Object[] { specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
-            if(ids.size() == 0){
-                return Stream.empty();
-            }
-            String pagePets = String.join(",", ids);
-
-            sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "images.id as imagesId, images.petId as petId, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
-                    "WHERE ( pets.id in (" + pagePets + ") AND  lower(species.id::text) LIKE ? " +
-                    "AND lower(breeds.id::text) LIKE ? " +
-                    "AND lower(gender) LIKE ? ) " +
-                    "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
-                    "ORDER BY " +
-                     searchCriteria;
-            Map<Pet, List<Long>> imageMap = jdbcTemplate.query( sql,
+            sqlWithPages += "ORDER BY " + searchCriteria;
+            Map<Pet, List<Long>> imageMap = jdbcTemplate.query( sqlWithPages,
                     new Object[] {specieFilter, breedFilter, genderFilter},
                     new PetMapExtractor());
             imageMap.forEach(Pet::setImages);
