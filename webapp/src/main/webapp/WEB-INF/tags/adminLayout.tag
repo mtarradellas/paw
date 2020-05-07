@@ -21,6 +21,7 @@
 </head>
 <body>
 <script src="<c:url value="/resources/jquery/jquery-3.4.1.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/js/admin_control.js"/>"></script>
 
 <nav class="navbar navbar-expand-lg header">
     <%--            TODO: cambiar el path del url--%>
@@ -37,7 +38,7 @@
             </li>
 
             <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admi"><spring:message code="adminHeader.listPets"/></a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admi/pets"><spring:message code="adminHeader.listPets"/></a></h4>
             </li>
 
             <li class="nav-item">

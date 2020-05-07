@@ -9,40 +9,57 @@
 
             <div class="col">
                 <div class="shadow p-3 bg-white rounded">
-                    <div class="m-2 ">
-                        <c:if test="${maxPage ne 1}">
-                            <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admi/'}" />
-                        </c:if>
-                    </div>
-
-                    <c:if test="${empty pets_list }">
-                        <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                            <a href="${pageContext.request.contextPath}/"><spring:message code="showFirst"/></a>
+                    <h2><b><spring:message code="welcomeMessage"/> </b></h2>
+                    <p><spring:message code="mainPageDescription1"/></p>
+                    <div>
+                        <div class="col p-2">
+                            <a href="${pageContext.request.contextPath}/admi/pets" class="btn btn-secondary btn-lg btn-block btn-secondary " role="button" aria-pressed="true">
+                                <spring:message code="adminHeader.listPets"/>
+                            </a>
+                        </div>
+                        <div class="col p-2">
+                            <a href="${pageContext.request.contextPath}/admi/users" class="btn btn-secondary btn-lg btn-block btn-secondary" role="button" aria-pressed="true">
+                                <spring:message code="adminHeader.listUsers"/>
+                            </a>
+                        </div>
+                        <div class="col p-2">
+                            <a href="${pageContext.request.contextPath}/admi/requests" class="btn btn-secondary btn-lg btn-block btn-secondary" role="button" aria-pressed="true">
+                                <spring:message code="adminHeader.listRequests"/>
+                            </a>
                         </div>
 
-                    </c:if>
-                    <div>
-                        <h2><spring:message code="admin.petsListing" /></h2>
+
                     </div>
-                    <div class="card-deck row">
-                        <ul class="list-group  list-group-flush">
-                            <c:forEach var="pet" items="${pets_list}">
-                                    <li class="list-group-item">
-                                        <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
-                                         alt="Pet image" height="70" width="70"> ${pet.petName}
-                                    </li>
-                            </c:forEach>
-                        </ul>
+                    <br><br>
+                    <p><spring:message code="mainPageDescription2"/></p>
+                    <div >
+                        <div class="col p-2">
+                            <button type="button" class="btn btn-info btn-lg btn-block">
+                                <i class="fas fa-plus mr-2"></i>
+                                <spring:message code="addPet"/>
+                            </button>
+                        </div>
+                        <div class="col p-2">
+                            <button type="button" class="btn btn-info btn-lg btn-block">
+                                <i class="fas fa-plus mr-2"></i>
+                                <spring:message code="addUser"/>
+                            </button>
+                        </div>
+                        <div class="col p-2">
+                            <button type="button" class="btn btn-info btn-lg btn-block">
+                                <i class="fas fa-plus mr-2"></i>
+                                <spring:message code="addRequest"/>
+                            </button>
+                        </div>
+
+
                     </div>
-                    <div class="m-2">
-                        <c:if test="${maxPage ne 1}">
-                            <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admi/'}" />
-                        </c:if>
-                    </div>
+
+
                 </div>
             </div>
-
         </div>
+
 
     </jsp:body>
 </t:adminLayout>

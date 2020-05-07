@@ -15,12 +15,17 @@ public class AdminController extends ParentController{
 
     //TODO: cambiar el path del mapping para que te redireccion correctamente
     @RequestMapping(value = "/admi")
+    public ModelAndView getAdminHome() {
+        return new ModelAndView("admin/admin");
+    }
+
+    @RequestMapping(value = "/admi/pets")
     public ModelAndView getPetsAdmin(@RequestParam(name = "page", required = false) String page) {
         if(page == null){
             page = "1";
         }
 
-        ModelAndView mav = new ModelAndView("admin/admin");
+        ModelAndView mav = new ModelAndView("admin/admin_pets");
         mav.addObject("currentPage", page);
 
         String maxPage = petService.getAdminPetPages();
