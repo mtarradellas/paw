@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class PetServiceImpl implements PetService {
     static final long AVAILABLE_STATUS = 1;
+    static final long REMOVED_STATUS = 2;
+    static final long SOLD_STATUS = 3;
 
     @Autowired
     private PetDao petDao;
@@ -85,9 +87,18 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public boolean updateStatus(long petId, long userId, long newStatus) {
+    public boolean sellPet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
-            petDao.updateStatus(petId, newStatus);
+            petDao.updateStatus(petId, SOLD_STATUS);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removePet(long petId, long userId) {
+        if (petDao.isPetOwner(petId, userId)) {
+            petDao.updateStatus(petId, REMOVED_STATUS);
             return true;
         }
         return false;
