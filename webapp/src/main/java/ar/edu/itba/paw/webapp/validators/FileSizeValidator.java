@@ -5,8 +5,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.List;
 
-public class FileSizeValidator implements ConstraintValidator<FileSize, Object> {
+public class FileSizeValidator implements ConstraintValidator<FileSize, List<MultipartFile>> {
 
     private int MAX_SIZE;
 
@@ -14,14 +15,16 @@ public class FileSizeValidator implements ConstraintValidator<FileSize, Object> 
         this.MAX_SIZE = constraintAnnotation.max();
     }
 
-    public boolean isValid(Object value,
+    public boolean isValid(List<MultipartFile> list,
                            ConstraintValidatorContext context) {
-        if(value == null)
+        if(list == null)
             return true;
 
-        MultipartFile val = (MultipartFile) value;
+        for(MultipartFile file : list) {
+            if(file.getSize() > MAX_SIZE)
+                return false;
+        }
 
-
-        return val.getSize() <= MAX_SIZE;
+        return true;
     }
 }

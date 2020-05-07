@@ -12,6 +12,18 @@
     padding-top: 5rem;
 }
 
+.image-preview-container {
+    background-color: #e7e9ea;
+    margin-top: 15px;
+    border-radius: 10px;
+}
+
+.pet-photo-preview {
+    max-width: 200px;
+    max-height: 200px;
+    margin: 1rem;
+}
+
 .pet-photo {
     max-width: 200px;
     max-height: 200px;

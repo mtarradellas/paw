@@ -7,16 +7,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = FileSizeValidator.class)
+@Constraint(validatedBy = NotEmptyMultipartValidator.class)
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FileSize {
+public @interface NotEmptyMultipart {
 
-    String message() default "{size}";
+    String message() default "{empty}";
 
     Class<?>[] groups() default {};
-
-    int max() default 20000000;
 
     Class<? extends Payload>[] payload() default {};
 }
