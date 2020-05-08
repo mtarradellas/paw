@@ -11,12 +11,13 @@ public interface PetService {
     Optional<Pet> findById(String language, long id);
     List<Pet> find(String language,String findValue, String page);
     List<Pet> list(String language, String page);
-    List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria,
-                           String searchOrder, String page);
-    List<Pet> getByUserId(String language, long userId, String page);
     Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated,
                String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId);
-    boolean updateStatus(long petId, long userId, long newStatus);
+    List<Pet> filteredList(String language, String species, String  breed, String gender, String searchCriteria,
+                           String searchOrder, String minPrice, String maxPrice, String page);
+    List<Pet> getByUserId(String language, long userId, String page);
+    boolean sellPet(long petId, long userId);
+    boolean removePet(long petId, long userId);
     String getMaxPages();
     String getMaxSearchPages(String language, String findValue);
     String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter);

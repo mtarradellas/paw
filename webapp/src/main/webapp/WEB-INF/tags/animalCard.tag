@@ -24,7 +24,7 @@
             <spring:message code="petCard.sex"/> <spring:message code="pet.${pet.gender}"/>
         </p>
 
-        <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link"><spring:message code="petCard.goToPage"/></a>
+        <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
     </div>
     <div class="card-footer">
         <h6><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></h6>

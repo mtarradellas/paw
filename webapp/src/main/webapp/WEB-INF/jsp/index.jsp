@@ -12,6 +12,12 @@
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
+                        <div class="m-2 ">
+                            <c:if test="${maxPage ne 1}">
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
+                            </c:if>
+                        </div>
+
                         <c:if test="${empty home_pet_list }">
                         <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                             <a href="${pageContext.request.contextPath}/"><spring:message code="showFirst"/></a>
@@ -27,8 +33,11 @@
                                 </div>
                             </c:forEach>
                         </div>
-
-                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
+                        <div class="m-2">
+                            <c:if test="${maxPage ne 1}">
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/'}" />
+                            </c:if>
+                        </div>
                     </div>
                 </div>
 

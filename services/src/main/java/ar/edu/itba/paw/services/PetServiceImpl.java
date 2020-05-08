@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 @Service
 public class PetServiceImpl implements PetService {
     static final long AVAILABLE_STATUS = 1;
+    static final long REMOVED_STATUS = 2;
+    static final long SOLD_STATUS = 3;
 
     @Autowired
     private PetDao petDao;
@@ -33,8 +35,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String page) {
-        return petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder,page).collect(Collectors.toList());
+    public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        return petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page).collect(Collectors.toList());
     }
 
     @Override
@@ -90,9 +92,18 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public boolean updateStatus(long petId, long userId, long newStatus) {
+    public boolean sellPet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
-            petDao.updateStatus(petId, newStatus);
+            petDao.updateStatus(petId, SOLD_STATUS);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removePet(long petId, long userId) {
+        if (petDao.isPetOwner(petId, userId)) {
+            petDao.updateStatus(petId, REMOVED_STATUS);
             return true;
         }
         return false;

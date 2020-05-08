@@ -24,7 +24,7 @@
                                         <a href="${homeUrl}"><spring:message code="request.goToHome"/></a>
                                     </c:when>
                                     <c:otherwise>
-                                        <a href="${pageContext.request.contextPath}/requests"><spring:message code="showAll"/></a>
+                                        <a href="${pageContext.request.contextPath}/requests"><spring:message code="removeFilters"/></a>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -37,7 +37,7 @@
                                         <small class="text-warning">    ${req.creationDate}</small>
                                     </div>
                                     <div class="col-sm-1 ">
-                                        <form method="POST" class="m-0" action="<c:url value="/requests-cancel/${req.id}"/>">
+                                        <form method="POST" class="m-0" action="<c:url value="/requests/${req.id}/cancel"/>">
                                             <button  type="submit" name="newStatus" value="cancel" class="btn btn-danger"><spring:message code="cancel"/></button>
                                         </form>
                                     </div>
