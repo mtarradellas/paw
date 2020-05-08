@@ -26,7 +26,9 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String findValue,
-                                @RequestParam(name = "page", required = false) String page) {
+                                @RequestParam(name = "page", required = false) String page,
+                                @RequestParam(name = "minPrice", required = false) String minPrice,
+                                @RequestParam(name = "maxPrice", required = false) String maxPrice) {
 
         final ModelAndView mav = new ModelAndView("index");
         final String locale = getLocale();
@@ -40,16 +42,16 @@ public class PetController extends ParentController {
         breed = breed == null || breed.equals("any") ? null : breed;
         gender = gender == null || gender.equals("any") ? null : gender;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
-
+//check price
         /* Filtered pet list */
-        if (species != null || gender != null || searchCriteria != null) {
+        if (species != null || gender != null || searchCriteria != null || minPrice != null || maxPrice != null) {
             String maxPage = petService.getMaxFilterPages(locale, species, breed, gender);
             mav.addObject("maxPage", maxPage);
 
-            LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, sCriteria: {}, sOrder: {}, page: {}",
-                    locale, species, breed, gender, searchCriteria, searchOrder, page);
+            LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, sCriteria: {}, sOrder: {}, mPrice: {}, mPrice: {}, page: {}",
+                    locale, species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page);
             List<Pet> petList = petService.filteredList(locale, species, breed, gender, searchCriteria,
-                    searchOrder, page);
+                    searchOrder, minPrice, maxPrice, page);
             mav.addObject("home_pet_list", petList);
         }
         /* Search input pet list */
