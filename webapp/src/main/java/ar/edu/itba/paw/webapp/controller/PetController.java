@@ -4,10 +4,13 @@ import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
+import ar.edu.itba.paw.webapp.form.SearchTools;
+import ar.edu.itba.paw.webapp.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
@@ -20,15 +23,9 @@ public class PetController extends ParentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
-    public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
-                                @RequestParam(name = "breed", required = false) String breed,
-                                @RequestParam(name = "gender", required = false) String gender,
-                                @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
-                                @RequestParam(name = "searchOrder", required = false) String searchOrder,
-                                @RequestParam(name = "find", required = false) String findValue,
+    public ModelAndView getHome(@ModelAttribute("searchTools") final SearchTools searchTools,
                                 @RequestParam(name = "page", required = false) String page,
-                                @RequestParam(name = "minPrice", required = false) String minPrice,
-                                @RequestParam(name = "maxPrice", required = false) String maxPrice) {
+                                @RequestParam(name = "find", required = false) String findValue) {
 
         final ModelAndView mav = new ModelAndView("index");
         final String locale = getLocale();
@@ -38,11 +35,14 @@ public class PetController extends ParentController {
         }
         mav.addObject("currentPage", page);
 
-        species = species == null || species.equals("any") ? null : species;
-        breed = breed == null || breed.equals("any") ? null : breed;
-        gender = gender == null || gender.equals("any") ? null : gender;
-        searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
-//check price
+        String species = searchTools.getSpecies();
+        String breed = searchTools.getBreed();
+        String gender = searchTools.getGender();
+        String searchCriteria = searchTools.getSearchCriteria();
+        String searchOrder = searchTools.getSearchOrder();
+        Integer minPrice = searchTools.getMinPrice();
+        Integer maxPrice = searchTools.getMaxPrice();
+
         /* Filtered pet list */
         if (species != null || gender != null || searchCriteria != null || minPrice != null || maxPrice != null) {
             String maxPage = petService.getMaxFilterPages(locale, species, breed, gender);
@@ -51,7 +51,7 @@ public class PetController extends ParentController {
             LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, sCriteria: {}, sOrder: {}, mPrice: {}, mPrice: {}, page: {}",
                     locale, species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page);
             List<Pet> petList = petService.filteredList(locale, species, breed, gender, searchCriteria,
-                    searchOrder, minPrice, maxPrice, page);
+                    searchOrder, "" + minPrice, "" + maxPrice, page);
             mav.addObject("home_pet_list", petList);
         }
         /* Search input pet list */
@@ -70,6 +70,7 @@ public class PetController extends ParentController {
             LOGGER.debug("Requesting full pet list");
             mav.addObject("home_pet_list", petService.list(locale, page));
         }
+
         mav.addObject("species_list", speciesService.speciesList(locale).toArray());
         mav.addObject("breeds_list", speciesService.breedsList(locale).toArray());
         return mav;

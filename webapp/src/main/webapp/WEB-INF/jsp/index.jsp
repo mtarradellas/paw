@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row">
 
-                <t:search-tools-pet breeds_list="${breeds_list}" species_list="${species_list}"/>
+                <t:search-tools-pet model="${searchTools}" breeds_list="${breeds_list}" species_list="${species_list}"/>
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
@@ -19,11 +19,11 @@
                         </div>
 
                         <c:if test="${empty home_pet_list }">
-                        <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                            <a href="${pageContext.request.contextPath}/"><spring:message code="showFirst"/></a>
-                        </div>
-
+                            <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                <a href="${pageContext.request.contextPath}/"><spring:message code="showFirst"/></a>
+                            </div>
                         </c:if>
+
                         <div class="card-deck row">
                             <c:forEach var="pet" items="${home_pet_list}">
                                 <div class="col-auto mb-3">
