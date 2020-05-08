@@ -269,7 +269,7 @@ public class PetDaoImplTest {
 
         /**/
         Stream<Pet> petStream = petDaoImpl.filteredList("es_ar", SPECIES.getName(), null,
-                                                null, "species", "asc","1");
+                                                null, "species", "asc","0", "6000","1");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
@@ -298,7 +298,7 @@ public class PetDaoImplTest {
 
         /**/
         Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES.getName(), BREED.getName(),
-                                                    null, "species", "asc","1");
+                                                    null, "species", "asc","0", "6000","1");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
@@ -324,7 +324,7 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
 
         /**/
-        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",null, null, GENDER, "species", "asc","1");
+        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",null, null, GENDER, "species", "asc","0", "6000","1");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
