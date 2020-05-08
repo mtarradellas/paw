@@ -86,7 +86,7 @@ public class LoginAndRegisterController extends ParentController {
 
         if (!opUser.isPresent()) {
             LOGGER.warn("User could not activate token {}", tokenString);
-            return new ModelAndView("views/token_has_expired");
+            return new ModelAndView("views/activation_email_invalid");
         }
 
         return new ModelAndView("redirect:/login");
