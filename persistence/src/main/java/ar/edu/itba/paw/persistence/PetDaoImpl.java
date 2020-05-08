@@ -171,8 +171,8 @@ public class PetDaoImpl implements PetDao {
                 "images.id as imagesId, images.petId as petId, " +
                 "pet_status.id as statusId, pet_status." + language + " as statusName " +
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
-                "WHERE (pets.id in (" + pagePets + ") AND lower(species.id::text) LIKE ? " +
-                " AND lower(breeds.id::text) LIKE ? " +
+                "WHERE (pets.id in (" + pagePets + ") AND lower(cast(species.id as char(20))) LIKE ? " +
+                " AND lower(cast(breeds.id as char(20))) LIKE ? " +
                 "AND lower(gender) LIKE ? ) " +
                 "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
 
