@@ -74,7 +74,7 @@ public class LoginAndRegisterController extends ParentController {
             return registerForm(userForm).addObject("generalError", true);
         }
 
-        return new ModelAndView("views/email_sent_for_password_reset");
+        return new ModelAndView("views/email_sent_for_account_activation");
     }
 
     @RequestMapping(value ="/account-activation", method = { RequestMethod.GET })
