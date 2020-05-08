@@ -324,6 +324,7 @@ public class PetDaoImpl implements PetDao {
         }
         String modifiedValue = "%"+findValue.toLowerCase()+"%";
 
+
         String sql = "select count(distinct pets.id) " +
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
                 "WHERE (LOWER(species." + language +") LIKE ?  " +
@@ -339,25 +340,40 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter) {
+    public String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice) {
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
         }
         if(breedFilter == null) { breedFilter = "%";}
-
         if(genderFilter == null) { genderFilter = "%"; }
-            Integer pets = jdbcTemplate.queryForObject(  "select count( distinct pets.id) "+
-                            "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                            "WHERE (lower(species.id::text) LIKE ? " +
-                            "AND lower(breeds.id::text) LIKE ? " +
-                            "AND lower(gender) LIKE ? ) " +
-                            "AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
+        int minP = -1;
+        int maxP = -1;
+        try {
+            minP = Integer.parseInt(minPrice);
+            maxP = Integer.parseInt(maxPrice);
+        } catch (NumberFormatException ignored) { }
+        String sql ="select count( distinct pets.id) "+
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
+                "WHERE (lower(species.id::text) LIKE ? " +
+                "AND lower(breeds.id::text) LIKE ? " +
+                "AND lower(gender) LIKE ? ) " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
+        Integer pets;
+        if(minP != -1 && maxP != -1) {
+            sql += "  AND price >= ? AND price <= ?  " ;
+            pets = jdbcTemplate.queryForObject( sql,
+                    new Object[] {specieFilter, breedFilter, genderFilter, minP, maxP},
+                    Integer.class);
+        }
+        else{
+            pets = jdbcTemplate.queryForObject( sql,
                     new Object[] {specieFilter, breedFilter, genderFilter},
                     Integer.class);
+        }
 
-            pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
-            return pets.toString();
+        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
+        return pets.toString();
     }
 
     @Override
