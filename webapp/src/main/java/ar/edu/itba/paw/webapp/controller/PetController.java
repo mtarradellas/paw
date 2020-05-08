@@ -91,36 +91,32 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
     public ModelAndView requestPet(@PathVariable("id") final long id) {
-        final long ownerId = petService.getOwnerId(id);
         final User user = loggedUser();
         final String locale = getLocale();
+
         if (user == null) {
             LOGGER.warn("User not authenticated, ignoring request");
+            return new ModelAndView("redirect:/403");
         }
-        else if (user.getId() == ownerId) {
-            LOGGER.warn("User is the owner of the pet, ignoring request");
-        }
-        else if (requestService.requestExists(id, ownerId, locale)) {
-            LOGGER.warn("A request for this pet was already created, ignoring new request");
+
+        /* TODO Generate exceptions for error handling */
+        Optional<Request> opRequest =  requestService.create(user.getId(), id, locale);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request creation from user {} to pet {} failed", user.getId(), id);
         }
         else {
-            Optional<Request> opRequest =  requestService.create(ownerId, id, locale);
-            if (!opRequest.isPresent()) {
-                LOGGER.warn("Request creation error. Call for requestService.create({}, {}, {}) failed", ownerId, id, locale);
+            final Request request = opRequest.get();
+            Optional<Contact> opContact = petService.getPetContact(id);
+            if (!opContact.isPresent()) {
+                LOGGER.warn("Contact info for pet {} not found", id);
             }
             else {
-                final Request request = opRequest.get();
-                Optional<Contact> opContact = petService.getPetContact(id);
-                if (!opContact.isPresent()) {
-                    LOGGER.warn("Contact info for pet {} not found", id);
-                }
-                else {
-                    final Contact contact = opContact.get();
-                    mailService.sendMail(contact.getEmail(), getMailMessage("subject", request),
-                            getMailMessage("body", request));
-                }
+                final Contact contact = opContact.get();
+                mailService.sendMail(contact.getEmail(), getMailMessage("subject", request),
+                        getMailMessage("body", request));
             }
         }
+
         return new ModelAndView("redirect:/pet/" + id );
     }
 
