@@ -138,6 +138,7 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String page) {
+        System.out.println(language + " " + specieFilter + " " + breedFilter + " " + genderFilter + " " + searchCriteria + " " + searchOrder + " " + page);
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
@@ -147,14 +148,13 @@ public class PetDaoImpl implements PetDao {
 
         //Query to get the petids for the current page
         String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
-        String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
-                "WHERE (lower(species.id::text) LIKE ? " +
-                "AND lower(breeds.id::text) LIKE ? " +
-                "AND lower(gender) LIKE ? ) " +
+        String sql = "SELECT pets.id as id " +
+                "FROM ((pets inner join species on pets.species = species.id) " +
+                        "inner join breeds on pets.breed = breeds.id) " +
+                        "inner join pet_status on pets.status = pet_status.id " +
+                "WHERE lower(cast(species.id as char(20))) LIKE ? " +
+                "AND lower(cast(breeds.id as char(20))) LIKE ? " +
+                "AND lower(gender) LIKE ? " +
                 "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
                 " limit "+ PETS_PER_PAGE + " offset " + offset;
 
@@ -171,8 +171,8 @@ public class PetDaoImpl implements PetDao {
                 "images.id as imagesId, images.petId as petId, " +
                 "pet_status.id as statusId, pet_status." + language + " as statusName " +
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
-                "WHERE (pets.id in (" + pagePets + ") AND lower(species.id::text) LIKE ? " +
-                " AND lower(breeds.id::text) LIKE ? " +
+                "WHERE (pets.id in (" + pagePets + ") AND lower(cast(species.id as char(20))) LIKE ? " +
+                " AND lower(cast(breeds.id as char(20))) LIKE ? " +
                 "AND lower(gender) LIKE ? ) " +
                 "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
 

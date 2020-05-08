@@ -14,6 +14,15 @@ public class Breed {
 
     public Breed() {}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        Breed breed = (Breed) o;
+        return id == breed.id;
+    }
+
     public long getId() {
         return id;
     }
