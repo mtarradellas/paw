@@ -1,25 +1,30 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private MailService mailService;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -40,8 +45,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException {
-        return this.userDao.create(username, encoder.encode(password), mail, phone);
+    public List<User> adminUserList(String page){
+        return userDao.adminUserList(page).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> adminSearchList(String language, String find, String page) {
+        return userDao.adminSearchList(language,find,page).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<User> create(String locale, String username, String password, String mail, String phone) throws DuplicateUserException {
+        LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
+        Optional<User> opUser = userDao.create(username, encoder.encode(password), mail, phone);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User DAO returned empty user");
+            return opUser;
+        }
+
+        User user = opUser.get();
+
+        UUID uuid = UUID.randomUUID();
+        createToken(uuid, opUser.get().getId());
+        mailService.sendMail(user.getMail(), activateAccountSubject(locale), activateAccountBody(locale, user, uuid));
+
+        LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}, phone: {}", user.getId(), user.getUsername(), user.getMail(), user.getPhone());
+        return opUser;
     }
 
     @Override
@@ -65,6 +94,83 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> activateAccountWithToken(UUID uuid) {
+        LOGGER.debug("Activating account token {}", uuid);
+
+        Optional<Token> opToken = getToken(uuid);
+        if (!opToken.isPresent()) {
+            LOGGER.warn("Token {} not found", uuid);
+            return Optional.empty();
+        }
+        final Token token = opToken.get();
+        if (new Date().after(token.getExpirationDate())) {
+            LOGGER.warn("Token {} has expired", uuid);
+            return Optional.empty();
+        }
+
+        Optional<User> opUser = findByToken(uuid);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User of token {} not found", uuid);
+            return Optional.empty();
+        }
+        /* TODO activate account */
+//        final User user = opUser.get();
+//        if (!userDao.activateAccount(user.getId())) {
+//            LOGGER.warn("Could not activate user {} account", user.getId());
+//            return Optional.empty();
+//        }
+
+        deleteToken(uuid);
+        return opUser;
+    }
+
+    @Override
+    public Optional<User> requestPasswordReset(String locale, String mail) {
+        LOGGER.debug("Requesting password reset for mail {}", mail);
+
+        Optional<User> opUser = userDao.findByMail(mail);
+        if (!opUser.isPresent()) {
+            LOGGER.debug("User with mail {} not found", mail);
+            return Optional.empty();
+        }
+        final User user = opUser.get();
+
+        UUID uuid = UUID.randomUUID();
+        createToken(uuid, user.getId());
+        mailService.sendMail(user.getMail(),resetPasswordSubject(locale),resetPasswordBody(locale, user,uuid));
+
+        return opUser;
+    }
+
+    @Override
+    public Optional<User> resetPassword(UUID uuid, String password) {
+        LOGGER.debug("Resetting password for token {}", uuid);
+
+        Optional<Token> opToken = getToken(uuid);
+        if (!opToken.isPresent()) {
+            LOGGER.warn("Token {} not found", uuid);
+            return Optional.empty();
+        }
+        final Token token = opToken.get();
+        if (new Date().after(token.getExpirationDate())) {
+            LOGGER.warn("Token {} has expired", uuid);
+            return Optional.empty();
+        }
+
+        Optional<User> opUser = findByToken(uuid);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User of token {} not found", uuid);
+            return Optional.empty();
+        }
+        final User user = opUser.get();
+
+        updatePassword(password, user.getId());
+        deleteToken(uuid);
+
+        return opUser;
+    }
+
+    @Override
     public Optional<Token> getToken(UUID uuid) {
         return userDao.getToken(uuid);
     }
@@ -77,5 +183,71 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByToken(UUID uuid) {
         return userDao.findByToken(uuid);
+    }
+
+    @Override
+    public String getAdminUserPages(){
+        return userDao.getAdminPages();
+    }
+
+    @Override
+    public String getAdminMaxSearchPages(String language, String find) {
+        return userDao.getAdminSearchPages(language, find);
+    }
+
+    private String resetPasswordBody(String locale, User user, UUID uuid) {
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
+        url += "?token=" + uuid;
+        String body;
+        if(locale.equals("en_US")) {
+            body = "Hello " + user.getUsername() +
+                    ",\nPlease click the link below to reset your password\n"
+                    + url +
+                    "\nSincerely,\nPet Society Team.";
+        }
+        else{
+            body = "Hola " + user.getUsername() +
+                    ",\nPor favor haz click en el siguiente link para resetear tu contraseña\n"
+                    + url +
+                    "\nSinceramente,\nEl equipo de Pet Society.";
+        }
+        return body;
+    }
+
+    private String resetPasswordSubject(String locale) {
+        String subject;
+        if(locale.equals("en_US")) {
+            subject = "Reset Your Password";
+        }
+        else { subject = "Resetea tu contraseña"; }
+        return subject;
+    }
+
+    private String activateAccountSubject(String locale) {
+        String subject;
+        if(locale.equals("en_US")) {
+            subject = "Activate your account";
+        }
+        else { subject = "Activa tu cuenta"; }
+        return subject;
+    }
+
+    private String activateAccountBody(String locale, User user, UUID uuid) {
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
+        url += "?token=" + uuid;
+        String body;
+        if(locale.equals("en_US")) {
+            body = "Hello " + user.getUsername() +
+                    ",\nPlease click the link below to activate your account\n"
+                    + url +
+                    "\nSincerely,\nPet Society Team.";
+        }
+        else{
+            body = "Hola " + user.getUsername() +
+                    ",\nPor favor haz click en el siguiente link para activar tu cuenta\n"
+                    + url +
+                    "\nSinceramente,\nEl equipo de Pet Society.";
+        }
+        return body;
     }
 }

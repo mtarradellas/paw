@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 @Repository
 public class UserDaoImpl implements UserDao {
 
+    private static final int ADMIN_SHOWCASE_ITEMS= 25;
+
     private static final String USER_TABLE = "users";
     private static final String TOKEN_TABLE = "tokens";
 
@@ -110,6 +112,55 @@ public class UserDaoImpl implements UserDao {
     public Stream<User> list() {
         return jdbcTemplate.query("SELECT * FROM users", USER_MAPPER)
                 .stream();
+    }
+
+    @Override
+    public Stream<User> adminUserList(String page){
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        return jdbcTemplate.query("SELECT * FROM users limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, USER_MAPPER)
+                .stream();
+    }
+
+    @Override
+    public Stream<User> adminSearchList(String language, String findValue, String page) {
+        if(findValue.equals("")){
+            return adminUserList(page);
+        }
+
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        return jdbcTemplate.query("select * from users WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) limit "
+                + ADMIN_SHOWCASE_ITEMS + " offset " + offset,
+                new Object[] { modifiedValue ,modifiedValue,modifiedValue},
+                USER_MAPPER)
+                .stream();
+    }
+
+    @Override
+    public String getAdminPages(){
+        Integer users = jdbcTemplate.queryForObject("select count(*) from users" ,
+                Integer.class);
+
+        users = (int) Math.ceil((double) users / ADMIN_SHOWCASE_ITEMS);
+        return users.toString();
+    }
+
+    @Override
+    public String getAdminSearchPages(String language, String findValue) {
+        if(findValue.equals("")){
+            return getAdminPages();
+        }
+
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
+
+        Integer users = jdbcTemplate.queryForObject("select count(*) from users " +
+                        "WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) " ,
+                new Object[] { modifiedValue ,modifiedValue,modifiedValue},
+                Integer.class);
+
+        users = (int) Math.ceil((double) users / ADMIN_SHOWCASE_ITEMS);
+        return users.toString();
     }
 
     @Override

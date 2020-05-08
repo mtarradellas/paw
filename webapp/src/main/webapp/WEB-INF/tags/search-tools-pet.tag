@@ -50,6 +50,23 @@
 
                 </select>
 
+                <label for="price-filter"><spring:message code="pet.price"/></label>
+                <div class="row" id="price-filter">
+                    <div class="col pr-0">
+                        <spring:message var="minPriceTxt" code="searchTool.minPrice"/>
+                        <input id="min-price" placeholder="${minPriceTxt}" class="form-control" name="minPrice" type="number"
+                            value="${param.minPrice}"
+                        >
+                    </div>
+                    <div class="col pl-0">
+                        <spring:message var="maxPriceTxt" code="searchTool.maxPrice"/>
+                        <input id="max-price" placeholder="${maxPriceTxt}" class="form-control ml-1" name="maxPrice" type="number"
+                               value="${param.maxPrice}"
+                        >
+                    </div>
+                </div>
+
+
                 <label for="filter-gender"><spring:message code="pet.sex"/></label>
                 <select name="gender" class="form-control" id="filter-gender">
                     <option value="any"><spring:message code="filter.any"/></option>
@@ -96,7 +113,7 @@
             </select>
         </div>
         <div class="card-footer" id="search-tools-submit">
-            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+            <button type="submit" class="blue-button"><spring:message code="filter"/></button>
         </div>
     </form>
 </div>

@@ -1,5 +1,4 @@
 package ar.edu.itba.paw.webapp.controller;
-
 import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Token;
@@ -8,6 +7,8 @@ import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import ar.edu.itba.paw.webapp.form.RequestMail;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,24 +21,22 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
-
 @Controller
 @ComponentScan("ar.edu.itba.paw.webapp.auth")
 public class LoginAndRegisterController extends ParentController {
 
-    @Autowired
-    private PSUserDetailsService userDetailsService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginAndRegisterController.class);
 
     @Autowired
-    private MailService mailService;
+    private PSUserDetailsService userDetailsService;
 
     @RequestMapping("/login")
     public ModelAndView login() {
@@ -53,27 +52,44 @@ public class LoginAndRegisterController extends ParentController {
     public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm,
                                    final BindingResult errors, HttpServletRequest request) {
 
+        final String locale = getLocale();
+
         if (errors.hasErrors()) {
+            errors.getAllErrors().forEach(error -> LOGGER.debug("{}", error.toString()));
             return registerForm(userForm);
         }
 
         Optional<User> opUser;
         try {
-            opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
+            opUser = userService.create(locale, userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail(), userForm.getPhone());
         } catch (DuplicateUserException ex) {
+            LOGGER.warn("{}", ex.getMessage());
             return registerForm(userForm)
                     .addObject("duplicatedUsername", ex.isDuplicatedUsername())
                     .addObject("duplicatedMail", ex.isDuplicatedMail());
         }
-
         if (opUser == null || !opUser.isPresent()) {
+            LOGGER.warn("User creation failed. User returned from creation is {}", opUser==null? "null":"empty");
             return registerForm(userForm).addObject("generalError", true);
         }
 
-        authenticateUserAndSetSession(opUser.get().getUsername(), request);
+        return new ModelAndView("views/email_sent_for_account_activation");
+    }
 
-        return new ModelAndView("redirect:/");
+    @RequestMapping(value ="/account-activation", method = { RequestMethod.GET })
+    public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString) {
+        UUID uuid = UUID.fromString(tokenString);
+
+        /* TODO create exceptions for better error handling */
+        Optional<User> opUser = userService.activateAccountWithToken(uuid);
+
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User could not activate token {}", tokenString);
+            return new ModelAndView("views/activation_email_invalid");
+        }
+
+        return new ModelAndView("redirect:/login");
     }
 
     @RequestMapping(value ="/request-password-reset", method = { RequestMethod.GET })
@@ -83,20 +99,19 @@ public class LoginAndRegisterController extends ParentController {
 
     @RequestMapping(value ="/request-password-reset", method = { RequestMethod.POST })
     public ModelAndView requestResetPassword(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm, final BindingResult errors) {
+        final String locale = getLocale();
+
         if (errors.hasErrors()) {
+            errors.getAllErrors().forEach(error -> LOGGER.debug("{}", error.toString()));
             return requestResetPassword(mailForm);
         }
-        Optional<User> opUser = userService.findByMail(mailForm.getMail());
-        if(opUser.isPresent()){
 
-            UUID uuid = UUID.randomUUID();
-            userService.createToken(uuid, opUser.get().getId());
-            mailService.sendMail(opUser.get().getMail(),resetPasswordSubject(),resetPasswordBody(opUser.get(),uuid));
-            return new ModelAndView("views/email_sent_for_password_reset");
+        Optional<User> opUser = userService.requestPasswordReset(locale, mailForm.getMail());
 
+        if (!opUser.isPresent()) {
+            return requestResetPassword(mailForm).addObject("invalid_mail", true);
         }
-        return requestResetPassword(mailForm)
-                .addObject("invalid_mail", true);
+        return new ModelAndView("views/email_sent_for_password_reset");
     }
 
     @RequestMapping(value ="/password-reset", method = { RequestMethod.GET })
@@ -109,19 +124,14 @@ public class LoginAndRegisterController extends ParentController {
         if (errors.hasErrors()) {
             return resetPassword(resetPasswordForm);
         }
-
         UUID uuid = UUID.fromString(resetPasswordForm.getToken());
-        Optional<Token> token = userService.getToken(uuid);
+        String password = resetPasswordForm.getPassword();
 
-        if(!token.isPresent() || new Date().after(token.get().getExpirationDate())){
+        Optional<User> opUser = userService.resetPassword(uuid, password);
+
+        if (!opUser.isPresent()) {
             return new ModelAndView("views/token_has_expired");
         }
-        Optional<User> opUser = userService.findByToken(uuid);
-        if(!opUser.isPresent()){
-            return new ModelAndView("error-views/404");
-        }
-        userService.updatePassword(resetPasswordForm.getPassword(), opUser.get().getId());
-        userService.deleteToken(uuid);
         return new ModelAndView("redirect:/login");
     }
 
@@ -132,20 +142,14 @@ public class LoginAndRegisterController extends ParentController {
 
     @RequestMapping(value ="/request-link-account", method = { RequestMethod.POST })
     public ModelAndView requestLinkAccount(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm, final BindingResult errors) {
-        return requestResetPassword(mailForm,errors);
+        return requestResetPassword(mailForm, errors);
     }
 
-
     public Authentication authenticateUserAndSetSession(String username,HttpServletRequest request){
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-
         return authentication;
     }
 
@@ -153,31 +157,5 @@ public class LoginAndRegisterController extends ParentController {
     public ModelAndView accessDenied() {
         return new ModelAndView("error-views/403");
     }
-
-    private String resetPasswordBody(User user, UUID uuid) {
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
-        url += "?token=" + uuid;
-        String body;
-        if(getLocale().equals("en_US")) {
-            body = "Hello " + user.getUsername() +
-                    ",\nPlease click the link below to reset your password\n"
-                    + url +
-                    "\nSincerely,\nPet Society Team.";
-        }
-        else{
-            body = "Hola " + user.getUsername() +
-                    ",\nPor favor haz click en el siguiente link para resetear tu contraseña\n"
-                    + url +
-                    "\nSinceramente,\nEl equipo de Pet Society.";
-        }
-        return body;
-    }
-    private String resetPasswordSubject() {
-        String subject;
-        if(getLocale().equals("en_US")) {
-            subject = "Reset Your Password";
-        }
-        else { subject = "Resetea tu contraseña"; }
-        return subject;
-    }
 }
+

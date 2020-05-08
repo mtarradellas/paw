@@ -37,6 +37,7 @@
                                     </div>
                                 </spring:bind>
                             </div>
+
                             <div class="col">
                                 <spring:bind path="location">
                                     <div class="form-group">
@@ -121,20 +122,7 @@
                     </div>
                     <div class="form-row p-1">
                         <div class="col">
-                            <spring:bind path="photo">
-                                <spring:message code="uploadPetForm.uploadPhoto" var="uploadPhotoTxt"/>
-                                <form:label path="photo" for="photo">${uploadPhotoTxt}:</form:label>
-                                <div>
-                                    <spring:message code="uploadPetForm.photo" var="photoTxt"/>
-
-                                <form:input path="photo" accept="image/*" type="file"
-                                            class="${status.error ? 'is-invalid' : ''}"
-                                            id="photo"
-                                />
-                            </div>
-                            <form:errors path="photo" element="div" cssClass="invalid-feedback"
-                                               cssStyle="${status.error ? 'display: block' : ''}"/>
-                            </spring:bind>
+                            <t:imageUpload/>
                         </div>
                     </div>
 

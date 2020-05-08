@@ -1,17 +1,16 @@
 package ar.edu.itba.paw.webapp.controller;
-
-
 import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exception.UserNotRequestOwnerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
 import java.util.Optional;
+
 
 @Controller
 public class UserController extends ParentController {
@@ -24,18 +23,18 @@ public class UserController extends ParentController {
     public ModelAndView user(@PathVariable("id") long id,
                              @RequestParam(name = "page", required = false) String page) {
 
-        if(page == null){
+        final ModelAndView mav = new ModelAndView("views/single_user");
+        final String locale = getLocale();
+
+        if (page == null){
             page = "1";
         }
-
-        final ModelAndView mav = new ModelAndView("views/single_user");
-        mav.addObject("currentPage",page);
-        mav.addObject("maxPage",petService.getMaxUserPetsPages(id));
-
-        mav.addObject("user",
-                userService.findById(id).orElseThrow(UserNotFoundException::new));
-        mav.addObject("userPets", petService.getByUserId(getLocale(),id,page));
-        LOGGER.debug("Loading user {} page", id);
+        mav.addObject("currentPage", page);
+        mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
+        Optional<User> opUser = userService.findById(id);
+        if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
+        mav.addObject("user", opUser.get());
+        mav.addObject("userPets", petService.getByUserId(locale, id, page));
         return mav;
     }
 
@@ -44,120 +43,81 @@ public class UserController extends ParentController {
                                     @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                     @RequestParam(name = "searchOrder", required = false) String searchOrder) {
 
+        final ModelAndView mav = new ModelAndView("views/requests");
+        final String locale = getLocale();
+        final User user = loggedUser();
+
         status = (status == null || status.equals("any") ? null : status);
         searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
-        final ModelAndView mav = new ModelAndView("views/requests");
 
-        if(status != null || searchCriteria != null) {
+        /* Filtered request list */
+        if (status != null || searchCriteria != null) {
             mav.addObject("requests_list",
-                    requestService.filterListByOwner(getLocale(), loggedUser().getId(), status, searchCriteria,searchOrder).toArray());
+                    requestService.filterListByOwner(locale, user.getId(), status, searchCriteria, searchOrder).toArray());
         }
-        else{
+        /* Default request list */
+        else {
             mav.addObject("requests_list",
-                    requestService.listByOwner(getLocale(),loggedUser().getId()).toArray());
+                    requestService.listByOwner(locale, user.getId()).toArray());
         }
-
         return mav;
     }
 
-    @RequestMapping(value = "/requests-cancel/{id}", method = {RequestMethod.POST})
-    public ModelAndView cancelRequest(@RequestParam(name = "newStatus", required = false) String status,
-                                      @PathVariable("id") long id) {
+    @RequestMapping(value = "/requests/{id}/cancel", method = {RequestMethod.POST})
+    public ModelAndView cancelRequest(@PathVariable("id") long id) {
+        final User user = loggedUser();
+        final String locale = getLocale();
 
-        if(loggedUser() != null){
-            requestService.delete(id, loggedUser().getId());
+        if (requestService.cancel(id, user.getId(), locale)) {
+            return new ModelAndView("redirect:/requests" );
         }
-
-        return new ModelAndView("redirect:/requests" );
+        return new ModelAndView("redirect:/403" );
     }
-
 
     @RequestMapping(value = "/interests")
     public ModelAndView getInterested(@RequestParam(name = "status", required = false) String status,
                                       @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                       @RequestParam(name = "searchOrder", required = false) String searchOrder) {
 
+        final ModelAndView mav = new ModelAndView("views/interests");
+        final User user = loggedUser();
+        final String locale = getLocale();
+
         status = (status == null || status.equals("any") ? null : status);
         searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
-        final ModelAndView mav = new ModelAndView("views/interests");
 
+        /* Filtered interest list */
         if(status != null || searchCriteria != null) {
             mav.addObject("interests_list",
-                    requestService.filterListByPetOwner(getLocale(), loggedUser().getId(), status, searchCriteria, searchOrder).toArray());
+                    requestService.filterListByPetOwner(locale, user.getId(), status, searchCriteria, searchOrder).toArray());
         }
+        /* Default interest list */
         else{
             mav.addObject("interests_list",
-                    requestService.listByPetOwner(getLocale(),loggedUser().getId()).toArray());
+                    requestService.listByPetOwner(locale, user.getId()).toArray());
         }
         return mav;
     }
 
-    @RequestMapping(value = "/interests-accept-reject/{id}", method = {RequestMethod.POST})
-    public ModelAndView changeStatus(@RequestParam(name = "newStatus", required = false) String status,
-                                     @PathVariable("id") long id) {
+    @RequestMapping(value = "/interests/{id}/accept", method = {RequestMethod.POST})
+    public ModelAndView acceptInterest(@PathVariable("id") long id) {
+        final User user = loggedUser();
+        final String locale = getLocale();
 
-            if(status.equals("accept")){
-                Optional<Request> newRequest = requestService.updateStatus(id,loggedUser().getId(),"accepted",getLocale());
-                if(newRequest.isPresent()){
-                    Optional<Contact> contact = petService.getPetContact(newRequest.get().getPetId());
-                    Optional<User> recipient = userService.findById(newRequest.get().getOwnerId());
-                    if(contact.isPresent() && recipient.isPresent()){
-                        mailService.sendMail(recipient.get().getMail(), getMailMessage(getLocale(), "subjectAccept", newRequest.get(), contact.get()),  getMailMessage(getLocale(), "bodyAccept", newRequest.get(), contact.get()));
-                    }
-                }
-            }else if (status.equals("reject")){
-                Optional<Request> newRequest = requestService.updateStatus(id,loggedUser().getId(),"rejected",getLocale());
-                if(newRequest.isPresent()){
-                    Optional<Contact> contact = petService.getPetContact(newRequest.get().getPetId());
-                    Optional<User> recipient = userService.findById(newRequest.get().getOwnerId());
-                    if(contact.isPresent() && recipient.isPresent()){
-                        mailService.sendMail(recipient.get().getMail(), getMailMessage(getLocale(), "subjectReject", newRequest.get(), contact.get()),  getMailMessage(getLocale(), "bodyReject", newRequest.get(), contact.get()));
-                    }
-                }
-            }
-
-        return new ModelAndView("redirect:/interests");
-    }
-
-    private String getMailMessage(String locale, String part, Request request, Contact contact){
-        switch(part){
-            case "subjectAccept":
-                if(locale.equals("en_US")){
-                    return "Hooray! Your request was accepted";
-                }else{
-                    return "¡Genial! Tu solicitud fue aceptada";
-                }
-            case "bodyAccept":
-                if(locale.equals("en_US")){
-                    return "User " + contact.getUsername() + " has accepted your request for "+ request.getPetName() + ". To begin the process for getting your new pet, please contact " + contact.getEmail() + " and ask about " + request.getPetName() + ".";
-                }else{
-                    return "El usuario " + contact.getUsername() + " ha aceptado tu solicitud de "+ request.getPetName() + ". Para iniciar el proceso de conseguir tu mascota, contáctese con " + contact.getEmail() + " y pregunte por " + request.getPetName() + ".";
-                }
-            case "subjectReject":
-                if(locale.equals("en_US")){
-                    return "We're sorry, your request was rejected";
-                }else{
-                    return "Lo sentimos, tu solicitud fue rechazada";
-                }
-            case "bodyReject":
-                if(locale.equals("en_US")){
-                    return "User " + contact.getUsername() + " has rejected your request for "+ request.getPetName() + ".";
-                }else{
-                    return "El usuario " + contact.getUsername() + " ha rechazado tu solicitud de "+ request.getPetName() + ".";
-                }
+        if (requestService.accept(id, user.getId(), locale)) {
+            return new ModelAndView("redirect:/interests" );
         }
-        return "";
+        return new ModelAndView("redirect:/403" );
     }
 
-    @RequestMapping(value = "/test")
-    public ModelAndView getIdPet() {
-        final ModelAndView mav = new ModelAndView("views/test");
+    @RequestMapping(value = "/interests/{id}/reject", method = {RequestMethod.POST})
+    public ModelAndView rejectInterest(@PathVariable("id") long id) {
+        final User user = loggedUser();
+        final String locale = getLocale();
 
-        mav.addObject("bool",
-                requestService.delete(2,1));
-
-        return mav;
+        if (requestService.reject(id, user.getId(), locale)) {
+            return new ModelAndView("redirect:/interests" );
+        }
+        return new ModelAndView("redirect:/403" );
     }
-
 }
-

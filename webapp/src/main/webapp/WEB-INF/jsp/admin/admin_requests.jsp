@@ -1,0 +1,167 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+
+<spring:message code="adminTitle.request" var="requestTitle"/>
+<t:adminLayout title="${requestTitle}" item="requests">
+    <jsp:body>
+        <span id="confirmMessage" hidden>
+            <spring:message code='confirmMessage' javaScriptEscape='true'/>
+        </span>
+        <div class="container-fluid">
+            <div class="row">
+                    <%--                Filter Tools --%>
+
+                <div class="col-md-2 search-tools">
+                    <form class="card shadow p-3" method="get"
+                          action="${pageContext.request.contextPath}/admi/requests">
+                        <div class="card-header">
+                            <h5 class="card-title"><spring:message code="filter.options"/></h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
+                            <div class="form-group">
+                                <label for="filter-status"><spring:message code="request.status"/></label>
+                                <select name="status" class="form-control" id="filter-status">
+                                    <option value="any"><spring:message code="filter.any"/></option>
+                                    <option value="accepted"><spring:message code="request.accepted"/></option>
+                                    <option value="rejected"><spring:message code="request.rejected"/></option>
+                                    <option value="pending"><spring:message code="request.pending"/></option>
+                                    <option value="pending"><spring:message code="request.canceled"/></option>
+                                </select>
+                            </div>
+                        </div>
+                        <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
+                        <label for="search-criteria"><spring:message code="filter.criteria"/></label>
+                        <select name="searchCriteria" class="form-control" id="search-criteria">
+                            <option value="any"><spring:message code="filter.any"/></option>
+                            <option value="date"
+                                    <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'date')}">selected</c:if>
+                            ><spring:message code="request.date"/></option>
+                            <option value="petName"
+                                    <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'petName')}">selected</c:if>
+                            ><spring:message code="request.petName"/></option>
+                        </select>
+                        <label for="search-order"><spring:message code="filter.order"/></label>
+                        <select name="searchOrder" class="form-control pb-3" id="search-order"
+                                <c:if test="${(empty param.searchCriteria) || (param.searchCriteria eq 'any')}">
+                                    disabled
+                                </c:if>
+                        >
+                            <option value="asc"
+                                    <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'asc')}">selected</c:if>
+                            ><spring:message code="filter.ascending"/></option>
+                            <option value="desc"
+                                    <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'desc')}">selected</c:if>
+                            ><spring:message code="filter.descending"/></option>
+                        </select>
+                        <div class="card-footer" id="search-tools-submit">
+                            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="shadow p-3 bg-white rounded">
+
+                        <c:if test="${empty requests_list }">
+                            <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                <a href="${pageContext.request.contextPath}/admi/requests"><spring:message
+                                        code="showFirst"/></a>
+                            </div>
+                        </c:if>
+                        <c:if test="${not empty requests_list}">
+                            <div>
+                                <h2><spring:message code="admin.requestsListing"/> <spring:message code="showingResults"
+                                                                                                   arguments="${requests_list.size()}"/>
+                                    <button type="button" class="btn btn-success"><i
+                                            class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></button>
+                                </h2>
+                            </div>
+                        </c:if>
+
+                        <div class="m-2 ">
+                            <c:if test="${maxPage ne 1}">
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
+                                              baseURL="${'/admi/requests/'}"/>
+                            </c:if>
+                        </div>
+                        <div>
+                            <c:if test="${not empty requests_list}">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <h5 class="text-left ml-4"><b><spring:message code="request"/></b></h5>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <h5 class="text-left"><b><spring:message code="request.status"/></b></h5>
+                                    </div>
+                                    <div class="col">
+                                        <h5 class="text-center mr-4"><b><spring:message code="actions"/></b></h5>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <ul class="list-group list-group-flush ">
+                                <c:forEach var="request" items="${requests_list}">
+                                    <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
+                                    <li class="list-group-item ">
+                                        <div class="row ">
+                                            <div class="col-lg-6">
+                                                <spring:message code="request.isInterested"
+                                                                arguments="${pageContext.request.contextPath}/admi/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admi/pet/${request.petId},${request.petName}"/>
+                                                <small class="text-warning"> ${req.creationDate}</small>
+                                            </div>
+                                            <div class="col-lg-1">
+                                                <c:if test="${request.status.id eq 1}">
+                                                    <spring:message code="request.pending"/>
+                                                </c:if>
+                                                <c:if test="${request.status.id eq 2}">
+                                                    <spring:message code="request.accepted"/>
+                                                </c:if>
+                                                <c:if test="${request.status.id eq 3}">
+                                                    <spring:message code="request.rejected"/>
+                                                </c:if>
+                                            </div>
+                                            <div class="col text-center ml-3">
+                                                <form method="POST" class="m-0"
+                                                      action="<c:url value="/admi/request/${request.id}/remove"/>">
+                                                    <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${request.ownerId}"/>"
+                                                       type="button" class="btn btn-secondary"><spring:message
+                                                            code="visitUser"/></a>
+                                                    <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${request.petId}"/>"
+                                                       type="button" class="btn btn-secondary"><spring:message
+                                                            code="visitPet"/></a>
+                                                    <a href="${pageContext.request.contextPath}/admi/request/<c:out value="${request.id}"/>/edit"
+                                                       type="button" class="btn btn-secondary"><spring:message
+                                                            code="edit"/></a>
+                                                    <button type="submit" onclick="confirmDelete(event)"
+                                                            class="btn btn-danger"><spring:message
+                                                            code="petCard.remove"/></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+                        <div class="m-2">
+                            <c:if test="${maxPage ne 1}">
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
+                                              baseURL="${'/admi/requests/'}"/>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="shadow p-3 bg-white rounded">
+                        <h4><b><spring:message code="guide.role"/></b></h4>
+                        <p><spring:message code="guide.role.description"/></p>
+                        <h4><b><spring:message code="guide.color"/></b></h4>
+                        <p><spring:message code="guide.color.description"/></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="<c:url value="/resources/js/interests.js"/>"></script>
+    </jsp:body>
+</t:adminLayout>
