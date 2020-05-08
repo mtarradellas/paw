@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.NumberUtils;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.Date;
@@ -137,17 +139,28 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String page) {
-        System.out.println(language + " " + specieFilter + " " + breedFilter + " " + genderFilter + " " + searchCriteria + " " + searchOrder + " " + page);
+    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
         }
+
+        int minP = -1;
+        int maxP = -1;
+        try {
+            minP = Integer.parseInt(minPrice);
+            maxP = Integer.parseInt(maxPrice);
+        } catch (NumberFormatException ignored) { }
+
         if(breedFilter == null) { breedFilter = "%";}
         if(genderFilter == null) { genderFilter = "%"; }
 
         //Query to get the petids for the current page
+        List<String> ids;
         String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
+        String limit = " limit "+ PETS_PER_PAGE + " offset " + offset;
+
         String sql = "SELECT pets.id as id " +
                 "FROM ((pets inner join species on pets.species = species.id) " +
                         "inner join breeds on pets.breed = breeds.id) " +
@@ -155,10 +168,15 @@ public class PetDaoImpl implements PetDao {
                 "WHERE lower(cast(species.id as char(20))) LIKE ? " +
                 "AND lower(cast(breeds.id as char(20))) LIKE ? " +
                 "AND lower(gender) LIKE ? " +
-                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
-                " limit "+ PETS_PER_PAGE + " offset " + offset;
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
 
-        List<String> ids = jdbcTemplate.query(sql, new Object[] { specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
+        if(minP != -1 && maxP != -1) {
+            sql += "  AND price >= ? AND price <= ?  " + limit;
+            ids = jdbcTemplate.query(sql, new Object[] { specieFilter, breedFilter, genderFilter, minP, maxP}, (resultSet, i) -> resultSet.getString("id"));
+        }
+        else {
+            ids = jdbcTemplate.query((sql + limit), new Object[]{specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
+        }
         if(ids.size() == 0){
             return Stream.empty();
         }
@@ -171,16 +189,12 @@ public class PetDaoImpl implements PetDao {
                 "images.id as imagesId, images.petId as petId, " +
                 "pet_status.id as statusId, pet_status." + language + " as statusName " +
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
-                "WHERE (pets.id in (" + pagePets + ") AND lower(cast(species.id as char(20))) LIKE ? " +
-                " AND lower(cast(breeds.id as char(20))) LIKE ? " +
-                "AND lower(gender) LIKE ? ) " +
-                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
+                "WHERE (pets.id in (" + pagePets + ") ) " ;
+
 
         if(searchCriteria == null) {
 
-            Map<Pet, List<Long>> imageMap = jdbcTemplate.query(  sqlWithPages,
-                    new Object[] {specieFilter, breedFilter, genderFilter},
-                    new PetMapExtractor());
+            Map<Pet, List<Long>> imageMap = jdbcTemplate.query(  sqlWithPages, new PetMapExtractor());
             imageMap.forEach(Pet::setImages);
             return imageMap.keySet().stream();
         }
@@ -208,9 +222,7 @@ public class PetDaoImpl implements PetDao {
             searchCriteria = searchCriteria + " " + searchOrder;
 
             sqlWithPages += "ORDER BY " + searchCriteria;
-            Map<Pet, List<Long>> imageMap = jdbcTemplate.query( sqlWithPages,
-                    new Object[] {specieFilter, breedFilter, genderFilter},
-                    new PetMapExtractor());
+            Map<Pet, List<Long>> imageMap = jdbcTemplate.query( sqlWithPages, new PetMapExtractor());
             imageMap.forEach(Pet::setImages);
             return imageMap.keySet().stream();
         }

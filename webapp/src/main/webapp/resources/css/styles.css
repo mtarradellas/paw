@@ -36,6 +36,49 @@
     min-width: 20rem;
 }
 
+.darkblue-action:hover
+{
+    color:white;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.darkblue-action{
+    background-color: #4a658e;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    text-decoration: none
+}
+
+.darkblue-action:hover{
+    background-color: #2d5184;
+}
+
+.darkblue-button{
+    background-color: #4a658e;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    border:none
+}
+
+.darkblue-button:hover {
+    background-color: #2d5184;
+}
+
+.blue-button{
+    background-color: #2660bf;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    border:none
+}
+
+.blue-button:hover {
+    background-color: #0a4cbf;
+}
+
 html,body {
     /*display: flex;*/
     /*flex-flow: column;*/
