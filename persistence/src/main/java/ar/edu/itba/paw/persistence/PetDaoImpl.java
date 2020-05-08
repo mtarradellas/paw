@@ -28,6 +28,7 @@ public class PetDaoImpl implements PetDao {
     private static final int PETS_PER_PAGE = 12;
     private static final int PETS_IN_USER_PAGE = 4;
     private static final int ADMIN_SHOWCASE_ITEMS = 25;
+
     private static final String PET_TABLE = "pets";
     private static final String HIDDEN_PETS_STATUS = " (2, 3) "; // Pets Removed or Sold are hidden from usual queries
 
@@ -45,11 +46,20 @@ public class PetDaoImpl implements PetDao {
     }
 
     private static final RowMapper<Contact> CONTACT_MAPPER = (rs, rowNum) -> new Contact(rs.getString("mail"), rs.getString("username"));
+    private static final RowMapper<Status> STATUS_MAPPER = (rs, rowNum) -> new Status(rs.getInt("id"), rs.getString("statusName"));
 
     @Override
-    public long getOwnerId(long petId) {
+    public long getOwnerId(long petId){
         return jdbcTemplate.queryForObject("select ownerid from pets where id = ? AND pets.status NOT IN" + HIDDEN_PETS_STATUS,
-                new Object[]{petId}, Long.class);
+                new Object[] {petId}, Long.class);
+    }
+
+    @Override
+    public Optional<Status> findStatusById(String language, long id) {
+        String sql = "SELECT id, pet_status." + language + " AS statusName " +
+                "FROM pet_status " +
+                "WHERE pet_status.id = ?";
+        return jdbcTemplate.query(sql, new Object[] {id}, STATUS_MAPPER).stream().findFirst();
     }
 
     @Override
@@ -176,98 +186,6 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
-
-        if (specieFilter == null) {
-            specieFilter = "%";
-            breedFilter = "%";
-        }
-
-        int minP = -1;
-        int maxP = -1;
-        try {
-            minP = Integer.parseInt(minPrice);
-            maxP = Integer.parseInt(maxPrice);
-        } catch (NumberFormatException ignored) {
-        }
-
-        if (breedFilter == null) {
-            breedFilter = "%";
-        }
-        if (genderFilter == null) {
-            genderFilter = "%";
-        }
-
-        //Query to get the petids for the current page
-        List<String> ids;
-        String offset = Integer.toString(PETS_PER_PAGE * (Integer.parseInt(page) - 1));
-        String limit = " limit " + PETS_PER_PAGE + " offset " + offset;
-
-        String sql = "SELECT pets.id as id " +
-                "FROM ((pets inner join species on pets.species = species.id) " +
-                "inner join breeds on pets.breed = breeds.id) " +
-                "inner join pet_status on pets.status = pet_status.id " +
-                "WHERE lower(cast(species.id as char(20))) LIKE ? " +
-                "AND lower(cast(breeds.id as char(20))) LIKE ? " +
-                "AND lower(gender) LIKE ? " +
-                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
-
-        if (minP != -1 && maxP != -1) {
-            sql += "  AND price >= ? AND price <= ?  " + limit;
-            ids = jdbcTemplate.query(sql, new Object[]{specieFilter, breedFilter, genderFilter, minP, maxP}, (resultSet, i) -> resultSet.getString("id"));
-        } else {
-            ids = jdbcTemplate.query((sql + limit), new Object[]{specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
-        }
-        if (ids.size() == 0) {
-            return Stream.empty();
-        }
-        String pagePets = String.join(",", ids);
-
-        //query to get the pets for the current page
-        String sqlWithPages = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "images.id as imagesId, images.petId as petId, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
-                "WHERE (pets.id in (" + pagePets + ") ) ";
-
-        if (searchCriteria == null) {
-
-            Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sqlWithPages, new PetMapExtractor());
-            imageMap.forEach(Pet::setImages);
-            return imageMap.keySet().stream();
-        } else {
-            if (searchCriteria.toLowerCase().contains("upload")) {
-                searchCriteria = "uploadDate";
-            } else if (searchCriteria.equalsIgnoreCase("gender")) {
-                searchCriteria = "gender";
-            } else if (searchCriteria.equalsIgnoreCase("price")) {
-                searchCriteria = "price";
-            } else if (searchCriteria.equalsIgnoreCase("species")) {
-                searchCriteria = "species." + language;
-            } else if (searchCriteria.equalsIgnoreCase("breed")) {
-                searchCriteria = "breeds." + language;
-            } else { /* Default criteria */
-                searchCriteria = "breeds." + language;
-            }
-            if (searchOrder == null || searchOrder.equalsIgnoreCase("asc")) {
-                searchOrder = "ASC";
-            } else {
-                searchOrder = "DESC";
-            }
-
-            searchCriteria = searchCriteria + " " + searchOrder;
-
-            sqlWithPages += "ORDER BY " + searchCriteria;
-            Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sqlWithPages, new PetMapExtractor());
-            imageMap.forEach(Pet::setImages);
-            return imageMap.keySet().stream();
-        }
-
-    }
-
-    @Override
     public Stream<Pet> adminFilteredList(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter, String searchCriteria, String searchOrder, String page) {
         if (specieFilter == null) {
             specieFilter = "%";
@@ -354,8 +272,121 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Stream<Pet> getByUserId(String language, long userId, String page) {
-        String offset = Integer.toString(PETS_IN_USER_PAGE * (Integer.parseInt(page) - 1));
+    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+
+        if(specieFilter == null) {
+            specieFilter = "%";
+            breedFilter = "%";
+        }
+
+        int minP = -1;
+        int maxP = -1;
+        try {
+            minP = Integer.parseInt(minPrice);
+            maxP = Integer.parseInt(maxPrice);
+        } catch (NumberFormatException ignored) { }
+
+        if(breedFilter == null) { breedFilter = "%";}
+        if(genderFilter == null) { genderFilter = "%"; }
+
+        //Query to get the petids for the current page
+        List<String> ids;
+        String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
+        String limit = " limit "+ PETS_PER_PAGE + " offset " + offset;
+
+        String sql = "SELECT pets.id as id " +
+                "FROM (((pets inner join species on pets.species = species.id) " +
+                "inner join breeds on pets.breed = breeds.id) " +
+                "inner join pet_status on pets.status = pet_status.id) " +
+                "WHERE lower(cast(species.id as char(20))) LIKE ? " +
+                "AND lower(cast(breeds.id as char(20))) LIKE ? " +
+                "AND lower(gender) LIKE ? " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
+
+        if(minP != -1 && maxP != -1) {
+            sql += "  AND price >= ? AND price <= ?  " ;
+            ids = jdbcTemplate.query(sql + limit, new Object[] { specieFilter, breedFilter, genderFilter, minP, maxP}, (resultSet, i) -> resultSet.getString("id"));
+        }
+        else {
+            ids = jdbcTemplate.query((sql + limit), new Object[]{specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
+        }
+        if(ids.size() == 0){
+            return Stream.empty();
+        }
+        String pagePets = String.join(",", ids);
+
+        //query to get the pets for the current page
+        String sqlWithPages = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id as imagesId, images.petId as petId, " +
+                "pet_status.id as statusId, pet_status." + language + " as statusName " +
+                "from ((((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)" +
+                "inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ) " +
+                "WHERE (pets.id in (" + pagePets + ") ) " ;
+
+
+        if(searchCriteria == null) {
+
+            Map<Pet, List<Long>> imageMap = jdbcTemplate.query(  sqlWithPages, new PetMapExtractor());
+            imageMap.forEach(Pet::setImages);
+            return imageMap.keySet().stream();
+        }
+        else {
+            if(searchCriteria.toLowerCase().contains("upload")){
+                searchCriteria = "uploadDate";
+            }
+            else if(searchCriteria.equalsIgnoreCase("gender")){
+                searchCriteria = "gender";
+            }
+            else if(searchCriteria.equalsIgnoreCase("price")){
+                searchCriteria = "price";
+            }
+            else if(searchCriteria.equalsIgnoreCase("species")){
+                searchCriteria = "species." + language;
+            }
+            else if(searchCriteria.equalsIgnoreCase("breed")){
+                searchCriteria = "breeds." + language;
+            } else { /* Default criteria */
+                searchCriteria = "breeds." + language;
+            }
+            if(searchOrder == null || searchOrder.equalsIgnoreCase("asc")) { searchOrder = "ASC";}
+            else { searchOrder = "DESC";}
+
+            searchCriteria = searchCriteria + " " + searchOrder;
+
+            sql += "ORDER BY " + searchCriteria;
+
+            if(minP != -1 && maxP != -1) {
+                ids = jdbcTemplate.query(sql + limit, new Object[] { specieFilter, breedFilter, genderFilter, minP, maxP}, (resultSet, i) -> resultSet.getString("id"));
+            }
+            else {
+                ids = jdbcTemplate.query((sql + limit), new Object[]{specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
+            }
+            if(ids.size() == 0){
+                return Stream.empty();
+            }
+            pagePets = String.join(",", ids);
+            sqlWithPages = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                    "images.id as imagesId, images.petId as petId, " +
+                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
+                    "from ((((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)" +
+                    "inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ) " +
+                    "WHERE (pets.id in (" + pagePets + ") ) " ;
+
+            sqlWithPages += "ORDER BY " + searchCriteria;
+            Map<Pet, List<Long>> imageMap = jdbcTemplate.query( sqlWithPages, new PetMapExtractor());
+            imageMap.forEach(Pet::setImages);
+            return imageMap.keySet().stream();
+        }
+
+    }
+
+    @Override
+    public Stream<Pet> getByUserId(String language, long userId, String page){
+        String offset = Integer.toString(PETS_IN_USER_PAGE*(Integer.parseInt(page)-1));
         String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                 "species.id as speciesId," + "species." + language + " AS speciesName, " +
                 "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
@@ -363,25 +394,24 @@ public class PetDaoImpl implements PetDao {
                 "images.id as imagesId, images.petId as petId " +
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ";
 
-
-        List<String> ids = jdbcTemplate.query(sql + " WHERE ownerid = ? " +
+        List<String> ids = jdbcTemplate.query(sql + " WHERE ownerid = ? AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
                         " limit " + PETS_IN_USER_PAGE + " offset " + offset,
-                new Object[]{userId},
+                new Object[] {userId},
                 (resultSet, i) -> resultSet.getString("id"));
 
         if (ids.isEmpty()) return Stream.<Pet>builder().build();
 
         String pagePets = String.join(",", ids);
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql +
-                        " WHERE  (pets.id in (" + pagePets + "))",
+                        " WHERE  (pets.id in (" + pagePets + ")) AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
                 new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
         return imageMap.keySet().stream();
     }
 
     @Override
-    public Pet create(String petName, Species species, Breed breed, String location, boolean vaccinated, String
-            gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
+    public Pet create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender,
+                      String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
         final Map<String, Object> values = new HashMap<String, Object>() {{
             put("petName", petName);
             put("species", species.getId());
@@ -394,10 +424,10 @@ public class PetDaoImpl implements PetDao {
             put("uploadDate", uploadDate);
             put("price", price);
             put("ownerId", ownerId);
-            put("status", status);
+            put("status", status.getId());
         }};
-        final Number key = jdbcInsert.executeAndReturnKey(values);
 
+        final Number key = jdbcInsert.executeAndReturnKey(values);
         return new Pet(key.longValue(), petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status);
     }
 
@@ -465,32 +495,6 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter) {
-        if (specieFilter == null) {
-            specieFilter = "%";
-            breedFilter = "%";
-        }
-        if (breedFilter == null) {
-            breedFilter = "%";
-        }
-
-        if (genderFilter == null) {
-            genderFilter = "%";
-        }
-        Integer pets = jdbcTemplate.queryForObject("select count( distinct pets.id) " +
-                        "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                        "WHERE (lower(species.id::text) LIKE ? " +
-                        "AND lower(breeds.id::text) LIKE ? " +
-                        "AND lower(gender) LIKE ? ) " +
-                        "AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
-                new Object[]{specieFilter, breedFilter, genderFilter},
-                Integer.class);
-
-        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
-        return pets.toString();
-    }
-
-    @Override
     public String maxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter) {
         if (specieFilter == null) {
             specieFilter = "%";
@@ -527,8 +531,46 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public String getMaxUserPetsPages(long userId) {
-        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? ", new Object[]{userId}, Integer.class);
+    public String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice) {
+        if(specieFilter == null) {
+            specieFilter = "%";
+            breedFilter = "%";
+        }
+        if(breedFilter == null) { breedFilter = "%";}
+        if(genderFilter == null) { genderFilter = "%"; }
+        int minP = -1;
+        int maxP = -1;
+        try {
+            minP = Integer.parseInt(minPrice);
+            maxP = Integer.parseInt(maxPrice);
+        } catch (NumberFormatException ignored) { }
+        String sql ="select count( distinct pets.id) "+
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
+                "WHERE (lower(species.id::text) LIKE ? " +
+                "AND lower(breeds.id::text) LIKE ? " +
+                "AND lower(gender) LIKE ? ) " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
+        Integer pets;
+        if(minP != -1 && maxP != -1) {
+            sql += "  AND price >= ? AND price <= ?  " ;
+            pets = jdbcTemplate.queryForObject( sql,
+                    new Object[] {specieFilter, breedFilter, genderFilter, minP, maxP},
+                    Integer.class);
+        }
+        else{
+            pets = jdbcTemplate.queryForObject( sql,
+                    new Object[] {specieFilter, breedFilter, genderFilter},
+                    Integer.class);
+        }
+
+        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
+        return pets.toString();
+    }
+
+    @Override
+    public String getMaxUserPetsPages(long userId){
+        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS, new Object[] {userId}, Integer.class);
         pets = (int) Math.ceil((double) pets / PETS_IN_USER_PAGE);
         return pets.toString();
     }
@@ -538,7 +580,7 @@ public class PetDaoImpl implements PetDao {
         return jdbcTemplate.query("SELECT users.mail AS mail, users.username AS username " +
                         "FROM pets INNER JOIN users ON users.id = pets.ownerId " +
                         "WHERE pets.id = ? AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
-                new Object[]{petId}, CONTACT_MAPPER).stream().findFirst();
+                new Object[] {petId}, CONTACT_MAPPER).stream().findFirst();
     }
 
     @Override
@@ -554,7 +596,7 @@ public class PetDaoImpl implements PetDao {
         String sql = "SELECT COUNT(id) " +
                 "FROM pets " +
                 "WHERE id = ? AND ownerId = ? ";
-        Integer owner = jdbcTemplate.queryForObject(sql, new Object[]{petId, userId}, Integer.class);
+        Integer owner = jdbcTemplate.queryForObject(sql, new Object[] {petId, userId}, Integer.class);
         return owner == 1;
     }
 }

@@ -59,6 +59,14 @@
                                     </div>
                                 </div>
                             </c:if>
+                            <c:if test="${req.status.id eq 4}">
+                                <div class="row p-1 bg-light resolved">
+                                    <div class=" col-sm-11">
+                                        <spring:message code="request.wasCanceled" arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                        <small class="text-warning">    ${req.creationDate}</small>
+                                    </div>
+                                </div>
+                            </c:if>
                         </c:forEach>
 
                     </div>

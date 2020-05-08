@@ -16,7 +16,7 @@ public interface UserService {
     Stream<User> list();
     List<User> adminUserList(String page);
     List<User> adminSearchList(String language, String find, String page);
-    Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException;
+    Optional<User> create(String locale, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String mail);
     boolean updatePassword(String newPassword, long id);
     boolean createToken(UUID uuid, long userId);
@@ -25,4 +25,7 @@ public interface UserService {
     Optional<User> findByToken(UUID uuid);
     String getAdminUserPages();
     String getAdminMaxSearchPages(String language, String find);
+    Optional<User> activateAccountWithToken(UUID uuid);
+    Optional<User> requestPasswordReset(String locale, String mail);
+    Optional<User> resetPassword(UUID uuid, String password);
 }

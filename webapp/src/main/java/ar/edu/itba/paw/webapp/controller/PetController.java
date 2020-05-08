@@ -1,15 +1,23 @@
 package ar.edu.itba.paw.webapp.controller;
+
 import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
+import ar.edu.itba.paw.webapp.form.UploadPetForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +54,7 @@ public class PetController extends ParentController {
 //check price
         /* Filtered pet list */
         if (species != null || gender != null || searchCriteria != null || minPrice != null || maxPrice != null) {
-            String maxPage = petService.getMaxFilterPages(locale, species, breed, gender);
+            String maxPage = petService.getMaxFilterPages(locale, species, breed, gender, minPrice, maxPrice);
             mav.addObject("maxPage", maxPage);
 
             LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, sCriteria: {}, sOrder: {}, mPrice: {}, mPrice: {}, page: {}",
@@ -146,8 +154,51 @@ public class PetController extends ParentController {
     }
 
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getImageWithMediaType(@PathVariable("id") long id) {
+    public @ResponseBody
+    byte[] getImageWithMediaType(@PathVariable("id") long id) {
         return imageService.getDataById(id).orElse(null);
+    }
+
+    @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
+    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm userForm) {
+        return new ModelAndView("views/upload_pet")
+                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
+                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
+    }
+
+    @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
+    public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,
+                                  final BindingResult errors, HttpServletRequest request) {
+
+
+        if (errors.hasErrors()) {
+            return uploadPetForm(petForm);
+        }
+
+        Date currentDate = new java.sql.Date(System.currentTimeMillis());
+        Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
+
+        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
+                          petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId());
+
+        if (!opPet.isPresent()) {
+            return uploadPetForm(petForm).addObject("pet_error", true);
+        }
+
+        petForm.getPhotos().forEach(photo -> {
+            byte[] imgBytes;
+            try {
+                imgBytes = photo.getBytes();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            }
+            imageService.create(opPet.get().getId(), imgBytes, loggedUser().getId());
+        });
+
+
+        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
 
     private String getMailMessage( String part, Request request){
