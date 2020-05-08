@@ -13,7 +13,7 @@
             <div class="row">
 <%--                Filter Tools --%>
                 <div class="col-md-2 search-tools">
-                    <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/admi/pets">
+                    <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/admi/requests">
                         <div class="card-header">
                             <h5 class="card-title"><spring:message code="filter.options"/></h5>
                         </div>
@@ -66,14 +66,14 @@
                                             <c:if test="${(not empty param.gender) && (param.gender eq 'female')}">selected</c:if>
                                     ><spring:message code="pet.female"/></option>
                                 </select>
-                                <label for="filter-status"><spring:message code="request.status"/></label>
+                                <label for="filter-status"><spring:message code="status"/></label>
                                 <select name="status" class="form-control" id="filter-status">
                                     <option value="any"><spring:message code="filter.any"/></option>
                                     <option value="deleted"
                                             <c:if test="${(not empty param.status) && (param.status eq 'deleted')}">selected</c:if>
                                     ><spring:message code="status.deleted"/></option>
                                     <option value="exists"
-                                            <c:if test="${(not empty param.status) && (param.stauts eq 'exists')}">selected</c:if>
+                                            <c:if test="${(not empty param.status) && (param.status eq 'exists')}">selected</c:if>
                                     ><spring:message code="status.exists"/></option>
                                 </select>
                             </div>

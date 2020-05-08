@@ -295,7 +295,7 @@ public class PetDaoImplTest {
 
         /**/
         Stream<Pet> petStream = petDaoImpl.filteredList(LANG, SPECIES.getName(), null,
-                null, "species", "asc","1");
+                null, "species", "asc","0", "6000","1");
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(0, petList.size());
@@ -312,7 +312,7 @@ public class PetDaoImplTest {
 //
 //        /**/
 //        Stream<Pet> petStream = petDaoImpl.filteredList("es_ar", SPECIES.getName(), null,
-//                null, "species", "asc","1");
+//                null, "species", "asc","0", "6000","1");
 //        List<Pet> petList = petStream.collect(Collectors.toList());
 //
 //        assertEquals(1, petList.size());
@@ -342,7 +342,7 @@ public class PetDaoImplTest {
 //
 //        /**/
 //        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES.getName(), BREED.getName(),
-//                                                    null, "species", "asc","1");
+//                                                    null, "species", "asc","0", "6000","1");
 //        List<Pet> petList = petStream.collect(Collectors.toList());
 //
 //        assertEquals(1, petList.size());
@@ -371,7 +371,7 @@ public class PetDaoImplTest {
 //                GENDER + "_other", DESCRIPTION, BIRTH_DATE, UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
 //
 //        /**/
-//        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",null, null, GENDER, "species", "asc","1");
+//        Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",null, null, GENDER, "species", "asc","0", "6000","1");
 //        List<Pet> petList = petStream.collect(Collectors.toList());
 //
 //        assertEquals(1, petList.size());

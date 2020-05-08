@@ -13,8 +13,8 @@ public interface PetService {
     Optional<Pet> adminFindById(String language, long id);
     List<Pet> find(String language,String findValue, String page);
     List<Pet> list(String language, String page);
-    List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String page);
     List<Pet> adminFilteredList(String language, String specie, String  breed, String gender, String status, String searchCriteria, String searchOrder, String page);
+    List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
     List<Pet> getByUserId(String language, long userId, String page);
     List<Pet> adminList(String language, String page);
     List<Pet> adminSearchList(String language, String find, String page);

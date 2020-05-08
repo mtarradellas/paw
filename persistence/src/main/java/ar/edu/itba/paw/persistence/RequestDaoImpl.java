@@ -106,6 +106,11 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
+    public Stream<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        return null;
+    }
+
+    @Override
     public Stream<Long> findIdByStatus(long petId, long ownerId, List<Integer> statusList) {
         if (statusList.isEmpty()) {
             return Stream.empty();
@@ -236,6 +241,31 @@ public class RequestDaoImpl implements RequestDao {
             requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
             return requests.toString();
     }
+
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+        if (status == null) {
+            status = "(1,2,3,4)";
+        } else if (status.equals("pending")) {
+            status = "(1)";
+        } else if (status.equals("accepted")) {
+            status = "(2)";
+        } else if (status.equals("rejected")) {
+            status = "(3)";
+        } else if (status.equals("canceled")) {
+            status = "(4)";
+        } else{
+            status = "(100)";
+        }
+
+        Integer pets = jdbcTemplate.queryForObject("select count(*)  " +
+                        "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId)"  +
+                        "WHERE request.status IN " + status + "" +
+                        "AND request.status IN " + status,
+                Integer.class);
+
+        pets = (int) Math.ceil((double) pets / ADMIN_SHOWCASE_ITEMS);
+        return pets.toString();    }
 
     @Override
     public boolean isRequestOwner(long id, long userId) {

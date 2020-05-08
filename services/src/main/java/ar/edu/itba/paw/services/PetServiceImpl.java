@@ -36,27 +36,13 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String page) {
-        List<Pet> petsList = petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder,page).collect(Collectors.toList());
-        petsList.removeIf(pet -> pet.getStatus().getId() == 2 || pet.getStatus().getId() == 3);
-        return petsList;
+    public List<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page) {
+        return petDao.adminFilteredList(language, specie, breed, gender, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
     }
 
     @Override
-    public List<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page) {
-        List<Pet> petsList = petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder,page).collect(Collectors.toList());
-
-        if(status == null || status.equals("any")){
-            return petsList;
-        }else if(status.equals("deleted")){
-            petsList.removeIf(pet -> pet.getStatus().getId() == 1);
-            return petsList;
-        }else if(status.equals("exists")){
-            petsList.removeIf(pet -> (pet.getStatus().getId() == 2 || pet.getStatus().getId() == 3));
-            return petsList;
-        }else{
-            return null;
-        }
+    public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        return petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page).collect(Collectors.toList());
     }
 
     @Override

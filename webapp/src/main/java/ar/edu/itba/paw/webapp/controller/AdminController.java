@@ -50,7 +50,7 @@ public class AdminController extends ParentController{
         gender = gender == null || gender.equals("any") ? null : gender;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
-        if (species != null || gender != null || searchCriteria != null) {
+        if (species != null || gender != null || searchCriteria != null || status != null) {
             String maxPage = petService.getMaxAdminFilterPages(locale, species, breed, gender, status);
             mav.addObject("maxPage", maxPage);
 
@@ -137,25 +137,44 @@ public class AdminController extends ParentController{
     }
 
     @RequestMapping(value = "/admi/requests")
-    public ModelAndView getRequestsAdmin(@RequestParam(name = "page", required = false) String page,
+    public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
+                                         @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                         @RequestParam(name = "searchOrder", required = false) String searchOrder,
+                                         @RequestParam(name = "page", required = false) String page,
                                          @RequestParam(name = "find", required = false) String find) {
         if(page == null){
             page = "1";
         }
 
+        final String locale = getLocale();
+
         ModelAndView mav = new ModelAndView("admin/admin_requests");
         mav.addObject("currentPage", page);
 
-        if(find != null){
-            String maxPage = requestService.getAdminMaxSearchPages(getLocale(), find);
+
+        status = status == null || status.equals("any") ? null : status;
+        searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
+
+        if ( searchCriteria != null || status != null) {
+            String maxPage = requestService.getAdminMaxFilterPages(locale, status);
             mav.addObject("maxPage", maxPage);
-            List<Request> requestList = requestService.adminSearchList(getLocale(), find, page);
+
+            LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, status: {}, sCriteria: {}, sOrder: {}, page: {}",
+                    locale, status, searchCriteria, searchOrder, page);
+            List<Request> requestList = requestService.adminFilteredList(locale, status, searchCriteria,
+                    searchOrder, page);
+            mav.addObject("requests_list", requestList);
+
+        }else if(find != null){
+            String maxPage = requestService.getAdminMaxSearchPages(locale, find);
+            mav.addObject("maxPage", maxPage);
+            List<Request> requestList = requestService.adminSearchList(locale, find, page);
             mav.addObject("requests_list", requestList);
 
         }else{
-            String maxPage = requestService.getAdminRequestPages(getLocale());
+            String maxPage = requestService.getAdminRequestPages(locale);
             mav.addObject("maxPage", maxPage);
-            List<Request> requestList = requestService.adminRequestList(getLocale(), page);
+            List<Request> requestList = requestService.adminRequestList(locale, page);
             mav.addObject("requests_list", requestList);
         }
 

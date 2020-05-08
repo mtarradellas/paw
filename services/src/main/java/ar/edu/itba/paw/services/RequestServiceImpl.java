@@ -64,6 +64,11 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public List<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        return requestDao.adminFilteredList(language,status,searchCriteria,searchOrder,page).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<Request> create(long userId, long petId, String language) {
         ArrayList<Integer> statusList = new ArrayList<Integer>() {{
             add(ACCEPTED_STATUS);
@@ -267,8 +272,13 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public String getAdminMaxSearchPages(String location, String find) {
-        return requestDao.getAdminMaxSearchPages(location,find);
+    public String getAdminMaxSearchPages(String language, String find) {
+        return requestDao.getAdminMaxSearchPages(language,find);
+    }
+
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+        return requestDao.getAdminMaxFilterPages(language, status);
     }
 
 }
