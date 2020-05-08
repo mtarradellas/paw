@@ -18,7 +18,7 @@ public interface PetService {
     boolean removePet(long petId, long userId);
     String getMaxPages();
     String getMaxSearchPages(String language, String findValue);
-    String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter);
+    String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice);
     String getMaxUserPetsPages(long userId);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);

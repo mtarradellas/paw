@@ -67,8 +67,8 @@
                 </div>
 
 
-                <label for="filter-price"><spring:message code="pet.sex"/></label>
-                <select name="price" class="form-control" id="filter-price">
+                <label for="filter-gender"><spring:message code="pet.sex"/></label>
+                <select name="gender" class="form-control" id="filter-gender">
                     <option value="any"><spring:message code="filter.any"/></option>
                     <option value="male"
                             <c:if test="${(not empty param.gender) && (param.gender eq 'male')}">selected</c:if>
