@@ -13,11 +13,14 @@ public interface UserService {
     Optional<User> findById(long id);
     Optional<User> findByUsername(String username);
     Stream<User> list();
-    Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException;
+    Optional<User> create(String locale, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String mail);
     boolean updatePassword(String newPassword, long id);
     boolean createToken(UUID uuid, long userId);
     Optional<Token> getToken(UUID uuid);
     boolean deleteToken(UUID uuid);
     Optional<User> findByToken(UUID uuid);
+    Optional<User> activateAccountWithToken(UUID uuid);
+    Optional<User> requestPasswordReset(String locale, String mail);
+    Optional<User> resetPassword(UUID uuid, String password);
 }
