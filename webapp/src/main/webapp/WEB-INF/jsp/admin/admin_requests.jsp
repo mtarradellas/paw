@@ -24,38 +24,60 @@
                             <div class="form-group">
                                 <label for="filter-status"><spring:message code="request.status"/></label>
                                 <select name="status" class="form-control" id="filter-status">
-                                    <option value="any"><spring:message code="filter.any"/></option>
-                                    <option value="accepted"><spring:message code="request.accepted"/></option>
-                                    <option value="rejected"><spring:message code="request.rejected"/></option>
-                                    <option value="pending"><spring:message code="request.pending"/></option>
-                                    <option value="pending"><spring:message code="request.canceled"/></option>
+                                    <option value="any"
+                                            <c:if test="${(not empty param.status) && (param.status eq 'any')}">
+                                                selected
+                                            </c:if>
+                                    >
+                                        <spring:message code="filter.any"/>
+                                    </option>
+                                    <option value="accepted"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('accepted' eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.accepted"/></option>
+                                    <option value="rejected"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('rejected' eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.rejected"/></option>
+                                    <option value="pending"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('pending' eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.pending"/></option>
+                                    <option value="pending"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('pending' eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.canceled"/></option>
                                 </select>
                             </div>
+                            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
+                            <label for="search-criteria"><spring:message code="filter.criteria"/></label>
+                            <select name="searchCriteria" class="form-control" id="search-criteria">
+                                <option value="any"><spring:message code="filter.any"/></option>
+                                <option value="date"
+                                        <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'date')}">selected</c:if>
+                                ><spring:message code="request.date"/></option>
+                                <option value="petName"
+                                        <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'petName')}">selected</c:if>
+                                ><spring:message code="request.petName"/></option>
+                            </select>
+                            <label for="search-order"><spring:message code="filter.order"/></label>
+                            <select name="searchOrder" class="form-control" id="search-order"
+                                    <c:if test="${(empty param.searchCriteria) || (param.searchCriteria eq 'any')}">
+                                        disabled
+                                    </c:if>
+                            >
+                                <option value="asc"
+                                        <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'asc')}">selected</c:if>
+                                ><spring:message code="filter.ascending"/></option>
+                                <option value="desc"
+                                        <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'desc')}">selected</c:if>
+                                ><spring:message code="filter.descending"/></option>
+                            </select>
                         </div>
-                        <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
-                        <label for="search-criteria"><spring:message code="filter.criteria"/></label>
-                        <select name="searchCriteria" class="form-control" id="search-criteria">
-                            <option value="any"><spring:message code="filter.any"/></option>
-                            <option value="date"
-                                    <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'date')}">selected</c:if>
-                            ><spring:message code="request.date"/></option>
-                            <option value="petName"
-                                    <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'petName')}">selected</c:if>
-                            ><spring:message code="request.petName"/></option>
-                        </select>
-                        <label for="search-order"><spring:message code="filter.order"/></label>
-                        <select name="searchOrder" class="form-control pb-3" id="search-order"
-                                <c:if test="${(empty param.searchCriteria) || (param.searchCriteria eq 'any')}">
-                                    disabled
-                                </c:if>
-                        >
-                            <option value="asc"
-                                    <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'asc')}">selected</c:if>
-                            ><spring:message code="filter.ascending"/></option>
-                            <option value="desc"
-                                    <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'desc')}">selected</c:if>
-                            ><spring:message code="filter.descending"/></option>
-                        </select>
                         <div class="card-footer" id="search-tools-submit">
                             <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
                         </div>

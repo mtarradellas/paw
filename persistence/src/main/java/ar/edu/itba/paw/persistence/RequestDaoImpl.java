@@ -107,7 +107,51 @@ public class RequestDaoImpl implements RequestDao {
 
     @Override
     public Stream<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
-        return null;
+        if (status == null) {
+            status = "(1,2,3,4)";
+        } else if (status.equals("pending")) {
+            status = "(1)";
+        } else if (status.equals("accepted")) {
+            status = "(2)";
+        } else if (status.equals("rejected")) {
+            status = "(3)";
+        } else if (status.equals("canceled")) {
+            status = "(4)";
+        } else{
+            status = "(100)";
+        }
+
+        Stream<Request> result;
+
+        String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                "WHERE  requests.status IN " + status;
+        if (searchCriteria == null) {
+            result = jdbcTemplate.query(sql, REQUEST_MAPPER).stream();
+        } else {
+            if (searchCriteria.contains("date")) {
+                searchCriteria = "requests.creationDate";
+            }
+            else if (searchCriteria.contains("petName")) {
+                searchCriteria = "pets.petName";
+            }
+            else { /* Default criteria */
+                searchCriteria = "requests.creationDate";
+            }
+            if (searchOrder == null || searchOrder.toLowerCase().contains("asc")) {
+                searchOrder = "ASC";
+            } else {
+                searchOrder = "DESC";
+            }
+            searchCriteria = searchCriteria + " " + searchOrder;
+            sql = sql + " ORDER BY " + searchCriteria;
+
+            result = jdbcTemplate.query(sql ,  REQUEST_MAPPER).stream();
+        }
+
+        return result;
+
     }
 
     @Override
@@ -258,14 +302,15 @@ public class RequestDaoImpl implements RequestDao {
             status = "(100)";
         }
 
-        Integer pets = jdbcTemplate.queryForObject("select count(*)  " +
-                        "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId)"  +
-                        "WHERE request.status IN " + status + "" +
-                        "AND request.status IN " + status,
+        Integer requests = jdbcTemplate.queryForObject("select count(*) " +
+                        "FROM (((requests inner join request_status on requests.status = request_status.id) " +
+                        "inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId) " +
+                        "WHERE requests.status IN " + status,
                 Integer.class);
 
-        pets = (int) Math.ceil((double) pets / ADMIN_SHOWCASE_ITEMS);
-        return pets.toString();    }
+        requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+        return requests.toString();
+    }
 
     @Override
     public boolean isRequestOwner(long id, long userId) {

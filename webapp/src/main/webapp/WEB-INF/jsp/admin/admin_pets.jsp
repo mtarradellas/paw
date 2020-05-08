@@ -12,8 +12,10 @@
         <div class="container-fluid">
             <div class="row">
 <%--                Filter Tools --%>
+
                 <div class="col-md-2 search-tools">
-                    <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/admi/pets">
+                    <form class="card shadow p-3" method="get"
+                          action="${pageContext.request.contextPath}/admi/pets">
                         <div class="card-header">
                             <h5 class="card-title"><spring:message code="filter.options"/></h5>
                         </div>
