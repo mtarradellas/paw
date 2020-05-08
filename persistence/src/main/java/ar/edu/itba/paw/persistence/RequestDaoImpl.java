@@ -19,6 +19,8 @@ public class RequestDaoImpl implements RequestDao {
 
     private static final String REQUESTS_TABLE = "requests";
 
+    private static final int ADMIN_SHOWCASE_ITEMS= 25;
+
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -71,6 +73,41 @@ public class RequestDaoImpl implements RequestDao {
                         "WHERE pets.ownerId = ?"
                 , new Object[]{petOwnerId}, REQUEST_MAPPER)
                 .stream();
+    }
+
+    @Override
+    public Stream<Request> adminRequestList(String language, String page){
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, REQUEST_MAPPER)
+                .stream();
+    }
+
+    @Override
+    public Stream<Request> adminSearchList(String language, String findValue, String page) {
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        if(findValue.equals("")){
+            return adminRequestList(language, page);
+        }
+
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
+        return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                " WHERE  (LOWER(request_status."+ language +") LIKE ?) OR" +
+                "(LOWER(users.username) LIKE ?) OR (LOWER(pets.petname) LIKE ?)" +
+                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset,
+                new Object[] { modifiedValue ,modifiedValue, modifiedValue},
+                REQUEST_MAPPER)
+                .stream();
+
+    }
+
+    @Override
+    public Stream<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        return null;
     }
 
     @Override
@@ -177,6 +214,58 @@ public class RequestDaoImpl implements RequestDao {
 
         return result;
     }
+
+    @Override
+    public String getAdminRequestPages(String language){
+        Integer requests = jdbcTemplate.queryForObject("select count(*) from requests" ,
+                Integer.class);
+
+        requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+        return requests.toString();
+    }
+
+    @Override
+    public String getAdminMaxSearchPages(String language, String findValue){
+            if (findValue.equals("")) {
+                return getAdminRequestPages(language);
+            }
+
+            String modifiedValue = "%" + findValue.toLowerCase() + "%";
+
+            Integer requests = jdbcTemplate.queryForObject("select count(*)  " +
+                            "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId)" +
+                            " WHERE  (LOWER(request_status." + language + ") LIKE ?) OR" +
+                            "(LOWER(users.username) LIKE ?) OR (LOWER(pets.petname) LIKE ?)",
+                    new Object[]{modifiedValue, modifiedValue, modifiedValue},
+                    Integer.class);
+            requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+            return requests.toString();
+    }
+
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+        if (status == null) {
+            status = "(1,2,3,4)";
+        } else if (status.equals("pending")) {
+            status = "(1)";
+        } else if (status.equals("accepted")) {
+            status = "(2)";
+        } else if (status.equals("rejected")) {
+            status = "(3)";
+        } else if (status.equals("canceled")) {
+            status = "(4)";
+        } else{
+            status = "(100)";
+        }
+
+        Integer pets = jdbcTemplate.queryForObject("select count(*)  " +
+                        "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId)"  +
+                        "WHERE request.status IN " + status + "" +
+                        "AND request.status IN " + status,
+                Integer.class);
+
+        pets = (int) Math.ceil((double) pets / ADMIN_SHOWCASE_ITEMS);
+        return pets.toString();    }
 
     @Override
     public boolean isRequestOwner(long id, long userId) {

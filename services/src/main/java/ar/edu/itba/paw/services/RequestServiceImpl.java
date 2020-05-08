@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -50,6 +51,21 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Stream<Request> listByPetOwner(String language, long petOwnerId) {
         return requestDao.listByPetOwner(language, petOwnerId);
+    }
+
+    @Override
+    public List<Request> adminRequestList(String language,String page){
+        return requestDao.adminRequestList(language, page).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Request> adminSearchList(String language, String find, String page) {
+        return requestDao.adminSearchList(language, find, page).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        return requestDao.adminFilteredList(language,status,searchCriteria,searchOrder,page).collect(Collectors.toList());
     }
 
     @Override
@@ -248,6 +264,21 @@ public class RequestServiceImpl implements RequestService {
                 }
         }
         return "";
+    }
+
+    @Override
+    public String getAdminRequestPages(String language){
+        return requestDao.getAdminRequestPages(language);
+    }
+
+    @Override
+    public String getAdminMaxSearchPages(String language, String find) {
+        return requestDao.getAdminMaxSearchPages(language,find);
+    }
+
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+        return requestDao.getAdminMaxFilterPages(language, status);
     }
 
 }

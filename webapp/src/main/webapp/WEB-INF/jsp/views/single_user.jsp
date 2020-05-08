@@ -16,14 +16,11 @@
                         <%--            <a href="${pageContext.request.contextPath}/editUser/${user.id}"><spring:message code="editUser"/></button></h1>--%>
 
                 </div>
-
                 <div class="p-2">
                     <c:if test="${loggedUser.id eq user.id}">
                         <ul class="list-group">
-                            <li class="list-group-item"><spring:message code="user.email"/> <c:out
-                                    value="${user.mail}"/></li>
-                            <li class="list-group-item"><spring:message code="user.phone"/> <c:out
-                                    value="${user.phone}"/></li>
+                            <li class="list-group-item"><spring:message code="user.email"/> <c:out value="${user.mail}"/></li>
+                            <li class="list-group-item"><spring:message code="user.phone"/> <c:out value="${user.phone}"/></li>
                         </ul>
                     </c:if>
                     <div class="p-2">
@@ -31,8 +28,7 @@
                         <c:if test="${not empty userPets}">
                             <div class="m-2 ">
                                 <c:if test="${maxPage ne 1}">
-                                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
-                                                  baseURL="/user/${id}"/>
+                                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/user/${id}"/>
                                 </c:if>
                             </div>
                         </c:if>
@@ -55,13 +51,13 @@
                         <c:if test="${not empty userPets}">
                             <div class="m-2 ">
                                 <c:if test="${maxPage ne 1}">
-                                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
-                                                  baseURL="/user/${id}"/>
+                                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/user/${id}"/>
                                 </c:if>
                             </div>
                         </c:if>
 
                     </div>
+
                 </div>
 
                 <div class="p-4">
