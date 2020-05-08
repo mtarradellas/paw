@@ -140,6 +140,7 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
@@ -160,11 +161,13 @@ public class PetDaoImpl implements PetDao {
         String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
         String limit = " limit "+ PETS_PER_PAGE + " offset " + offset;
 
-        String sql = "select pets.id as id "+
-                "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
-                "WHERE (lower(species.id::text) LIKE ? " +
-                "AND lower(breeds.id::text) LIKE ? " +
-                "AND lower(gender) LIKE ? ) " +
+        String sql = "SELECT pets.id as id " +
+                "FROM ((pets inner join species on pets.species = species.id) " +
+                        "inner join breeds on pets.breed = breeds.id) " +
+                        "inner join pet_status on pets.status = pet_status.id " +
+                "WHERE lower(cast(species.id as char(20))) LIKE ? " +
+                "AND lower(cast(breeds.id as char(20))) LIKE ? " +
+                "AND lower(gender) LIKE ? " +
                 "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
 
         if(minP != -1 && maxP != -1) {
@@ -187,6 +190,7 @@ public class PetDaoImpl implements PetDao {
                 "pet_status.id as statusId, pet_status." + language + " as statusName " +
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
                 "WHERE (pets.id in (" + pagePets + ") ) " ;
+
 
         if(searchCriteria == null) {
 
@@ -227,7 +231,7 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> getByUserId(String language, long userId, String page){
-        String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
+        String offset = Integer.toString(PETS_IN_USER_PAGE*(Integer.parseInt(page)-1));
         String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                 "species.id as speciesId," + "species." + language + " AS speciesName, " +
                 "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
@@ -236,18 +240,20 @@ public class PetDaoImpl implements PetDao {
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ";
 
         List<String> ids = jdbcTemplate.query(sql + " WHERE ownerid = ? AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
-                                                        " limit " + PETS_PER_PAGE + " offset " + offset,
+                                                        " limit " + PETS_IN_USER_PAGE + " offset " + offset,
                                             new Object[] {userId},
                                             (resultSet, i) -> resultSet.getString("id"));
 
         if (ids.isEmpty()) return Stream.<Pet>builder().build();
 
         String pagePets = String.join(",", ids);
+        System.out.println(pagePets + "\n\n\n\n\n\n");
 
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql +
                                                         " WHERE  (pets.id in (" + pagePets + ")) AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
                                                         new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
+        System.out.println(imageMap.size() + "\n\n\n\n\n\n");
         return imageMap.keySet().stream();
     }
 
