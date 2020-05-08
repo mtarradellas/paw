@@ -154,19 +154,17 @@ public class PetController extends ParentController {
             return uploadPetForm(petForm).addObject("pet_error", true);
         }
 
-        byte[] imgBytes;
-        try {
-            imgBytes = petForm.getPhoto().getBytes();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return uploadPetForm(petForm).addObject("img_error", true);
-        }
+        petForm.getPhotos().forEach(photo -> {
+            byte[] imgBytes;
+            try {
+                imgBytes = photo.getBytes();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            }
+            imageService.create(opPet.get().getId(), imgBytes, loggedUser().getId());
+        });
 
-        Optional<Image> opImage = imageService.create(opPet.get().getId(), imgBytes, loggedUser().getId());
-
-        if (!opImage.isPresent()) {
-            return uploadPetForm(petForm).addObject("img_error", true);
-        }
 
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
