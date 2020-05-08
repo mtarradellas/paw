@@ -4,7 +4,7 @@
 
 
 <spring:message code="adminTitle.request" var="requestTitle"/>
-<t:adminLayout title="${requestTitle}">
+<t:adminLayout title="${requestTitle}" item="requests">
     <jsp:body>
         <span id="confirmMessage" hidden>
             <spring:message code='confirmMessage' javaScriptEscape='true' />
@@ -34,6 +34,7 @@
                             </c:if>
                         </div>
                         <div>
+                            <c:if test="${not empty requests_list}">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <h5 class="text-left ml-4"><b><spring:message code="request"/></b></h5>
@@ -45,17 +46,16 @@
                                     <h5 class="text-center mr-4"><b><spring:message code="actions"/></b></h5>
                                 </div>
                             </div>
+                            </c:if>
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="request" items="${requests_list}">
                                     <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
                                     <li class="list-group-item ">
                                         <div class="row ">
                                             <div class="col-lg-6">
-                                                <a href="${pageContext.request.contextPath}/admi/request/{${request.id}}">
-                                                    <spring:message code="request.isInterested" arguments="${pageContext.request.contextPath}/admi/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admi/pet/${request.petId},${request.petName}"/>
-                                                </a>
+                                                 <spring:message code="request.isInterested" arguments="${pageContext.request.contextPath}/admi/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admi/pet/${request.petId},${request.petName}"/>
                                             </div>
-                                            <div class="col-lg-2">
+                                            <div class="col-lg-1">
                                                 <c:if test="${request.status.id eq 1}">
                                                     <spring:message code="request.pending"/>
                                                 </c:if>
@@ -67,11 +67,11 @@
                                                 </c:if>
                                             </div>
                                             <div class="col text-center ml-3">
-                                                <form method="POST" class="m-0" action="<c:url value="/admi/request/${request.id}/delete"/>">
-                                                    <a href="${pageContext.request.contextPath}/admi/user/{${request.ownerId}}" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
-                                                    <a href="${pageContext.request.contextPath}/admi/pet/{${request.petId}}" type="button" class="btn btn-secondary"><spring:message code="visitPet"/></a>
-                                                    <a href="${pageContext.request.contextPath}/admi/request/{${request.id}}/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
-                                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="delete"/></button>
+                                                <form method="POST" class="m-0" action="<c:url value="/admi/request/${request.id}/remove"/>">
+                                                    <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${request.ownerId}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
+                                                    <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${request.petId}"/>" type="button" class="btn btn-secondary"><spring:message code="visitPet"/></a>
+                                                    <a href="${pageContext.request.contextPath}/admi/request/<c:out value="${request.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
+                                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
                                                 </form>
                                             </div>
                                         </div>

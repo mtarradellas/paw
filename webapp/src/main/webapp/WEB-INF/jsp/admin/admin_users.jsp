@@ -4,7 +4,7 @@
 
 
 <spring:message code="adminTitle.user" var="userTitle"/>
-<t:adminLayout title="${userTitle}">
+<t:adminLayout title="${userTitle}" item="users">
     <jsp:body>
         <span id="confirmMessage" hidden>
             <spring:message code='confirmMessage' javaScriptEscape='true' />
@@ -34,6 +34,7 @@
                             </c:if>
                         </div>
                         <div>
+                            <c:if test="${not empty users_list}">
                             <div class="row">
                                 <div class="col-lg-8">
                                     <h5 class="text-left ml-4"><b><spring:message code="user"/></b></h5>
@@ -42,21 +43,22 @@
                                     <h5 class="text-center mr-4"><b><spring:message code="actions"/></b></h5>
                                 </div>
                             </div>
+                            </c:if>
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="user" items="${users_list}">
                                     <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
                                     <li class="list-group-item ">
                                         <div class="row ">
                                             <div class="col-lg-8">
-                                                <a href="${pageContext.request.contextPath}/admi/user/{${user.id}}">
-                                                        ${user.username} - ${user.mail}
+                                                <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${user.id}"/>">
+                                                    <c:out value="${user.username}"/> - <c:out value="${user.mail}"/>
                                                 </a>
                                             </div>
                                             <div class="col text-center ml-3">
-                                                <form method="POST" class="m-0" action="<c:url value="/admi/user/${user.id}/delete"/>">
-                                                    <a href="${pageContext.request.contextPath}/admi/user/{${user.id}}" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
-                                                    <a href="${pageContext.request.contextPath}/admi/user/{${user.id}}/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
-                                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="delete"/></button>
+                                                <form method="POST" class="m-0" action="<c:url value="/admi/user/${user.id}/remove"/>">
+                                                    <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${user.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
+                                                    <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
+                                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
                                                 </form>
                                             </div>
                                         </div>

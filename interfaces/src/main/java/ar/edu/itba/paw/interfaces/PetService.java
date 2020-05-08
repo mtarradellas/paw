@@ -13,7 +13,8 @@ public interface PetService {
     List<Pet> list(String language, String page);
     List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String page);
     List<Pet> getByUserId(String language, long userId, String page);
-    List<Pet> adminPetList(String language, String page);
+    List<Pet> adminList(String language, String page);
+    List<Pet> adminSearchList(String language, String find, String page);
     Pet create(String language, String petName, String speciesName, String breedName, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId);
     boolean sellPet(long petId, long userId);
     boolean removePet(long petId, long userId);
@@ -21,7 +22,8 @@ public interface PetService {
     String getMaxSearchPages(String language, String findValue);
     String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter);
     String getMaxUserPetsPages(long userId);
-    String getAdminPetPages();
+    String getAdminMaxPages();
+    String getAdminMaxSearchPages(String language,String find);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
 

@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:message code="adminTitle" var="adminTitle"/>
-<t:adminLayout title="${adminTitle}">
+<t:adminLayout title="${adminTitle}" item="pets">
     <jsp:body>
         <div id="body" class="page-content">
 

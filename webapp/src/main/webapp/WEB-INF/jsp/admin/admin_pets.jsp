@@ -4,7 +4,7 @@
 
 
 <spring:message code="adminTitle.pet" var="petTitle"/>
-<t:adminLayout title="${petTitle}">
+<t:adminLayout title="${petTitle}" item="pets">
     <jsp:body>
         <span id="confirmMessage" hidden>
             <spring:message code='confirmMessage' javaScriptEscape='true' />
@@ -35,6 +35,7 @@
                             </c:if>
                         </div>
                         <div>
+                            <c:if test="${not empty pets_list}">
                             <div class="row">
                                 <div class="col-lg-8">
                                    <h5 class="text-left ml-4"><b><spring:message code="pet"/></b></h5>
@@ -43,23 +44,30 @@
                                     <h5 class="text-center mr-4"><b><spring:message code="actions"/></b></h5>
                                 </div>
                             </div>
+                            </c:if>
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="pet" items="${pets_list}">
 <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
                                     <li class="list-group-item ">
                                         <div class="row ">
                                             <div class="col-lg-8">
-                                                <a href="${pageContext.request.contextPath}/admi/pet/{${pet.id}}">
+                                                <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>">
                                                 <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
-                                                     alt="Pet image" height="70" width="70"> ${pet.petName}
+                                                     alt="Pet image" height="70" width="70">
+                                                    <c:if test="${not empty pet.petName}">
+                                                        <c:out value="${pet.petName}"/>
+                                                    </c:if>
+                                                    <c:if test="${empty pet.petName}">
+                                                        <spring:message code="pet.unnamed"/>
+                                                    </c:if>
                                                 </a>
                                             </div>
                                             <div class="col text-center pt-3 ml-3">
-                                                <form method="POST" class="m-0" action="<c:url value="/admi/pet/${pet.id}/delete"/>">
-                                                    <a href="${pageContext.request.contextPath}/admi/user/{${pet.ownerId}}" type="button" class="btn btn-secondary"><spring:message code="visitOwner"/></a>
-                                                    <a href="${pageContext.request.contextPath}/admi/pet/{${pet.id}}" type="button" class="btn btn-secondary"><spring:message code="visitPet"/></a>
-                                                    <a href="${pageContext.request.contextPath}/admi/pet/{${pet.id}}/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
-                                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="delete"/></button>
+                                                <form method="POST" class="m-0" action="<c:url value="/admi/pet/${pet.id}/remove"/>">
+                                                    <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${pet.ownerId}"/>" type="button" class="btn btn-secondary"><spring:message code="visitOwner"/></a>
+                                                    <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitPet"/></a>
+                                                    <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
+                                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
                                                 </form>
                                             </div>
                                         </div>

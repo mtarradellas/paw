@@ -34,7 +34,7 @@ public class PetController extends ParentController {
         if (page == null) {
             page = "1";
         }
-        
+
         mav.addObject("currentPage", page);
 
         species = species == null || species.equals("any") ? null : species;

@@ -3,7 +3,7 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@attribute name="title" required="true" type="java.lang.String"%>
-
+<%@attribute name="item" required="true" type="java.lang.String" %>
 
 <html>
 <head>
@@ -52,7 +52,7 @@
 
         </ul>
 
-        <form class="form-inline my-2 my-lg-0" method="GET" action="${pageContext.request.contextPath}/admi">
+        <form class="form-inline my-2 my-lg-0" method="GET" action="${pageContext.request.contextPath}/admi/${item}">
             <input id="search-value" name="find" class="form-control mr-sm-2" type="search" placeholder="<spring:message code="search"/>" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" ><spring:message code="search"/></button>
         </form>
