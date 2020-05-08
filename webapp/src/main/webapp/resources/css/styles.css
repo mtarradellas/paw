@@ -12,6 +12,24 @@
     padding-top: 5rem;
 }
 
+.edit-anchor {
+    position: absolute;
+    border: 1px solid #95999c;
+    border-radius: 5px;
+    right: 40px;
+    top: 35px;
+    padding: 5px;
+    background: #e0e0e0;
+    text-decoration: none;
+    color: black;
+}
+
+.edit-anchor:hover {
+    background: #a8a8a8;
+    cursor: pointer;
+    text-decoration: none;
+}
+
 .pet-photo {
     max-width: 200px;
     max-height: 200px;
@@ -141,3 +159,26 @@ html,body {
     width: 50%;
     text-align: center;
 }
+
+.delete-image-select{
+    position: relative;
+    display: inline-flex;
+    margin: 5px
+}
+
+.delete-image-select img{
+    border: 5px white solid;
+}
+
+.delete-image-select:hover {
+    cursor: pointer;
+}
+
+.image-checked img{
+    border: 5px #c72c2c solid;
+}
+
+.image-checkbox{
+    display:none;
+}
+

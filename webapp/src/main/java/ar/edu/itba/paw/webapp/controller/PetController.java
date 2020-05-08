@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
+import ar.edu.itba.paw.webapp.form.EditPetForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
-import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,9 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -171,7 +166,29 @@ public class PetController extends ParentController {
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
 
+    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })
+    public ModelAndView editPetForm(@ModelAttribute ("editPetForm") final EditPetForm editPetForm, @PathVariable("id") long id) {
+        return new ModelAndView("views/pet_edit")
+                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
+                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray())
+                .addObject("pet",
+                        petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
+                .addObject("id", id);
+    }
 
+    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.POST })
+    public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
+                                  @PathVariable("id") long id,
+                                  final BindingResult errors, HttpServletRequest request) {
+
+        if (errors.hasErrors()) {
+            return editPetForm(editPetForm, id);
+        }
+
+        /*TODO: convertir todo esto en un update y agregar la funcionalidad para eliminar las imagenes*/
+
+        return new ModelAndView("redirect:/");
+    }
 
     private String getMailMessage(String locale, String part, Request request){
         switch(part){
