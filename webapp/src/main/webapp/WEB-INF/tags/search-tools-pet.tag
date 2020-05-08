@@ -113,7 +113,7 @@
             </select>
         </div>
         <div class="card-footer" id="search-tools-submit">
-            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+            <button type="submit" class="blue-button"><spring:message code="filter"/></button>
         </div>
     </form>
 </div>
