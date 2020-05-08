@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Constraint(validatedBy = ImageDimensionsValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ImageDimensions {
 
@@ -16,13 +16,15 @@ public @interface ImageDimensions {
 
     Class<?>[] groups() default {};
 
-    int maxHeight() default 400;
+    int maxHeight() default 10000;
 
-    int minHeight() default 200;
+    int minHeight() default 100;
 
-    int maxWidth() default 400;
+    int maxWidth() default 10000;
 
-    int minWidth() default 200;
+    int minWidth() default 100;
+
+    double widthToHeightMaxRatio() default 3;
 
     Class<? extends Payload>[] payload() default {};
 }
