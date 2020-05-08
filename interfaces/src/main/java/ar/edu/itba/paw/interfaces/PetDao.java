@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface PetDao {
-    Optional<Pet> findById(String language, long id);
+    Optional<Pet> findById(String language, long id, int level);
     Stream<Pet> list(String language, String page, int level);
     Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder,String page);
     Stream<Pet> find(String language, String findValue,String page, int level);
@@ -18,6 +18,7 @@ public interface PetDao {
     String maxPages(int level);
     String maxSearchPages(String language, String findValue, int level);
     String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter);
+    String maxAdminFilterPages(String language,String specieFilter,String breedFilter,String genderFilter,String statusFilter);
     String getMaxUserPetsPages(long userId);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);

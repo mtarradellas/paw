@@ -239,7 +239,7 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
 
         /**/
-        Optional<Pet> opPet = petDaoImpl.findById(LANG, ID);
+        Optional<Pet> opPet = petDaoImpl.findById(LANG, ID, 0);
 
         assertFalse(opPet.isPresent());
     }
@@ -252,7 +252,7 @@ public class PetDaoImplTest {
                 UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId());
 
         /**/
-        Optional<Pet> opPet = petDaoImpl.findById(LANG, id);
+        Optional<Pet> opPet = petDaoImpl.findById(LANG, id, 0);
 
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
         assertTrue(opPet.isPresent());

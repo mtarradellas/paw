@@ -28,6 +28,9 @@
             <c:if test="${not empty param.find}">
                 <c:param name="find" value="${param.find}"/>
             </c:if>
+            <c:if test="${not empty param.status}">
+                <c:param name="status" value="${param.status}"/>
+            </c:if>
         </c:url>
         <c:if test="${currentPage > 1}">
             <li class="page-item"><a class="page-link" href="<c:out value="${prev}" />" >prev</a></li>
@@ -59,6 +62,9 @@
                         <c:if test="${not empty param.find}">
                             <c:param name="find" value="${param.find}"/>
                         </c:if>
+                        <c:if test="${not empty param.status}">
+                            <c:param name="status" value="${param.status}"/>
+                        </c:if>
                     </c:url>
                     <li class="page-item"><a class="page-link" href='<c:out value="${url}" />'>${i.index}</a></li>
                 </c:otherwise>
@@ -84,6 +90,9 @@
             </c:if>
             <c:if test="${not empty param.find}">
                 <c:param name="find" value="${param.find}"/>
+            </c:if>
+            <c:if test="${not empty param.status}">
+                <c:param name="status" value="${param.status}"/>
             </c:if>
         </c:url>
         <c:if test="${currentPage + 1 <= maxPage}">

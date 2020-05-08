@@ -2,10 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Contact;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +22,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Optional<Pet> findById(String language, long id){
-        return petDao.findById(language, id);
+        return petDao.findById(language, id, 0);
+    }
+
+    @Override
+    public Optional<Pet> adminFindById(String language, long id){
+        return petDao.findById(language, id, 1);
     }
 
     @Override
@@ -35,7 +37,26 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public List<Pet> filteredList(String language, String specie, String  breed, String gender, String searchCriteria, String searchOrder, String page) {
-        return petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder,page).collect(Collectors.toList());
+        List<Pet> petsList = petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder,page).collect(Collectors.toList());
+        petsList.removeIf(pet -> pet.getStatus().getId() == 2 || pet.getStatus().getId() == 3);
+        return petsList;
+    }
+
+    @Override
+    public List<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page) {
+        List<Pet> petsList = petDao.filteredList(language,specie, breed, gender, searchCriteria, searchOrder,page).collect(Collectors.toList());
+
+        if(status == null || status.equals("any")){
+            return petsList;
+        }else if(status.equals("deleted")){
+            petsList.removeIf(pet -> pet.getStatus().getId() == 1);
+            return petsList;
+        }else if(status.equals("exists")){
+            petsList.removeIf(pet -> (pet.getStatus().getId() == 2 || pet.getStatus().getId() == 3));
+            return petsList;
+        }else{
+            return null;
+        }
     }
 
     @Override
@@ -84,6 +105,11 @@ public class PetServiceImpl implements PetService {
     @Override
     public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter) {
         return petDao.maxFilterPages(language,specieFilter,breedFilter,genderFilter);
+    }
+
+    @Override
+    public String getMaxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter) {
+        return petDao.maxAdminFilterPages(language, specieFilter, breedFilter, genderFilter,statusFilter);
     }
 
     @Override

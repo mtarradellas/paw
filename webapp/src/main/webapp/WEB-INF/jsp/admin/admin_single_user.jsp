@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:message code="userTitle" var="userTitle"/>
-<t:adminLayout title="${userTitle}">
+<t:adminLayout title="${userTitle}" item="user">
     <jsp:body>
 
         <span id="confirmMessage" hidden>
@@ -41,7 +41,7 @@
                             <c:if test="${not empty userPets}">
                                 <div class="m-2 ">
                                     <c:if test="${maxPage ne 1}">
-                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admi/user/' + user.id}" />
+                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/admi/user/${id}"/>
                                     </c:if>
                                 </div>
                             </c:if>
@@ -64,7 +64,7 @@
                             <c:if test="${not empty userPets}">
                                 <div class="m-2 ">
                                     <c:if test="${maxPage ne 1}">
-                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admi/user/' + user.id}" />
+                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/admi/user/${id}"/>
                                     </c:if>
                                 </div>
                             </c:if>

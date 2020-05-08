@@ -8,7 +8,7 @@
 <spring:message code="petCard.someInfo" arguments="${pronoun}" var="someInfo"/>
 <spring:message code="petTitle" var="petTitle"/>
 
-<t:adminLayout title="${petTitle}">
+<t:adminLayout title="${petTitle}" item="pet">
     <jsp:body>
         <span id="confirmMessage" hidden>
             <spring:message code='confirmMessage' javaScriptEscape='true' />

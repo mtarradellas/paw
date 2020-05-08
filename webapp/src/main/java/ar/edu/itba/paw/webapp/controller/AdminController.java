@@ -5,6 +5,8 @@ import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import java.util.List;
 @Controller
 public class AdminController extends ParentController{
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
+
     //TODO: cambiar el path del mapping para que te redireccion correctamente
     @RequestMapping(value = "/admi")
     public ModelAndView getAdminHome() {
@@ -23,27 +27,56 @@ public class AdminController extends ParentController{
     }
 
     @RequestMapping(value = "/admi/pets")
-    public ModelAndView getPetsAdmin(@RequestParam(name = "page", required = false) String page,
+    public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
+                                     @RequestParam(name = "breed", required = false) String breed,
+                                     @RequestParam(name = "gender", required = false) String gender,
+                                     @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                     @RequestParam(name = "searchOrder", required = false) String searchOrder,
+                                     @RequestParam(name = "status", required = false) String status,
+                                     @RequestParam(name = "page", required = false) String page,
                                      @RequestParam(name = "find", required = false) String find) {
+
         if(page == null){
             page = "1";
         }
 
-        ModelAndView mav = new ModelAndView("admin/admin_pets");
-        mav.addObject("currentPage", page);
+        final String locale = getLocale();
 
-        if(find != null){
-            String maxPage = petService.getAdminMaxSearchPages(getLocale(),find);
+        ModelAndView mav = new ModelAndView("admin/admin_pets");
+
+        species = species == null || species.equals("any") ? null : species;
+        breed = breed == null || breed.equals("any") ? null : breed;
+        status = status == null || status.equals("any") ? null : status;
+        gender = gender == null || gender.equals("any") ? null : gender;
+        searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
+
+        if (species != null || gender != null || searchCriteria != null) {
+            String maxPage = petService.getMaxAdminFilterPages(locale, species, breed, gender, status);
             mav.addObject("maxPage", maxPage);
-            List<Pet> petList = petService.adminSearchList(getLocale(), find, page);
+
+            LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, status: {}, sCriteria: {}, sOrder: {}, page: {}",
+                    locale, species, breed, gender, status, searchCriteria, searchOrder, page);
+            List<Pet> petList = petService.adminFilteredList(locale, species, breed, gender, status, searchCriteria,
+                    searchOrder, page);
+            mav.addObject("pets_list", petList);
+
+        }else if(find != null){
+            String maxPage = petService.getAdminMaxSearchPages(locale,find);
+            mav.addObject("maxPage", maxPage);
+            List<Pet> petList = petService.adminSearchList(locale, find, page);
             mav.addObject("pets_list", petList);
 
         }else{
             String maxPage = petService.getAdminMaxPages();
             mav.addObject("maxPage", maxPage);
-            List<Pet> petList = petService.adminList(getLocale(), page);
+            List<Pet> petList = petService.adminList(locale, page);
             mav.addObject("pets_list", petList);
         }
+
+        mav.addObject("currentPage", page);
+        mav.addObject("species_list", speciesService.speciesList(locale).toArray());
+        mav.addObject("breeds_list", speciesService.breedsList(locale).toArray());
+
 
 
         return mav;
@@ -54,8 +87,7 @@ public class AdminController extends ParentController{
 
         final ModelAndView mav = new ModelAndView("/admin/admin_single_pet");
 
-
-        mav.addObject("pet", petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new));
+        mav.addObject("pet", petService.adminFindById(getLocale(), id).orElseThrow(PetNotFoundException::new));
 
         return mav;
     }
