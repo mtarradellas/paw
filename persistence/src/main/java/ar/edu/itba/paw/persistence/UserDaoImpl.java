@@ -175,7 +175,6 @@ public class UserDaoImpl implements UserDao {
         try {
             key = jdbcInsert.executeAndReturnKey(values);
         } catch (DuplicateKeyException ex) {
-            System.out.println(ex.getMessage());
             if (ex.getMessage().contains("users_username_key")) throw new DuplicateUserException(DUPLICATE_USERNAME_ERROR, true, false);
             if (ex.getMessage().contains("users_mail_key")) throw new DuplicateUserException(DUPLICATE_MAIL_ERROR, false, true);
             return Optional.empty();

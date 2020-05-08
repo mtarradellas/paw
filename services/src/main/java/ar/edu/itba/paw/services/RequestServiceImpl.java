@@ -1,12 +1,16 @@
 package ar.edu.itba.paw.services;
 
 
-import ar.edu.itba.paw.interfaces.RequestDao;
-import ar.edu.itba.paw.interfaces.RequestService;
+import ar.edu.itba.paw.interfaces.*;
+import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,8 +19,22 @@ import java.util.stream.Stream;
 @Service
 public class RequestServiceImpl implements RequestService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestServiceImpl.class);
+
+    private final int PENDING_STATUS = 1;
+    private final int ACCEPTED_STATUS = 2;
+    private final int REJECTED_STATUS = 3;
+    private final int CANCELED_STATUS = 4;
+
     @Autowired
     private RequestDao requestDao;
+
+    @Autowired
+    private PetService petService;
+    @Autowired
+    private MailService mailService;
+    @Autowired
+    private UserService userService;
 
     private final int PENDING = 1;
 
@@ -46,13 +64,23 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Optional<Request> create(long ownerId, long petId, String language) {
-        return requestDao.create(ownerId, petId, PENDING, language);
-    }
+    public Optional<Request> create(long userId, long petId, String language) {
+        ArrayList<Integer> statusList = new ArrayList<Integer>() {{
+            add(ACCEPTED_STATUS);
+            add(REJECTED_STATUS);
+            add(PENDING_STATUS);
+        }};
+        if (requestDao.findIdByStatus(petId, userId, statusList).count() > 0) {
+            LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", userId, petId);
+            return Optional.empty();
+        }
+        /* TODO change to petService.isPetOwner */
+        if (petService.getOwnerId(petId) == userId) {
+            LOGGER.warn("User {} is the owner of the requested pet {}, ignoring request creation", userId, petId);
+            return Optional.empty();
+        }
 
-    @Override
-    public Optional<Request> updateStatus(long id, long petOwnerId, String status, String language) {
-        return requestDao.updateStatus(id, petOwnerId, status, language);
+        return requestDao.create(userId, petId, PENDING, language);
     }
 
     @Override
@@ -72,8 +100,165 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean delete(long id, long ownerId) {
-        return requestDao.delete(id, ownerId);
+    public boolean cancel(long id, long ownerId, String locale) {
+        LOGGER.debug("User {} attempting to cancel request {}", ownerId, id);
+
+        if (!requestDao.isRequestOwner(id, ownerId)) {
+            LOGGER.warn("User {} is not Request {} owner, Request not canceled", ownerId, id);
+            return false;
+        }
+
+        requestDao.updateStatus(id, CANCELED_STATUS);
+/*
+        final Optional<Request> opRequest = requestDao.findById(id, locale);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, CANCELED_STATUS, ownerId);
+            return false;
+        }
+        final Request request = opRequest.get();
+
+        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
+        if (!opContact.isPresent()) {
+            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
+            return false;
+        }
+
+        final Optional<User> opRecipient = userService.findById(request.getOwnerId());
+        if (!opRecipient.isPresent()) {
+            LOGGER.warn("Recipient user {} through request {} not found", request.getOwnerId(), request.getId());
+            return false;
+        }
+
+        final Contact contact = opContact.get();
+        final User recipient = opRecipient.get();
+
+        mailService.sendMail(recipient.getMail(), getMailMessage("subjectCancel", request, contact, locale),
+                getMailMessage("bodyCancel", request, contact, locale));
+*/
+        LOGGER.debug("Request {} canceled by user {}", id, ownerId);
+        return true;
+    }
+
+    /*  TODO throw exceptions on errors */
+    @Override
+    public boolean accept(long id, long ownerId, String locale) {
+        LOGGER.debug("User {} attempting to accept request {}", ownerId, id);
+
+        if (!requestDao.isRequestTarget(id, ownerId)) {
+            LOGGER.warn("User {} is not Request {} target, Request not accepted", ownerId, id);
+            return false;
+        }
+
+        requestDao.updateStatus(id, ACCEPTED_STATUS);
+
+        final Optional<Request> opRequest = requestDao.findById(id, locale);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, ACCEPTED_STATUS, ownerId);
+            return false;
+        }
+        final Request request = opRequest.get();
+
+        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
+        if (!opContact.isPresent()) {
+            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
+            return false;
+        }
+
+        final Optional<User> opRecipient = userService.findById(request.getOwnerId());
+        if (!opRecipient.isPresent()) {
+            LOGGER.warn("Recipient user {} through request {} not found", request.getOwnerId(), request.getId());
+            return false;
+        }
+
+        final Contact contact = opContact.get();
+        final User recipient = opRecipient.get();
+
+        mailService.sendMail(recipient.getMail(), getMailMessage("subjectAccept", request, contact, locale),
+                getMailMessage("bodyAccept", request, contact, locale));
+
+        LOGGER.debug("Request {} accepted by user {}", id, ownerId);
+        return true;
+    }
+
+    @Override
+    public boolean reject(long id, long ownerId, String locale) {
+        LOGGER.debug("User {} attempting to reject request {}", ownerId, id);
+
+        if (!requestDao.isRequestTarget(id, ownerId)) {
+            LOGGER.warn("User {} is not Request {} target, Request not rejected", ownerId, id);
+            return false;
+        }
+
+        requestDao.updateStatus(id, REJECTED_STATUS);
+
+        final Optional<Request> opRequest = requestDao.findById(id, locale);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, REJECTED_STATUS, ownerId);
+            return false;
+        }
+        final Request request = opRequest.get();
+
+        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
+        if (!opContact.isPresent()) {
+            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
+            return false;
+        }
+
+        final Optional<User> opRecipient = userService.findById(request.getOwnerId());
+        if (!opRecipient.isPresent()) {
+            LOGGER.warn("Recipient user {} through request {} not found", request.getOwnerId(), request.getId());
+            return false;
+        }
+
+        final Contact contact = opContact.get();
+        final User recipient = opRecipient.get();
+
+        mailService.sendMail(recipient.getMail(), getMailMessage("subjectReject", request, contact, locale),
+                getMailMessage("bodyReject", request, contact, locale));
+
+        LOGGER.debug("Request {} rejected by user {}", id, ownerId);
+        return true;
+    }
+
+    private String getMailMessage( String part, Request request, Contact contact, String locale){
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+        switch(part){
+            case "subjectAccept":
+                if(locale.equals("en_US")){
+                    return "Hooray! Your request was accepted";
+                }else{
+                    return "¡Genial! Su solicitud fue aceptada";
+                }
+            case "bodyAccept":
+                if(locale.equals("en_US")){
+                    return "User " + contact.getUsername() + " has accepted your request for "+ request.getPetName() + "." +
+                            " To begin the process for getting your new pet, please contact " + contact.getEmail() + " and ask about " + request.getPetName() + "." +
+                            "\nFor more information, contact us at petsociety.contact@gmail.com or go to " + url + "." +
+                            "\nSincerely,\nPet Society Team.";
+                }else{
+                    return "El usuario " + contact.getUsername() + " ha aceptado su solicitud de "+ request.getPetName() + "." +
+                            "\nPara iniciar el proceso de conseguir su mascota, contáctese con " + contact.getEmail() + " y pregunte por " + request.getPetName() + "." +
+                            "\nPara más información, contáctese con petsociety.contact@gmail.com o vaya a " + url + "." +
+                            "\nSinceramente,\nEl equipo de Pet Society." ;
+                }
+            case "subjectReject":
+                if(locale.equals("en_US")){
+                    return "We're sorry, your request was rejected";
+                }else{
+                    return "Lo sentimos, su solicitud fue rechazada";
+                }
+            case "bodyReject":
+                if(locale.equals("en_US")){
+                    return "User " + contact.getUsername() + " has rejected your request for "+ request.getPetName() + "." +
+                            "\nFor more information, contact us at petsociety.contact@gmail.com or go to " + url + "." +
+                            "\nSincerely,\nPet Society Team.";
+                }else{
+                    return "El usuario " + contact.getUsername() + " ha rechazado su solicitud de "+ request.getPetName() + "." +
+                            "\nPara más información, contáctese con petsociety.contact@gmail.com o vaya a " + url + "." +
+                            "\nSinceramente,\nEl equipo de Pet Society." ;
+                }
+        }
+        return "";
     }
 
     @Override
