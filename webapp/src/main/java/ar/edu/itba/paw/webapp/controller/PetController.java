@@ -53,7 +53,7 @@ public class PetController extends ParentController {
 //check price
         /* Filtered pet list */
         if (species != null || gender != null || searchCriteria != null || minPrice != null || maxPrice != null) {
-            String maxPage = petService.getMaxFilterPages(locale, species, breed, gender);
+            String maxPage = petService.getMaxFilterPages(locale, species, breed, gender, minPrice, maxPrice);
             mav.addObject("maxPage", maxPage);
 
             LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, sCriteria: {}, sOrder: {}, mPrice: {}, mPrice: {}, page: {}",

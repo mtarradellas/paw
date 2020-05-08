@@ -77,8 +77,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter) {
-        return petDao.maxFilterPages(language,specieFilter,breedFilter,genderFilter);
+    public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice) {
+        return petDao.maxFilterPages(language,specieFilter,breedFilter,genderFilter, minPrice, maxPrice);
     }
 
     @Override
