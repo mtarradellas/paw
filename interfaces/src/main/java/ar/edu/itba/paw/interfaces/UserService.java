@@ -15,6 +15,7 @@ public interface UserService {
     Optional<User> findByUsername(String username);
     Stream<User> list();
     List<User> adminUserList(String page);
+    List<User> adminSearchList(String language, String find, String page);
     Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String mail);
     boolean updatePassword(String newPassword, long id);
@@ -23,4 +24,5 @@ public interface UserService {
     boolean deleteToken(UUID uuid);
     Optional<User> findByToken(UUID uuid);
     String getAdminUserPages();
+    String getAdminMaxSearchPages(String language, String find);
 }

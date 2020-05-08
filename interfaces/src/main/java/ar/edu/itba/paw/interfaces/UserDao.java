@@ -14,6 +14,7 @@ public interface UserDao {
     Optional<User> findByUsername(String username);
     Stream<User> list();
     Stream<User> adminUserList(String page);
+    Stream<User> adminSearchList(String language, String find, String page);
     Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String mail);
     boolean updatePassword(String newPassword, long id);
@@ -21,5 +22,6 @@ public interface UserDao {
     Optional<Token> getToken(UUID uuid);
     boolean deleteToken(UUID uuid);
     Optional<User> findByToken(UUID uuid);
-    String getAdminUserPages();
+    String getAdminPages();
+    String getAdminSearchPages(String language, String find);
 }

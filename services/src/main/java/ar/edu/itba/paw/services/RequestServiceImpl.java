@@ -41,6 +41,11 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public List<Request> adminSearchList(String language, String find, String page) {
+        return requestDao.adminSearchList(language, find, page).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<Request> create(long ownerId, long petId, String language) {
         return requestDao.create(ownerId, petId, PENDING, language);
     }
@@ -74,6 +79,11 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public String getAdminRequestPages(String language){
         return requestDao.getAdminRequestPages(language);
+    }
+
+    @Override
+    public String getAdminMaxSearchPages(String location, String find) {
+        return requestDao.getAdminMaxSearchPages(location,find);
     }
 
 }

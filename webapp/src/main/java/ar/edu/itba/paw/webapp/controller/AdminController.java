@@ -51,7 +51,9 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value = "/admi/pet/{id}")
     public ModelAndView getSinglePet(@PathVariable("id") long id){
+
         final ModelAndView mav = new ModelAndView("/admin/admin_single_pet");
+
 
         mav.addObject("pet", petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new));
 
@@ -59,7 +61,8 @@ public class AdminController extends ParentController{
     }
 
     @RequestMapping(value = "/admi/users")
-    public ModelAndView getUsersAdmin(@RequestParam(name = "page", required = false) String page) {
+    public ModelAndView getUsersAdmin(@RequestParam(name = "page", required = false) String page,
+                                      @RequestParam(name = "find", required = false) String find) {
         if(page == null){
             page = "1";
         }
@@ -67,10 +70,18 @@ public class AdminController extends ParentController{
         ModelAndView mav = new ModelAndView("admin/admin_users");
         mav.addObject("currentPage", page);
 
-        String maxPage = userService.getAdminUserPages();
-        mav.addObject("maxPage", maxPage);
-        List<User> userList = userService.adminUserList(page);
-        mav.addObject("users_list", userList);
+        if(find != null){
+            String maxPage = userService.getAdminMaxSearchPages(getLocale(), find);
+            mav.addObject("maxPage", maxPage);
+            List<User> userList = userService.adminSearchList(getLocale(), find, page);
+            mav.addObject("users_list", userList);
+
+        }else{
+            String maxPage = userService.getAdminUserPages();
+            mav.addObject("maxPage", maxPage);
+            List<User> userList = userService.adminUserList(page);
+            mav.addObject("users_list", userList);
+        }
 
         return mav;
     }
@@ -94,7 +105,8 @@ public class AdminController extends ParentController{
     }
 
     @RequestMapping(value = "/admi/requests")
-    public ModelAndView getRequestsAdmin(@RequestParam(name = "page", required = false) String page) {
+    public ModelAndView getRequestsAdmin(@RequestParam(name = "page", required = false) String page,
+                                         @RequestParam(name = "find", required = false) String find) {
         if(page == null){
             page = "1";
         }
@@ -102,10 +114,18 @@ public class AdminController extends ParentController{
         ModelAndView mav = new ModelAndView("admin/admin_requests");
         mav.addObject("currentPage", page);
 
-        String maxPage = requestService.getAdminRequestPages(getLocale());
-        mav.addObject("maxPage", maxPage);
-        List<Request> requestList = requestService.adminRequestList(getLocale(), page);
-        mav.addObject("requests_list", requestList);
+        if(find != null){
+            String maxPage = requestService.getAdminMaxSearchPages(getLocale(), find);
+            mav.addObject("maxPage", maxPage);
+            List<Request> requestList = requestService.adminSearchList(getLocale(), find, page);
+            mav.addObject("requests_list", requestList);
+
+        }else{
+            String maxPage = requestService.getAdminRequestPages(getLocale());
+            mav.addObject("maxPage", maxPage);
+            List<Request> requestList = requestService.adminRequestList(getLocale(), page);
+            mav.addObject("requests_list", requestList);
+        }
 
         return mav;
     }

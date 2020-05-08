@@ -43,6 +43,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> adminSearchList(String language, String find, String page) {
+        return userDao.adminSearchList(language,find,page).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException {
         return this.userDao.create(username, encoder.encode(password), mail, phone);
     }
@@ -84,6 +89,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getAdminUserPages(){
-        return userDao.getAdminUserPages();
+        return userDao.getAdminPages();
+    }
+
+    @Override
+    public String getAdminMaxSearchPages(String language, String find) {
+        return userDao.getAdminSearchPages(language,find);
     }
 }

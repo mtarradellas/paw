@@ -86,6 +86,26 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
+    public Stream<Request> adminSearchList(String language, String findValue, String page) {
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        if(findValue.equals("")){
+            return adminRequestList(language, page);
+        }
+
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
+        return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                " WHERE  (LOWER(request_status."+ language +") LIKE ?) OR" +
+                "(LOWER(users.username) LIKE ?) OR (LOWER(pets.petname) LIKE ?)" +
+                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset,
+                new Object[] { modifiedValue ,modifiedValue, modifiedValue},
+                REQUEST_MAPPER)
+                .stream();
+
+    }
+
+    @Override
     public Optional<Request> create(long ownerId, long petId, int status, String language) {
 
         /* Checks that owner of request is not also owner of pet */
@@ -211,6 +231,24 @@ public class RequestDaoImpl implements RequestDao {
         Integer requests = jdbcTemplate.queryForObject("select count(*) from requests" ,
                 Integer.class);
 
+        requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+        return requests.toString();
+    }
+
+    @Override
+    public String getAdminMaxSearchPages(String language, String findValue) {
+        if(findValue.equals("")){
+            return getAdminRequestPages(language);
+        }
+
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
+
+        Integer requests = jdbcTemplate.queryForObject("select count(*)  " +
+                        "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId)" +
+                        " WHERE  (LOWER(request_status."+ language +") LIKE ?) OR" +
+                        "(LOWER(users.username) LIKE ?) OR (LOWER(pets.petname) LIKE ?)" ,
+                new Object[] { modifiedValue ,modifiedValue, modifiedValue},
+                Integer.class);
         requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
         return requests.toString();
     }
