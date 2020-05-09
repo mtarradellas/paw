@@ -4,8 +4,6 @@ function setModified(ev){
     const data = "" + div.data("current");
     const val = $(this).val();
 
-    console.log(val, data);
-
     if(val !== data){
         div.addClass("input-modified");
     }else{
@@ -23,6 +21,10 @@ $(document).ready(function(ev){
         input.val("" + div.data("current"));
 
         div.removeClass("input-modified");
+
+        input.removeClass("is-invalid");
+
+        div.siblings(".text-error").remove();
     });
 
     modifiableDiv.find('input[type=text]').on('input', setModified);

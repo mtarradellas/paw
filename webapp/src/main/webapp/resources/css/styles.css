@@ -265,8 +265,21 @@ html,body {
     border-color: #a5a522;
 }
 
+.input-modified.input-modifiable-div input.is-invalid {
+    border-color: #f63434;
+}
+
+.input-modified.input-modifiable-div select.is-invalid {
+    border-color: #f63434;
+}
+
 .input-modified.input-modifiable-div .revert-input-anchor {
     display: inline;
+}
+
+.text-error{
+    color: #f63434;
+    font-size: small;
 }
 
 /*.button {*/

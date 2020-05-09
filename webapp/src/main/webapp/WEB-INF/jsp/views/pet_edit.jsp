@@ -32,7 +32,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="petName" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="petName" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
 
@@ -49,7 +49,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="description" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="description" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
@@ -67,7 +67,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="location" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="location" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                                 <spring:bind path="price">
@@ -83,7 +83,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="price" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="price" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
@@ -108,7 +108,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="speciesId" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="speciesId" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                                 <spring:bind path="breedId">
@@ -129,7 +129,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="breedId" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="breedId" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                                 <spring:bind path="birthDate">
@@ -145,7 +145,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="birthDate" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="birthDate" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
@@ -168,7 +168,7 @@
                                             </a>
                                         </div>
 
-                                        <form:errors path="vaccinated" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="vaccinated" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
 
@@ -188,7 +188,7 @@
                                                 </svg>
                                             </a>
                                         </div>
-                                        <form:errors path="gender" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors path="gender" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
@@ -206,7 +206,7 @@
                                     </c:forEach>
 
                                 </div>
-                                <form:errors path="imagesIdToDelete" element="div" cssClass="invalid-feedback"
+                                <form:errors path="imagesIdToDelete" element="div" cssClass="text-error"
                                              cssStyle="${status.error ? 'display: block' : ''}"/>
                             </div>
                         </div>
