@@ -186,6 +186,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public boolean isAdmin(long userId) {
+        return jdbcTemplate.queryForObject("select count(*) from admins " +
+                        "WHERE id = ?" ,
+                new Object[] { userId},
+                Integer.class) == 1;
+    }
+
+    @Override
     public Optional<User> create(String language, String username, String password, String mail, String phone, int status) throws DuplicateUserException {
         final Map<String, Object> values = new HashMap<>();
         values.put("username", username);

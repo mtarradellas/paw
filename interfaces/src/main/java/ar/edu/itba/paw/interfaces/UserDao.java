@@ -25,4 +25,5 @@ public interface UserDao {
     String getAdminPages();
     String getAdminSearchPages(String language, String find);
     boolean updateStatus(long id, int status);
+    boolean isAdmin(long userId);
 }

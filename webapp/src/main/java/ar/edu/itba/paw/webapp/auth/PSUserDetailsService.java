@@ -37,6 +37,9 @@ public class PSUserDetailsService implements UserDetailsService {
 
         final Collection<GrantedAuthority> authorities = new HashSet<>();
 
+        if(userService.isAdmin(user.getId())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new org.springframework.security.core.userdetails.User(

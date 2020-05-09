@@ -108,7 +108,7 @@ public class AdminController extends ParentController{
         return new ModelAndView("admin/admin_upload_pet")
                 .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
                 .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray())
-                .addObject("users_list",userService.list().toArray());
+                .addObject("users_list",userService.list(getLocale()).toArray());
     }
 
     @RequestMapping(value = "/admi/upload-pet", method = { RequestMethod.POST })
@@ -265,7 +265,7 @@ public class AdminController extends ParentController{
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
         return new ModelAndView("admin/admin_upload_request")
                 .addObject("pets_list", petService.listAll(getLocale()))
-                .addObject("users_list",userService.list().toArray());
+                .addObject("users_list",userService.list(getLocale()).toArray());
     }
 
     @RequestMapping(value = "/admi/upload-request", method = { RequestMethod.POST })
