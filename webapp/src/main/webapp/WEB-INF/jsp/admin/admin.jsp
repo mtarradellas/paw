@@ -47,10 +47,11 @@
                             </button>
                         </div>
                         <div class="col p-2">
-                            <button type="button" class="btn btn-info btn-lg btn-block">
+                            <a type="button" class="btn btn-info btn-lg btn-block"
+                               href="${pageContext.request.contextPath}/admi/upload-request">
                                 <i class="fas fa-plus mr-2"></i>
                                 <spring:message code="addRequest"/>
-                            </button>
+                            </a>
                         </div>
 
 

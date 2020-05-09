@@ -204,3 +204,7 @@ html,body {
     left: 35px;
     display: block;
 }
+
+.error{
+    color: red;
+}

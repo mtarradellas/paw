@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
+import ar.edu.itba.paw.webapp.form.AdminUploadRequestForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,6 +141,32 @@ public class AdminController extends ParentController{
 
 
         return new ModelAndView("redirect:/admi/pet/" + opPet.get().getId());
+    }
+
+    @RequestMapping(value ="/admi/upload-request", method = { RequestMethod.GET })
+    public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
+        return new ModelAndView("admin/admin_upload_request")
+                .addObject("pets_list", petService.listAll(getLocale()))
+                .addObject("users_list",userService.list().toArray());
+    }
+
+    @RequestMapping(value = "/admi/upload-request", method = { RequestMethod.POST })
+    public ModelAndView uploadRequest(@Valid @ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm,
+                                  final BindingResult errors, HttpServletRequest request) {
+
+
+        if (errors.hasErrors()) {
+            return uploadRequestForm(requestForm);
+        }
+
+        Optional<Request> optionalRequest = requestService.create(requestForm.getUserId(),requestForm.getPetId(), getLocale());
+
+        if (!optionalRequest.isPresent()) {
+            return uploadRequestForm(requestForm).addObject("request_error", true);
+        }
+
+
+        return new ModelAndView("redirect:/admi/requests");
     }
 
     @RequestMapping(value = "/admi/users")

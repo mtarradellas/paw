@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 public interface PetDao {
     Optional<Pet> findById(String language, long id, int level);
     Stream<Pet> list(String language, String page, int level);
+    Stream<Pet> listAll(String language);
     Stream<Pet> find(String language, String findValue,String page, int level);
     Stream<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page);
     Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);

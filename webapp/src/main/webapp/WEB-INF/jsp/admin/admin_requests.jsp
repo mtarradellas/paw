@@ -97,8 +97,9 @@
                             <div>
                                 <h2><spring:message code="admin.requestsListing"/> <spring:message code="showingResults"
                                                                                                    arguments="${requests_list.size()}"/>
-                                    <button type="button" class="btn btn-success"><i
-                                            class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></button>
+                                    <a type="button" class="btn btn-success"
+                                       href="${pageContext.request.contextPath}/admi/upload-request">
+                                        <i class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></a>
                                 </h2>
                             </div>
                         </c:if>
@@ -131,7 +132,7 @@
                                             <div class="col-lg-6">
                                                 <spring:message code="request.isInterested"
                                                                 arguments="${pageContext.request.contextPath}/admi/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admi/pet/${request.petId},${request.petName}"/>
-                                                <small class="text-warning"> ${req.creationDate}</small>
+                                                <small class="text-warning"> ${request.creationDate}</small>
                                             </div>
                                             <div class="col-lg-1">
                                                 <c:if test="${request.status.id eq 1}">

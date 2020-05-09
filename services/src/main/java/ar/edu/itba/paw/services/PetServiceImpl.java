@@ -40,6 +40,11 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public List<Pet> listAll(String language) {
+        return petDao.listAll(language).collect(Collectors.toList());
+    }
+
+    @Override
     public List<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page) {
         return petDao.adminFilteredList(language, specie, breed, gender, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
     }
