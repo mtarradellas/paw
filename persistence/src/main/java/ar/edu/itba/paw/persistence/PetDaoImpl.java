@@ -125,6 +125,20 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
+    public Stream<Pet> listAll(String language) {
+        String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id as speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id as imagesId, images.petId as petId, " +
+                "pet_status.id as statusId, pet_status." + language + " as statusName " +
+                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ";
+        Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql,
+                new PetMapExtractor());
+        imageMap.forEach(Pet::setImages);
+        return imageMap.keySet().stream();
+    }
+
+    @Override
     public Stream<Pet> find(String language, String findValue, String page, int level) {
         if (findValue.equals("")) {
             return list(language, "1", level);
