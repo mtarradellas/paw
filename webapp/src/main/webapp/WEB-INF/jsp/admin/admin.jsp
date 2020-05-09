@@ -34,10 +34,11 @@
                     <p><spring:message code="mainPageDescription2"/></p>
                     <div >
                         <div class="col p-2">
-                            <button type="button" class="btn btn-info btn-lg btn-block">
+                            <a type="button" class="btn btn-info btn-lg btn-block"
+                               href="${pageContext.request.contextPath}/admi/upload-pet">
                                 <i class="fas fa-plus mr-2"></i>
                                 <spring:message code="addPet"/>
-                            </button>
+                            </a>
                         </div>
                         <div class="col p-2">
                             <button type="button" class="btn btn-info btn-lg btn-block">

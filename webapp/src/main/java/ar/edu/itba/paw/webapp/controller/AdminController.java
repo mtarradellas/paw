@@ -5,15 +5,21 @@ import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
+import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
+import ar.edu.itba.paw.webapp.form.UploadPetForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class AdminController extends ParentController{
@@ -90,6 +96,50 @@ public class AdminController extends ParentController{
         mav.addObject("pet", petService.adminFindById(getLocale(), id).orElseThrow(PetNotFoundException::new));
 
         return mav;
+    }
+
+
+    @RequestMapping(value ="/admi/upload-pet", method = { RequestMethod.GET })
+    public ModelAndView uploadPetForm(@ModelAttribute("adminUploadPetForm") final AdminUploadPetForm userForm) {
+        return new ModelAndView("admin/admin_upload_pet")
+                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
+                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray())
+                .addObject("users_list",userService.list().toArray());
+    }
+
+    @RequestMapping(value = "/admi/upload-pet", method = { RequestMethod.POST })
+    public ModelAndView uploadPet(@Valid @ModelAttribute("adminUploadPetForm") final AdminUploadPetForm petForm,
+                                  final BindingResult errors, HttpServletRequest request) {
+
+
+        if (errors.hasErrors()) {
+            return uploadPetForm(petForm);
+        }
+
+        Date currentDate = new java.sql.Date(System.currentTimeMillis());
+        Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
+
+        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
+                petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                birthDate, currentDate, petForm.getPrice(), petForm.getOwner());
+
+        if (!opPet.isPresent()) {
+            return uploadPetForm(petForm).addObject("pet_error", true);
+        }
+
+        petForm.getPhotos().forEach(photo -> {
+            byte[] imgBytes;
+            try {
+                imgBytes = photo.getBytes();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            }
+            imageService.create(opPet.get().getId(), imgBytes, petForm.getOwner());
+        });
+
+
+        return new ModelAndView("redirect:/admi/pet/" + opPet.get().getId());
     }
 
     @RequestMapping(value = "/admi/users")

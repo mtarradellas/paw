@@ -133,8 +133,9 @@
                             <div>
                                 <h2><spring:message code="admin.petsListing"/> <spring:message code="showingResults"
                                                                                                arguments="${pets_list.size()}"/>
-                                    <button type="button" class="btn btn-success"><i
-                                            class="fas fa-plus mr-2"></i><spring:message code="addPet"/></button>
+                                    <a type="button" class="btn btn-success"
+                                            href="${pageContext.request.contextPath}/admi/upload-pet"
+                                    ><i class="fas fa-plus mr-2"></i><spring:message code="addPet"/></a>
                                 </h2>
                             </div>
                         </c:if>

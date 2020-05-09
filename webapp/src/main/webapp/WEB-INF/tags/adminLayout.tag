@@ -23,7 +23,7 @@
 <script src="<c:url value="/resources/jquery/jquery-3.4.1.slim.min.js"/>"></script>
 <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
 
-<nav class="navbar navbar-expand-lg header">
+<nav class="navbar navbar-expand-lg admin-header">
     <%--            TODO: cambiar el path del url--%>
     <a class="navbar-brand" href="${pageContext.request.contextPath}/admi">
         <img src="<c:url value="/resources/images/logo.png"/>" alt="logo" height="70" width="70"/>
