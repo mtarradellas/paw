@@ -20,7 +20,7 @@ public class BreedIdMatchValidator implements ConstraintValidator<BreedIdMatch, 
     public boolean isValid(Object value,
                            ConstraintValidatorContext context) {
 
-        Integer val = (Integer) value;
+        Long val = (Long) value;
 
         if(val == null)
             return false;

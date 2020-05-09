@@ -217,7 +217,7 @@
                         </div>
 
                         <div class="m-1 p-3 row">
-                            <spring:message code="uploadPetForm.submit" var="submitText"/>
+                            <spring:message code="editPetForm.updatePet" var="submitText"/>
                             <input type="submit" class="btn btn-primary" value="${submitText}"/>
                         </div>
                     </form:form>

@@ -26,10 +26,10 @@ public class EditPetForm {
     private String petName;
 
     @SpeciesIdMatch
-    private Integer speciesId;
+    private Long speciesId;
 
     @BreedIdMatch
-    private Integer breedId;
+    private Long breedId;
 
     @Size(min = 3, max = 50)
     private String location;
@@ -76,19 +76,19 @@ public class EditPetForm {
         this.petName = petName;
     }
 
-    public Integer getSpeciesId() {
+    public Long getSpeciesId() {
         return speciesId;
     }
 
-    public void setSpeciesId(Integer speciesId) {
+    public void setSpeciesId(Long speciesId) {
         this.speciesId = speciesId;
     }
 
-    public Integer getBreedId() {
+    public Long getBreedId() {
         return breedId;
     }
 
-    public void setBreedId(Integer breedId) {
+    public void setBreedId(Long breedId) {
         this.breedId = breedId;
     }
 

@@ -205,7 +205,23 @@ public class PetController extends ParentController {
     }
 
     @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })
-    public ModelAndView editPetForm(@ModelAttribute ("editPetForm") final EditPetForm editPetForm, @PathVariable("id") long id) {
+    public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
+        Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
+
+        petForm.setBirthDate(pet.getBirthDate());
+        petForm.setBreedId(pet.getBreed().getId());
+        petForm.setDescription(pet.getDescription());
+        petForm.setGender(pet.getGender());
+        petForm.setLocation(pet.getLocation());
+        petForm.setPrice(pet.getPrice());
+        petForm.setPetName(pet.getPetName());
+        petForm.setSpeciesId(pet.getSpecies().getId());
+        petForm.setVaccinated(pet.isVaccinated());
+        
+        return editPetForm(petForm, id);
+    }
+
+    private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
         return new ModelAndView("views/pet_edit")
                 .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
                 .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray())
