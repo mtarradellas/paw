@@ -31,7 +31,7 @@ public class UserController extends ParentController {
         }
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
-        Optional<User> opUser = userService.findById(id);
+        Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
         mav.addObject("userPets", petService.getByUserId(locale, id, page));
@@ -119,5 +119,13 @@ public class UserController extends ParentController {
             return new ModelAndView("redirect:/interests" );
         }
         return new ModelAndView("redirect:/403" );
+    }
+
+    @RequestMapping(value = "/test")
+    public ModelAndView testUsers() {
+        final ModelAndView mav = new ModelAndView("views/test");
+        mav.addObject("users",
+                userService.adminUserList(getLocale(), page).toArray());
+        return mav;
     }
 }

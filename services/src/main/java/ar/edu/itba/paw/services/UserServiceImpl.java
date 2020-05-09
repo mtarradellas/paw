@@ -20,6 +20,9 @@ import java.util.stream.Stream;
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final int ACTIVE = 1;
+    private final int INACTIVE = 2;
+
 
     @Autowired
     private UserDao userDao;
@@ -30,23 +33,23 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder encoder;
 
     @Override
-    public Optional<User> findById(long id) {
-        return this.userDao.findById(id);
+    public Optional<User> findById(String language, long id) {
+        return this.userDao.findById(language, id);
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return this.userDao.findByUsername(username);
+    public Optional<User> findByUsername(String language, String username) {
+        return this.userDao.findByUsername(language, username);
     }
 
     @Override
-    public Stream<User> list() {
-        return this.userDao.list();
+    public Stream<User> list(String language) {
+        return this.userDao.list(language);
     }
 
     @Override
-    public List<User> adminUserList(String page){
-        return userDao.adminUserList(page).collect(Collectors.toList());
+    public List<User> adminUserList(String language, String page){
+        return userDao.adminUserList(language, page).collect(Collectors.toList());
     }
 
     @Override
@@ -55,9 +58,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> create(String locale, String username, String password, String mail, String phone) throws DuplicateUserException {
+    public Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
-        Optional<User> opUser = userDao.create(username, encoder.encode(password), mail, phone);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, INACTIVE);
         if (!opUser.isPresent()) {
             LOGGER.warn("User DAO returned empty user");
             return opUser;
@@ -67,15 +70,15 @@ public class UserServiceImpl implements UserService {
 
         UUID uuid = UUID.randomUUID();
         createToken(uuid, opUser.get().getId());
-        mailService.sendMail(user.getMail(), activateAccountSubject(locale), activateAccountBody(locale, user, uuid));
+        mailService.sendMail(user.getMail(), activateAccountSubject(language), activateAccountBody(language, user, uuid));
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}, phone: {}", user.getId(), user.getUsername(), user.getMail(), user.getPhone());
         return opUser;
     }
 
     @Override
-    public Optional<User> findByMail(String mail) {
-        return userDao.findByMail(mail);
+    public Optional<User> findByMail(String language, String mail) {
+        return userDao.findByMail(language, mail);
     }
 
     @Override
@@ -94,7 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> activateAccountWithToken(UUID uuid) {
+    public Optional<User> activateAccountWithToken(String language, UUID uuid) {
         LOGGER.debug("Activating account token {}", uuid);
 
         Optional<Token> opToken = getToken(uuid);
@@ -108,18 +111,17 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
 
-        Optional<User> opUser = findByToken(uuid);
+        Optional<User> opUser = findByToken(language, uuid);
         if (!opUser.isPresent()) {
             LOGGER.warn("User of token {} not found", uuid);
             return Optional.empty();
         }
         /* TODO activate account */
-//        final User user = opUser.get();
-//        if (!userDao.activateAccount(user.getId())) {
-//            LOGGER.warn("Could not activate user {} account", user.getId());
-//            return Optional.empty();
-//        }
 
+        if(!userDao.updateStatus(opUser.get().getId(), ACTIVE)) {
+            LOGGER.warn("Could not activate user {} account", opUser.get().getId());
+            return Optional.empty();
+        }
         deleteToken(uuid);
         return opUser;
     }
@@ -128,7 +130,7 @@ public class UserServiceImpl implements UserService {
     public Optional<User> requestPasswordReset(String locale, String mail) {
         LOGGER.debug("Requesting password reset for mail {}", mail);
 
-        Optional<User> opUser = userDao.findByMail(mail);
+        Optional<User> opUser = userDao.findByMail(locale, mail);
         if (!opUser.isPresent()) {
             LOGGER.debug("User with mail {} not found", mail);
             return Optional.empty();
@@ -143,7 +145,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> resetPassword(UUID uuid, String password) {
+    public Optional<User> resetPassword(String language, UUID uuid, String password) {
         LOGGER.debug("Resetting password for token {}", uuid);
 
         Optional<Token> opToken = getToken(uuid);
@@ -157,7 +159,7 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
 
-        Optional<User> opUser = findByToken(uuid);
+        Optional<User> opUser = findByToken(language, uuid);
         if (!opUser.isPresent()) {
             LOGGER.warn("User of token {} not found", uuid);
             return Optional.empty();
@@ -181,8 +183,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByToken(UUID uuid) {
-        return userDao.findByToken(uuid);
+    public Optional<User> findByToken(String language, UUID uuid) {
+        return userDao.findByToken(language, uuid);
     }
 
     @Override
