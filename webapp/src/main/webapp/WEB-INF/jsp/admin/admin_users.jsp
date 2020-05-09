@@ -23,7 +23,9 @@
                         <c:if test="${not empty users_list}">
                             <div>
                                 <h2><spring:message code="admin.usersListing" /> <spring:message code="showingResults" arguments="${users_list.size()}"/>
-                                    <button type="button" class="btn btn-success"><i class="fas fa-plus mr-2"></i><spring:message code="addUser"/></button>
+                                    <a type="button" class="btn btn-success"
+                                       href="${pageContext.request.contextPath}/admi/upload-user">
+                                        <i class="fas fa-plus mr-2"></i><spring:message code="addUser"/></a>
                                 </h2>
                             </div>
                         </c:if>

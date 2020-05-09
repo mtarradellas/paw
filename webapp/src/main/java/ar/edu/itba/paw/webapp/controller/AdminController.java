@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
@@ -8,6 +9,7 @@ import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
 import ar.edu.itba.paw.webapp.form.AdminUploadRequestForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
+import ar.edu.itba.paw.webapp.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class AdminController extends ParentController{
@@ -105,10 +108,11 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value ="/admi/upload-pet", method = { RequestMethod.GET })
     public ModelAndView uploadPetForm(@ModelAttribute("adminUploadPetForm") final AdminUploadPetForm userForm) {
+        String language = getLocale();
         return new ModelAndView("admin/admin_upload_pet")
-                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
-                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray())
-                .addObject("users_list",userService.list().toArray());
+                .addObject("species_list", speciesService.speciesList(language).toArray())
+                .addObject("breeds_list", speciesService.breedsList(language).toArray())
+                .addObject("users_list",userService.list(language).toArray());
     }
 
     @RequestMapping(value = "/admi/upload-pet", method = { RequestMethod.POST })
@@ -215,6 +219,59 @@ public class AdminController extends ParentController{
     }
 
 
+    @RequestMapping(value ="/admi/upload-user", method = { RequestMethod.GET })
+    public ModelAndView uploadUserForm(@ModelAttribute("registerForm") final UserForm userForm) {
+        return new ModelAndView("admin/admin_upload_user");
+    }
+
+    @RequestMapping(value = "/admi/upload-user", method = { RequestMethod.POST })
+    public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm,
+                                   final BindingResult errors, HttpServletRequest request) {
+
+        final String locale = getLocale();
+
+        if (errors.hasErrors()) {
+            errors.getAllErrors().forEach(error -> LOGGER.debug("{}", error.toString()));
+            return uploadUserForm(userForm);
+        }
+
+        Optional<User> opUser;
+        try {
+            opUser = userService.create(locale, userForm.getUsername(), userForm.getPassword(),
+                    userForm.getMail(), userForm.getPhone());
+        } catch (DuplicateUserException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return uploadUserForm(userForm)
+                    .addObject("duplicatedUsername", ex.isDuplicatedUsername())
+                    .addObject("duplicatedMail", ex.isDuplicatedMail());
+        }
+        if (opUser == null || !opUser.isPresent()) {
+            LOGGER.warn("User creation failed. User returned from creation is {}", opUser==null? "null":"empty");
+            return uploadUserForm(userForm).addObject("generalError", true);
+        }
+
+        return new ModelAndView("admin/admin_users");
+    }
+
+
+//    @RequestMapping(value = "/admi/request/{id}/cancel", method = {RequestMethod.POST})
+//    public ModelAndView requestUpdateCanceled(@PathVariable("id") long id) {
+//        requestService.cancelRequestAdmin(id);
+//        LOGGER.debug("Request {} updated as canceled", id);
+//        return new ModelAndView("redirect:/admi/requests");
+//
+//    }
+//
+//    @RequestMapping(value = "/admi/request/{id}/recover", method = {RequestMethod.POST})
+//    public ModelAndView requestUpdateRecover(@PathVariable("id") long id) {
+//        requestService.recoverRequestAdmin(id);
+//        LOGGER.debug("Request {} updated as recovered", id);
+//        return new ModelAndView("redirect:/admi/requests");
+//    }
+
+
+
+
 //    REQUESTS ENDPOINTS
     @RequestMapping(value = "/admi/requests")
     public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
@@ -263,9 +320,10 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value ="/admi/upload-request", method = { RequestMethod.GET })
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
+        String language = getLocale();
         return new ModelAndView("admin/admin_upload_request")
-                .addObject("pets_list", petService.listAll(getLocale()))
-                .addObject("users_list",userService.list().toArray());
+                .addObject("pets_list", petService.listAll(language))
+                .addObject("users_list",userService.list(language).toArray());
     }
 
     @RequestMapping(value = "/admi/upload-request", method = { RequestMethod.POST })
