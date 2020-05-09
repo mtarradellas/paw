@@ -121,8 +121,7 @@
                         </div>
                         <div class="form-row p-1">
                             <div class="col">
-                                <spring:message code="editPetForm.deletePhotos" var="deletePhotosTxt"/>
-                                <form:label path="imagesIdToDelete" for="deletePhotos">${deletePhotosTxt}:</form:label>
+                                <spring:message code="editPetForm.deletePhotos"/>
                                 <div>
 
                                     <c:forEach items="${pet.images}" var="imageId">
@@ -139,20 +138,7 @@
                         </div>
                         <div class="form-row p-1">
                             <div class="col">
-                                <spring:bind path="photo">
-                                    <spring:message code="editPetForm.uploadAnotherPhoto" var="uploadPhotoTxt"/>
-                                    <form:label path="photo" for="photo">${uploadPhotoTxt}:</form:label>
-                                    <div>
-                                        <spring:message code="uploadPetForm.photo" var="photoTxt"/>
-
-                                        <form:input path="photo" accept="image/*" type="file"
-                                                    class="${status.error ? 'is-invalid' : ''}"
-                                                    id="photo"
-                                        />
-                                    </div>
-                                    <form:errors path="photo" element="div" cssClass="invalid-feedback"
-                                                 cssStyle="${status.error ? 'display: block' : ''}"/>
-                                </spring:bind>
+                                <t:imageUpload/>
                             </div>
                         </div>
 
@@ -161,7 +147,6 @@
                             <input type="submit" class="btn btn-primary" value="${submitText}"/>
                         </div>
                     </form:form>
-
 
                 </div>
                 <div class="p-3">

@@ -118,6 +118,7 @@
                                     <form:errors path="gender" element="div" cssClass="invalid-feedback"/>
                                 </div>
                             </spring:bind>
+
                         </div>
                     </div>
                     <div class="form-row p-1">

@@ -216,8 +216,8 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.POST })
     public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
-                                  @PathVariable("id") long id,
-                                  final BindingResult errors, HttpServletRequest request) {
+                                  final BindingResult errors, HttpServletRequest request,
+                                @PathVariable("id") long id) {
 
         if (errors.hasErrors()) {
             return editPetForm(editPetForm, id);

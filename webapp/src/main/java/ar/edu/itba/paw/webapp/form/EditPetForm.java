@@ -19,7 +19,7 @@ public class EditPetForm {
     @NotNull
     @FileSize
     @ImageDimensions
-    private MultipartFile photo;
+    private List<MultipartFile> photos;
 
     @Size(min = 2, max = 50)
     @Pattern(regexp = "^[a-zA-Z]+$")
@@ -60,12 +60,12 @@ public class EditPetForm {
         this.imagesIdToDelete = imagesIdToDelete;
     }
 
-    public MultipartFile getPhoto() {
-        return photo;
+    public List<MultipartFile> getPhotos() {
+        return photos;
     }
 
-    public void setPhoto(MultipartFile photo) {
-        this.photo = photo;
+    public void setPhotos(List<MultipartFile> photos) {
+        this.photos = photos;
     }
 
     public String getPetName() {

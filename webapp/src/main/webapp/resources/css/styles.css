@@ -14,20 +14,21 @@
 
 .edit-anchor {
     position: absolute;
-    border: 1px solid #95999c;
+    border: 1px solid #ced2d6;
     border-radius: 5px;
     right: 40px;
     top: 35px;
-    padding: 5px;
+    padding: 6px 10px 6px 10px;
     background: #e0e0e0;
     text-decoration: none;
     color: black;
 }
 
 .edit-anchor:hover {
-    background: #a8a8a8;
+    background-color: #bdbdbd;
     cursor: pointer;
     text-decoration: none;
+    color: black;
 }
 
 .image-preview-container {
