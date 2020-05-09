@@ -5,8 +5,9 @@
     <title>test</title>
 </head>
 <body>
-<%--<c:forEach items="${request_list}" var="r">--%>
-<h1><c:out value="${bool}"/></h1>
+<%--<c:forEach items="${users}" var="user">--%>
+<h1><c:out value="${string}"/></h1>
+<%--<h1><c:out value="${user.status.name}"/></h1>--%>
 
 
 <%--</c:forEach>--%>

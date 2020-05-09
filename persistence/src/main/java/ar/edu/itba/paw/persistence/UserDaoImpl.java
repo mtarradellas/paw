@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.Status;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 
@@ -37,7 +38,9 @@ public class UserDaoImpl implements UserDao {
             rs.getString("username"),
             rs.getString("password"),
             rs.getString("mail"),
-            rs.getString("phone"));
+            rs.getString("phone"),
+            new Status(rs.getInt("status"),rs.getString("statusName"))
+    );
 
     private static final RowMapper<Token> TOKEN_MAPPER = (rs, rowNum) -> new Token(
             rs.getLong("id"),
@@ -58,20 +61,26 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[] {id}, USER_MAPPER)
+    public Optional<User> findById(String language, long id) {
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
+                "WHERE users.id = ?", new Object[] {id}, USER_MAPPER)
                 .stream().findFirst();
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE username = ?", new Object[] {username}, USER_MAPPER)
+    public Optional<User> findByUsername(String language, String username) {
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
+                "WHERE username = ?", new Object[] {username}, USER_MAPPER)
                 .stream().findFirst();
     }
 
     @Override
-    public Optional<User> findByMail(String mail) {
-        return jdbcTemplate.query("SELECT * FROM users WHERE mail = ?", new Object[] {mail}, USER_MAPPER)
+    public Optional<User> findByMail(String language, String mail) {
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
+                "WHERE mail = ?", new Object[] {mail}, USER_MAPPER)
                 .stream().findFirst();
     }
 
@@ -101,36 +110,41 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findByToken(UUID uuid) {
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone " +
-                "FROM users INNER JOIN tokens ON users.id = tokens.userid " +
+    public Optional<User> findByToken(String language, UUID uuid) {
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                        "FROM ( users INNER JOIN user_status ON users.status = user_status.id ) INNER JOIN tokens ON users.id = tokens.userid " +
                 "WHERE tokens.token = ? ", new Object[] {uuid}, USER_MAPPER)
                 .stream().findFirst();
     }
 
     @Override
-    public Stream<User> list() {
-        return jdbcTemplate.query("SELECT * FROM users", USER_MAPPER)
+    public Stream<User> list(String language) {
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                "FROM users INNER JOIN user_status ON users.status = user_status.id ", USER_MAPPER)
                 .stream();
     }
 
     @Override
-    public Stream<User> adminUserList(String page){
+    public Stream<User> adminUserList(String language, String page){
         String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
-        return jdbcTemplate.query("SELECT * FROM users limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, USER_MAPPER)
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
+                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, USER_MAPPER)
                 .stream();
     }
 
     @Override
     public Stream<User> adminSearchList(String language, String findValue, String page) {
         if(findValue.equals("")){
-            return adminUserList(page);
+            return adminUserList(language, page);
         }
 
         String modifiedValue = "%"+findValue.toLowerCase()+"%";
 
         String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
-        return jdbcTemplate.query("select * from users WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) limit "
+        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                        "FROM users INNER JOIN user_status ON users.status = user_status.id " +
+                        " WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) limit "
                 + ADMIN_SHOWCASE_ITEMS + " offset " + offset,
                 new Object[] { modifiedValue ,modifiedValue,modifiedValue},
                 USER_MAPPER)
@@ -164,12 +178,29 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException {
-        final Map<String, String> values = new HashMap<>();
+    public boolean updateStatus(long id, int status) {
+        String sql = "UPDATE users " +
+                "SET status = ? " +
+                "WHERE id = ? ";
+        return jdbcTemplate.update(sql, status, id) == 1;
+    }
+
+    @Override
+    public boolean isAdmin(long userId) {
+        return jdbcTemplate.queryForObject("select count(*) from admins " +
+                        "WHERE id = ?" ,
+                new Object[] { userId},
+                Integer.class) == 1;
+    }
+
+    @Override
+    public Optional<User> create(String language, String username, String password, String mail, String phone, int status) throws DuplicateUserException {
+        final Map<String, Object> values = new HashMap<>();
         values.put("username", username);
         values.put("password", password);
         values.put("mail", mail);
         values.put("phone", phone);
+        values.put("status", status);
         Number key;
 
         try {
@@ -180,7 +211,7 @@ public class UserDaoImpl implements UserDao {
             return Optional.empty();
         }
 
-        return Optional.of(new User(key.longValue(), username, password, mail, phone));
+        return findById(language, key.longValue());
     }
 }
 

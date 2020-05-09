@@ -82,7 +82,7 @@ public class LoginAndRegisterController extends ParentController {
         UUID uuid = UUID.fromString(tokenString);
 
         /* TODO create exceptions for better error handling */
-        Optional<User> opUser = userService.activateAccountWithToken(uuid);
+        Optional<User> opUser = userService.activateAccountWithToken(getLocale(), uuid);
 
         if (!opUser.isPresent()) {
             LOGGER.warn("User could not activate token {}", tokenString);
@@ -127,7 +127,7 @@ public class LoginAndRegisterController extends ParentController {
         UUID uuid = UUID.fromString(resetPasswordForm.getToken());
         String password = resetPasswordForm.getPassword();
 
-        Optional<User> opUser = userService.resetPassword(uuid, password);
+        Optional<User> opUser = userService.resetPassword(getLocale(), uuid, password);
 
         if (!opUser.isPresent()) {
             return new ModelAndView("views/token_has_expired");

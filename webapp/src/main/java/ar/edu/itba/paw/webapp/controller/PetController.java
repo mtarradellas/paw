@@ -163,7 +163,7 @@ public class PetController extends ParentController {
     }
 
     @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
-    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm userForm) {
+    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm petForm) {
         return new ModelAndView("views/upload_pet")
                 .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
                 .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
