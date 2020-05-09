@@ -31,7 +31,7 @@ public class AdminController extends ParentController{
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
     //TODO: cambiar el path del mapping para que te redireccion correctamente
-    @RequestMapping(value = "/admi")
+    @RequestMapping(value = "/admin")
     public ModelAndView getAdminHome() {
         return new ModelAndView("admin/admin");
     }
@@ -39,7 +39,7 @@ public class AdminController extends ParentController{
 
 
 //    PETS ENDPOINTS
-    @RequestMapping(value = "/admi/pets")
+    @RequestMapping(value = "/admin/pets")
     public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
                                      @RequestParam(name = "breed", required = false) String breed,
                                      @RequestParam(name = "gender", required = false) String gender,
@@ -95,7 +95,7 @@ public class AdminController extends ParentController{
         return mav;
     }
 
-    @RequestMapping(value = "/admi/pet/{id}")
+    @RequestMapping(value = "/admin/pet/{id}")
     public ModelAndView getSinglePet(@PathVariable("id") long id){
 
         final ModelAndView mav = new ModelAndView("/admin/admin_single_pet");
@@ -106,7 +106,7 @@ public class AdminController extends ParentController{
     }
 
 
-    @RequestMapping(value ="/admi/upload-pet", method = { RequestMethod.GET })
+    @RequestMapping(value ="/admin/upload-pet", method = { RequestMethod.GET })
     public ModelAndView uploadPetForm(@ModelAttribute("adminUploadPetForm") final AdminUploadPetForm userForm) {
         String language = getLocale();
         return new ModelAndView("admin/admin_upload_pet")
@@ -115,7 +115,7 @@ public class AdminController extends ParentController{
                 .addObject("users_list",userService.list(language).toArray());
     }
 
-    @RequestMapping(value = "/admi/upload-pet", method = { RequestMethod.POST })
+    @RequestMapping(value = "/admin/upload-pet", method = { RequestMethod.POST })
     public ModelAndView uploadPet(@Valid @ModelAttribute("adminUploadPetForm") final AdminUploadPetForm petForm,
                                   final BindingResult errors, HttpServletRequest request) {
 
@@ -147,34 +147,34 @@ public class AdminController extends ParentController{
         });
 
 
-        return new ModelAndView("redirect:/admi/pet/" + opPet.get().getId());
+        return new ModelAndView("redirect:/admin/pet/" + opPet.get().getId());
     }
 
-    @RequestMapping(value = "/admi/pet/{id}/remove", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/pet/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
          petService.removePetAdmin(id);
          LOGGER.debug("Pet {} updated as removed", id);
-         return new ModelAndView("redirect:/admi/pets");
+         return new ModelAndView("redirect:/admin/pets");
 
     }
 
-    @RequestMapping(value = "/admi/pet/{id}/sell-adopt", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/pet/{id}/sell-adopt", method = {RequestMethod.POST})
     public ModelAndView petUpdateSold(@PathVariable("id") long id) {
         petService.sellPetAdmin(id);
         LOGGER.debug("Pet {} updated as sold", id);
-        return new ModelAndView("redirect:/admi/pets");
+        return new ModelAndView("redirect:/admin/pets");
     }
 
-    @RequestMapping(value = "/admi/pet/{id}/recover", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/pet/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
         petService.recoverPetAdmin(id);
         LOGGER.debug("Pet {} updated as recovered", id);
-        return new ModelAndView("redirect:/admi/pets");
+        return new ModelAndView("redirect:/admin/pets");
     }
 
 
 //    USERS ENDPOINTS
-    @RequestMapping(value = "/admi/users")
+    @RequestMapping(value = "/admin/users")
     public ModelAndView getUsersAdmin(@RequestParam(name = "page", required = false) String page,
                                       @RequestParam(name = "find", required = false) String find) {
         if(page == null){
@@ -200,7 +200,7 @@ public class AdminController extends ParentController{
         return mav;
     }
 
-    @RequestMapping(value = "/admi/user/{id}")
+    @RequestMapping(value = "/admin/user/{id}")
     public ModelAndView getSingleUser(@PathVariable("id") long id,
                                       @RequestParam(name = "page", required = false) String page){
 
@@ -219,12 +219,12 @@ public class AdminController extends ParentController{
     }
 
 
-    @RequestMapping(value ="/admi/upload-user", method = { RequestMethod.GET })
+    @RequestMapping(value ="/admin/upload-user", method = { RequestMethod.GET })
     public ModelAndView uploadUserForm(@ModelAttribute("registerForm") final UserForm userForm) {
         return new ModelAndView("admin/admin_upload_user");
     }
 
-    @RequestMapping(value = "/admi/upload-user", method = { RequestMethod.POST })
+    @RequestMapping(value = "/admin/upload-user", method = { RequestMethod.POST })
     public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm,
                                    final BindingResult errors, HttpServletRequest request) {
 
@@ -237,7 +237,7 @@ public class AdminController extends ParentController{
 
         Optional<User> opUser;
         try {
-            opUser = userService.create(locale, userForm.getUsername(), userForm.getPassword(),
+            opUser = userService.adminCreate(locale, userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail(), userForm.getPhone());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -250,30 +250,30 @@ public class AdminController extends ParentController{
             return uploadUserForm(userForm).addObject("generalError", true);
         }
 
-        return new ModelAndView("admin/admin_users");
+        return new ModelAndView("redirect:/admin/users");
     }
 
 
-//    @RequestMapping(value = "/admi/request/{id}/cancel", method = {RequestMethod.POST})
-//    public ModelAndView requestUpdateCanceled(@PathVariable("id") long id) {
-//        requestService.cancelRequestAdmin(id);
-//        LOGGER.debug("Request {} updated as canceled", id);
-//        return new ModelAndView("redirect:/admi/requests");
-//
-//    }
-//
-//    @RequestMapping(value = "/admi/request/{id}/recover", method = {RequestMethod.POST})
-//    public ModelAndView requestUpdateRecover(@PathVariable("id") long id) {
-//        requestService.recoverRequestAdmin(id);
-//        LOGGER.debug("Request {} updated as recovered", id);
-//        return new ModelAndView("redirect:/admi/requests");
-//    }
+    @RequestMapping(value = "/admin/user/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView userUpdateDelete(@PathVariable("id") long id) {
+        userService.removeAdmin(id);
+        LOGGER.debug("User {} updated as deleted", id);
+        return new ModelAndView("redirect:/admin/users");
+
+    }
+
+    @RequestMapping(value = "/admin/user/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView userUpdateRecover(@PathVariable("id") long id) {
+        userService.recoverAdmin(id);
+        LOGGER.debug("User {} updated as recovered", id);
+        return new ModelAndView("redirect:/admin/users");
+    }
 
 
 
 
 //    REQUESTS ENDPOINTS
-    @RequestMapping(value = "/admi/requests")
+    @RequestMapping(value = "/admin/requests")
     public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
                                          @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                          @RequestParam(name = "searchOrder", required = false) String searchOrder,
@@ -318,7 +318,7 @@ public class AdminController extends ParentController{
         return mav;
     }
 
-    @RequestMapping(value ="/admi/upload-request", method = { RequestMethod.GET })
+    @RequestMapping(value ="/admin/upload-request", method = { RequestMethod.GET })
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
         String language = getLocale();
         return new ModelAndView("admin/admin_upload_request")
@@ -326,7 +326,7 @@ public class AdminController extends ParentController{
                 .addObject("users_list",userService.list(language).toArray());
     }
 
-    @RequestMapping(value = "/admi/upload-request", method = { RequestMethod.POST })
+    @RequestMapping(value = "/admin/upload-request", method = { RequestMethod.POST })
     public ModelAndView uploadRequest(@Valid @ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm,
                                       final BindingResult errors, HttpServletRequest request) {
 
@@ -342,22 +342,22 @@ public class AdminController extends ParentController{
         }
 
 
-        return new ModelAndView("redirect:/admi/requests");
+        return new ModelAndView("redirect:/admin/requests");
     }
 
-    @RequestMapping(value = "/admi/request/{id}/cancel", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/request/{id}/cancel", method = {RequestMethod.POST})
     public ModelAndView requestUpdateCanceled(@PathVariable("id") long id) {
         requestService.cancelRequestAdmin(id);
         LOGGER.debug("Request {} updated as canceled", id);
-        return new ModelAndView("redirect:/admi/requests");
+        return new ModelAndView("redirect:/admin/requests");
 
     }
 
-    @RequestMapping(value = "/admi/request/{id}/recover", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/request/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView requestUpdateRecover(@PathVariable("id") long id) {
         requestService.recoverRequestAdmin(id);
         LOGGER.debug("Request {} updated as recovered", id);
-        return new ModelAndView("redirect:/admi/requests");
+        return new ModelAndView("redirect:/admin/requests");
     }
 
 }

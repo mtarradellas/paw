@@ -13,17 +13,17 @@
                     <p><spring:message code="mainPageDescription1"/></p>
                     <div>
                         <div class="col p-2">
-                            <a href="${pageContext.request.contextPath}/admi/pets" class="btn btn-secondary btn-lg btn-block btn-secondary " role="button" aria-pressed="true">
+                            <a href="${pageContext.request.contextPath}/admin/pets" class="btn btn-secondary btn-lg btn-block btn-secondary " role="button" aria-pressed="true">
                                 <spring:message code="adminHeader.listPets"/>
                             </a>
                         </div>
                         <div class="col p-2">
-                            <a href="${pageContext.request.contextPath}/admi/users" class="btn btn-secondary btn-lg btn-block btn-secondary" role="button" aria-pressed="true">
+                            <a href="${pageContext.request.contextPath}/admin/users" class="btn btn-secondary btn-lg btn-block btn-secondary" role="button" aria-pressed="true">
                                 <spring:message code="adminHeader.listUsers"/>
                             </a>
                         </div>
                         <div class="col p-2">
-                            <a href="${pageContext.request.contextPath}/admi/requests" class="btn btn-secondary btn-lg btn-block btn-secondary" role="button" aria-pressed="true">
+                            <a href="${pageContext.request.contextPath}/admin/requests" class="btn btn-secondary btn-lg btn-block btn-secondary" role="button" aria-pressed="true">
                                 <spring:message code="adminHeader.listRequests"/>
                             </a>
                         </div>
@@ -35,21 +35,21 @@
                     <div >
                         <div class="col p-2">
                             <a type="button" class="btn btn-info btn-lg btn-block"
-                               href="${pageContext.request.contextPath}/admi/upload-pet">
+                               href="${pageContext.request.contextPath}/admin/upload-pet">
                                 <i class="fas fa-plus mr-2"></i>
                                 <spring:message code="addPet"/>
                             </a>
                         </div>
                         <div class="col p-2">
                             <a type="button" class="btn btn-info btn-lg btn-block"
-                               href="${pageContext.request.contextPath}/admi/upload-user">
+                               href="${pageContext.request.contextPath}/admin/upload-user">
                                 <i class="fas fa-plus mr-2"></i>
                                 <spring:message code="addUser"/>
                             </a>
                         </div>
                         <div class="col p-2">
                             <a type="button" class="btn btn-info btn-lg btn-block"
-                               href="${pageContext.request.contextPath}/admi/upload-request">
+                               href="${pageContext.request.contextPath}/admin/upload-request">
                                 <i class="fas fa-plus mr-2"></i>
                                 <spring:message code="addRequest"/>
                             </a>

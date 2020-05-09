@@ -10,7 +10,7 @@
             <h1>${addUserTitle}</h1>
 
             <form:form modelAttribute="registerForm"
-                       action="${pageContext.request.contextPath}/admi/upload-user"
+                       action="${pageContext.request.contextPath}/admin/upload-user"
                        method="post" enctype="application/x-www-form-urlencoded">
                 <spring:bind path="username">
                     <div class="form-group">
@@ -70,6 +70,9 @@
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form:form>
+        </div>
+        <div class="p-3">
+            <a href="${pageContext.request.contextPath}/admin/requests"><spring:message code="goBackLists"/></a>
         </div>
     </div>
 </t:adminLayout>

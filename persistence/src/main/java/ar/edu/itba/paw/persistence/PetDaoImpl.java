@@ -92,15 +92,21 @@ public class PetDaoImpl implements PetDao {
     }
 
     public Stream<Pet> list(String language, String page, int level) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
         String sql;
 
         if (level == 0) {
-            String offset = Integer.toString(PETS_PER_PAGE * (Integer.parseInt(page) - 1));
+            String offset = Integer.toString(PETS_PER_PAGE * (numValue - 1));
             sql = "select id from pets " +
                     " WHERE pets.status NOT IN " + HIDDEN_PETS_STATUS +
                     " limit " + PETS_PER_PAGE + " offset " + offset;
         } else {
-            String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (Integer.parseInt(page) - 1));
+            String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numValue - 1));
             sql = "select id from pets " +
                     " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
         }
@@ -140,6 +146,12 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> find(String language, String findValue, String page, int level) {
+        int numPageValue = 1;
+        try {
+            numPageValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
         if (findValue.equals("")) {
             return list(language, "1", level);
         }
@@ -155,7 +167,7 @@ public class PetDaoImpl implements PetDao {
         String sql;
 
         if (level == 0) {
-            String offset = Integer.toString(PETS_PER_PAGE * (Integer.parseInt(page) - 1));
+            String offset = Integer.toString(PETS_PER_PAGE * (numPageValue - 1));
             sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                     "species.id as speciesId," + "species." + language + " AS speciesName, " +
                     "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
@@ -167,7 +179,7 @@ public class PetDaoImpl implements PetDao {
                     "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
                     " limit " + PETS_PER_PAGE + " offset " + offset;
         } else {
-            String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (Integer.parseInt(page) - 1));
+            String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numPageValue - 1));
             sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                     "species.id as speciesId," + "species." + language + " AS speciesName, " +
                     "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
@@ -201,6 +213,12 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> adminFilteredList(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter, String searchCriteria, String searchOrder, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
         if (specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
@@ -224,7 +242,7 @@ public class PetDaoImpl implements PetDao {
 
         //Query to get the petids for the current page
         List<String> ids;
-        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (Integer.parseInt(page) - 1));
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numValue - 1));
         String limit = " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
 
         String sql = "SELECT pets.id as id " +
@@ -287,6 +305,12 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
 
         if(specieFilter == null) {
             specieFilter = "%";
@@ -305,7 +329,7 @@ public class PetDaoImpl implements PetDao {
 
         //Query to get the petids for the current page
         List<String> ids;
-        String offset = Integer.toString(PETS_PER_PAGE*(Integer.parseInt(page)-1));
+        String offset = Integer.toString(PETS_PER_PAGE*(numValue-1));
         String limit = " limit "+ PETS_PER_PAGE + " offset " + offset;
 
         String sql = "SELECT pets.id as id " +
@@ -400,7 +424,13 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> getByUserId(String language, long userId, String page){
-        String offset = Integer.toString(PETS_IN_USER_PAGE*(Integer.parseInt(page)-1));
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
+        String offset = Integer.toString(PETS_IN_USER_PAGE*(numValue-1));
         String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                 "species.id as speciesId," + "species." + language + " AS speciesName, " +
                 "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +

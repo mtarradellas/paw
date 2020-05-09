@@ -15,7 +15,7 @@
 
                 <div class="col-md-2 search-tools">
                     <form class="card shadow p-3" method="get"
-                          action="${pageContext.request.contextPath}/admi/pets">
+                          action="${pageContext.request.contextPath}/admin/pets">
                         <div class="card-header">
                             <h5 class="card-title"><spring:message code="filter.options"/></h5>
                         </div>
@@ -124,7 +124,7 @@
 
                         <c:if test="${empty pets_list }">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/admi/pets"><spring:message
+                                <a href="${pageContext.request.contextPath}/admin/pets"><spring:message
                                         code="showFirst"/></a>
                             </div>
                         </c:if>
@@ -134,7 +134,7 @@
                                 <h2><spring:message code="admin.petsListing"/> <spring:message code="showingResults"
                                                                                                arguments="${pets_list.size()}"/>
                                     <a type="button" class="btn btn-success"
-                                       href="${pageContext.request.contextPath}/admi/upload-pet"
+                                       href="${pageContext.request.contextPath}/admin/upload-pet"
                                     ><i class="fas fa-plus mr-2"></i><spring:message code="addPet"/></a>
                                 </h2>
                             </div>
@@ -143,7 +143,7 @@
                         <div class="m-2 ">
                             <c:if test="${maxPage ne 1}">
                                 <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
-                                              baseURL="${'/admi/pets/'}"/>
+                                              baseURL="${'/admin/pets/'}"/>
                             </c:if>
                         </div>
                         <div>
@@ -169,7 +169,7 @@
                                     >
                                         <div class="row ">
                                             <div class="col-lg-8">
-                                                <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>">
+                                                <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>">
                                                     <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
                                                          alt="Pet image" height="70" width="70">
                                                     <c:if test="${not empty pet.petName}">
@@ -183,14 +183,14 @@
                                             <div class="col text-center pt-3 ml-3">
                                                 <c:if test="${pet.status.id eq 1}">
                                                     <form method="POST" class="m-0"
-                                                          action="<c:url value="/admi/pet/${pet.id}/remove"/>">
-                                                        <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${pet.ownerId}"/>"
+                                                          action="<c:url value="/admin/pet/${pet.id}/remove"/>">
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.ownerId}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitOwner"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>/edit"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
                                                         <button type="submit" onclick="confirmDelete(event)"
@@ -200,14 +200,14 @@
                                                 </c:if>
                                                 <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
                                                     <form method="POST" class="m-0"
-                                                          action="<c:url value="/admi/pet/${pet.id}/recover"/>">
-                                                        <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${pet.ownerId}"/>"
+                                                          action="<c:url value="/admin/pet/${pet.id}/recover"/>">
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.ownerId}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitOwner"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>/edit"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
                                                         <button type="submit"
@@ -225,7 +225,7 @@
                         <div class="m-2">
                             <c:if test="${maxPage ne 1}">
                                 <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
-                                              baseURL="${'/admi/pets/'}"/>
+                                              baseURL="${'/admin/pets/'}"/>
                             </c:if>
                         </div>
                     </div>

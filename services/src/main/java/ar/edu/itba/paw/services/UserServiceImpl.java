@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final int ACTIVE = 1;
     private final int INACTIVE = 2;
+    private final int DELETED = 3;
 
 
     @Autowired
@@ -73,6 +74,17 @@ public class UserServiceImpl implements UserService {
         mailService.sendMail(user.getMail(), activateAccountSubject(language), activateAccountBody(language, user, uuid));
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}, phone: {}", user.getId(), user.getUsername(), user.getMail(), user.getPhone());
+        return opUser;
+    }
+
+    @Override
+    public Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
+        LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, ACTIVE);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User DAO returned empty user");
+            return opUser;
+        }
         return opUser;
     }
 
@@ -170,6 +182,21 @@ public class UserServiceImpl implements UserService {
         deleteToken(uuid);
 
         return opUser;
+    }
+
+    @Override
+    public boolean isAdmin(long userId) {
+        return userDao.isAdmin(userId);
+    }
+
+    @Override
+    public void removeAdmin(long userId) {
+        userDao.updateStatus(userId, DELETED);
+    }
+
+    @Override
+    public void recoverAdmin(long userId) {
+        userDao.updateStatus(userId, ACTIVE);
     }
 
     @Override
