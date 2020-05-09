@@ -237,6 +237,16 @@ public class RequestServiceImpl implements RequestService {
         requestDao.updateStatus(requestId, PENDING_STATUS);
     }
 
+    @Override
+    public void cancelAllByOwner(long ownerId) {
+        requestDao.updateAllByOwner(ownerId, PENDING_STATUS, CANCELED_STATUS);
+    }
+
+    @Override
+    public void cancelAllByPetOwner(long petOwnerId) {
+        requestDao.updateAllByPetOwner(petOwnerId, PENDING_STATUS, REJECTED_STATUS);
+    }
+
     private String getMailMessage( String part, Request request, Contact contact, String locale){
         String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
         switch(part){

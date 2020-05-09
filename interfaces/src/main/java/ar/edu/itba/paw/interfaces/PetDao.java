@@ -27,4 +27,5 @@ public interface PetDao {
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
     Optional<Status> findStatusById(String language, long id);
+    void updateAllByOwner(long ownerId, int status);
 }

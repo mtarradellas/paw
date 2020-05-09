@@ -32,4 +32,5 @@ public interface UserService {
     boolean isAdmin(long userId);
     void removeAdmin(long userId);
     void recoverAdmin(long userId);
+    void removeUser(long userId);
 }

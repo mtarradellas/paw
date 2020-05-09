@@ -124,8 +124,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/test")
     public ModelAndView testUsers() {
         final ModelAndView mav = new ModelAndView("views/test");
-        mav.addObject("users",
-                userService.adminUserList(getLocale(), page).toArray());
+        userService.removeUser(26);
+        mav.addObject("string",
+                userService.findById(getLocale(),26).get().getStatus().getName());
         return mav;
     }
 }

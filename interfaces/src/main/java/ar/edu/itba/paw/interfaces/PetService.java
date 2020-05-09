@@ -34,5 +34,6 @@ public interface PetService {
     String getAdminMaxSearchPages(String language,String find);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
+    void removeAllByOwner(long ownerId);
 
 }

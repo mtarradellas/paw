@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.PetDao;
-import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.SpeciesDao;
-import ar.edu.itba.paw.interfaces.SpeciesService;
+import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +20,7 @@ public class PetServiceImpl implements PetService {
     private PetDao petDao;
     @Autowired
     private SpeciesDao speciesDao;
+
 
     @Override
     public Optional<Pet> findById(String language, long id) {
@@ -89,6 +87,11 @@ public class PetServiceImpl implements PetService {
     @Override
     public long getOwnerId(long petId) {
         return petDao.getOwnerId(petId);
+    }
+
+    @Override
+    public void removeAllByOwner(long ownerId) {
+        petDao.updateAllByOwner(ownerId, (int)REMOVED_STATUS);
     }
 
     @Override

@@ -195,6 +195,25 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
+    public void updateAllByOwner(long ownerId, int oldStatus, int newStatus) {
+
+        System.out.println("\n\n\n\n"+ownerId+"oldstatus: "+oldStatus+"new status "+newStatus+"\n\n\n\n\n");
+        String sql = "UPDATE requests " +
+                "SET status = ? " +
+                "WHERE status = ? AND ownerId = ? ";
+        jdbcTemplate.update(sql, newStatus, oldStatus, ownerId);
+    }
+
+    @Override
+    public void updateAllByPetOwner(long petOwnerId, int oldStatus, int newStatus) {
+        String sql = "UPDATE requests " +
+                "SET status = ? " +
+                "FROM pets " +
+                "WHERE pets.id = requests.petId AND requests.status = ? AND pets.ownerId = ? ";
+        jdbcTemplate.update(sql, newStatus, oldStatus, petOwnerId);
+    }
+
+    @Override
     public Optional<Request> create(long ownerId, long petId, int status, String language) {
 
         final Map<String, Object> values = new HashMap<>();
