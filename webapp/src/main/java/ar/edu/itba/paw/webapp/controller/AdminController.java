@@ -33,6 +33,9 @@ public class AdminController extends ParentController{
         return new ModelAndView("admin/admin");
     }
 
+
+
+//    PETS ENDPOINTS
     @RequestMapping(value = "/admi/pets")
     public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
                                      @RequestParam(name = "breed", required = false) String breed,
@@ -161,36 +164,12 @@ public class AdminController extends ParentController{
     @RequestMapping(value = "/admi/pet/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
         petService.recoverPetAdmin(id);
-        LOGGER.debug("Pet {} updated as sold", id);
+        LOGGER.debug("Pet {} updated as recovered", id);
         return new ModelAndView("redirect:/admi/pets");
     }
 
-    @RequestMapping(value ="/admi/upload-request", method = { RequestMethod.GET })
-    public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
-        return new ModelAndView("admin/admin_upload_request")
-                .addObject("pets_list", petService.listAll(getLocale()))
-                .addObject("users_list",userService.list().toArray());
-    }
 
-    @RequestMapping(value = "/admi/upload-request", method = { RequestMethod.POST })
-    public ModelAndView uploadRequest(@Valid @ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm,
-                                  final BindingResult errors, HttpServletRequest request) {
-
-
-        if (errors.hasErrors()) {
-            return uploadRequestForm(requestForm);
-        }
-
-        Optional<Request> optionalRequest = requestService.create(requestForm.getUserId(),requestForm.getPetId(), getLocale());
-
-        if (!optionalRequest.isPresent()) {
-            return uploadRequestForm(requestForm).addObject("request_error", true);
-        }
-
-
-        return new ModelAndView("redirect:/admi/requests");
-    }
-
+//    USERS ENDPOINTS
     @RequestMapping(value = "/admi/users")
     public ModelAndView getUsersAdmin(@RequestParam(name = "page", required = false) String page,
                                       @RequestParam(name = "find", required = false) String find) {
@@ -235,6 +214,8 @@ public class AdminController extends ParentController{
         return mav;
     }
 
+
+//    REQUESTS ENDPOINTS
     @RequestMapping(value = "/admi/requests")
     public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
                                          @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
@@ -278,6 +259,47 @@ public class AdminController extends ParentController{
         }
 
         return mav;
+    }
+
+    @RequestMapping(value ="/admi/upload-request", method = { RequestMethod.GET })
+    public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
+        return new ModelAndView("admin/admin_upload_request")
+                .addObject("pets_list", petService.listAll(getLocale()))
+                .addObject("users_list",userService.list().toArray());
+    }
+
+    @RequestMapping(value = "/admi/upload-request", method = { RequestMethod.POST })
+    public ModelAndView uploadRequest(@Valid @ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm,
+                                      final BindingResult errors, HttpServletRequest request) {
+
+
+        if (errors.hasErrors()) {
+            return uploadRequestForm(requestForm);
+        }
+
+        Optional<Request> optionalRequest = requestService.create(requestForm.getUserId(),requestForm.getPetId(), getLocale());
+
+        if (!optionalRequest.isPresent()) {
+            return uploadRequestForm(requestForm).addObject("request_error", true);
+        }
+
+
+        return new ModelAndView("redirect:/admi/requests");
+    }
+
+    @RequestMapping(value = "/admi/request/{id}/cancel", method = {RequestMethod.POST})
+    public ModelAndView requestUpdateCanceled(@PathVariable("id") long id) {
+        requestService.cancelRequestAdmin(id);
+        LOGGER.debug("Request {} updated as canceled", id);
+        return new ModelAndView("redirect:/admi/requests");
+
+    }
+
+    @RequestMapping(value = "/admi/request/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView requestUpdateRecover(@PathVariable("id") long id) {
+        requestService.recoverRequestAdmin(id);
+        LOGGER.debug("Request {} updated as recovered", id);
+        return new ModelAndView("redirect:/admi/requests");
     }
 
 }

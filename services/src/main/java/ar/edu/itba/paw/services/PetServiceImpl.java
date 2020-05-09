@@ -142,11 +142,6 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public void sellPetAdmin(long petId) {
-        petDao.updateStatus(petId, SOLD_STATUS);
-    }
-
-    @Override
     public boolean removePet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
             petDao.updateStatus(petId, REMOVED_STATUS);
@@ -158,6 +153,11 @@ public class PetServiceImpl implements PetService {
     @Override
     public void removePetAdmin(long petId) {
         petDao.updateStatus(petId, REMOVED_STATUS);
+    }
+
+    @Override
+    public void sellPetAdmin(long petId) {
+        petDao.updateStatus(petId, SOLD_STATUS);
     }
 
     @Override
