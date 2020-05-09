@@ -10,18 +10,19 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public interface UserDao {
-    Optional<User> findById(long id);
-    Optional<User> findByUsername(String username);
-    Stream<User> list();
-    Stream<User> adminUserList(String page);
+    Optional<User> findById(String language, long id);
+    Optional<User> findByUsername(String language, String username);
+    Stream<User> list(String language);
+    Stream<User> adminUserList(String language, String page);
     Stream<User> adminSearchList(String language, String find, String page);
-    Optional<User> create(String username, String password, String mail, String phone) throws DuplicateUserException;
-    Optional<User> findByMail(String mail);
+    Optional<User> create(String language, String username, String password, String mail, String phone, int status) throws DuplicateUserException;
+    Optional<User> findByMail(String language, String mail);
     boolean updatePassword(String newPassword, long id);
     boolean createToken(UUID uuid, long userId, Date expirationDate);
     Optional<Token> getToken(UUID uuid);
     boolean deleteToken(UUID uuid);
-    Optional<User> findByToken(UUID uuid);
+    Optional<User> findByToken(String language, UUID uuid);
     String getAdminPages();
     String getAdminSearchPages(String language, String find);
+    boolean updateStatus(long id, int status);
 }

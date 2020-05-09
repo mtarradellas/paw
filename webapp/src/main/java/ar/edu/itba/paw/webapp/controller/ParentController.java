@@ -49,7 +49,7 @@ public class ParentController {
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
             return null;
         }
-        return userService.findByUsername(auth.getName()).orElse(null);
+        return userService.findByUsername(getLocale(), auth.getName()).orElse(null);
     }
 
     @ExceptionHandler(PetNotFoundException.class)

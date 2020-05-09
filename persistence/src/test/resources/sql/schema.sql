@@ -9,6 +9,11 @@ speciesId INTEGER REFERENCES species(id),
 es_AR VARCHAR(255),
 en_US VARCHAR(255)
 );
+create table user_status (
+id INTEGER primary key,
+en_US VARCHAR(255),
+es_AR VARCHAR(255)
+);
 CREATE TABLE IF NOT EXISTS users (
 id SERIAL PRIMARY KEY,
 username VARCHAR(255) NOT NULL UNIQUE,

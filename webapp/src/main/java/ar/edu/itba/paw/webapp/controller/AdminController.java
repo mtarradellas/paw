@@ -111,7 +111,7 @@ public class AdminController extends ParentController{
         }else{
             String maxPage = userService.getAdminUserPages();
             mav.addObject("maxPage", maxPage);
-            List<User> userList = userService.adminUserList(page);
+            List<User> userList = userService.adminUserList(getLocale(), page);
             mav.addObject("users_list", userList);
         }
 
@@ -128,7 +128,7 @@ public class AdminController extends ParentController{
             page = "1";
         }
 
-        mav.addObject("user", userService.findById(id).orElseThrow(UserNotFoundException::new));
+        mav.addObject("user", userService.findById(getLocale(), id).orElseThrow(UserNotFoundException::new));
         mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
         mav.addObject("currentPage", page);
         mav.addObject("userPets", petService.getByUserId(getLocale(), id, page));

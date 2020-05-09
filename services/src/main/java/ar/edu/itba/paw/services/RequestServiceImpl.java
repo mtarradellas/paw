@@ -26,6 +26,8 @@ public class RequestServiceImpl implements RequestService {
     private final int REJECTED_STATUS = 3;
     private final int CANCELED_STATUS = 4;
 
+    private final String DEFAULT_LOCALE = "es_AR";
+
     @Autowired
     private RequestDao requestDao;
 
@@ -169,7 +171,7 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        final Optional<User> opRecipient = userService.findById(request.getOwnerId());
+        final Optional<User> opRecipient = userService.findById(DEFAULT_LOCALE, request.getOwnerId());
         if (!opRecipient.isPresent()) {
             LOGGER.warn("Recipient user {} through request {} not found", request.getOwnerId(), request.getId());
             return false;
@@ -209,7 +211,7 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        final Optional<User> opRecipient = userService.findById(request.getOwnerId());
+        final Optional<User> opRecipient = userService.findById(DEFAULT_LOCALE, request.getOwnerId());
         if (!opRecipient.isPresent()) {
             LOGGER.warn("Recipient user {} through request {} not found", request.getOwnerId(), request.getId());
             return false;
