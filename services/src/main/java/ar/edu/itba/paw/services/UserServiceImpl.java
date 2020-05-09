@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.MailService;
-import ar.edu.itba.paw.interfaces.UserDao;
-import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
@@ -22,12 +20,17 @@ public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final int ACTIVE = 1;
     private final int INACTIVE = 2;
+    private final int DELETED = 3;
 
 
     @Autowired
     private UserDao userDao;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private PetService petService;
+    @Autowired
+    private RequestService requestService;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -186,6 +189,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isAdmin(long userId) {
         return userDao.isAdmin(userId);
+    }
+
+    @Override
+    public void removeUser(long userId) {
+        requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
+        requestService.cancelAllByOwner(userId);
+        petService.removeAllByOwner(userId);
+        userDao.updateStatus(userId, DELETED);
     }
 
     @Override

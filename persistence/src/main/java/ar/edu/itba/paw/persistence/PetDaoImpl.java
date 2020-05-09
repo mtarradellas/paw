@@ -63,6 +63,14 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
+    public void updateAllByOwner(long ownerId, int status) {
+        String sql = "UPDATE pets " +
+                "SET status = ? " +
+                "WHERE ownerId = ? ";
+        jdbcTemplate.update(sql, status, ownerId);
+    }
+
+    @Override
     public Optional<Pet> findById(String language, long id, int level) {
         String sql;
 

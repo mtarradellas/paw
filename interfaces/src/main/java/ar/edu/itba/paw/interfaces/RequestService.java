@@ -26,4 +26,6 @@ public interface RequestService {
     boolean reject(long id, long ownerId, String locale);
     void cancelRequestAdmin(long requestId);
     void recoverRequestAdmin(long requestId);
+    void cancelAllByOwner(long ownerId);
+    void cancelAllByPetOwner(long petOwnerId);
 }
