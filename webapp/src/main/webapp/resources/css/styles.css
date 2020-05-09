@@ -238,6 +238,37 @@ html,body {
     display:none;
 }
 
+.revert-input-anchor{
+    padding: 10px;
+    background: #e2dada;
+    border-radius: 5px;
+    margin-left: 5px;
+    border: 1px #cac1c1 solid;
+    text-decoration: none;
+    display: none;
+}
+
+.revert-input-anchor:hover{
+    background-color: #a59d9d;
+    cursor: pointer;
+}
+
+.input-modifiable-div {
+    display: flex;
+}
+
+.input-modified.input-modifiable-div input {
+    border-color: #a5a522;
+}
+
+.input-modified.input-modifiable-div select {
+    border-color: #a5a522;
+}
+
+.input-modified.input-modifiable-div .revert-input-anchor {
+    display: inline;
+}
+
 /*.button {*/
 /*    text-decoration: none;*/
 /*    background-color: #EEEEEE;*/
