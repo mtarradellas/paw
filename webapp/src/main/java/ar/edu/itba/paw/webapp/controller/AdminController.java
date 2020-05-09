@@ -143,6 +143,28 @@ public class AdminController extends ParentController{
         return new ModelAndView("redirect:/admi/pet/" + opPet.get().getId());
     }
 
+    @RequestMapping(value = "/admi/pet/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
+         petService.removePetAdmin(id);
+         LOGGER.debug("Pet {} updated as removed", id);
+         return new ModelAndView("redirect:/admi/pets");
+
+    }
+
+    @RequestMapping(value = "/admi/pet/{id}/sell-adopt", method = {RequestMethod.POST})
+    public ModelAndView petUpdateSold(@PathVariable("id") long id) {
+        petService.sellPetAdmin(id);
+        LOGGER.debug("Pet {} updated as sold", id);
+        return new ModelAndView("redirect:/admi/pets");
+    }
+
+    @RequestMapping(value = "/admi/pet/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
+        petService.recoverPetAdmin(id);
+        LOGGER.debug("Pet {} updated as sold", id);
+        return new ModelAndView("redirect:/admi/pets");
+    }
+
     @RequestMapping(value ="/admi/upload-request", method = { RequestMethod.GET })
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
         return new ModelAndView("admin/admin_upload_request")

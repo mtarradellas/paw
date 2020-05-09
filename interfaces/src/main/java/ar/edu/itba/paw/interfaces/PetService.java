@@ -21,7 +21,10 @@ public interface PetService {
     List<Pet> filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
     List<Pet> getByUserId(String language, long userId, String page);
     boolean sellPet(long petId, long userId);
+    void sellPetAdmin(long petId);
     boolean removePet(long petId, long userId);
+    void removePetAdmin(long petId);
+    void recoverPetAdmin(long petId);
     String getMaxPages();
     String getMaxSearchPages(String language, String findValue);
     String getMaxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
