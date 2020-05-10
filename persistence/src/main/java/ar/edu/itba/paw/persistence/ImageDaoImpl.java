@@ -9,9 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Repository
@@ -57,6 +55,21 @@ public class ImageDaoImpl implements ImageDao {
 
         key = jdbcInsert.executeAndReturnKey(values);
         return Optional.of(new Image(key.intValue(), bytes, petId));
+    }
+
+    @Override
+    public void delete(Integer id) {
+        jdbcTemplate.update("DELETE FROM images WHERE id = ? ", new Object[]{id}) ;
+    }
+
+    @Override
+    public void delete(List<Integer> ids) {
+        List<String> images = new ArrayList<>();
+        for (Integer id:ids) {
+            images.add(id.toString());
+        }
+        String imagesToDelete = String.join(",", images);
+        jdbcTemplate.update("DELETE FROM images WHERE id IN (" + imagesToDelete +") ") ;
     }
 
 }

@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -34,5 +35,15 @@ public class ImageServiceImpl implements ImageService {
             return imageDao.create(petId, bytes);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void delete(Integer id) {
+        this.imageDao.delete(id);
+    }
+
+    @Override
+    public void delete(List<Integer> ids) {
+        this.imageDao.delete(ids);
     }
 }

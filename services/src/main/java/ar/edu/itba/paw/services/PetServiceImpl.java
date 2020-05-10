@@ -2,6 +2,8 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PetServiceImpl implements PetService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PetServiceImpl.class);
+
     static final long AVAILABLE_STATUS = 1;
     static final long REMOVED_STATUS = 2;
     static final long SOLD_STATUS = 3;
@@ -20,6 +24,8 @@ public class PetServiceImpl implements PetService {
     private PetDao petDao;
     @Autowired
     private SpeciesDao speciesDao;
+    @Autowired
+    private ImageService imageService;
 
 
     @Override
@@ -92,6 +98,22 @@ public class PetServiceImpl implements PetService {
     @Override
     public void removeAllByOwner(long ownerId) {
         petDao.updateAllByOwner(ownerId, (int)REMOVED_STATUS);
+    }
+
+    @Override
+    public Optional<Pet> update(long userId, long id, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
+                       boolean vaccinated, String gender, String description, Date birthDate, int price) {
+        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
+                "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
+                id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+        if(! petDao.isPetOwner(id, userId)) {
+            LOGGER.warn("Logged user is not the owner of pet {}, update aborted", id);
+            return Optional.empty();
+        }
+        LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
+        imageService.delete(imagesToDelete);
+        petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+        return Optional.empty();
     }
 
     @Override

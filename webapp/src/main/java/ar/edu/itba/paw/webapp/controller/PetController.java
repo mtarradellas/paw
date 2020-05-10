@@ -240,7 +240,9 @@ public class PetController extends ParentController {
         }
 
         /*TODO: convertir todo esto en un update y agregar la funcionalidad para eliminar las imagenes*/
-
+        petService.update(loggedUser().getId(), id, editPetForm.getImagesIdToDelete(), editPetForm.getPetName(), editPetForm.getSpeciesId(),
+                editPetForm.getBreedId(), editPetForm.getLocation(), editPetForm.getVaccinated(), editPetForm.getGender(),
+                editPetForm.getDescription(), (Date) editPetForm.getBirthDate(), editPetForm.getPrice());
         return new ModelAndView("redirect:/");
     }
 
