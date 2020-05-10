@@ -173,6 +173,7 @@ public class PetServiceImpl implements PetService {
         Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
         if (!opPet.isPresent()){
             LOGGER.debug("Pet {} update failed", id);
+            return Optional.empty();
         }
         LOGGER.debug("Pet {} successfully updated", opPet.get());
 
