@@ -11,7 +11,74 @@
         </span>
         <div class="container-fluid">
             <div class="row">
-                <t:search-tools-pet breeds_list="${breeds_list}" species_list="${species_list}"/>
+
+                <div class="col-md-2 search-tools">
+                    <form class="card shadow p-3" method="get"
+                          action="${pageContext.request.contextPath}/admin/users">
+                        <div class="card-header">
+                            <h5 class="card-title"><spring:message code="filter.options"/></h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
+                            <div class="form-group">
+                                <label for="filter-status"><spring:message code="request.status"/></label>
+                                <select name="status" class="form-control" id="filter-status">
+                                    <option value="any"
+                                            <c:if test="${(not empty param.status) && (param.status eq 'any')}">
+                                                selected
+                                            </c:if>
+                                    >
+                                        <spring:message code="filter.any"/>
+                                    </option>
+                                    <option value="active"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('active' eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="status.active"/></option>
+                                    <option value="inactive"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('inactive' eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="status.inactive"/></option>
+                                    <option value="deleted"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('deleted' eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="status.deleted"/></option>
+
+                                </select>
+                            </div>
+                            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
+                            <label for="search-criteria"><spring:message code="filter.criteria"/></label>
+                            <select name="searchCriteria" class="form-control" id="search-criteria">
+                                <option value="any"><spring:message code="filter.any"/></option>
+                                <option value="mail"
+                                        <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'mail')}">selected</c:if>
+                                ><spring:message code="register.email"/></option>
+                                <option value="username"
+                                        <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'username')}">selected</c:if>
+                                ><spring:message code="request.username"/></option>
+                            </select>
+                            <label for="search-order"><spring:message code="filter.order"/></label>
+                            <select name="searchOrder" class="form-control" id="search-order"
+                                    <c:if test="${(empty param.searchCriteria) || (param.searchCriteria eq 'any')}">
+                                        disabled
+                                    </c:if>
+                            >
+                                <option value="asc"
+                                        <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'asc')}">selected</c:if>
+                                ><spring:message code="filter.ascending"/></option>
+                                <option value="desc"
+                                        <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'desc')}">selected</c:if>
+                                ><spring:message code="filter.descending"/></option>
+                            </select>
+                        </div>
+                        <div class="card-footer" id="search-tools-submit">
+                            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="col-lg-8">
                     <div class="shadow p-3 bg-white rounded">
 

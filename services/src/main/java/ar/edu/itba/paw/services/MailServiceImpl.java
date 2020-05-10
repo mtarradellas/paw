@@ -1,10 +1,16 @@
 package ar.edu.itba.paw.services;
 
+import java.io.StringWriter;
+import java.util.Map;
+
 import ar.edu.itba.paw.interfaces.MailService;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.MailException;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,61 +18,50 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.ServletContextResource;
 
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
 
-@Service
+@Service("mailService")
 @Configuration
 @EnableAsync
 public class MailServiceImpl implements MailService {
+
     @Autowired
     JavaMailSender mailSender;
 
+    @Autowired
+    VelocityEngine velocityEngine;
 
-    @Override
+    @Autowired
+    MessageSource messageSource;
+
     @Async
-    public void sendMail(String recipient, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(recipient);
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+    public void sendMail(String recipient, Map<String, Object> arguments, String mailType){
+        MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource);
 
-    }
-
-    @Override
-    public void sendMailWithAttachment(String to, String subject, String body, String fileToAttach){
         MimeMessagePreparator preparator = mimeMessage -> {
-            
-            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            mimeMessage.setFrom(new InternetAddress("petsociety.contact@gmail.com"));
-            mimeMessage.setSubject(subject);
-            mimeMessage.setText(body);
 
-            FileSystemResource file = new FileSystemResource(new File(fileToAttach));
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            helper.addAttachment("logo.jpg", file);
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+            helper.setTo(recipient);
+            helper.setSubject(messageSourceAccessor.getMessage(mailType + "Subject"));
+            VelocityContext context = new VelocityContext();
+            context.put("bodyMessages", messageSourceAccessor);
+            for(String key : arguments.keySet()){
+                context.put(key,arguments.get(key));
+            }
+            StringWriter stringWriter = new StringWriter();
+            velocityEngine.mergeTemplate("templates/" + mailType + ".vm", "UTF-8", context, stringWriter);
+            String text = stringWriter.toString();
+
+            helper.setText(text,true);
         };
 
-        try {
-            mailSender.send(preparator);
-        }
-        catch (MailException ex) {
-            // simply log it and go on...
-            System.err.println(ex.getMessage());
-        }
+        mailSender.send(preparator);
     }
 
-//    This is to send a preconfigured message
-//    @Autowired
-//    private SimpleMailMessage preConfiguredMessage;
-
-//    public void sendPreConfiguredMail(String message) {
-//        SimpleMailMessage mailMessage = new SimpleMailMessage(preConfiguredMessage);
-//        mailMessage.setText(message);
-//        mailSender.send(mailMessage);
-//    }
 }

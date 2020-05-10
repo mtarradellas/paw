@@ -90,6 +90,7 @@ public class PetController extends ParentController {
         }
 
         /* TODO Generate exceptions for error handling */
+
         Optional<Request> opRequest =  requestService.create(user.getId(), id, locale);
         if (!opRequest.isPresent()) {
             mav.addObject("request_error", true);

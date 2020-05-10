@@ -143,11 +143,11 @@
                             </div>
                         </form:form>
 
+                        <div class="p-3">
+                            <a href="${pageContext.request.contextPath}/admin/pets"><spring:message code="goBackLists"/></a>
+                        </div>
+                    </div>
 
-                    </div>
-                    <div class="p-3">
-                        <a href="${pageContext.request.contextPath}/admin/pets"><spring:message code="goBackLists"/></a>
-                    </div>
                 </div>
             </div>
         </div>

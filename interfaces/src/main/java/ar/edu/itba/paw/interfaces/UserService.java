@@ -16,6 +16,7 @@ public interface UserService {
     Stream<User> list(String language);
     List<User> adminUserList(String language, String page);
     List<User> adminSearchList(String language, String find, String page);
+    List<User> adminFilteredList(String language,String status,String searchCriteria,String searchOrder,String page);
     Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String language, String mail);
@@ -26,6 +27,7 @@ public interface UserService {
     Optional<User> findByToken(String language, UUID uuid);
     String getAdminUserPages();
     String getAdminMaxSearchPages(String language, String find);
+    String getAdminMaxFilterPages(String language,String status);
     Optional<User> activateAccountWithToken(String language, UUID uuid);
     Optional<User> requestPasswordReset(String locale, String mail);
     Optional<User> resetPassword(String language, UUID uuid, String password);
