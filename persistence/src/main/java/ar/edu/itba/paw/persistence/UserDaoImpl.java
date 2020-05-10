@@ -164,6 +164,61 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public Stream<User> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
+        if (status == null) {
+            status = "(1,2,3)";
+        } else if (status.equals("active")) {
+            status = "(1)";
+        } else if (status.equals("inactive")) {
+            status = "(2)";
+        } else if (status.equals("deleted")) {
+            status = "(3)";
+        } else{
+            status = "(100)";
+        }
+
+        Stream<User> result;
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numValue - 1));
+        String limit = " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
+
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
+                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
+                "WHERE  users.status IN " + status ;
+
+        if (searchCriteria == null) {
+            result = jdbcTemplate.query(sql + limit, USER_MAPPER).stream();
+        }else {
+            if (searchCriteria.contains("mail")) {
+                searchCriteria = "users.mail";
+            }
+            else if (searchCriteria.contains("username")) {
+                searchCriteria = "users.username";
+            }
+            else { /* Default criteria */
+                searchCriteria = "users.id";
+            }
+            if (searchOrder == null || searchOrder.toLowerCase().contains("asc")) {
+                searchOrder = "ASC";
+            } else {
+                searchOrder = "DESC";
+            }
+            searchCriteria = searchCriteria + " " + searchOrder;
+            sql = sql + " ORDER BY " + searchCriteria;
+
+            result = jdbcTemplate.query(sql ,  USER_MAPPER).stream();
+        }
+
+        return result;
+    }
+
+    @Override
     public String getAdminPages(){
         Integer users = jdbcTemplate.queryForObject("select count(*) from users" ,
                 Integer.class);
@@ -185,6 +240,28 @@ public class UserDaoImpl implements UserDao {
                 new Object[] { modifiedValue ,modifiedValue,modifiedValue},
                 Integer.class);
 
+        users = (int) Math.ceil((double) users / ADMIN_SHOWCASE_ITEMS);
+        return users.toString();
+    }
+
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+
+        if (status == null) {
+            status = "(1,2,3)";
+        } else if (status.equals("active")) {
+            status = "(1)";
+        } else if (status.equals("inactive")) {
+            status = "(2)";
+        } else if (status.equals("deleted")) {
+            status = "(3)";
+        } else{
+            status = "(100)";
+        }
+
+        Integer users = jdbcTemplate.queryForObject( "SELECT count(distinct users.id) "+
+                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
+                "WHERE  users.status IN " + status, Integer.class);
         users = (int) Math.ceil((double) users / ADMIN_SHOWCASE_ITEMS);
         return users.toString();
     }

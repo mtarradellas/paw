@@ -182,31 +182,51 @@ public class AdminController extends ParentController{
 
 
 //    USERS ENDPOINTS
-    @RequestMapping(value = "/admin/users")
-    public ModelAndView getUsersAdmin(@RequestParam(name = "page", required = false) String page,
-                                      @RequestParam(name = "find", required = false) String find) {
-        if(page == null){
-            page = "1";
-        }
-
-        ModelAndView mav = new ModelAndView("admin/admin_users");
-        mav.addObject("currentPage", page);
-
-        if(find != null){
-            String maxPage = userService.getAdminMaxSearchPages(getLocale(), find);
-            mav.addObject("maxPage", maxPage);
-            List<User> userList = userService.adminSearchList(getLocale(), find, page);
-            mav.addObject("users_list", userList);
-
-        }else{
-            String maxPage = userService.getAdminUserPages();
-            mav.addObject("maxPage", maxPage);
-            List<User> userList = userService.adminUserList(getLocale(), page);
-            mav.addObject("users_list", userList);
-        }
-
-        return mav;
+@RequestMapping(value = "/admin/users")
+public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = false) String status,
+                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                  @RequestParam(name = "searchOrder", required = false) String searchOrder,
+                                  @RequestParam(name = "page", required = false) String page,
+                                  @RequestParam(name = "find", required = false) String find) {
+    if(page == null){
+        page = "1";
     }
+
+    final String locale = getLocale();
+
+
+    ModelAndView mav = new ModelAndView("admin/admin_users");
+    mav.addObject("currentPage", page);
+
+    status = status == null || status.equals("any") ? null : status;
+    searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
+
+    if ( searchCriteria != null || status != null) {
+        String maxPage = userService.getAdminMaxFilterPages(locale, status);
+        mav.addObject("maxPage", maxPage);
+
+        LOGGER.debug("Requesting filtered user list of parameters: locale: {}, " +
+                        "status: {}, sCriteria: {}, sOrder: {}, page: {}",
+                locale, status, searchCriteria, searchOrder, page);
+        List<User> usersList = userService.adminFilteredList(locale, status, searchCriteria,
+                searchOrder, page);
+        mav.addObject("users_list", usersList);
+
+    }else if(find != null){
+        String maxPage = userService.getAdminMaxSearchPages(locale, find);
+        mav.addObject("maxPage", maxPage);
+        List<User> userList = userService.adminSearchList(locale, find, page);
+        mav.addObject("users_list", userList);
+
+    }else{
+        String maxPage = userService.getAdminUserPages();
+        mav.addObject("maxPage", maxPage);
+        List<User> userList = userService.adminUserList(locale, page);
+        mav.addObject("users_list", userList);
+    }
+
+    return mav;
+}
 
     @RequestMapping(value = "/admin/user/{id}")
     public ModelAndView getSingleUser(@PathVariable("id") long id,

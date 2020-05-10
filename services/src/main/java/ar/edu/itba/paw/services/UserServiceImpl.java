@@ -61,6 +61,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        return userDao.adminFilteredList(language, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
         Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, INACTIVE);
@@ -255,5 +260,11 @@ public class UserServiceImpl implements UserService {
     public String getAdminMaxSearchPages(String language, String find) {
         return userDao.getAdminSearchPages(language, find);
     }
+
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+        return userDao.getAdminMaxFilterPages(language, status);
+    }
+
 
 }
