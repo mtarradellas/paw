@@ -70,9 +70,10 @@
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                 </div>
             </form:form>
+            <div class="p-3">
+                <a href="${pageContext.request.contextPath}/admin/requests"><spring:message code="goBackLists"/></a>
+            </div>
         </div>
-        <div class="p-3">
-            <a href="${pageContext.request.contextPath}/admin/requests"><spring:message code="goBackLists"/></a>
-        </div>
+
     </div>
 </t:adminLayout>

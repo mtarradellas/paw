@@ -368,5 +368,26 @@ public class AdminController extends ParentController{
         return new ModelAndView("redirect:/admin/requests");
     }
 
+    @RequestMapping(value ="/admin/request/{id}/edit", method = { RequestMethod.GET })
+    public ModelAndView editRequest(@PathVariable("id") long id) {
+
+        Optional<Request> request = requestService.findById(id,getLocale());
+        if(!request.isPresent()){
+            return new ModelAndView("error-views/404");
+        }
+
+        return new ModelAndView("admin/admin_edit_request")
+                .addObject("request", request.get());
+    }
+
+    @RequestMapping(value = "/admin/request/{id}/edit", method = { RequestMethod.POST })
+    public ModelAndView uploadRequest(@PathVariable("id") long id,
+                                      @RequestParam(name = "newStatus", required = false) String newStatus) {
+
+        requestService.adminUpdateStatus(id,newStatus);
+
+        return new ModelAndView("redirect:/admin/requests");
+    }
+
 }
 
