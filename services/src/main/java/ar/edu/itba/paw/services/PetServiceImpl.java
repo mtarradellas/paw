@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,6 @@ import java.util.stream.Collectors;
 public class PetServiceImpl implements PetService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PetServiceImpl.class);
-
-    static final long AVAILABLE_STATUS = 1;
-    static final long REMOVED_STATUS = 2;
-    static final long SOLD_STATUS = 3;
 
     @Autowired
     private PetDao petDao;
@@ -113,9 +110,9 @@ public class PetServiceImpl implements PetService {
         }
         Breed breed = opBreed.get();
 
-        Optional<Status> opStatus = petDao.findStatusById(language, AVAILABLE_STATUS);
+        Optional<Status> opStatus = petDao.findStatusById(language, PetStatus.AVAILABLE.getValue());
         if (!opStatus.isPresent()) {
-            LOGGER.warn("Status {} not found, pet creation failed", AVAILABLE_STATUS);
+            LOGGER.warn("Status {} not found, pet creation failed", PetStatus.AVAILABLE.getValue());
             return Optional.empty();
         }
         Status status = opStatus.get();
@@ -137,7 +134,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void removeAllByOwner(long ownerId) {
-        petDao.updateAllByOwner(ownerId, (int)REMOVED_STATUS);
+        petDao.updateAllByOwner(ownerId, PetStatus.REMOVED.getValue());
     }
 
     @Override
@@ -184,7 +181,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public boolean sellPet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
-            petDao.updateStatus(petId, SOLD_STATUS);
+            petDao.updateStatus(petId, PetStatus.SOLD.getValue());
             return true;
         }
         return false;
@@ -193,7 +190,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public boolean removePet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
-            petDao.updateStatus(petId, REMOVED_STATUS);
+            petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
             return true;
         }
         return false;
@@ -201,16 +198,16 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void removePetAdmin(long petId) {
-        petDao.updateStatus(petId, REMOVED_STATUS);
+        petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
     }
 
     @Override
     public void sellPetAdmin(long petId) {
-        petDao.updateStatus(petId, SOLD_STATUS);
+        petDao.updateStatus(petId, PetStatus.SOLD.getValue());
     }
 
     @Override
     public void recoverPetAdmin(long petId) {
-        petDao.updateStatus(petId, AVAILABLE_STATUS);
+        petDao.updateStatus(petId, PetStatus.AVAILABLE.getValue());
     }
 }

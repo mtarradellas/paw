@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.models.*;
 
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,7 +31,9 @@ public class PetDaoImpl implements PetDao {
     private static final int ADMIN_SHOWCASE_ITEMS = 25;
 
     private static final String PET_TABLE = "pets";
-    private static final String HIDDEN_PETS_STATUS = " (2, 3) "; // Pets Removed or Sold are hidden from usual queries
+
+    // Pets Removed or Sold are hidden from usual queries
+    private static final String HIDDEN_PETS_STATUS =  " ( " + PetStatus.REMOVED.getValue() + ", " + PetStatus.SOLD.getValue() + " ) ";
 
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -220,6 +223,7 @@ public class PetDaoImpl implements PetDao {
         if (genderFilter == null) {
             genderFilter = "%";
         }
+        /* TODO change to constants */
         if (statusFilter == null) {
             statusFilter = "(1, 2, 3)";
         }else if (statusFilter.equals("deleted")){

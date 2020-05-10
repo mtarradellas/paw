@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,9 +69,21 @@ public class PetController extends ParentController {
         User user = loggedUser();
         String locale = getLocale();
         /* Check if user has already requested pet */
-        if (user != null) {
-            mav.addObject("requestExists", requestService.requestExists(id, user.getId(), locale));
+        if (user != null && !user.getRequestList().isEmpty()) {
+            Optional<Request> opRequest = user.getRequestList().stream().filter(request -> request.getPetId() == id).max(Comparator.comparing(Request::getCreationDate));
+            if (!opRequest.isPresent()) {
+                LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
+                mav.addObject("lastRequest", null);
+                mav.addObject("requestExists", false);
+            }
+            else {
+                LOGGER.debug("User {} last request status for pet {} is {}", user.getId(), id, opRequest.get().getId());
+                mav.addObject("lastRequest", opRequest.get().getStatus().getId());
+                mav.addObject("requestExists", true);
+            }
         } else {
+            LOGGER.debug("User is not authenticated or has no requests");
+            mav.addObject("lastRequest", null);
             mav.addObject("requestExists", false);
         }
         mav.addObject("pet",

@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,6 @@ public class RequestServiceImpl implements RequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestServiceImpl.class);
 
-    private final int PENDING_STATUS = 1;
-    private final int ACCEPTED_STATUS = 2;
-    private final int REJECTED_STATUS = 3;
-    private final int CANCELED_STATUS = 4;
-
     private final String DEFAULT_LOCALE = "es_AR";
 
     @Autowired
@@ -37,8 +33,6 @@ public class RequestServiceImpl implements RequestService {
     private MailService mailService;
     @Autowired
     private UserService userService;
-
-    private final int PENDING = 1;
 
     @Override
     public Optional<Request> findById(long id, String language) {
@@ -73,9 +67,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Optional<Request> create(long userId, long petId, String locale) {
         ArrayList<Integer> statusList = new ArrayList<Integer>() {{
-            add(ACCEPTED_STATUS);
-            add(REJECTED_STATUS);
-            add(PENDING_STATUS);
+            add(RequestStatus.ACCEPTED.getValue());
+            add(RequestStatus.REJECTED.getValue());
+            add(RequestStatus.PENDING.getValue());
         }};
         if (requestDao.findIdByStatus(petId, userId, statusList).count() > 0) {
             LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", userId, petId);
@@ -87,7 +81,7 @@ public class RequestServiceImpl implements RequestService {
             return Optional.empty();
         }
 
-        Optional<Request> opRequest = requestDao.create(userId, petId, PENDING, locale);
+        Optional<Request> opRequest = requestDao.create(userId, petId, RequestStatus.PENDING.getValue(), locale);
         if (!opRequest.isPresent()) {
             LOGGER.warn("Request creation from user {} to pet {} failed", userId, petId);
             return Optional.empty();
@@ -132,7 +126,7 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        requestDao.updateStatus(id, CANCELED_STATUS);
+        requestDao.updateStatus(id, RequestStatus.CANCELED.getValue());
 /*
         final Optional<Request> opRequest = requestDao.findById(id, locale);
         if (!opRequest.isPresent()) {
@@ -173,11 +167,11 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        requestDao.updateStatus(id, ACCEPTED_STATUS);
+        requestDao.updateStatus(id, RequestStatus.ACCEPTED.getValue());
 
         final Optional<Request> opRequest = requestDao.findById(id, locale);
         if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, ACCEPTED_STATUS, ownerId);
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, RequestStatus.ACCEPTED.getValue(), ownerId);
             return false;
         }
         final Request request = opRequest.get();
@@ -213,11 +207,11 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        requestDao.updateStatus(id, REJECTED_STATUS);
+        requestDao.updateStatus(id, RequestStatus.REJECTED.getValue());
 
         final Optional<Request> opRequest = requestDao.findById(id, locale);
         if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, REJECTED_STATUS, ownerId);
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, RequestStatus.REJECTED.getValue(), ownerId);
             return false;
         }
         final Request request = opRequest.get();
@@ -246,22 +240,22 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void cancelRequestAdmin(long requestId) {
-        requestDao.updateStatus(requestId, CANCELED_STATUS);
+        requestDao.updateStatus(requestId, RequestStatus.CANCELED.getValue());
     }
 
     @Override
     public void recoverRequestAdmin(long requestId) {
-        requestDao.updateStatus(requestId, PENDING_STATUS);
+        requestDao.updateStatus(requestId, RequestStatus.PENDING.getValue());
     }
 
     @Override
     public void cancelAllByOwner(long ownerId) {
-        requestDao.updateAllByOwner(ownerId, PENDING_STATUS, CANCELED_STATUS);
+        requestDao.updateAllByOwner(ownerId, RequestStatus.PENDING.getValue(), RequestStatus.CANCELED.getValue());
     }
 
     @Override
     public void cancelAllByPetOwner(long petOwnerId) {
-        requestDao.updateAllByPetOwner(petOwnerId, PENDING_STATUS, REJECTED_STATUS);
+        requestDao.updateAllByPetOwner(petOwnerId, RequestStatus.PENDING.getValue(), RequestStatus.REJECTED.getValue());
     }
 
     private String getMailMessage( String part, Request request, Contact contact, String locale){

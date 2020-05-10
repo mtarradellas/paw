@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,6 @@ import java.util.stream.Stream;
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-    private final int ACTIVE = 1;
-    private final int INACTIVE = 2;
-    private final int DELETED = 3;
-
 
     @Autowired
     private UserDao userDao;
@@ -63,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, INACTIVE);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, UserStatus.INACTIVE.getValue());
         if (!opUser.isPresent()) {
             LOGGER.warn("User DAO returned empty user");
             return opUser;
@@ -82,7 +79,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, ACTIVE);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, UserStatus.ACTIVE.getValue());
         if (!opUser.isPresent()) {
             LOGGER.warn("User DAO returned empty user");
             return opUser;
@@ -132,7 +129,7 @@ public class UserServiceImpl implements UserService {
         }
         /* TODO activate account */
 
-        if(!userDao.updateStatus(opUser.get().getId(), ACTIVE)) {
+        if(!userDao.updateStatus(opUser.get().getId(), UserStatus.ACTIVE.getValue())) {
             LOGGER.warn("Could not activate user {} account", opUser.get().getId());
             return Optional.empty();
         }
@@ -196,7 +193,7 @@ public class UserServiceImpl implements UserService {
         requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByOwner(userId);
         petService.removeAllByOwner(userId);
-        userDao.updateStatus(userId, DELETED);
+        userDao.updateStatus(userId, UserStatus.DELETED.getValue());
     }
 
     @Override

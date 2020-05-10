@@ -176,7 +176,6 @@ public class RequestDaoImpl implements RequestDao {
     @Override
     public void updateAllByOwner(long ownerId, int oldStatus, int newStatus) {
 
-        System.out.println("\n\n\n\n"+ownerId+"oldstatus: "+oldStatus+"new status "+newStatus+"\n\n\n\n\n");
         String sql = "UPDATE requests " +
                 "SET status = ? " +
                 "WHERE status = ? AND ownerId = ? ";
