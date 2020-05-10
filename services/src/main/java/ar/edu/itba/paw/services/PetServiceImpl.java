@@ -164,9 +164,10 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("Breed {} not found, pet update failed", breedId);
             return Optional.empty();
         }
-
-        LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
-        imageService.delete(imagesToDelete);
+        if(imagesToDelete != null ) {
+            LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
+            imageService.delete(imagesToDelete);
+        }
 
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
         Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);

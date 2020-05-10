@@ -235,11 +235,10 @@ public class PetController extends ParentController {
             return editPetForm(editPetForm, id).addObject("image_error", true);
         }
 
-        /*TODO: convertir todo esto en un update y agregar la funcionalidad para eliminar las imagenes*/
+        Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
         Optional<Pet> opPet =petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
                 editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
-                editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(),
-                (Date) editPetForm.getBirthDate(), editPetForm.getPrice());
+                editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
         if(!opPet.isPresent()){
             LOGGER.warn("Pet could not be updated");
             return new ModelAndView("redirect:/");

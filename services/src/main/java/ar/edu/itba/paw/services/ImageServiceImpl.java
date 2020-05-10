@@ -44,6 +44,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void delete(List<Integer> ids) {
-        this.imageDao.delete(ids);
+        for (Integer id: ids) {
+            this.imageDao.delete(id);
+        }
     }
 }
