@@ -73,7 +73,17 @@ public class UserServiceImpl implements UserService {
 
         UUID uuid = UUID.randomUUID();
         createToken(uuid, opUser.get().getId());
-//        mailService.sendMail(user.getMail(), activateAccountSubject(language), activateAccountBody(language, user, uuid));
+
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
+        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
+        urlToken += "?token=" + uuid;
+
+        arguments.put("URLToken", urlToken );
+        arguments.put("URL", url );
+        arguments.put("username",user.getUsername());
+
+        mailService.sendMail(user.getMail(), arguments, "activate_account");
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}, phone: {}", user.getId(), user.getUsername(), user.getMail(), user.getPhone());
         return opUser;
@@ -153,8 +163,17 @@ public class UserServiceImpl implements UserService {
 
         UUID uuid = UUID.randomUUID();
         createToken(uuid, user.getId());
-//        mailService.sendMail(user.getMail(),resetPasswordSubject(locale),resetPasswordBody(locale, user,uuid));
 
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
+        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
+        urlToken += "?token=" + uuid;
+
+        arguments.put("URLToken", urlToken );
+        arguments.put("URL", url );
+        arguments.put("username",user.getUsername());
+
+        mailService.sendMail(user.getMail(), arguments, "reset_password");
         return opUser;
     }
 
@@ -237,59 +256,4 @@ public class UserServiceImpl implements UserService {
         return userDao.getAdminSearchPages(language, find);
     }
 
-    private String resetPasswordBody(String locale, User user, UUID uuid) {
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
-        url += "?token=" + uuid;
-        String body;
-        if(locale.equals("en_US")) {
-            body = "Hello " + user.getUsername() +
-                    ",\nPlease click the link below to reset your password\n"
-                    + url +
-                    "\nSincerely,\nPet Society Team.";
-        }
-        else{
-            body = "Hola " + user.getUsername() +
-                    ",\nPor favor haz click en el siguiente link para resetear tu contraseña\n"
-                    + url +
-                    "\nSinceramente,\nEl equipo de Pet Society.";
-        }
-        return body;
-    }
-
-    private String resetPasswordSubject(String locale) {
-        String subject;
-        if(locale.equals("en_US")) {
-            subject = "Reset Your Password";
-        }
-        else { subject = "Resetea tu contraseña"; }
-        return subject;
-    }
-
-    private String activateAccountSubject(String locale) {
-        String subject;
-        if(locale.equals("en_US")) {
-            subject = "Activate your account";
-        }
-        else { subject = "Activa tu cuenta"; }
-        return subject;
-    }
-
-    private String activateAccountBody(String locale, User user, UUID uuid) {
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
-        url += "?token=" + uuid;
-        String body;
-        if(locale.equals("en_US")) {
-            body = "Hello " + user.getUsername() +
-                    ",\nPlease click the link below to activate your account\n"
-                    + url +
-                    "\nSincerely,\nPet Society Team.";
-        }
-        else{
-            body = "Hola " + user.getUsername() +
-                    ",\nPor favor haz click en el siguiente link para activar tu cuenta\n"
-                    + url +
-                    "\nSinceramente,\nEl equipo de Pet Society.";
-        }
-        return body;
-    }
 }
