@@ -1,0 +1,10 @@
+<html>
+    <body>
+        <p>$bodyMessages.getMessage("request_accept.triggerUser"): <a href="${ownerURL}">${ownerUsername}</a>.</p>
+        <p>$bodyMessages.getMessage("request_accept.pet"): <a href="${petURL}">${petName}</a>.</p>
+        <p>$bodyMessages.getMessage("request_accept.contact"): ${contactEmail}.</p>
+        <p>$bodyMessages.getMessage("request_accept.info.mail").</p>
+        <p><a href="${URL}">$bodyMessages.getMessage("request_accept.info.site")</a></p>
+        <p>$bodyMessages.getMessage("goodbye")</p>
+    </body>
+</html>
