@@ -216,12 +216,31 @@ public class PetController extends ParentController {
         if (errors.hasErrors()) {
             return editPetForm(editPetForm, id);
         }
+        List<byte[]> photos = new ArrayList<>();
+        try {
+            for (MultipartFile photo : editPetForm.getPhotos()) {
+                try {
+                    photos.add(photo.getBytes());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    throw new ImageLoadException(ex);
+                }
+            }
+        } catch (ImageLoadException ex) {
+            LOGGER.warn("Image bytes load from pet form failed");
+            return editPetForm(editPetForm, id).addObject("image_error", true);
+        }
 
         /*TODO: convertir todo esto en un update y agregar la funcionalidad para eliminar las imagenes*/
-        petService.update(loggedUser().getId(), id, editPetForm.getImagesIdToDelete(), editPetForm.getPetName(), editPetForm.getSpeciesId(),
-                editPetForm.getBreedId(), editPetForm.getLocation(), editPetForm.getVaccinated(), editPetForm.getGender(),
-                editPetForm.getDescription(), (Date) editPetForm.getBirthDate(), editPetForm.getPrice());
-        return new ModelAndView("redirect:/");
+        Optional<Pet> opPet =petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
+                editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
+                editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(),
+                (Date) editPetForm.getBirthDate(), editPetForm.getPrice());
+        if(!opPet.isPresent()){
+            LOGGER.warn("Pet could not be updated");
+            return new ModelAndView("redirect:/");
+        }
+        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
 
     private String getMailMessage( String part, Request request){

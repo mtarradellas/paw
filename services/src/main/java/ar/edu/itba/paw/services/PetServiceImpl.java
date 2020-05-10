@@ -22,6 +22,10 @@ public class PetServiceImpl implements PetService {
     static final long REMOVED_STATUS = 2;
     static final long SOLD_STATUS = 3;
 
+    static final int USER_LEVEL = 0;
+    static final int ADMIN_LEVEL = 1;
+
+
     @Autowired
     private PetDao petDao;
     @Autowired
@@ -32,12 +36,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Optional<Pet> findById(String language, long id) {
-        return petDao.findById(language, id, 0);
+        return petDao.findById(language, id, USER_LEVEL);
     }
 
     @Override
     public Optional<Pet> adminFindById(String language, long id) {
-        return petDao.findById(language, id, 1);
+        return petDao.findById(language, id, ADMIN_LEVEL);
     }
 
     @Override
@@ -49,7 +53,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public List<Pet> list(String language,String page){
 
-        return petDao.list(language, page, 0).collect(Collectors.toList());// 0 is user
+        return petDao.list(language, page, USER_LEVEL).collect(Collectors.toList());
     }
 
     @Override
@@ -71,7 +75,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public PetList find(String language,String findValue, String page){
-        List<Pet> list = petDao.find(language, findValue, page, 0).collect(Collectors.toList());// 0 is user
+        List<Pet> list = petDao.find(language, findValue, page, USER_LEVEL).collect(Collectors.toList());
         String maxPage = getMaxSearchPages(language, findValue);
         return new PetList(list, maxPage);
 
@@ -84,12 +88,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public List<Pet> adminList(String language, String page) {
-        return petDao.list(language, page, 1).collect(Collectors.toList());// 1 is admin
+        return petDao.list(language, page, ADMIN_LEVEL).collect(Collectors.toList());
     }
 
     @Override
     public List<Pet> adminSearchList(String language, String find, String page) {
-        return petDao.find(language, find, page, 1).collect(Collectors.toList()); //1 is admin
+        return petDao.find(language, find, page, ADMIN_LEVEL).collect(Collectors.toList());
     }
 
     @Override
@@ -141,7 +145,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> update(long userId, long id, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
+    public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
                        boolean vaccinated, String gender, String description, Date birthDate, int price) {
         LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
                 "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
@@ -153,17 +157,17 @@ public class PetServiceImpl implements PetService {
         LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
         imageService.delete(imagesToDelete);
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
-        return Optional.empty();
+        return petDao.findById(language, id, USER_LEVEL);
     }
 
     @Override
     public String getMaxPages() {
-        return petDao.maxPages(0);
-    } // 0 is user
+        return petDao.maxPages(USER_LEVEL);
+    }
 
     @Override
     public String getMaxSearchPages(String language, String findValue) {
-        return petDao.maxSearchPages(language, findValue, 0); //0 is user
+        return petDao.maxSearchPages(language, findValue, USER_LEVEL);
     }
 
     @Override
@@ -183,12 +187,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public String getAdminMaxSearchPages(String language, String find) {
-        return petDao.maxSearchPages(language, find, 1); //1 is admin
+        return petDao.maxSearchPages(language, find, ADMIN_LEVEL);
     }
 
     @Override
     public String getAdminMaxPages() {
-        return petDao.maxPages(1); //level 1 is admin
+        return petDao.maxPages(ADMIN_LEVEL);
 
     }
 
