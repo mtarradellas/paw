@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces;
 
+import java.io.StringWriter;
+
 public interface MailService {
-    void sendMail(String recipient, String subject, String body);
-    void sendMailWithAttachment(String to, String subject, String body, String fileToAttach);
+    void sendRequestPetMail(String recipient, String language);
 }

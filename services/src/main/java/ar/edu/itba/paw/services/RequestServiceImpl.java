@@ -180,8 +180,8 @@ public class RequestServiceImpl implements RequestService {
         final Contact contact = opContact.get();
         final User recipient = opRecipient.get();
 
-        mailService.sendMail(recipient.getMail(), getMailMessage("subjectAccept", request, contact, locale),
-                getMailMessage("bodyAccept", request, contact, locale));
+//        mailService.sendMail(recipient.getMail(), getMailMessage("subjectAccept", request, contact, locale),
+//                getMailMessage("bodyAccept", request, contact, locale));
 
         LOGGER.debug("Request {} accepted by user {}", id, ownerId);
         return true;
@@ -220,8 +220,8 @@ public class RequestServiceImpl implements RequestService {
         final Contact contact = opContact.get();
         final User recipient = opRecipient.get();
 
-        mailService.sendMail(recipient.getMail(), getMailMessage("subjectReject", request, contact, locale),
-                getMailMessage("bodyReject", request, contact, locale));
+//        mailService.sendMail(recipient.getMail(), getMailMessage("subjectReject", request, contact, locale),
+//                getMailMessage("bodyReject", request, contact, locale));
 
         LOGGER.debug("Request {} rejected by user {}", id, ownerId);
         return true;

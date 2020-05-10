@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
         UUID uuid = UUID.randomUUID();
         createToken(uuid, opUser.get().getId());
-        mailService.sendMail(user.getMail(), activateAccountSubject(language), activateAccountBody(language, user, uuid));
+//        mailService.sendMail(user.getMail(), activateAccountSubject(language), activateAccountBody(language, user, uuid));
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}, phone: {}", user.getId(), user.getUsername(), user.getMail(), user.getPhone());
         return opUser;
@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
 
         UUID uuid = UUID.randomUUID();
         createToken(uuid, user.getId());
-        mailService.sendMail(user.getMail(),resetPasswordSubject(locale),resetPasswordBody(locale, user,uuid));
+//        mailService.sendMail(user.getMail(),resetPasswordSubject(locale),resetPasswordBody(locale, user,uuid));
 
         return opUser;
     }
