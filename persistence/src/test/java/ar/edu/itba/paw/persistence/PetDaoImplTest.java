@@ -33,7 +33,7 @@ public class PetDaoImplTest {
     private static final long ID = 1;
     private static final String PET_NAME = "pet_test_name";
     private static final Species SPECIES = new Species(1, "pet_test_species");
-    private static final Breed BREED = new Breed(1, 1, "pet_test_breed");
+    private static final Breed BREED = new Breed(1,  "pet_test_breed", SPECIES);
     private static final String LOCATION = "pet_test_location";
     private static final Boolean VACCINATED = false;
     private static final String GENDER = "pet_test_gender";
@@ -56,7 +56,7 @@ public class PetDaoImplTest {
             rs.getLong("id"),
             rs.getString("petname"),
             new Species(rs.getLong("species"), SPECIES.getName()),
-            new Breed(rs.getLong("breed"), rs.getLong("species"), BREED.getName()),
+            new Breed(rs.getLong("breed"), BREED.getName(), SPECIES),
             rs.getString("location"),
             rs.getBoolean("vaccinated"),
             rs.getString("gender"),
@@ -129,9 +129,9 @@ public class PetDaoImplTest {
             put("en_us", SPECIES.getName());
         }};
         SPECIES.setId(jdbcInsertSpecies.executeAndReturnKey(speciesValues).intValue());
-        BREED.setSpeciesId(SPECIES.getId());
+        BREED.setSpecies(SPECIES);
         final Map<String, Object> breedValues = new HashMap<String, Object>() {{
-            put("speciesId", BREED.getSpeciesId());
+            put("speciesId", BREED.getSpecies().getId());
             put("es_ar", BREED.getName());
             put("en_us", BREED.getName());
         }};
