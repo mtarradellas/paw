@@ -13,7 +13,7 @@
 
                 <div class="bg-light shadow p-3">
                     <div class="p-2">
-                        <form:form modelAttribute="adminUploadPetForm" action="${pageContext.request.contextPath}/admi/upload-pet" method="post" enctype="multipart/form-data">
+                        <form:form modelAttribute="adminUploadPetForm" action="${pageContext.request.contextPath}/admin/upload-pet" method="post" enctype="multipart/form-data">
                             <h1>${addPetTitle}</h1>
 
                             <div class="form-row p-1">
@@ -146,7 +146,7 @@
 
                     </div>
                     <div class="p-3">
-                        <a href="${pageContext.request.contextPath}/admi"><spring:message code="backToHome"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/pets"><spring:message code="goBackLists"/></a>
                     </div>
                 </div>
             </div>

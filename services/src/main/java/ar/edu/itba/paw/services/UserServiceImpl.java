@@ -189,11 +189,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void removeAdmin(long userId) {
+        requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
+        requestService.cancelAllByOwner(userId);
+        petService.removeAllByOwner(userId);
+        userDao.updateStatus(userId, UserStatus.DELETED.getValue());
+    }
+
     public void removeUser(long userId) {
         requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByOwner(userId);
         petService.removeAllByOwner(userId);
         userDao.updateStatus(userId, UserStatus.DELETED.getValue());
+    }
+
+    @Override
+    public void recoverAdmin(long userId) {
+        userDao.updateStatus(userId, UserStatus.ACTIVE.getValue());
     }
 
     @Override

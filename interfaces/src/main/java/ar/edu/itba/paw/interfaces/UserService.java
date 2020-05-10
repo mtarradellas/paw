@@ -30,5 +30,7 @@ public interface UserService {
     Optional<User> requestPasswordReset(String locale, String mail);
     Optional<User> resetPassword(String language, UUID uuid, String password);
     boolean isAdmin(long userId);
+    void removeAdmin(long userId);
+    void recoverAdmin(long userId);
     void removeUser(long userId);
 }

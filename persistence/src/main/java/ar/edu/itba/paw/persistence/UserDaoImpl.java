@@ -162,7 +162,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Stream<User> adminUserList(String language, String page){
-        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {}
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
 
         String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
@@ -180,12 +186,18 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Stream<User> adminSearchList(String language, String findValue, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
         if(findValue.equals("")){
             return adminUserList(language, page);
         }
 
         String modifiedValue = "%" + findValue.toLowerCase() + "%";
-        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
 
         String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
@@ -264,5 +276,6 @@ public class UserDaoImpl implements UserDao {
 
         return findById(language, key.longValue());
     }
+
 }
 
