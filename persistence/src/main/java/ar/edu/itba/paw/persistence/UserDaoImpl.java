@@ -2,10 +2,10 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
-import ar.edu.itba.paw.models.Status;
-import ar.edu.itba.paw.models.Token;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
+import ar.edu.itba.paw.persistence.mappers.PetMapExtractor;
+import ar.edu.itba.paw.persistence.mappers.UserMapExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,14 +33,14 @@ public class UserDaoImpl implements UserDao {
     private final SimpleJdbcInsert jdbcInsert;
     private final SimpleJdbcInsert jdbcInsertToken;
 
-    private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
-            rs.getLong("id"),
-            rs.getString("username"),
-            rs.getString("password"),
-            rs.getString("mail"),
-            rs.getString("phone"),
-            new Status(rs.getInt("status"),rs.getString("statusName"))
-    );
+//    private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
+//            rs.getLong("id"),
+//            rs.getString("username"),
+//            rs.getString("password"),
+//            rs.getString("mail"),
+//            rs.getString("phone"),
+//            new Status(rs.getInt("status"),rs.getString("statusName"))
+//    );
 
     private static final RowMapper<Token> TOKEN_MAPPER = (rs, rowNum) -> new Token(
             rs.getLong("id"),
@@ -62,26 +62,48 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(String language, long id) {
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
-                "WHERE users.id = ?", new Object[] {id}, USER_MAPPER)
-                .stream().findFirst();
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                        "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                        "pets.id AS petId, pets.petName as petName " +
+                     "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                        "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                        "ON users.id = requests.ownerId " +
+                     "WHERE users.id = ?";
+
+        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new Object[] {id}, new UserMapExtractor());
+        requestMap.forEach(User::setRequestList);
+        return requestMap.keySet().stream().findFirst();
     }
 
     @Override
     public Optional<User> findByUsername(String language, String username) {
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
-                "WHERE username = ?", new Object[] {username}, USER_MAPPER)
-                .stream().findFirst();
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                "pets.id AS petId, pets.petName as petName " +
+                "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                "ON users.id = requests.ownerId " +
+                "WHERE users.username = ?";
+
+        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new Object[] {username}, new UserMapExtractor());
+        requestMap.forEach(User::setRequestList);
+
+        return requestMap.keySet().stream().findFirst();
     }
 
     @Override
     public Optional<User> findByMail(String language, String mail) {
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
-                "WHERE mail = ?", new Object[] {mail}, USER_MAPPER)
-                .stream().findFirst();
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                "pets.id AS petId, pets.petName as petName " +
+                "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                "ON users.id = requests.ownerId " +
+                "WHERE users.mail = ?";
+
+        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new Object[] {mail}, new UserMapExtractor());
+        requestMap.forEach(User::setRequestList);
+        return requestMap.keySet().stream().findFirst();
     }
 
     @Override
@@ -111,32 +133,55 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByToken(String language, UUID uuid) {
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                        "FROM ( users INNER JOIN user_status ON users.status = user_status.id ) INNER JOIN tokens ON users.id = tokens.userid " +
-                "WHERE tokens.token = ? ", new Object[] {uuid}, USER_MAPPER)
-                .stream().findFirst();
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                "pets.id AS petId, pets.petName as petName " +
+                "FROM ((users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                "ON users.id = requests.ownerId) INNER JOIN tokens ON users.id = tokens.userId " +
+                "WHERE tokens.token = ?";
+
+        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new Object[] {uuid}, new UserMapExtractor());
+        requestMap.forEach(User::setRequestList);
+        return requestMap.keySet().stream().findFirst();
     }
 
     @Override
     public Stream<User> list(String language) {
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                "FROM users INNER JOIN user_status ON users.status = user_status.id ", USER_MAPPER)
-                .stream();
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                "pets.id AS petId, pets.petName as petName " +
+                "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                "ON users.id = requests.ownerId";
+
+        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new UserMapExtractor());
+        requestMap.forEach(User::setRequestList);
+        return requestMap.keySet().stream();
     }
 
     @Override
     public Stream<User> adminUserList(String language, String page){
+
         int numValue = 1;
         try {
             numValue = Integer.parseInt(page);
-        } catch (NumberFormatException ignored) {
-        }
+        } catch (NumberFormatException ignored) {}
 
         String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
-                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, USER_MAPPER)
-                .stream();
+
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                "pets.id AS petId, pets.petName as petName " +
+                "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                "ON users.id = requests.ownerId " +
+                "WHERE users.id = ? " +
+                "limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
+
+        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new UserMapExtractor());
+        requestMap.forEach(User::setRequestList);
+        return requestMap.keySet().stream();
     }
 
     @Override
@@ -151,16 +196,22 @@ public class UserDaoImpl implements UserDao {
             return adminUserList(language, page);
         }
 
-        String modifiedValue = "%"+findValue.toLowerCase()+"%";
-
+        String modifiedValue = "%" + findValue.toLowerCase() + "%";
         String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
-        return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                        "FROM users INNER JOIN user_status ON users.status = user_status.id " +
-                        " WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) limit "
-                + ADMIN_SHOWCASE_ITEMS + " offset " + offset,
-                new Object[] { modifiedValue ,modifiedValue,modifiedValue},
-                USER_MAPPER)
-                .stream();
+
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                "pets.id AS petId, pets.petName as petName " +
+                "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                "ON users.id = requests.ownerId " +
+                "WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) " +
+                "limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
+
+        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new Object[] {modifiedValue, modifiedValue, modifiedValue},
+                new UserMapExtractor());
+        requestMap.forEach(User::setRequestList);
+        return requestMap.keySet().stream();
     }
 
     @Override

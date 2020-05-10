@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.models;
 
+import java.util.List;
+
 public class User {
     private long id;
     private String username;
@@ -7,6 +9,7 @@ public class User {
     private String mail;
     private String phone;
     private Status status;
+    private List<Request> requestList;
 
     public User(String username, String mail, String phone) {
         this.username = username;
@@ -35,6 +38,23 @@ public class User {
         this.phone = phone;
         this.password = password;
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id && username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + (int) id;
+        hash = 31 * hash + username.hashCode();
+        return hash;
     }
 
     public Status getStatus() {
@@ -83,6 +103,14 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public List<Request> getRequestList() {
+        return requestList;
+    }
+
+    public void setRequestList(List<Request> requestList) {
+        this.requestList = requestList;
     }
 
 }
