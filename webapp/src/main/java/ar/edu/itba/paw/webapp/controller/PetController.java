@@ -200,9 +200,13 @@ public class PetController extends ParentController {
     }
 
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
+        String locale = getLocale();
+
+        BreedList breedList = speciesService.breedsList(locale);
+
         return new ModelAndView("views/pet_edit")
-                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
-                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray())
+                .addObject("species_list", breedList.getSpecies().toArray())
+                .addObject("breeds_list", breedList.toArray())
                 .addObject("pet",
                         petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
                 .addObject("id", id);
