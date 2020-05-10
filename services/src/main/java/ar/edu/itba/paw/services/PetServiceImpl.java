@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -148,16 +149,37 @@ public class PetServiceImpl implements PetService {
     public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
                        boolean vaccinated, String gender, String description, Date birthDate, int price) {
         LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
-                "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
+                        "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
                 id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+
         if(! petDao.isPetOwner(id, userId)) {
             LOGGER.warn("Logged user is not the owner of pet {}, update aborted", id);
             return Optional.empty();
         }
+        if (!speciesDao.findSpeciesById(language, speciesId).isPresent()) {
+            LOGGER.warn("Species {} not found, pet update failed", speciesId);
+            return Optional.empty();
+        }
+        if (!speciesDao.findBreedById(language, breedId).isPresent()) {
+            LOGGER.warn("Breed {} not found, pet update failed", breedId);
+            return Optional.empty();
+        }
+
         LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
         imageService.delete(imagesToDelete);
+
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
-        return petDao.findById(language, id, USER_LEVEL);
+        Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
+        if (!opPet.isPresent()){
+            LOGGER.debug("Pet {} update failed", id);
+        }
+        LOGGER.debug("Pet {} successfully updated", opPet.get());
+
+        for (byte[] photo : photos) {
+            LOGGER.debug("Adding image to pet {}", id);
+            imageService.create(opPet.get().getId(), photo, opPet.get().getOwnerId());
+        }
+        return opPet;
     }
 
     @Override
