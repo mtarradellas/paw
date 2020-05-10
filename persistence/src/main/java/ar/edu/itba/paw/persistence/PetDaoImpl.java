@@ -329,6 +329,8 @@ public class PetDaoImpl implements PetDao {
         int maxP = -1;
         try {
             minP = Integer.parseInt(minPrice);
+        } catch (NumberFormatException ignored) { }
+        try {
             maxP = Integer.parseInt(maxPrice);
         } catch (NumberFormatException ignored) { }
 
@@ -349,9 +351,22 @@ public class PetDaoImpl implements PetDao {
                 "AND lower(gender) LIKE ? " +
                 "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
 
-        if(minP != -1 && maxP != -1) {
-            sql += "  AND price >= ? AND price <= ?  " ;
-            ids = jdbcTemplate.query(sql + limit, new Object[] { specieFilter, breedFilter, genderFilter, minP, maxP}, (resultSet, i) -> resultSet.getString("id"));
+        if(minP != -1 || maxP != -1) {
+            if (minP == -1 && maxP != -1) {
+                sql += " AND price <= ?  ";
+                ids = jdbcTemplate.query(sql + limit, new Object[]{specieFilter, breedFilter, genderFilter, maxP},
+                        (resultSet, i) -> resultSet.getString("id"));
+
+            } else if (minP != -1 && maxP == -1) {
+                sql += "  AND price >= ? ";
+                ids = jdbcTemplate.query(sql + limit, new Object[]{specieFilter, breedFilter, genderFilter, minP},
+                        (resultSet, i) -> resultSet.getString("id"));
+
+            } else {
+                sql += "  AND price >= ? AND price <= ?  ";
+                ids = jdbcTemplate.query(sql + limit, new Object[]{specieFilter, breedFilter, genderFilter, minP, maxP},
+                        (resultSet, i) -> resultSet.getString("id"));
+            }
         }
         else {
             ids = jdbcTemplate.query((sql + limit), new Object[]{specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
@@ -403,11 +418,23 @@ public class PetDaoImpl implements PetDao {
 
             sql += "ORDER BY " + searchCriteria;
 
-            if(minP != -1 && maxP != -1) {
-                ids = jdbcTemplate.query(sql + limit, new Object[] { specieFilter, breedFilter, genderFilter, minP, maxP}, (resultSet, i) -> resultSet.getString("id"));
+            if(minP != -1 || maxP != -1) {
+                if (minP == -1 && maxP != -1) {
+                    ids = jdbcTemplate.query(sql + limit, new Object[]{specieFilter, breedFilter, genderFilter, maxP},
+                            (resultSet, i) -> resultSet.getString("id"));
+
+                } else if (minP != -1 && maxP == -1) {
+                    ids = jdbcTemplate.query(sql + limit, new Object[]{specieFilter, breedFilter, genderFilter, minP},
+                            (resultSet, i) -> resultSet.getString("id"));
+
+                } else {
+                    ids = jdbcTemplate.query(sql + limit, new Object[]{specieFilter, breedFilter, genderFilter, minP, maxP},
+                            (resultSet, i) -> resultSet.getString("id"));
+                }
             }
             else {
-                ids = jdbcTemplate.query((sql + limit), new Object[]{specieFilter, breedFilter, genderFilter}, (resultSet, i) -> resultSet.getString("id"));
+                ids = jdbcTemplate.query((sql + limit), new Object[]{specieFilter, breedFilter, genderFilter},
+                        (resultSet, i) -> resultSet.getString("id"));
             }
             if(ids.size() == 0){
                 return Stream.empty();
@@ -594,6 +621,8 @@ public class PetDaoImpl implements PetDao {
         int maxP = -1;
         try {
             minP = Integer.parseInt(minPrice);
+        } catch (NumberFormatException ignored) { }
+        try {
             maxP = Integer.parseInt(maxPrice);
         } catch (NumberFormatException ignored) { }
         String sql ="select count( distinct pets.id) "+
@@ -603,11 +632,26 @@ public class PetDaoImpl implements PetDao {
                 "AND lower(gender) LIKE ? ) " +
                 "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
         Integer pets;
-        if(minP != -1 && maxP != -1) {
-            sql += "  AND price >= ? AND price <= ?  " ;
-            pets = jdbcTemplate.queryForObject( sql,
-                    new Object[] {specieFilter, breedFilter, genderFilter, minP, maxP},
-                    Integer.class);
+
+        if(minP != -1 || maxP != -1) {
+            if (minP == -1 && maxP != -1) {
+                sql += " AND price <= ?  ";
+                pets = jdbcTemplate.queryForObject( sql,
+                        new Object[] {specieFilter, breedFilter, genderFilter, maxP},
+                        Integer.class);
+
+            } else if (minP != -1 && maxP == -1) {
+                sql += "  AND price >= ? ";
+                pets = jdbcTemplate.queryForObject( sql,
+                        new Object[] {specieFilter, breedFilter, genderFilter, minP},
+                        Integer.class);
+
+            } else {
+                sql += "  AND price >= ? AND price <= ?  ";
+                pets = jdbcTemplate.queryForObject( sql,
+                        new Object[] {specieFilter, breedFilter, genderFilter, minP, maxP},
+                        Integer.class);
+            }
         }
         else{
             pets = jdbcTemplate.queryForObject( sql,

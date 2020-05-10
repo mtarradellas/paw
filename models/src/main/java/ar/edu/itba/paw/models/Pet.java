@@ -57,6 +57,12 @@ public class Pet {
         return hash;
     }
 
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", name: " + petName + ", species: " + species + ", breed: " + breed +
+                ", owner: " + ownerId + ", status: " + status + " }";
+    }
+
     public long getId() {
         return id;
     }

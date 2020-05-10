@@ -9,7 +9,7 @@ speciesId INTEGER REFERENCES species(id),
 es_AR VARCHAR(255),
 en_US VARCHAR(255)
 );
-create table user_status (
+CREATE TABLE IF NOT EXISTS user_status (
 id INTEGER primary key,
 en_US VARCHAR(255),
 es_AR VARCHAR(255)
@@ -19,7 +19,8 @@ id SERIAL PRIMARY KEY,
 username VARCHAR(255) NOT NULL UNIQUE,
 password VARCHAR(255) NOT NULL,
 mail VARCHAR(255) NOT NULL UNIQUE,
-phone VARCHAR(255)
+phone VARCHAR(255),
+status INTEGER references user_status(id)
 );
 CREATE TABLE IF NOT EXISTS pet_status (
 id INTEGER primary key,

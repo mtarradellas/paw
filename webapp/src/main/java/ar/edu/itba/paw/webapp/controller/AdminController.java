@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
@@ -15,12 +16,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -127,27 +130,32 @@ public class AdminController extends ParentController{
         Date currentDate = new java.sql.Date(System.currentTimeMillis());
         Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
 
+        List<byte[]> photos = new ArrayList<>();
+        try {
+            for (MultipartFile photo : petForm.getPhotos()) {
+                try {
+                    photos.add(photo.getBytes());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    throw new ImageLoadException(ex);
+                }
+            }
+        } catch (ImageLoadException ex) {
+            LOGGER.warn("Image bytes load from pet form failed");
+            return uploadPetForm(petForm).addObject("image_error", true);
+        }
+
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
                 petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                birthDate, currentDate, petForm.getPrice(), petForm.getOwner());
+                birthDate, currentDate, petForm.getPrice(), petForm.getOwner(), photos);
 
         if (!opPet.isPresent()) {
+            LOGGER.warn("Pet could not be created");
             return uploadPetForm(petForm).addObject("pet_error", true);
         }
 
-        petForm.getPhotos().forEach(photo -> {
-            byte[] imgBytes;
-            try {
-                imgBytes = photo.getBytes();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException(ex);
-            }
-            imageService.create(opPet.get().getId(), imgBytes, petForm.getOwner());
-        });
 
-
-        return new ModelAndView("redirect:/admin/pet/" + opPet.get().getId());
+        return new ModelAndView("redirect:/admi/pet/" + opPet.get().getId());
     }
 
     @RequestMapping(value = "/admin/pet/{id}/remove", method = {RequestMethod.POST})
