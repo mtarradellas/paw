@@ -24,7 +24,6 @@
 <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
 
 <nav class="navbar navbar-expand-lg admin-header">
-    <%--            TODO: cambiar el path del url--%>
     <a class="navbar-brand" href="${pageContext.request.contextPath}/admin">
         <img src="<c:url value="/resources/images/logo.png"/>" alt="logo" height="70" width="70"/>
     </a>
