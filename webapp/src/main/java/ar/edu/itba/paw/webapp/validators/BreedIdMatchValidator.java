@@ -25,7 +25,7 @@ public class BreedIdMatchValidator implements ConstraintValidator<BreedIdMatch, 
         if(val == null)
             return false;
 
-        Stream<Breed> breedStream = speciesService.breedsList("en_US");
+        Stream<Breed> breedStream = speciesService.breedsList("en_US").stream();
 
         return breedStream.anyMatch(p->val == p.getId());
     }

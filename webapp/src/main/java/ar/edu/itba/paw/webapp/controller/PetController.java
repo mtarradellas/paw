@@ -5,7 +5,9 @@ import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.*;
-
+import ar.edu.itba.paw.interfaces.SpeciesService;
+import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
@@ -15,12 +17,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,43 +51,20 @@ public class PetController extends ParentController {
         if (page == null) {
             page = "1";
         }
-
         mav.addObject("currentPage", page);
 
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
         gender = gender == null || gender.equals("any") ? null : gender;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
-//check price
-        /* Filtered pet list */
-        if (species != null || gender != null || searchCriteria != null || minPrice != null || maxPrice != null) {
-            String maxPage = petService.getMaxFilterPages(locale, species, breed, gender, minPrice, maxPrice);
-            mav.addObject("maxPage", maxPage);
 
-            LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, sCriteria: {}, sOrder: {}, mPrice: {}, mPrice: {}, page: {}",
-                    locale, species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page);
-            List<Pet> petList = petService.filteredList(locale, species, breed, gender, searchCriteria,
-                    searchOrder, minPrice, maxPrice, page);
-            mav.addObject("home_pet_list", petList);
-        }
-        /* Search input pet list */
-        else if (findValue != null) {
-            String maxPage = petService.getMaxSearchPages(locale, findValue);
-            mav.addObject("maxPage", maxPage);
+        PetList petList = petService.petList(locale, findValue, species, breed, gender, searchCriteria,
+                searchOrder, minPrice, maxPrice, page);
 
-            LOGGER.debug("Requesting search pet list of parameters: {}, {}, {}", locale, findValue, page);
-            mav.addObject("home_pet_list", petService.find(locale, findValue, page).toArray());
-        }
-        /* Default home pet list */
-        else {
-            String maxPage = petService.getMaxPages();
-            mav.addObject("maxPage", maxPage);
-
-            LOGGER.debug("Requesting full pet list");
-            mav.addObject("home_pet_list", petService.list(locale, page));
-        }
-        mav.addObject("species_list", speciesService.speciesList(locale).toArray());
-        mav.addObject("breeds_list", speciesService.breedsList(locale).toArray());
+        mav.addObject("maxPage", petList.getMaxPage());
+        mav.addObject("home_pet_list", petList.toArray());
+        mav.addObject("species_list", petList.getSpecies().toArray());
+        mav.addObject("breeds_list", petList.getBreeds().toArray());
         return mav;
     }
 
@@ -105,6 +86,7 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
     public ModelAndView requestPet(@PathVariable("id") final long id) {
+        final ModelAndView mav = new ModelAndView("redirect:/pet/" + id);
         final User user = loggedUser();
         final String locale = getLocale();
 
@@ -116,19 +98,7 @@ public class PetController extends ParentController {
         /* TODO Generate exceptions for error handling */
         Optional<Request> opRequest =  requestService.create(user.getId(), id, locale);
         if (!opRequest.isPresent()) {
-            LOGGER.warn("Request creation from user {} to pet {} failed", user.getId(), id);
-        }
-        else {
-            final Request request = opRequest.get();
-            Optional<Contact> opContact = petService.getPetContact(id);
-            if (!opContact.isPresent()) {
-                LOGGER.warn("Contact info for pet {} not found", id);
-            }
-            else {
-                final Contact contact = opContact.get();
-                mailService.sendMail(contact.getEmail(), getMailMessage("subject", request),
-                        getMailMessage("body", request));
-            }
+            mav.addObject("request_error", true);
         }
 
         return new ModelAndView("redirect:/pet/" + id );
@@ -164,15 +134,18 @@ public class PetController extends ParentController {
 
     @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
     public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm petForm) {
-        return new ModelAndView("views/upload_pet")
-                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
-                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
+        ModelAndView mav = new ModelAndView("views/upload_pet");
+        String locale = getLocale();
+
+        BreedList breedList = speciesService.breedsList(locale);
+        mav.addObject("species_list", breedList.getSpecies().toArray());
+        mav.addObject("breeds_list", breedList.toArray());
+        return mav;
     }
 
     @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
     public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,
                                   final BindingResult errors, HttpServletRequest request) {
-
 
         if (errors.hasErrors()) {
             return uploadPetForm(petForm);
@@ -181,28 +154,33 @@ public class PetController extends ParentController {
         Date currentDate = new java.sql.Date(System.currentTimeMillis());
         Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
 
+        List<byte[]> photos = new ArrayList<>();
+        try {
+            for (MultipartFile photo : petForm.getPhotos()) {
+                try {
+                    photos.add(photo.getBytes());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    throw new ImageLoadException(ex);
+                }
+            }
+        } catch (ImageLoadException ex) {
+            LOGGER.warn("Image bytes load from pet form failed");
+            return uploadPetForm(petForm).addObject("image_error", true);
+        }
+
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
                           petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId());
+                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId(), photos);
 
         if (!opPet.isPresent()) {
+            LOGGER.warn("Pet could not be created");
             return uploadPetForm(petForm).addObject("pet_error", true);
         }
 
-        petForm.getPhotos().forEach(photo -> {
-            byte[] imgBytes;
-            try {
-                imgBytes = photo.getBytes();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException(ex);
-            }
-            imageService.create(opPet.get().getId(), imgBytes, loggedUser().getId());
-        });
-
-
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
+
 
     @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })
     public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
@@ -269,4 +247,5 @@ public class PetController extends ParentController {
         }
         return "";
     }
+
 }

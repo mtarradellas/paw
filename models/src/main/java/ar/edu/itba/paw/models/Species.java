@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.models;
 
-public class Species {
+public class Species implements Comparable<Species>{
 
     private long id;
     private String name;
@@ -21,6 +21,11 @@ public class Species {
         return id == species.id;
     }
 
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + " }";
+    }
+
     public long getId() {
         return id;
     }
@@ -35,5 +40,10 @@ public class Species {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int compareTo(Species o) {
+        return name.compareTo(o.name);
     }
 }

@@ -25,7 +25,7 @@ public class SpeciesIdMatchValidator implements ConstraintValidator<SpeciesIdMat
         if(val == null)
             return false;
 
-        Stream<Species> speciesStream = speciesService.speciesList("en_US");
+        Stream<Species> speciesStream = speciesService.speciesList("en_US").stream();
 
         return speciesStream.anyMatch(p->val == p.getId());
     }

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PetServiceImpl implements PetService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(PetServiceImpl.class);
 
     static final long AVAILABLE_STATUS = 1;
@@ -39,7 +41,14 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> list(String language, String page) {
+    public PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        if (findValue == null) return filteredList(language, species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page);
+        return find(language, findValue, page);
+    }
+
+    @Override
+    public List<Pet> list(String language,String page){
+
         return petDao.list(language, page, 0).collect(Collectors.toList());// 0 is user
     }
 
@@ -54,13 +63,18 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> filteredList(String language, String specie, String breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
-        return petDao.filteredList(language, specie, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page).collect(Collectors.toList());
+    public PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        List<Pet> list = petDao.filteredList(language,species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page).collect(Collectors.toList());
+        String maxPage = getMaxFilterPages(language, species, breed, gender, minPrice, maxPrice);
+        return new PetList(list, maxPage);
     }
 
     @Override
-    public List<Pet> find(String language, String findValue, String page) {
-        return petDao.find(language, findValue, page, 0).collect(Collectors.toList());// 0 is user
+    public PetList find(String language,String findValue, String page){
+        List<Pet> list = petDao.find(language, findValue, page, 0).collect(Collectors.toList());// 0 is user
+        String maxPage = getMaxSearchPages(language, findValue);
+        return new PetList(list, maxPage);
+
     }
 
     @Override
@@ -79,15 +93,41 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location,
-                                boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId) {
+    public Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated,
+                                String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, List<byte[]> photos) {
+        LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, location: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, upDate: {}, price: {}, owner: {}",
+                petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+
+
         Optional<Species> opSpecies = speciesDao.findSpeciesById(language, speciesId);
-        Optional<Breed> opBreed = speciesDao.findBreedById(language, breedId);
-        Optional<Status> opStatus = petDao.findStatusById(language, AVAILABLE_STATUS);
-        if (!opSpecies.isPresent() || !opBreed.isPresent() || !opStatus.isPresent()) {
+        if (!opSpecies.isPresent()) {
+            LOGGER.warn("Species {} not found, pet creation failed", speciesId);
             return Optional.empty();
         }
-        return Optional.of(petDao.create(petName, opSpecies.get(), opBreed.get(), location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, opStatus.get()));
+        Species species = opSpecies.get();
+
+        Optional<Breed> opBreed = speciesDao.findBreedById(language, breedId);
+        if (!opBreed.isPresent()) {
+            LOGGER.warn("Breed {} not found, pet creation failed", breedId);
+            return Optional.empty();
+        }
+        Breed breed = opBreed.get();
+
+        Optional<Status> opStatus = petDao.findStatusById(language, AVAILABLE_STATUS);
+        if (!opStatus.isPresent()) {
+            LOGGER.warn("Status {} not found, pet creation failed", AVAILABLE_STATUS);
+            return Optional.empty();
+        }
+        Status status = opStatus.get();
+
+        Pet pet = petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status);
+        LOGGER.debug("Pet {} successfully created", pet);
+
+        for (byte[] photo : photos) {
+            imageService.create(pet.getId(), photo, ownerId);
+        }
+
+        return Optional.of(pet);
     }
 
     @Override
