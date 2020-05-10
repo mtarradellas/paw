@@ -239,12 +239,22 @@ public class UserDaoImpl implements UserDao {
         String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numValue - 1));
         String limit = " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
 
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
-                "FROM users INNER JOIN user_status ON users.status = user_status.id " +
-                "WHERE  users.status IN " + status ;
+        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+                "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
+                "pets.id AS petId, pets.petName as petName " +
+                "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
+                "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
+                "ON users.id = requests.ownerId " +
+                "WHERE  users.status IN " + status;
+
+//        Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new UserMapExtractor());
+//        requestMap.forEach(User::setRequestList);
+//        return requestMap.keySet().stream();
 
         if (searchCriteria == null) {
-            result = jdbcTemplate.query(sql + limit, USER_MAPPER).stream();
+            Map<User, List<Request>> requestMap = jdbcTemplate.query(sql + limit, new UserMapExtractor());
+            requestMap.forEach(User::setRequestList);
+            result = requestMap.keySet().stream();
         }else {
             if (searchCriteria.contains("mail")) {
                 searchCriteria = "users.mail";
@@ -263,7 +273,9 @@ public class UserDaoImpl implements UserDao {
             searchCriteria = searchCriteria + " " + searchOrder;
             sql = sql + " ORDER BY " + searchCriteria;
 
-            result = jdbcTemplate.query(sql ,  USER_MAPPER).stream();
+            Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new UserMapExtractor());
+            requestMap.forEach(User::setRequestList);
+            result = requestMap.keySet().stream();
         }
 
         return result;

@@ -274,13 +274,13 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public void adminUpdateStatus(long id, String status) {
         if(status.equals("pending")){
-            requestDao.updateStatus(id, PENDING_STATUS);
+            requestDao.updateStatus(id, RequestStatus.PENDING.getValue());
         }else if(status.equals("accepted")){
-            requestDao.updateStatus(id, ACCEPTED_STATUS);
+            requestDao.updateStatus(id, RequestStatus.ACCEPTED.getValue());
         }else if(status.equals("rejected")){
-            requestDao.updateStatus(id, REJECTED_STATUS);
+            requestDao.updateStatus(id, RequestStatus.REJECTED.getValue());
         }else if(status.equals("canceled")){
-            requestDao.updateStatus(id, CANCELED_STATUS);
+            requestDao.updateStatus(id, RequestStatus.CANCELED.getValue());
         }
     }
 
