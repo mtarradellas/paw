@@ -69,7 +69,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Optional<Request> create(long userId, long petId, String language) {
+    public Optional<Request> create(long userId, long petId, String locale) {
         ArrayList<Integer> statusList = new ArrayList<Integer>() {{
             add(ACCEPTED_STATUS);
             add(REJECTED_STATUS);
@@ -85,7 +85,24 @@ public class RequestServiceImpl implements RequestService {
             return Optional.empty();
         }
 
-        return requestDao.create(userId, petId, PENDING, language);
+        Optional<Request> opRequest = requestDao.create(userId, petId, PENDING, locale);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request creation from user {} to pet {} failed", userId, petId);
+            return Optional.empty();
+        }
+        Request request = opRequest.get();
+
+        Optional<Contact> opContact = petService.getPetContact(petId);
+        if (!opContact.isPresent()) {
+            LOGGER.warn("Contact info for pet {} not found", petId);
+            return opRequest;
+        }
+        final Contact contact = opContact.get();
+
+        mailService.sendMail(contact.getEmail(), getMailMessage(locale, "subject", request),
+                getMailMessage(locale, "body", request));
+
+        return opRequest;
     }
 
     @Override
@@ -279,6 +296,29 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public String getAdminMaxFilterPages(String language, String status) {
         return requestDao.getAdminMaxFilterPages(language, status);
+    }
+
+    private String getMailMessage(String locale, String part, Request request){
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+        switch(part){
+            case "subject":
+                if(locale.equals("en_US")){
+                    return "A user showed interest in one of your pets!";
+                }else{
+                    return "¡Un usuario mostró interés en una de sus mascotas!";
+                }
+            case "body":
+                if(locale.equals("en_US")){
+                    return "User " + request.getOwnerUsername() + " is interested in "+ request.getPetName() + "." +
+                            " Go to " + url + " to accept or reject his request!!" +
+                            "\nSincerely,\nPet Society Team.";
+                }else{
+                    return "El usuario " + request.getOwnerUsername() + " está interesado/a en "+ request.getPetName() +
+                            "¡¡Vaya a " + url + " para aceptar o rechazar su solicitud!!" +
+                            "\nSinceramente,\nEl equipo de Pet Society.";
+                }
+        }
+        return "";
     }
 
 }

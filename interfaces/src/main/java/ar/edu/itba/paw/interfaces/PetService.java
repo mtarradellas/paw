@@ -2,6 +2,7 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.PetList;
 import ar.edu.itba.paw.models.Request;
 
 import java.sql.Date;
@@ -11,13 +12,14 @@ import java.util.Optional;
 public interface PetService {
     Optional<Pet> findById(String language, long id);
     Optional<Pet> adminFindById(String language, long id);
-    List<Pet> find(String language,String findValue, String page);
+    PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
+    PetList find(String language, String findValue, String page);
+    PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
     List<Pet> list(String language, String page);
     List<Pet> adminFilteredList(String language, String specie, String  breed, String gender, String status, String searchCriteria, String searchOrder, String page);
     List<Pet> adminList(String language, String page);
     List<Pet> adminSearchList(String language, String find, String page);
-    Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId);
-    List<Pet> filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
+    Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, List<byte[]> photos);
     List<Pet> getByUserId(String language, long userId, String page);
     boolean sellPet(long petId, long userId);
     boolean removePet(long petId, long userId);

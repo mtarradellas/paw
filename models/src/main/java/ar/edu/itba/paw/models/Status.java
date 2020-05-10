@@ -18,6 +18,11 @@ public class Status {
         return id == status.id;
     }
 
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + " }";
+    }
+
     public int getId() {
         return id;
     }

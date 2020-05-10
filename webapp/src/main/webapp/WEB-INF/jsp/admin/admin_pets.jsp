@@ -45,8 +45,8 @@
 
                                     <c:forEach items="${breeds_list}" var="breed">
                                         <c:set var="breedId">${breed.id}</c:set>
-                                        <c:set var="speciesId">${breed.speciesId}</c:set>
-                                        <option class="species-${breed.speciesId}" value="${breed.id}"
+                                        <c:set var="speciesId">${breed.species.id}</c:set>
+                                        <option class="species-${breed.species.id}" value="${breed.id}"
                                                 <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesId ne param.species)}">style="display: none;"</c:if>
                                                 <c:if test="${(not empty param.breed) && (param.breed ne 'any') && (breedId eq param.breed)}">selected</c:if>
                                         >
