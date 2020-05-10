@@ -126,7 +126,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Stream<User> adminUserList(String language, String page){
-        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
         return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
                 "FROM users INNER JOIN user_status ON users.status = user_status.id " +
                 " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, USER_MAPPER)
@@ -135,13 +141,19 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Stream<User> adminSearchList(String language, String findValue, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
         if(findValue.equals("")){
             return adminUserList(language, page);
         }
 
         String modifiedValue = "%"+findValue.toLowerCase()+"%";
 
-        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
         return jdbcTemplate.query("SELECT users.id AS id, username, password, mail, phone, users.status AS status, user_status." + language + " AS statusName "+
                         "FROM users INNER JOIN user_status ON users.status = user_status.id " +
                         " WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) limit "
@@ -213,5 +225,6 @@ public class UserDaoImpl implements UserDao {
 
         return findById(language, key.longValue());
     }
+
 }
 

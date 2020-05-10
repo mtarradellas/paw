@@ -14,7 +14,7 @@
                 <div class="bg-light shadow p-3">
                     <div class="p-2">
                         <form:form modelAttribute="adminUploadRequestForm"
-                                   action="${pageContext.request.contextPath}/admi/upload-request" method="post"
+                                   action="${pageContext.request.contextPath}/admin/upload-request" method="post"
                                    enctype="multipart/form-data">
                             <h1>${addRequestTitle}</h1>
 
@@ -62,7 +62,7 @@
                         </form:form>
                     </div>
                     <div class="p-3">
-                        <a href="${pageContext.request.contextPath}/admi"><spring:message code="backToHome"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/requests"><spring:message code="goBackLists"/></a>
                     </div>
                 </div>
             </div>

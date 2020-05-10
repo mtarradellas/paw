@@ -17,20 +17,22 @@
 
                         <c:if test="${empty users_list }">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/admi/users"><spring:message code="showFirst"/></a>
+                                <a href="${pageContext.request.contextPath}/admin/users"><spring:message code="showFirst"/></a>
                             </div>
                         </c:if>
                         <c:if test="${not empty users_list}">
                             <div>
                                 <h2><spring:message code="admin.usersListing" /> <spring:message code="showingResults" arguments="${users_list.size()}"/>
-                                    <button type="button" class="btn btn-success"><i class="fas fa-plus mr-2"></i><spring:message code="addUser"/></button>
+                                    <a type="button" class="btn btn-success"
+                                       href="${pageContext.request.contextPath}/admin/upload-user">
+                                        <i class="fas fa-plus mr-2"></i><spring:message code="addUser"/></a>
                                 </h2>
                             </div>
                         </c:if>
 
                         <div class="m-2 ">
                             <c:if test="${maxPage ne 1}">
-                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admi/users/'}" />
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admin/users/'}" />
                             </c:if>
                         </div>
                         <div>
@@ -47,19 +49,35 @@
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="user" items="${users_list}">
                                     <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
-                                    <li class="list-group-item ">
+                                    <li     <c:if test="${(user.status.id eq 1) or (user.status.id eq 2)}">
+                                                class="list-group-item"
+                                            </c:if>
+                                            <c:if test="${ (user.status.id eq 3)}">
+                                                class="list-group-item resolved"
+                                            </c:if>
+                                    >
                                         <div class="row ">
                                             <div class="col-lg-8">
-                                                <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${user.id}"/>">
+                                                <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>">
                                                     <c:out value="${user.username}"/> - <c:out value="${user.mail}"/>
                                                 </a>
                                             </div>
                                             <div class="col text-center ml-3">
-                                                <form method="POST" class="m-0" action="<c:url value="/admi/user/${user.id}/remove"/>">
-                                                    <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${user.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
-                                                    <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
-                                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
-                                                </form>
+                                                <c:if test="${(user.status.id eq 1) or (user.status.id eq 2)}">
+                                                    <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/remove"/>">
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
+                                                        <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
+                                                    </form>
+                                                </c:if>
+                                                <c:if test="${ (user.status.id eq 3)}">
+                                                    <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/recover"/>">
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
+                                                        <button type="submit" class="btn btn-success"><spring:message code="petCard.recover"/></button>
+                                                    </form>
+                                                </c:if>
+
                                             </div>
                                         </div>
                                     </li>
@@ -68,7 +86,7 @@
                         </div>
                         <div class="m-2">
                             <c:if test="${maxPage ne 1}">
-                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admi/users/'}" />
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/admin/users/'}" />
                             </c:if>
                         </div>
                     </div>
