@@ -127,7 +127,7 @@ public class PetController extends ParentController {
     }
 
     @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
-    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm userForm) {
+    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm petForm) {
         ModelAndView mav = new ModelAndView("views/upload_pet");
         String locale = getLocale();
 

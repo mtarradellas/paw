@@ -29,13 +29,14 @@ public class PetServiceImpl implements PetService {
     @Autowired
     private ImageService imageService;
 
+
     @Override
-    public Optional<Pet> findById(String language, long id){
+    public Optional<Pet> findById(String language, long id) {
         return petDao.findById(language, id, 0);
     }
 
     @Override
-    public Optional<Pet> adminFindById(String language, long id){
+    public Optional<Pet> adminFindById(String language, long id) {
         return petDao.findById(language, id, 1);
     }
 
@@ -47,7 +48,13 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public List<Pet> list(String language,String page){
+
         return petDao.list(language, page, 0).collect(Collectors.toList());// 0 is user
+    }
+
+    @Override
+    public List<Pet> listAll(String language) {
+        return petDao.listAll(language).collect(Collectors.toList());
     }
 
     @Override
@@ -67,20 +74,21 @@ public class PetServiceImpl implements PetService {
         List<Pet> list = petDao.find(language, findValue, page, 0).collect(Collectors.toList());// 0 is user
         String maxPage = getMaxSearchPages(language, findValue);
         return new PetList(list, maxPage);
+
     }
 
     @Override
-    public List<Pet> getByUserId(String language, long ownerId, String page){
-        return petDao.getByUserId( language, ownerId, page).collect(Collectors.toList());
+    public List<Pet> getByUserId(String language, long ownerId, String page) {
+        return petDao.getByUserId(language, ownerId, page).collect(Collectors.toList());
     }
 
     @Override
-    public List<Pet> adminList(String language, String page){
+    public List<Pet> adminList(String language, String page) {
         return petDao.list(language, page, 1).collect(Collectors.toList());// 1 is admin
     }
 
     @Override
-    public List<Pet> adminSearchList(String language, String find, String page){
+    public List<Pet> adminSearchList(String language, String find, String page) {
         return petDao.find(language, find, page, 1).collect(Collectors.toList()); //1 is admin
     }
 
@@ -89,6 +97,7 @@ public class PetServiceImpl implements PetService {
                                 String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, List<byte[]> photos) {
         LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, location: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, upDate: {}, price: {}, owner: {}",
                 petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+
 
         Optional<Species> opSpecies = speciesDao.findSpeciesById(language, speciesId);
         if (!opSpecies.isPresent()) {
@@ -122,42 +131,47 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public long getOwnerId(long petId){
+    public long getOwnerId(long petId) {
         return petDao.getOwnerId(petId);
     }
 
     @Override
-    public String getMaxPages(){
+    public void removeAllByOwner(long ownerId) {
+        petDao.updateAllByOwner(ownerId, (int)REMOVED_STATUS);
+    }
+
+    @Override
+    public String getMaxPages() {
         return petDao.maxPages(0);
     } // 0 is user
 
     @Override
     public String getMaxSearchPages(String language, String findValue) {
-        return petDao.maxSearchPages(language,findValue, 0); //0 is user
+        return petDao.maxSearchPages(language, findValue, 0); //0 is user
     }
 
     @Override
     public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice) {
-        return petDao.maxFilterPages(language,specieFilter,breedFilter,genderFilter, minPrice, maxPrice);
+        return petDao.maxFilterPages(language, specieFilter, breedFilter, genderFilter, minPrice, maxPrice);
     }
 
     @Override
     public String getMaxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter) {
-        return petDao.maxAdminFilterPages(language, specieFilter, breedFilter, genderFilter,statusFilter);
+        return petDao.maxAdminFilterPages(language, specieFilter, breedFilter, genderFilter, statusFilter);
     }
 
     @Override
-    public String getMaxUserPetsPages(long userId){
+    public String getMaxUserPetsPages(long userId) {
         return petDao.getMaxUserPetsPages(userId);
     }
 
     @Override
-    public String getAdminMaxSearchPages(String language, String find){
+    public String getAdminMaxSearchPages(String language, String find) {
         return petDao.maxSearchPages(language, find, 1); //1 is admin
     }
 
     @Override
-    public String getAdminMaxPages(){
+    public String getAdminMaxPages() {
         return petDao.maxPages(1); //level 1 is admin
 
     }
@@ -183,5 +197,20 @@ public class PetServiceImpl implements PetService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void removePetAdmin(long petId) {
+        petDao.updateStatus(petId, REMOVED_STATUS);
+    }
+
+    @Override
+    public void sellPetAdmin(long petId) {
+        petDao.updateStatus(petId, SOLD_STATUS);
+    }
+
+    @Override
+    public void recoverPetAdmin(long petId) {
+        petDao.updateStatus(petId, AVAILABLE_STATUS);
     }
 }
