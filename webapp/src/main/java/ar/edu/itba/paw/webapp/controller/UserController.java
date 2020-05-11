@@ -12,8 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,15 +35,20 @@ public class UserController extends ParentController {
         if (page == null){
             page = "1";
         }
-        Stream<Pet> petsByUser = petService.getByUserId(locale, id, page);
-
+        List<Pet> petsByUser = petService.getByUserId(locale, id, page).collect(Collectors.toList());
+        List<Pet> petsAvailableByUser = new ArrayList<>();
+        for (Pet pet : petsByUser) {
+            if(pet.getStatus().getId() == PetStatus.AVAILABLE.getValue()) {
+                petsAvailableByUser.add(pet);
+            }
+        }
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
         Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
         mav.addObject("userPets", petsByUser.toArray());
-        mav.addObject("userAvailablePets", petsByUser.filter(pet -> pet.getStatus().getId() == PetStatus.AVAILABLE.getValue()).toArray());
+        mav.addObject("userAvailablePets", petsAvailableByUser);
         return mav;
     }
 
