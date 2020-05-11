@@ -77,8 +77,7 @@ public class RequestServiceImpl implements RequestService {
             LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", userId, petId);
             return Optional.empty();
         }
-        /* TODO change to petService.isPetOwner */
-        if (petService.getOwnerId(petId) == userId) {
+        if (petService.isPetOwner(petId, userId)) {
             LOGGER.warn("User {} is the owner of the requested pet {}, ignoring request creation", userId, petId);
             return Optional.empty();
         }

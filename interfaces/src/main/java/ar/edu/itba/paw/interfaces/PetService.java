@@ -43,5 +43,5 @@ public interface PetService {
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
     void removeAllByOwner(long ownerId);
-
+    boolean isPetOwner(long petId, long userId);
 }

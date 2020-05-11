@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.models.DepartmentList;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,9 +17,8 @@ public class HomeController extends ParentController {
 
     @RequestMapping("/contact")
     public ModelAndView getContact() {
-        return new ModelAndView("views/contact");
+        DepartmentList departmentList = locationService.departmentList();
+        return new ModelAndView("views/contact").addObject("provinces", departmentList.getProvinceList());
     }
-
-
 
 }

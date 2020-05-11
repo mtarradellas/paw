@@ -31,7 +31,6 @@ public class AdminController extends ParentController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
-    //TODO: cambiar el path del mapping para que te redireccion correctamente
     @RequestMapping(value = "/admin")
     public ModelAndView getAdminHome() {
         return new ModelAndView("admin/admin");

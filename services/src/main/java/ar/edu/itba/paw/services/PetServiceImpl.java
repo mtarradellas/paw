@@ -220,4 +220,9 @@ public class PetServiceImpl implements PetService {
     public void recoverPetAdmin(long petId) {
         petDao.updateStatus(petId, PetStatus.AVAILABLE.getValue());
     }
+
+    @Override
+    public boolean isPetOwner(long petId, long userId) {
+        return petDao.isPetOwner(petId, userId);
+    }
 }
