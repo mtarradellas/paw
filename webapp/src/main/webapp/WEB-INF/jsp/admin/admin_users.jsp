@@ -105,7 +105,7 @@
                         <div>
                             <c:if test="${not empty users_list}">
                             <div class="row">
-                                <div class="col-lg-8">
+                                <div class="col-lg-7">
                                     <h5 class="text-left ml-4"><b><spring:message code="user"/></b></h5>
                                 </div>
                                 <div class="col">
@@ -124,7 +124,7 @@
                                             </c:if>
                                     >
                                         <div class="row ">
-                                            <div class="col-lg-8">
+                                            <div class="col-lg-7">
                                                 <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>">
                                                     <c:out value="${user.username}"/> - <c:out value="${user.mail}"/>
                                                 </a>

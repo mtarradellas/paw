@@ -113,7 +113,7 @@
                         <div>
                             <c:if test="${not empty requests_list}">
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-5">
                                         <h5 class="text-left ml-4"><b><spring:message code="request"/></b></h5>
                                     </div>
                                     <div class="col-lg-2">
@@ -135,7 +135,7 @@
                                             </c:if>
                                     >
                                         <div class="row ">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-5">
                                                 <spring:message code="request.isInterested"
                                                                 arguments="${pageContext.request.contextPath}/admin/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admin/pet/${request.petId},${request.petName}"/>
                                                 <small class="text-warning"> ${request.creationDate}</small>

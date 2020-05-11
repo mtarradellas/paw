@@ -25,7 +25,7 @@
                         </c:if>
                         <c:if test="${not empty interests_list}">
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-lg-5">
                                     <h5 class="text-left"><b><spring:message code="request"/></b></h5>
                                 </div>
                                 <div class="col-lg-2">
@@ -41,7 +41,7 @@
                         <c:forEach var="req" items="${interests_list}">
                             <c:if test="${req.status.id eq 1}">
                                 <div class="row bg-light p-1">
-                                    <div class=" col-lg-6">
+                                    <div class=" col-lg-5">
                                         <spring:message code="request.isInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
@@ -73,7 +73,7 @@
                             </c:if>
                             <c:if test="${req.status.id ne 1}">
                                 <div class="row bg-light p-1 resolved">
-                                    <div class=" col-lg-6">
+                                    <div class=" col-lg-5">
                                         <spring:message code="request.wasInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.ownerId},${req.ownerUsername},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>

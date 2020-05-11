@@ -149,7 +149,7 @@
                         <div>
                             <c:if test="${not empty pets_list}">
                                 <div class="row">
-                                    <div class="col-lg-8">
+                                    <div class="col-lg-7">
                                         <h5 class="text-left ml-4"><b><spring:message code="pet"/></b></h5>
                                     </div>
                                     <div class="col">
@@ -168,7 +168,7 @@
                                             </c:if>
                                     >
                                         <div class="row ">
-                                            <div class="col-lg-8">
+                                            <div class="col-lg-7">
                                                 <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>">
                                                     <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
                                                          alt="Pet image" height="70" width="70">
