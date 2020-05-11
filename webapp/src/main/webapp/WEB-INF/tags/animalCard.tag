@@ -2,6 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@tag description="Animal card" pageEncoding="UTF-8"%>
 <%@attribute name="pet" required="true" type="ar.edu.itba.paw.models.Pet"%>
+<%@attribute name="level" required="true" type="java.lang.String"%>
 
 <c:set var="cprice" scope="application" value="${pet.price}"/>
 
@@ -24,7 +25,12 @@
             <spring:message code="petCard.sex"/> <spring:message code="pet.${pet.gender}"/>
         </p>
 
-        <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
+        <c:if test="${level eq 'admin'}">
+            <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>" class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
+        </c:if>
+        <c:if test="${level eq 'user'}">
+            <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
+        </c:if>
     </div>
     <div class="card-footer">
         <h6><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></h6>

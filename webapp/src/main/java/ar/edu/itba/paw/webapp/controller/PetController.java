@@ -89,13 +89,8 @@ public class PetController extends ParentController {
             mav.addObject("requestExists", false);
         }
         Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
+        mav.addObject("pet", pet);
 
-        if(pet.getOwnerId() == user.getId() || pet.getStatus().getId() == PetStatus.AVAILABLE.getValue()) {
-            mav.addObject("pet", pet);
-        }
-        else {
-            throw new PetNotFoundException();
-        }
         return mav;
     }
 

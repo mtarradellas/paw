@@ -31,23 +31,33 @@
                                 <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                             </h1>
                         </c:if>
+                        <c:if test="${pet.status.id eq 3}">
+                            <h1 class="ml-1 "> (<spring:message code="status.sold"/>) </h1>
+                        </c:if>
+                        <c:if test="${pet.status.id eq 2}">
+                            <h1 class="ml-1"> (<spring:message code="status.deleted"/>) </h1>
+                        </c:if>
                         <c:if test="${(pet.ownerId ne loggedUser.id)}">
                             <c:if test="${not requestExists}">
-                                <h1 class="mt-2 ml-4">
-                                    <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
-                                        <button type="submit" name="action" class="btn btn-success">
-                                            <i class="fas fa-plus mr-2"></i>
-                                            <spring:message code="petCard.showInterest"/>
-                                        </button>
-                                    </form>
-                                </h1>
+                                <c:if test="${pet.status.id eq 1}">
+                                    <h1 class="mt-2 ml-4">
+                                        <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
+                                            <button type="submit" name="action" class="btn btn-success">
+                                                <i class="fas fa-plus mr-2"></i>
+                                                <spring:message code="petCard.showInterest"/>
+                                            </button>
+                                        </form>
+                                    </h1>
+                                </c:if>
                             </c:if>
                             <c:if test="${requestExists}">
-                                <h1 class="mt-2 ml-4">
-                                    <button type="button" class="btn btn-success" disabled>
-                                        <spring:message code="petCard.alreadyRequested"/>
-                                    </button>
-                                </h1>
+                                <c:if test="${pet.status.id eq 1}">
+                                    <h1 class="mt-2 ml-4">
+                                        <button type="button" class="btn btn-success" disabled>
+                                            <spring:message code="petCard.alreadyRequested"/>
+                                        </button>
+                                    </h1>
+                                </c:if>
                             </c:if>
                         </c:if>
                         <c:if test="${(pet.ownerId eq loggedUser.id)}">
