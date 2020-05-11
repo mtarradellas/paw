@@ -1,14 +1,19 @@
 package ar.edu.itba.paw.webapp.controller;
-import ar.edu.itba.paw.models.Contact;
-import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-import ar.edu.itba.paw.webapp.exception.UserNotRequestOwnerException;
+import ar.edu.itba.paw.webapp.form.EditUserForm;
+import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
+import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Optional;
 
 
@@ -121,6 +126,60 @@ public class UserController extends ParentController {
         return new ModelAndView("redirect:/403" );
     }
 
+    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.GET })
+    public ModelAndView editUserGet(@ModelAttribute("editUserForm") final EditUserForm editUserForm, @PathVariable("id") long id){
+        final String locale = getLocale();
+
+        User user = userService.findById(locale, id).orElseThrow(UserNotFoundException::new);
+
+        editUserForm.setPhone(user.getPhone());
+        editUserForm.setUsername(user.getUsername());
+
+        return editUserForm(editUserForm, id);
+    }
+
+    private ModelAndView editUserForm(@ModelAttribute("editUserForm") final EditUserForm editUserForm, long id) {
+        final String locale = getLocale();
+
+        return new ModelAndView("views/user_edit")
+                .addObject("user",
+                        userService.findById(locale, id).orElseThrow(UserNotFoundException::new))
+                .addObject("id", id);
+    }
+
+    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-basic-info"})
+    public ModelAndView editBasicInfo(@Validated({BasicInfoEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
+                                final BindingResult errors, HttpServletRequest request,
+                                @PathVariable("id") long id) {
+
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n BASIC INFO \n\n\n\n\n\n\n\n\n\n\n\n");
+
+        if (errors.hasErrors()) {
+            return editUserForm(editUserForm, id);
+        }
+
+        /*TODO: convertir todo esto en un update*/
+
+        return new ModelAndView("redirect:/");
+    }
+
+    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-password"})
+    public ModelAndView editPassword(@Validated({ChangePasswordEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
+                                 final BindingResult errors, HttpServletRequest request,
+                                 @PathVariable("id") long id) {
+
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n PASSWORD \n\n\n\n\n\n\n\n\n\n\n\n");
+
+        if (errors.hasErrors()) {
+            return editUserForm(editUserForm, id);
+        }
+
+        /*TODO: convertir todo esto en un update*/
+
+        return new ModelAndView("redirect:/");
+    }
+    
+    
     @RequestMapping(value = "/test")
     public ModelAndView testUsers() {
         final ModelAndView mav = new ModelAndView("views/test");
