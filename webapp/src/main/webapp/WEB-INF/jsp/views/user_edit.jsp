@@ -63,6 +63,7 @@
                             <input type="submit" class="btn btn-primary" value="${submitText}" name="update-basic-info"/>
                         </div>
 
+                        <hr>
 
                         <h3><spring:message code="editUserBasicForm.passwordForm"/></h3>
 
@@ -108,7 +109,7 @@
                         </div>
 
                         <div class="p-1">
-                            <spring:message code="editUserBasicForm.updateUser" var="submitText"/>
+                            <spring:message code="editUserBasicForm.updatePassword" var="submitText"/>
                             <input type="submit" class="btn btn-primary" value="${submitText}" name="update-password"/>
                         </div>
 
