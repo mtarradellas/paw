@@ -1,14 +1,12 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:message code="interestsTitle" var="titleVar"/>
 <t:basicLayout title="${titleVar}">
     <jsp:body>
-         <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage.request.action' javaScriptEscape='true'/>
-        </span>
         <div class="container-fluid">
+            <jsp:include page="../parts/are-you-sure.jsp"/>
             <jsp class="row">
                 <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp">
                     <jsp:param name="destination" value="interests"/>
@@ -107,6 +105,8 @@
                 </div>
         </div>
         </div>
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
+
         <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
         <script src="<c:url value="/resources/js/interests.js"/>"></script>
     </jsp:body>
