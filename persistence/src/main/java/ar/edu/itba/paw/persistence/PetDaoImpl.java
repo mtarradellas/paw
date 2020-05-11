@@ -33,7 +33,7 @@ public class PetDaoImpl implements PetDao {
     private static final String PET_TABLE = "pets";
 
     // Pets Removed or Sold are hidden from usual queries
-    private static final String HIDDEN_PETS_STATUS =  " ( " + PetStatus.REMOVED.getValue() + ", " + PetStatus.SOLD.getValue() + " ) ";
+    private static final String HIDDEN_PETS_STATUS =  " ( " + 300 + " ) ";
 
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
