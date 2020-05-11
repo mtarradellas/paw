@@ -175,7 +175,7 @@ public class UserController extends ParentController {
         if(!opUser.isPresent()){
             return new ModelAndView("redirect:/500");
         }
-        System.out.println(opUser.get().getUsername()+"\n"+opUser.get().getId()+"\n");
+        authenticateUserAndSetSession(opUser.get().getUsername(),request);
         return new ModelAndView("redirect:/user/" + opUser.get().getId());
     }
 

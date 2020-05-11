@@ -35,8 +35,6 @@ public class LoginAndRegisterController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginAndRegisterController.class);
 
-    @Autowired
-    private PSUserDetailsService userDetailsService;
 
     @RequestMapping("/login")
     public ModelAndView login() {
@@ -145,13 +143,6 @@ public class LoginAndRegisterController extends ParentController {
         return requestResetPassword(mailForm, errors);
     }
 
-    public Authentication authenticateUserAndSetSession(String username,HttpServletRequest request){
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-        return authentication;
-    }
 
     @RequestMapping(value = "/403")
     public ModelAndView accessDenied() {
