@@ -8,7 +8,7 @@
     <span id="confirmMessage" hidden>
         <spring:message code='confirmMessage' javaScriptEscape='true'/>
     </span>
-    <div class="row ">
+    <div class="container-fluid ">
         <div class=" col-md-10 offset-md-1">
             <div class="bg-light shadow ">
                 <div class="p-2 bg-dark">
@@ -39,11 +39,24 @@
                     </c:if>
                     <hr>
                     <div class="p-2">
-                        <h2><spring:message code="userPets"/></h2>
+
+                        <h2><b><spring:message code="userPets"/></b> <c:if test="${loggedUser.id eq user.id}"> <spring:message code="userPets.faded"/></c:if></h2>
+                        <c:if test="${not empty userPets}">
+                            <div class="m-2 ">
+                                <c:if test="${maxPage ne 1}">
+                                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/user/${id}"/>
+                                </c:if>
+                            </div>
+                        </c:if>
                         <div class="card-deck row">
 
                             <c:forEach var="pet" items="${userPets}">
-                                <div class="col-auto mb-3">
+                                <c:if test="${pet.status.id eq 1}">
+                                    <div class="col-auto mb-3">
+                                </c:if>
+                                <c:if test="${pet.status.id ne 1 }">
+                                    <div class="col-auto mb-3 resolved">
+                                </c:if>
 
                                     <t:animalCard pet="${pet}" level="user"/>
 
@@ -68,7 +81,7 @@
                     <hr>
                 </div>
                 <div class="p-4">
-                    <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
+                    <b><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></b>
                 </div>
             </div>
         </div>

@@ -16,7 +16,7 @@
     <span id="confirmMessage" hidden>
         <spring:message code='confirmMessage' javaScriptEscape='true'/>
     </span>
-    <div class="row">
+    <div class="container-fluid">
         <div class=" col-md-10 offset-md-1 ">
             <div class="bg-light shadow ">
                 <div class="p-2 bg-dark">
