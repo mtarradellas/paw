@@ -15,7 +15,8 @@
                 </jsp:include>
                 <div class="col-lg-8">
                     <div class="shadow p-3 bg-white rounded">
-                        <h2>Users interested in your pets:</h2>
+                        <h2><spring:message code="interest.title"/> <spring:message code="showingResults"
+                                                                                   arguments="${list_size}"/></h2>
                         <c:if test="${empty interests_list }">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                 <c:if test="${(not empty param.status) or (not empty param.searchCriteria) or (not empty param.searchOrder) }">

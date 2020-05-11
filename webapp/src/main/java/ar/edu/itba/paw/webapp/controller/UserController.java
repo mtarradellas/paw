@@ -115,13 +115,15 @@ public class UserController extends ParentController {
 
         /* Filtered interest list */
         if(status != null || searchCriteria != null) {
-            mav.addObject("interests_list",
-                    requestService.filterListByPetOwner(locale, user.getId(), status, searchCriteria, searchOrder).toArray());
+            List<Request> requestList = requestService.filterListByPetOwner(locale, user.getId(), status, searchCriteria, searchOrder).collect(Collectors.toList());
+            mav.addObject("interests_list", requestList);
+            mav.addObject("list_size", requestList.size());
         }
         /* Default interest list */
         else{
-            mav.addObject("interests_list",
-                    requestService.listByPetOwner(locale, user.getId()).toArray());
+            List<Request> requestList = requestService.listByPetOwner(locale, user.getId()).collect(Collectors.toList());
+            mav.addObject("interests_list", requestList);
+            mav.addObject("list_size", requestList.size());
         }
         return mav;
     }
