@@ -194,12 +194,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void update(String language, long id, String username, String phone) {
+    public void update(String language, long id, String username, String phone) throws DuplicateUserException {
         String sql = "UPDATE users " +
                 "SET username = ?, phone = ? " +
                 "WHERE id = ? ";
         try {
-            jdbcTemplate.update(sql, username, phone);
+            jdbcTemplate.update(sql, username, phone, id);
         } catch (DuplicateKeyException ex) {
             if (ex.getMessage().contains("users_username_key")) throw new DuplicateUserException(DUPLICATE_USERNAME_ERROR, true, false);
         }

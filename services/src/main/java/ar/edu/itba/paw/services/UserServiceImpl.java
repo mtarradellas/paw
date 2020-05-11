@@ -96,8 +96,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updatePassword(String newPassword, long id) {
-        return userDao.updatePassword(encoder.encode(newPassword), id);
+    public Optional<User> updatePassword(String language, String newPassword, long id) {
+        if(userDao.updatePassword(encoder.encode(newPassword), id)){
+            LOGGER.debug("Password updated");
+            return userDao.findById(language, id);
+        }
+        LOGGER.warn("DAO could not update password");
+        return Optional.empty();
     }
 
     @Override
@@ -130,7 +135,6 @@ public class UserServiceImpl implements UserService {
             LOGGER.warn("User of token {} not found", uuid);
             return Optional.empty();
         }
-        /* TODO activate account */
 
         if(!userDao.updateStatus(opUser.get().getId(), ACTIVE)) {
             LOGGER.warn("Could not activate user {} account", opUser.get().getId());
@@ -180,7 +184,7 @@ public class UserServiceImpl implements UserService {
         }
         final User user = opUser.get();
 
-        updatePassword(password, user.getId());
+        updatePassword(language, password, user.getId());
         deleteToken(uuid);
 
         return opUser;
@@ -201,6 +205,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> update(String language, long id, String username, String phone) throws DuplicateUserException {
+
         LOGGER.debug("Attempting user {} update with username: {}, phone: {}", id, username, phone);
         userDao.update(language, id, username, phone);
         Optional<User> opUser = findById(language, id);

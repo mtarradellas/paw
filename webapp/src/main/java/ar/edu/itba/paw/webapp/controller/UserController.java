@@ -1,4 +1,5 @@
 package ar.edu.itba.paw.webapp.controller;
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
@@ -130,6 +131,9 @@ public class UserController extends ParentController {
     public ModelAndView editUserGet(@ModelAttribute("editUserForm") final EditUserForm editUserForm, @PathVariable("id") long id){
         final String locale = getLocale();
 
+        if(loggedUser().getId() != id) {
+            return new ModelAndView("redirect:/403" );
+        }
         User user = userService.findById(locale, id).orElseThrow(UserNotFoundException::new);
 
         editUserForm.setPhone(user.getPhone());
@@ -157,10 +161,22 @@ public class UserController extends ParentController {
         if (errors.hasErrors()) {
             return editUserForm(editUserForm, id);
         }
-
-        /*TODO: convertir todo esto en un update*/
-
-        return new ModelAndView("redirect:/");
+        if(loggedUser().getId() != id) {
+            return new ModelAndView("redirect:/403");
+        }
+        Optional<User> opUser;
+        try {
+             opUser = userService.update(getLocale(), id, editUserForm.getUsername(), editUserForm.getPhone());
+        } catch (DuplicateUserException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return editUserForm(editUserForm, id)
+                    .addObject("duplicatedUsername", ex.isDuplicatedUsername());
+        }
+        if(!opUser.isPresent()){
+            return new ModelAndView("redirect:/500");
+        }
+        System.out.println(opUser.get().getUsername()+"\n"+opUser.get().getId()+"\n");
+        return new ModelAndView("redirect:/user/" + opUser.get().getId());
     }
 
     @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-password"})
@@ -173,10 +189,15 @@ public class UserController extends ParentController {
         if (errors.hasErrors()) {
             return editUserForm(editUserForm, id);
         }
+        if(loggedUser().getId() != id) {
+            return new ModelAndView("redirect:/403");
+        }
+        Optional<User> opUser = userService.updatePassword(getLocale(), editUserForm.getNewPassword(), id);
+        if(!opUser.isPresent()){
+            return new ModelAndView("redirect:/500");
+        }
+        return new ModelAndView("redirect:/user/" + opUser.get().getId());
 
-        /*TODO: convertir todo esto en un update*/
-
-        return new ModelAndView("redirect:/");
     }
     
     
