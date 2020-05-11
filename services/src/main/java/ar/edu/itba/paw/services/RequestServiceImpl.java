@@ -2,9 +2,7 @@ package ar.edu.itba.paw.services;
 
 
 import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.models.Contact;
-import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,18 +47,23 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> adminRequestList(String language,String page){
-        return requestDao.adminRequestList(language, page).collect(Collectors.toList());
+    public RequestList adminRequestList(String language, String findValue, String status, String searchCriteria, String searchOrder, String page){
+        if (findValue == null) return adminFilteredList(language, status, searchCriteria, searchOrder, page);
+        return adminFind(language, findValue, page);
     }
 
     @Override
-    public List<Request> adminSearchList(String language, String find, String page) {
-        return requestDao.adminSearchList(language, find, page).collect(Collectors.toList());
+    public RequestList adminFind(String language, String findValue, String page) {
+        List<Request> list = requestDao.adminSearchList(language, findValue, page).collect(Collectors.toList()); //1 is admin
+        String maxPage = getAdminMaxSearchPages(language, findValue);
+        return new RequestList(list, maxPage);
     }
 
     @Override
-    public List<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
-        return requestDao.adminFilteredList(language,status,searchCriteria,searchOrder,page).collect(Collectors.toList());
+    public RequestList adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        List<Request> list = requestDao.adminFilteredList(language, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+        String maxPage = getAdminMaxFilterPages(language, status);
+        return new RequestList(list, maxPage);
     }
 
     @Override
