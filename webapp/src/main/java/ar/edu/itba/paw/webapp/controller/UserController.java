@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.models.Contact;
+import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotRequestOwnerException;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Controller
@@ -30,12 +33,15 @@ public class UserController extends ParentController {
         if (page == null){
             page = "1";
         }
+        Stream<Pet> petsByUser = petService.getByUserId(locale, id, page);
+
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
         Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
-        mav.addObject("userPets", petService.getByUserId(locale, id, page));
+        mav.addObject("userPets", petsByUser.toArray());
+        mav.addObject("userAvailablePets", petsByUser.filter(pet -> pet.getStatus().getId() == PetStatus.AVAILABLE.getValue()).toArray());
         return mav;
     }
 

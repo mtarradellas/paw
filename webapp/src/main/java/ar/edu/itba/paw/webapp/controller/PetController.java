@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
@@ -87,8 +88,9 @@ public class PetController extends ParentController {
             mav.addObject("lastRequest", null);
             mav.addObject("requestExists", false);
         }
-        mav.addObject("pet",
-                petService.findById(locale, id).orElseThrow(PetNotFoundException::new));
+        Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
+        mav.addObject("pet", pet);
+
         return mav;
     }
 
