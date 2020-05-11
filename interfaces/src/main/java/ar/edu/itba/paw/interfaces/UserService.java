@@ -31,4 +31,5 @@ public interface UserService {
     Optional<User> resetPassword(String language, UUID uuid, String password);
     boolean isAdmin(long userId);
     void removeUser(long userId);
+    Optional<User> update(String language, long id, String username, String phone) throws DuplicateUserException;
 }

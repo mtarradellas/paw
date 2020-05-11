@@ -200,6 +200,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> update(String language, long id, String username, String phone) throws DuplicateUserException {
+        LOGGER.debug("Attempting user {} update with username: {}, phone: {}", id, username, phone);
+        userDao.update(language, id, username, phone);
+        Optional<User> opUser = findById(language, id);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("Error finding user with id {}", id);
+            return opUser;
+        }
+        LOGGER.debug("Successfully updated user; id: {} username: {}, phone: {}", opUser.get().getId(), opUser.get().getUsername(), opUser.get().getPhone());
+        return opUser;
+    }
+
+    @Override
     public Optional<Token> getToken(UUID uuid) {
         return userDao.getToken(uuid);
     }
