@@ -129,4 +129,17 @@ public class UserController extends ParentController {
                 userService.findById(getLocale(),26).get().getStatus().getName());
         return mav;
     }
+
+    //TODO
+    @RequestMapping(value = "/user/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView userUpdateRemoved(@PathVariable("id") long id) {
+        User user = loggedUser();
+        if (user != null && id == user.getId()) {
+            userService.removeUser(id);
+            LOGGER.debug("User {} updated as removed", id);
+            return new ModelAndView("redirect:/");
+        }
+        LOGGER.warn("User is not logged user, status not updated");
+        return new ModelAndView("redirect:/403");
+    }
 }

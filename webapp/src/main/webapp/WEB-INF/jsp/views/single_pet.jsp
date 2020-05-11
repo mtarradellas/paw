@@ -14,35 +14,20 @@
 
 <t:basicLayout title="${titleVar}">
     <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage' javaScriptEscape='true'/>
-        </span>
+        <spring:message code='confirmMessage' javaScriptEscape='true'/>
+    </span>
     <div class="row">
         <div class=" col-md-10 offset-md-1 ">
-            <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <img src="" alt="Full sized image"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-light shadow p-3 ">
-                <div class="p-2">
-                    <div class="row">
+            <div class="bg-light shadow ">
+                <div class="p-2 bg-dark">
+                    <div class="row text-whitesmoke">
                         <c:if test="${not empty pet.petName}">
-                            <h1 class="m-1">
+                            <h1 class="ml-4 ">
                                 <c:out value="${meet}" />
                             </h1>
                         </c:if>
                         <c:if test="${empty pet.petName}">
-                            <h1>
+                            <h1 class="ml-4 ">
                                 <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                             </h1>
                         </c:if>
@@ -85,12 +70,14 @@
                         </c:if>
                     </div>
                 </div>
-                <t:photosList images="${pet.images}"/>
-                <div class="p-2">
+                <div class="p-3">
+                    <t:photosList images="${pet.images}"/>
+                </div>
+                <div class="p-3">
                     <c:out value="${pet.description}"/>
                 </div>
                 <hr>
-                <div class="p-2">
+                <div class="p-3">
                     <h2><c:out value="${someInfo}"/></h2>
 
                     <ul class="list-group">
@@ -123,7 +110,7 @@
                         <c:if test="${pet.price gt 0}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i class="fas fa-times ml-2"></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i class="fas fa-check ml-2 "></i>
-                                 (<spring:message code="petCard.price"/> <spring:message code="argPrice" arguments="${pet.price}"/>)
+                                (<spring:message code="petCard.price"/> <spring:message code="argPrice" arguments="${pet.price}"/>)
                             </li>
                         </c:if>
                     </ul>
@@ -135,6 +122,21 @@
 
                 <div class="p-4">
                     <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
+                </div>
+            </div>
+
+            <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="" alt="Full sized image"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
