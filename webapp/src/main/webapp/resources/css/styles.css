@@ -12,6 +12,25 @@
     padding-top: 5rem;
 }
 
+.edit-anchor {
+    position: absolute;
+    border: 1px solid #ced2d6;
+    border-radius: 5px;
+    right: 40px;
+    top: 35px;
+    padding: 6px 10px 6px 10px;
+    background: #e0e0e0;
+    text-decoration: none;
+    color: black;
+}
+
+.edit-anchor:hover {
+    background-color: #bdbdbd;
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+}
+
 .image-preview-container {
     background-color: #e7e9ea;
     margin-top: 15px;
@@ -182,6 +201,87 @@ html,body {
     text-align: center;
 }
 
+.delete-image-select{
+    position: relative;
+    display: inline-flex;
+    margin: 5px
+}
+
+.delete-image-select img{
+    border: 5px white solid;
+}
+
+.delete-image-select:hover {
+    cursor: pointer;
+}
+
+.image-checked img{
+    border: 5px #c72c2c solid;
+}
+
+.image-checkbox{
+    display:none;
+}
+
+.revert-input-anchor{
+    padding: 10px;
+    background: #e2dada;
+    border-radius: 5px;
+    margin-left: 5px;
+    border: 1px #cac1c1 solid;
+    text-decoration: none;
+    display: none;
+}
+
+.revert-input-anchor:hover{
+    background-color: #a59d9d;
+    cursor: pointer;
+}
+
+.input-modifiable-div {
+    display: flex;
+}
+
+.input-modified.input-modifiable-div input {
+    border-color: #a5a522;
+}
+
+.input-modified.input-modifiable-div select {
+    border-color: #a5a522;
+}
+
+.input-modified.input-modifiable-div input.is-invalid {
+    border-color: #f63434;
+}
+
+.input-modified.input-modifiable-div select.is-invalid {
+    border-color: #f63434;
+}
+
+.input-modified.input-modifiable-div .revert-input-anchor {
+    display: inline;
+}
+
+.text-error{
+    color: #f63434;
+    font-size: small;
+}
+
+/*.button {*/
+/*    text-decoration: none;*/
+/*    background-color: #EEEEEE;*/
+/*    color: #333333;*/
+/*    padding: 2px 6px 2px 6px;*/
+/*    border-top: 1px solid #CCCCCC;*/
+/*    border-right: 1px solid #333333;*/
+/*    border-bottom: 1px solid #333333;*/
+/*    border-left: 1px solid #CCCCCC;*/
+/*}*/
+
+/*.pn {*/
+/*    color: black;*/
+/*}*/
+
 .admin-header{
     background-color: #2b5a5d;
     color: white;
@@ -209,10 +309,3 @@ html,body {
     color: red;
 }
 
-
-.btn-circle {
-    display:block;
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-}
