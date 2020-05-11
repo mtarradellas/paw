@@ -2,8 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
-import ar.edu.itba.paw.models.Token;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,18 +47,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> adminUserList(String language, String page){
-        return userDao.adminUserList(language, page).collect(Collectors.toList());
+    public UserList adminUserList(String locale, String findValue, String status, String searchCriteria, String searchOrder, String page){
+        if (findValue == null) return adminFilteredList(locale, status, searchCriteria, searchOrder, page);
+        return adminFind(locale, findValue, page);
     }
 
     @Override
-    public List<User> adminSearchList(String language, String find, String page) {
-        return userDao.adminSearchList(language,find,page).collect(Collectors.toList());
+    public UserList adminFind(String language, String findValue, String page) {
+        List<User> list = userDao.adminSearchList(language, findValue, page).collect(Collectors.toList());
+        String maxPage = getAdminMaxSearchPages(language, findValue);
+        return new UserList(list, maxPage);
     }
 
     @Override
-    public List<User> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
-        return userDao.adminFilteredList(language, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+    public UserList adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        List<User> list = userDao.adminFilteredList(language, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+        String maxPage = getAdminMaxFilterPages(language, status);
+        return new UserList(list, maxPage);
     }
 
     @Override
