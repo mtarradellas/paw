@@ -46,7 +46,6 @@ public class PetController extends ParentController {
         if (page == null) {
             page = "1";
         }
-        mav.addObject("currentPage", page);
 
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
@@ -56,6 +55,7 @@ public class PetController extends ParentController {
         PetList petList = petService.petList(locale, findValue, species, breed, gender, searchCriteria,
                 searchOrder, minPrice, maxPrice, page);
 
+        mav.addObject("currentPage", page);
         mav.addObject("maxPage", petList.getMaxPage());
         mav.addObject("home_pet_list", petList.toArray());
         mav.addObject("species_list", petList.getSpecies().toArray());
