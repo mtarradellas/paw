@@ -57,7 +57,7 @@
                                 <c:forEach var="pet" items="${userPets}">
                                     <div class="col-auto mb-3">
 
-                                        <t:animalCard pet="${pet}"/>
+                                        <t:animalCard pet="${pet}" level="admin"/>
 
                                     </div>
                                 </c:forEach>
