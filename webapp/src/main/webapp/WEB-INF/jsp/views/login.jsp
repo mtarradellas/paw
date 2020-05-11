@@ -8,20 +8,24 @@
         <div class="shadow p-4 login-register-container bg-white">
             <h1>${loginTitle}</h1>
             <form action="${loginUrl}" method="post" enctype="application/x-www-form-urlencoded">
+
                 <div class="form-group">
                     <spring:message code="login.username" var="usernameTxt"/>
                     <label for="username">${usernameTxt}:</label>
-                    <input type="text" placeholder="${usernameTxt}" class="form-control" name="username" id="username">
+                    <input type="text" placeholder="${usernameTxt}" class="form-control ${not empty loginFailed ? 'is-invalid' : ''}" name="username" id="username">
                 </div>
                 <div class="form-group">
                     <spring:message code="login.password" var="passwordTxt"/>
                     <label for="password">${passwordTxt}:</label>
-                    <input type="password" placeholder="${passwordTxt}" class="form-control" name="password" id="password">
+                    <input type="password" placeholder="${passwordTxt}" class="form-control ${not empty loginFailed ? 'is-invalid' : ''}" name="password" id="password">
                 </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="rememberme" name="rememberme">
                     <label class="form-check-label" for="rememberme"><spring:message code="login.rememberMe"/></label>
                 </div>
+                <c:if test="${not empty loginFailed}">
+                    <div class="text-error"><spring:message code="login.incorrectUsernameOrPassword"/></div>
+                </c:if>
                 <div class="p-2">
                     <spring:message code="login.submit" var="submitText"/>
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
