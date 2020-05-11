@@ -208,3 +208,11 @@ html,body {
 .error{
     color: red;
 }
+
+
+.btn-circle {
+    display:block;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}

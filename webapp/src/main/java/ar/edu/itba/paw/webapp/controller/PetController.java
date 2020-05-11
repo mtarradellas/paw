@@ -60,6 +60,7 @@ public class PetController extends ParentController {
         mav.addObject("home_pet_list", petList.toArray());
         mav.addObject("species_list", petList.getSpecies().toArray());
         mav.addObject("breeds_list", petList.getBreeds().toArray());
+        mav.addObject("pets_list_size", petList.size());
         return mav;
     }
 
