@@ -33,7 +33,7 @@ public class PetDaoImpl implements PetDao {
     private static final String PET_TABLE = "pets";
 
     // Pets Removed or Sold are hidden from usual queries
-    private static final String HIDDEN_PETS_STATUS =  " ( " + 300 + " ) ";
+    private static final String HIDDEN_PETS_STATUS =  " ( " + PetStatus.REMOVED.getValue() + ", " + PetStatus.SOLD.getValue() + " ) ";
 
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -85,7 +85,7 @@ public class PetDaoImpl implements PetDao {
                     "pet_status.id as statusId, pet_status." + language + " as statusName " +
                     "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
                     "inner join images on images.petId = pets.id) inner join pet_status on pet_status.id = status " +
-                    "WHERE pets.id = ? AND pets.status NOT IN" + HIDDEN_PETS_STATUS;
+                    "WHERE pets.id = ?";
         } else {
             sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
                     "species.id as speciesId," + "species." + language + " AS speciesName, " +
@@ -477,7 +477,7 @@ public class PetDaoImpl implements PetDao {
                 "images.id as imagesId, images.petId as petId " +
                 "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ";
 
-        List<String> ids = jdbcTemplate.query(sql + " WHERE ownerid = ? AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
+        List<String> ids = jdbcTemplate.query(sql + " WHERE ownerid = ? " +
                         " limit " + PETS_IN_USER_PAGE + " offset " + offset,
                 new Object[] {userId},
                 (resultSet, i) -> resultSet.getString("id"));
@@ -486,7 +486,7 @@ public class PetDaoImpl implements PetDao {
 
         String pagePets = String.join(",", ids);
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql +
-                        " WHERE  (pets.id in (" + pagePets + ")) AND pets.status NOT IN " + HIDDEN_PETS_STATUS,
+                        " WHERE  (pets.id in (" + pagePets + "))  ",
                 new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
         return imageMap.keySet().stream();

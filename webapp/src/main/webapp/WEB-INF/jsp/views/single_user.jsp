@@ -45,7 +45,7 @@
                             <c:forEach var="pet" items="${userPets}">
                                 <div class="col-auto mb-3">
 
-                                    <t:animalCard pet="${pet}"/>
+                                    <t:animalCard pet="${pet}" level="user"/>
 
                                 </div>
                             </c:forEach>
@@ -66,25 +66,6 @@
 
                     </div>
                     <hr>
-                    <div class="p-2">
-                        <h2><spring:message code="interestPets"/></h2>
-                        <div class="card-deck row">
-
-<%--                            <c:forEach var="pet" items="${userPets}">--%>
-<%--                                <div class="col-auto mb-3">--%>
-
-<%--                                    <t:animalCard pet="${pet}"/>--%>
-
-<%--                                </div>--%>
-<%--                            </c:forEach>--%>
-<%--                            <c:if test="${empty userPets}">--%>
-<%--                                <div class="col-auto">--%>
-<%--                                    <spring:message code="noPetsFound"/>--%>
-<%--                                </div>--%>
-<%--                            </c:if>--%>
-
-                        </div>
-                    </div>
                 </div>
                 <div class="p-4">
                     <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
