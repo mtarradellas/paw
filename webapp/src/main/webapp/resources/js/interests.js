@@ -9,3 +9,4 @@ $('#search-criteria').on('change', function(event){
     }
 
 });
+

@@ -6,6 +6,7 @@
 <t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="container-fluid">
+            <jsp:include page="../parts/are-you-sure.jsp"/>
             <jsp class="row">
                 <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp" >
                     <jsp:param name="destination" value="interests"/>
@@ -28,10 +29,10 @@
                                             <small class="text-warning">    ${req.creationDate}</small>
                                         </div>
                                         <div class="col-sm-2 ">
-                                            <form method="POST" class="m-0" action="<c:url value="/interests/${req.id}/accept"/>">
+                                            <form method="POST" class="m-0 are-you-sure" action="<c:url value="/interests/${req.id}/accept"/>">
                                                 <button type="submit" name="newStatus" class="btn btn-success"><spring:message code="accept"/></button>
                                             </form>
-                                            <form method="POST" class="m-0" action="<c:url value="/interests/${req.id}/reject"/>">
+                                            <form method="POST" class="m-0 are-you-sure" action="<c:url value="/interests/${req.id}/reject"/>">
                                                 <button type="submit" name="newStatus" class="btn btn-danger" ><spring:message code="reject"/></button>
                                             </form>
                                         </div>
@@ -53,7 +54,7 @@
                 </div>
             </div>
         </div>
-
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
         <script src="<c:url value="/resources/js/interests.js"/>"></script>
     </jsp:body>
 </t:basicLayout>
