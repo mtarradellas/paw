@@ -5,7 +5,7 @@
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
 
-<spring:message var="titleTxt" code="editUserBasicForm.title"/>
+<spring:message var="titleTxt" code="editUserForm.title"/>
 
 <t:basicLayout title="${titleTxt}">
     <div class="row">
@@ -16,12 +16,12 @@
                     <h1>${titleTxt}</h1>
                     <form:form modelAttribute="editUserForm" action="${pageContext.request.contextPath}/edit-user/${id}" method="post" enctype="multipart/form-data">
 
-                        <h3><spring:message code="editUserBasicForm.basicForm"/></h3>
+                        <h3><spring:message code="editUserForm.basicForm"/></h3>
                         <div class="form-row p-1">
                             <div class="col">
                                 <spring:bind path="username">
                                     <div class="form-group">
-                                        <spring:message code="editUserBasicForm.username" var="usernameTxt"/>
+                                        <spring:message code="editUserForm.username" var="usernameTxt"/>
                                         <form:label path="username" for="username">${usernameTxt}: </form:label>
                                         <div class="input-modifiable-div" data-current="${user.username}">
                                             <form:input placeholder="${usernameTxt}" type="text" id="petName" path="username" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
@@ -39,7 +39,7 @@
                             <div class="col">
                                 <spring:bind path="phone">
                                     <div class="form-group">
-                                        <spring:message code="editUserBasicForm.phone" var="phoneTxt"/>
+                                        <spring:message code="editUserForm.phone" var="phoneTxt"/>
                                         <form:label path="phone" for="phone">${phoneTxt}: </form:label>
                                         <div class="input-modifiable-div" data-current="${user.phone}">
                                             <form:input placeholder="${phoneTxt}" type="number" id="phone" path="phone" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
@@ -59,19 +59,22 @@
                         </div>
 
                         <div class="p-1">
-                            <spring:message code="editUserBasicForm.updateUser" var="submitText"/>
+                            <spring:message code="editUserForm.updateUser" var="submitText"/>
                             <input type="submit" class="btn btn-primary" value="${submitText}" name="update-basic-info"/>
                         </div>
 
                         <hr>
 
-                        <h3><spring:message code="editUserBasicForm.passwordForm"/></h3>
+                    </form:form>
+                    <form:form modelAttribute="editUserForm" action="${pageContext.request.contextPath}/edit-user/${id}" method="post" enctype="multipart/form-data">
+
+                    <h3><spring:message code="editUserForm.passwordForm"/></h3>
 
                         <div class="form-row p-1">
                             <div class="col">
                                 <spring:bind path="currentPassword">
                                     <div class="form-group">
-                                        <spring:message code="editUserBasicForm.currentPassword" var="passwordTxt"/>
+                                        <spring:message code="editUserForm.currentPassword" var="passwordTxt"/>
                                         <form:label path="currentPassword" for="currentPassword">${passwordTxt}: </form:label>
                                         <form:input type="password" placeholder="${passwordTxt}" id="currentPassword" path="currentPassword" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="currentPassword" element="div" cssClass="invalid-feedback"/>
@@ -84,7 +87,7 @@
                             <div class="col">
                                 <spring:bind path="newPassword">
                                     <div class="form-group">
-                                        <spring:message code="editUserBasicForm.newPassword" var="passwordTxt"/>
+                                        <spring:message code="editUserForm.newPassword" var="passwordTxt"/>
                                         <form:label path="newPassword" for="password">${passwordTxt}: </form:label>
                                         <form:input type="password" placeholder="${passwordTxt}" id="password" path="newPassword" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="newPassword" element="div" cssClass="invalid-feedback"/>
@@ -93,27 +96,23 @@
                             </div>
 
                             <div class="col">
-                                <c:set var="classError"><form:errors element="div" cssClass="invalid-feedback"/></c:set>
                                 <spring:bind path="repeatNewPassword">
                                     <div class="form-group">
-                                        <spring:message code="editUserBasicForm.repeatNewPassword" var="repeatPasswordTxt"/>
+                                        <spring:message code="editUserForm.repeatNewPassword" var="repeatPasswordTxt"/>
                                         <form:label path="repeatNewPassword" for="repeatPassword">${repeatPasswordTxt}: </form:label>
                                         <form:input placeholder="${repeatPasswordTxt}" type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
                                                     path="repeatNewPassword"/>
                                         <form:errors path="repeatNewPassword" element="div" cssClass="invalid-feedback"/>
-                                            ${classError}
                                     </div>
                                 </spring:bind>
                             </div>
-
                         </div>
+                        <form:errors element="p" cssClass="text-error"/>
 
                         <div class="p-1">
-                            <spring:message code="editUserBasicForm.updatePassword" var="submitText"/>
+                            <spring:message code="editUserForm.updatePassword" var="submitText"/>
                             <input type="submit" class="btn btn-primary" value="${submitText}" name="update-password"/>
                         </div>
-
-
 
                     </form:form>
 

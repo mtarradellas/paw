@@ -134,12 +134,20 @@ public class UserController extends ParentController {
         if(loggedUser().getId() != id) {
             return new ModelAndView("redirect:/403" );
         }
+
+        return editUserForm(populateForm(editUserForm, id), id);
+    }
+
+    private EditUserForm populateForm(EditUserForm editUserForm, long id){
+
+        final String locale = getLocale();
+
         User user = userService.findById(locale, id).orElseThrow(UserNotFoundException::new);
 
         editUserForm.setPhone(user.getPhone());
         editUserForm.setUsername(user.getUsername());
 
-        return editUserForm(editUserForm, id);
+        return editUserForm;
     }
 
     private ModelAndView editUserForm(@ModelAttribute("editUserForm") final EditUserForm editUserForm, long id) {
@@ -155,8 +163,6 @@ public class UserController extends ParentController {
     public ModelAndView editBasicInfo(@Validated({BasicInfoEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
                                 final BindingResult errors, HttpServletRequest request,
                                 @PathVariable("id") long id) {
-
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n BASIC INFO \n\n\n\n\n\n\n\n\n\n\n\n");
 
         if (errors.hasErrors()) {
             return editUserForm(editUserForm, id);
@@ -184,9 +190,8 @@ public class UserController extends ParentController {
                                  final BindingResult errors, HttpServletRequest request,
                                  @PathVariable("id") long id) {
 
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n PASSWORD \n\n\n\n\n\n\n\n\n\n\n\n");
-
         if (errors.hasErrors()) {
+            populateForm(editUserForm, id);
             return editUserForm(editUserForm, id);
         }
         if(loggedUser().getId() != id) {
