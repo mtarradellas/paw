@@ -31,6 +31,7 @@ public interface PetService {
     boolean sellPet(long petId, long userId);
     void sellPetAdmin(long petId);
     boolean removePet(long petId, long userId);
+    boolean recoverPet(long petId, long userId);
     void removePetAdmin(long petId);
     void recoverPetAdmin(long petId);
     String getMaxPages();

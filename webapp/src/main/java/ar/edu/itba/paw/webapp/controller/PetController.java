@@ -135,6 +135,17 @@ public class PetController extends ParentController {
         return new ModelAndView("redirect:/403");
     }
 
+    @RequestMapping(value = "/pet/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
+        User user = loggedUser();
+        if (user != null && petService.recoverPet(id, user.getId())) {
+            LOGGER.debug("Pet {} updated as recovered", id);
+            return new ModelAndView("redirect:/pet/{id}");
+        }
+        LOGGER.warn("User is not pet owner, pet status not updated");
+        return new ModelAndView("redirect:/403");
+    }
+
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
     byte[] getImageWithMediaType(@PathVariable("id") long id) {

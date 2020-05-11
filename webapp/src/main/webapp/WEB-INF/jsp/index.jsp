@@ -41,6 +41,8 @@
                                         <p><spring:message code="help.profile.text"/></p>
                                         <h2><spring:message code="help.requests.title"/></h2>
                                         <p><spring:message code="help.requests.text"/></p>
+                                        <h2><spring:message code="help.recoverUser.title"/></h2>
+                                        <p><spring:message code="help.recoverUser.text"/></p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
