@@ -28,6 +28,8 @@ public class PetServiceImpl implements PetService {
     static final int USER_LEVEL = 0;
     static final int ADMIN_LEVEL = 1;
 
+    static final int MIN_IMAGES = 1;
+    static final int MAX_IMAGES = 5;
 
     @Autowired
     private PetDao petDao;
@@ -166,10 +168,6 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("Breed {} not found, pet update failed", breedId);
             return Optional.empty();
         }
-        if(imagesToDelete != null ) {
-            LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
-            imageService.delete(imagesToDelete);
-        }
         int toDelete;
         if(imagesToDelete == null){
             toDelete = 0;
@@ -179,10 +177,13 @@ public class PetServiceImpl implements PetService {
         }
         int previousImageQuantity = imageService.quantityByPetId(id);
         int finalImageQuantity = previousImageQuantity + photos.size() - toDelete;
-        if(finalImageQuantity <= 0) {
+        if(finalImageQuantity < MIN_IMAGES || finalImageQuantity > MAX_IMAGES) {
             throw new InvalidImageQuantityException("Pet must have between 1 and 5 images");
         }
-
+        if(imagesToDelete != null ) {
+            LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
+            imageService.delete(imagesToDelete);
+        }
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
         Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
         if (!opPet.isPresent()){

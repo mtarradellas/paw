@@ -239,7 +239,7 @@ public class PetController extends ParentController {
         }
 
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
-        Optional<Pet> opPet = Optional.empty();
+        Optional<Pet> opPet;
         try {
              opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
                     editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
