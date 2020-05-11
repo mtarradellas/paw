@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 public interface ImageDao {
     Stream<Image> findByPetId(long id);
+    Integer quantityByPetId(long id);
     Optional<byte[]> getDataById(long id);
     Optional<Image> create(long petId, byte[] bytes);
     void delete(Integer id);

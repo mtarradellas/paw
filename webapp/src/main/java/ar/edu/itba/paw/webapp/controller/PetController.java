@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.exception.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
@@ -238,9 +239,16 @@ public class PetController extends ParentController {
         }
 
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
-        Optional<Pet> opPet =petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
-                editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
-                editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
+        Optional<Pet> opPet = Optional.empty();
+        try {
+             opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
+                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
+                    editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
+        }
+        catch(InvalidImageQuantityException ex) {
+            LOGGER.warn(ex.getMessage());
+            return editPetForm(editPetForm, id).addObject("image_quantity_error", true);
+        }
         if(!opPet.isPresent()){
             LOGGER.warn("Pet could not be updated");
             return new ModelAndView("redirect:/");

@@ -41,6 +41,11 @@ public class ImageDaoImpl implements ImageDao {
     }
 
     @Override
+    public Integer quantityByPetId(long id) {
+        return jdbcTemplate.queryForObject("SELECT count(*) FROM images WHERE petId = ? ", new Object[] {id}, Integer.class);
+    }
+
+    @Override
     public Optional<byte[]> getDataById(long id) {
         return jdbcTemplate.query("SELECT img FROM images WHERE id = ? ", new Object[] {id}, IMAGE_DATA_MAPPER)
                 .stream().findFirst();

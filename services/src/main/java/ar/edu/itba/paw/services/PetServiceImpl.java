@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
+import ar.edu.itba.paw.interfaces.exception.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
@@ -147,7 +149,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                       boolean vaccinated, String gender, String description, Date birthDate, int price) {
+                       boolean vaccinated, String gender, String description, Date birthDate, int price) throws InvalidImageQuantityException {
         LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
                         "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
                 id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
@@ -167,6 +169,18 @@ public class PetServiceImpl implements PetService {
         if(imagesToDelete != null ) {
             LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
             imageService.delete(imagesToDelete);
+        }
+        int toDelete;
+        if(imagesToDelete == null){
+            toDelete = 0;
+        }
+        else {
+            toDelete = imagesToDelete.size();
+        }
+        int previousImageQuantity = imageService.quantityByPetId(id);
+        int finalImageQuantity = previousImageQuantity + photos.size() - toDelete;
+        if(finalImageQuantity <= 0) {
+            throw new InvalidImageQuantityException("Pet must have between 1 and 5 images");
         }
 
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
