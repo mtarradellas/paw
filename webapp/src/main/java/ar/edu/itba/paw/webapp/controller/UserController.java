@@ -9,15 +9,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Controller
 public class UserController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
-    String  page = "1";
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
@@ -52,13 +53,15 @@ public class UserController extends ParentController {
 
         /* Filtered request list */
         if (status != null || searchCriteria != null) {
-            mav.addObject("requests_list",
-                    requestService.filterListByOwner(locale, user.getId(), status, searchCriteria, searchOrder).toArray());
+            List<Request> requestList = requestService.filterListByOwner(locale, user.getId(), status, searchCriteria, searchOrder).collect(Collectors.toList());
+            mav.addObject("requests_list", requestList);
+            mav.addObject("list_size", requestList.size());
         }
         /* Default request list */
         else {
-            mav.addObject("requests_list",
-                    requestService.listByOwner(locale, user.getId()).toArray());
+            List<Request> requestList = requestService.listByOwner(locale, user.getId()).collect(Collectors.toList());
+            mav.addObject("requests_list",requestList);
+            mav.addObject("list_size", requestList.size());
         }
         return mav;
     }
@@ -69,6 +72,17 @@ public class UserController extends ParentController {
         final String locale = getLocale();
 
         if (requestService.cancel(id, user.getId(), locale)) {
+            return new ModelAndView("redirect:/requests" );
+        }
+        return new ModelAndView("redirect:/403" );
+    }
+
+    @RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView recoverRequest(@PathVariable("id") long id) {
+        final User user = loggedUser();
+        final String locale = getLocale();
+
+        if (requestService.recover(id, user.getId(), locale)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -137,7 +151,7 @@ public class UserController extends ParentController {
         if (user != null && id == user.getId()) {
             userService.removeUser(id);
             LOGGER.debug("User {} updated as removed", id);
-            return new ModelAndView("redirect:/");
+            return new ModelAndView("redirect:/logout");
         }
         LOGGER.warn("User is not logged user, status not updated");
         return new ModelAndView("redirect:/403");

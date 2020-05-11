@@ -27,6 +27,7 @@ public interface RequestService {
     boolean cancel(long id, long ownerId, String locale);
     boolean accept(long id, long ownerId, String locale);
     boolean reject(long id, long ownerId, String locale);
+    boolean recover(long id, long ownerId, String locale);
     void adminUpdateStatus(long id, String status);
     void cancelRequestAdmin(long requestId);
     void recoverRequestAdmin(long requestId);

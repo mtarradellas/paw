@@ -40,13 +40,6 @@
                     <hr>
                     <div class="p-2">
                         <h2><spring:message code="userPets"/></h2>
-                        <c:if test="${not empty userPets}">
-                            <div class="m-2 ">
-                                <c:if test="${maxPage ne 1}">
-                                    <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/user/${id}"/>
-                                </c:if>
-                            </div>
-                        </c:if>
                         <div class="card-deck row">
 
                             <c:forEach var="pet" items="${userPets}">
@@ -73,14 +66,33 @@
 
                     </div>
                     <hr>
+                    <div class="p-2">
+                        <h2><spring:message code="interestPets"/></h2>
+                        <div class="card-deck row">
 
+<%--                            <c:forEach var="pet" items="${userPets}">--%>
+<%--                                <div class="col-auto mb-3">--%>
+
+<%--                                    <t:animalCard pet="${pet}"/>--%>
+
+<%--                                </div>--%>
+<%--                            </c:forEach>--%>
+<%--                            <c:if test="${empty userPets}">--%>
+<%--                                <div class="col-auto">--%>
+<%--                                    <spring:message code="noPetsFound"/>--%>
+<%--                                </div>--%>
+<%--                            </c:if>--%>
+
+                        </div>
+                    </div>
                 </div>
-
                 <div class="p-4">
                     <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
 </t:basicLayout>
