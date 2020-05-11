@@ -46,8 +46,8 @@
                                     <h5 class="text-center mr-4"><b><spring:message code="actions"/></b></h5>
                                 </div>
                             </div>
+                            <hr class="m-0">
                         </c:if>
-                        <hr class="m-0">
                         <c:forEach var="req" items="${requests_list}">
                             <c:if test="${req.status.id eq 1}">
                                 <div class="row bg-light p-1">
@@ -82,7 +82,7 @@
                                     <div class="col-lg-2">
                                         <spring:message code="request.accepted"/>
                                     </div>
-                                    <div class="col text-center">
+                                    <div class="col text-center button-container">
                                         <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
                                            type="button" class="btn btn-secondary"><spring:message
                                                 code="visitPet"/></a>
@@ -99,7 +99,7 @@
                                     <div class="col-lg-2">
                                         <spring:message code="request.rejected"/>
                                     </div>
-                                    <div class="col text-center">
+                                    <div class="col text-center button-container">
                                         <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
                                            type="button" class="btn btn-secondary"><spring:message
                                                 code="visitPet"/></a>
@@ -116,7 +116,7 @@
                                     <div class="col-lg-2">
                                         <spring:message code="request.canceled"/>
                                     </div>
-                                    <div class="col text-center">
+                                    <div class="col text-center button-container">
                                         <form method="POST" class="m-0"
                                               action="<c:url value="/requests/${req.id}/recover"/>">
                                             <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
@@ -143,7 +143,7 @@
                 </div>
             </div>
         </div>
-        <script src="<c:url value="/resources/js/admin_control.js.js"/>"></script>
+        <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
         <script src="<c:url value="/resources/js/interests.js"/>"></script>
     </jsp:body>
 </t:basicLayout>

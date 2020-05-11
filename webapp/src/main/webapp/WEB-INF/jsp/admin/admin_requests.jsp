@@ -154,7 +154,7 @@
                                                     <spring:message code="request.canceled"/>
                                                 </c:if>
                                             </div>
-                                            <div class="col text-center ml-3">
+                                            <div class="col text-center ml-3 ">
                                                 <c:if test="${request.status.id eq 1 or request.status.id eq 2 or request.status.id eq 3}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/request/${request.id}/cancel"/>">
