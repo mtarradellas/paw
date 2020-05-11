@@ -3,6 +3,7 @@ package ar.edu.itba.paw.interfaces;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.UserList;
 
 import java.util.Date;
 import java.util.List;
@@ -14,9 +15,9 @@ public interface UserService {
     Optional<User> findById(String language, long id);
     Optional<User> findByUsername(String language, String username);
     Stream<User> list(String language);
-    List<User> adminUserList(String language, String page);
-    List<User> adminSearchList(String language, String find, String page);
-    List<User> adminFilteredList(String language,String status,String searchCriteria,String searchOrder,String page);
+    UserList adminUserList(String language, String findValue, String status, String searchCriteria, String searchOrder, String page);
+    UserList adminFind(String language, String find, String page);
+    UserList adminFilteredList(String language,String status,String searchCriteria,String searchOrder,String page);
     Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String language, String mail);

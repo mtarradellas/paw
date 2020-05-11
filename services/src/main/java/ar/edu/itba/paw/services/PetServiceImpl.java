@@ -28,35 +28,9 @@ public class PetServiceImpl implements PetService {
 
 
     @Override
-    public Optional<Pet> findById(String language, long id) {
-        return petDao.findById(language, id, 0);
-    }
-
-    @Override
-    public Optional<Pet> adminFindById(String language, long id) {
-        return petDao.findById(language, id, 1);
-    }
-
-    @Override
     public PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
         if (findValue == null) return filteredList(language, species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page);
         return find(language, findValue, page);
-    }
-
-    @Override
-    public List<Pet> list(String language,String page){
-
-        return petDao.list(language, page, 0).collect(Collectors.toList());// 0 is user
-    }
-
-    @Override
-    public List<Pet> listAll(String language) {
-        return petDao.listAll(language).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page) {
-        return petDao.adminFilteredList(language, specie, breed, gender, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
     }
 
     @Override
@@ -71,7 +45,48 @@ public class PetServiceImpl implements PetService {
         List<Pet> list = petDao.find(language, findValue, page, 0).collect(Collectors.toList());// 0 is user
         String maxPage = getMaxSearchPages(language, findValue);
         return new PetList(list, maxPage);
+    }
 
+    @Override
+    public PetList adminPetList(String language, String findValue, String species, String  breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        if (findValue == null) return adminFilteredList(language, species, breed, gender, status, searchCriteria, searchOrder, minPrice, maxPrice, page);
+        return adminFind(language, findValue, status, page);
+    }
+
+    @Override
+    public PetList adminFilteredList(String language, String species, String breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        List<Pet> list = petDao.adminFilteredList(language, species, breed, gender, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+        String maxPage = getMaxAdminFilterPages(language, species, breed, gender, status);
+        return new PetList(list, maxPage);
+    }
+
+    @Override
+    public PetList adminFind(String language, String findValue, String status, String page) {
+        List<Pet> list = petDao.find(language, findValue, page, 1).collect(Collectors.toList()); //1 is admin
+        String maxPage = getAdminMaxSearchPages(language, findValue);
+        return new PetList(list, maxPage);
+    }
+
+    @Override
+    public Optional<Pet> findById(String language, long id) {
+        return petDao.findById(language, id, 0);
+    }
+
+    @Override
+    public Optional<Pet> adminFindById(String language, long id) {
+        return petDao.findById(language, id, 1);
+    }
+
+
+    @Override
+    public List<Pet> list(String language,String page){
+
+        return petDao.list(language, page, 0).collect(Collectors.toList());// 0 is user
+    }
+
+    @Override
+    public List<Pet> listAll(String language) {
+        return petDao.listAll(language).collect(Collectors.toList());
     }
 
     @Override
@@ -82,11 +97,6 @@ public class PetServiceImpl implements PetService {
     @Override
     public List<Pet> adminList(String language, String page) {
         return petDao.list(language, page, 1).collect(Collectors.toList());// 1 is admin
-    }
-
-    @Override
-    public List<Pet> adminSearchList(String language, String find, String page) {
-        return petDao.find(language, find, page, 1).collect(Collectors.toList()); //1 is admin
     }
 
     @Override

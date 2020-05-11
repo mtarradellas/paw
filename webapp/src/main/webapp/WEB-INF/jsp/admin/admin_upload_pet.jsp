@@ -79,7 +79,7 @@
                                             <form:select id="breedId" path="breedId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                                 <c:forEach var="breed" items="${breeds_list}">
-                                                    <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
+                                                    <form:option cssClass="species-${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
                                             <form:errors path="breedId" element="div" cssClass="invalid-feedback"/>
