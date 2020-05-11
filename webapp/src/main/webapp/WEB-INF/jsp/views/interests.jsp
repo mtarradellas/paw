@@ -57,15 +57,13 @@
                                                type="button" class=" btn btn-secondary"><spring:message
                                                     code="visitUser"/></a>
                                             <form method="POST"
-                                                  action="<c:url value="/interests/${req.id}/accept"/>"
-                                                  onclick="confirmDelete(event)">
-                                                <button type="submit" name="newStatus" class="btn btn-success">
+                                                  action="<c:url value="/interests/${req.id}/accept"/>">
+                                                <button type="submit" name="newStatus" class="btn btn-success are-you-sure">
                                                     <spring:message code="accept"/></button>
                                             </form>
                                             <form method="POST"
                                                   action="<c:url value="/interests/${req.id}/reject"/>">
-                                                <button type="submit" name="newStatus" class="btn btn-danger"
-                                                        onclick="confirmDelete(event)">
+                                                <button type="submit" name="newStatus" class="btn btn-danger are-you-sure">
                                                     <spring:message code="reject"/></button>
                                             </form>
                                         </div>
