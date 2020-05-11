@@ -177,9 +177,11 @@ public class PetServiceImpl implements PetService {
         }
         LOGGER.debug("Pet {} successfully updated", opPet.get());
 
-        for (byte[] photo : photos) {
-            LOGGER.debug("Adding image to pet {}", id);
-            imageService.create(opPet.get().getId(), photo, opPet.get().getOwnerId());
+        if(photos != null) {
+            for (byte[] photo : photos) {
+                LOGGER.debug("Adding image to pet {}", id);
+                imageService.create(opPet.get().getId(), photo, opPet.get().getOwnerId());
+            }
         }
         return opPet;
     }

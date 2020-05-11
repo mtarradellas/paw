@@ -223,11 +223,13 @@ public class PetController extends ParentController {
         List<byte[]> photos = new ArrayList<>();
         try {
             for (MultipartFile photo : editPetForm.getPhotos()) {
-                try {
-                    photos.add(photo.getBytes());
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    throw new ImageLoadException(ex);
+                if(!photo.isEmpty()) {
+                    try {
+                        photos.add(photo.getBytes());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        throw new ImageLoadException(ex);
+                    }
                 }
             }
         } catch (ImageLoadException ex) {
