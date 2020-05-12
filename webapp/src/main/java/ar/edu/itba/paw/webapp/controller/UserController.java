@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
@@ -224,7 +225,13 @@ public class UserController extends ParentController {
         if(loggedUser().getId() != id) {
             return new ModelAndView("redirect:/403");
         }
-        Optional<User> opUser = userService.updatePassword(getLocale(), editUserForm.getNewPassword(), id);
+        Optional<User> opUser;
+        try {
+            opUser = userService.updatePassword(getLocale(), editUserForm.getCurrentPassword(), editUserForm.getNewPassword(), id);
+        }
+        catch(InvalidPasswordException ex) {
+            return editUserForm(editUserForm, id).addObject("current_password_fail", true);
+        }
         if(!opUser.isPresent()){
             return new ModelAndView("redirect:/500");
         }

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
@@ -112,7 +113,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> updatePassword(String language, String newPassword, long id) {
+    public Optional<User> updatePassword(String language, String oldPassword, String newPassword, long id) throws InvalidPasswordException {
+        if(oldPassword != null){
+            LOGGER.debug("Checking old password");
+            if(!userDao.matchesPassword(id, encoder.encode(oldPassword))){
+                LOGGER.warn("Password does not match the current one");
+                throw new InvalidPasswordException("Password does not match the current one");
+            }
+        }
         if(userDao.updatePassword(encoder.encode(newPassword), id)){
             LOGGER.debug("Password updated");
             return userDao.findById(language, id);
@@ -208,8 +216,10 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
         final User user = opUser.get();
-
-        updatePassword(language, password, user.getId());
+        try {
+            updatePassword(language,null, password, user.getId());
+        }
+        catch(InvalidPasswordException ignored){}
         deleteToken(uuid);
 
         return opUser;
