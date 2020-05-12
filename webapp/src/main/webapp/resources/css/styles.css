@@ -17,7 +17,7 @@
     border: 1px solid #ced2d6;
     border-radius: 5px;
     right: 40px;
-    top: 35px;
+    top: 15px;
     padding: 6px 10px 6px 10px;
     background: #e0e0e0;
     text-decoration: none;
@@ -308,6 +308,8 @@ html,body {
 .error{
     color: red;
 }
+
+
 
 .btn-circle {
     display:block;
