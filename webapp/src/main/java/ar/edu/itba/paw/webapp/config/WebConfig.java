@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -107,14 +108,13 @@ public class WebConfig {
         return multipartResolver;
     }
 
-//    This is a template for a preconfigured message
-//    @Bean
-//    public SimpleMailMessage emailTemplate()
-//    {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo("somebody@gmail.com");
-//        message.setFrom("admin@gmail.com");
-//        message.setText("FATAL - Application crash. Save your job !!");
-//        return message;
-//    }
+    @Bean
+    public VelocityEngine velocityEngine() throws Exception {
+        Properties properties = new Properties();
+        properties.setProperty("input.encoding", "UTF-8");
+        properties.setProperty("output.encoding", "UTF-8");
+        properties.setProperty("resource.loader", "class");
+        properties.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        return new VelocityEngine(properties);
+    }
 }

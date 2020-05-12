@@ -1,14 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
 import ar.edu.itba.paw.webapp.form.AdminUploadRequestForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
+import ar.edu.itba.paw.webapp.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,6 +24,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class AdminController extends ParentController{
@@ -31,7 +32,7 @@ public class AdminController extends ParentController{
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
     //TODO: cambiar el path del mapping para que te redireccion correctamente
-    @RequestMapping(value = "/admi")
+    @RequestMapping(value = "/admin")
     public ModelAndView getAdminHome() {
         return new ModelAndView("admin/admin");
     }
@@ -39,23 +40,24 @@ public class AdminController extends ParentController{
 
 
 //    PETS ENDPOINTS
-    @RequestMapping(value = "/admi/pets")
+    @RequestMapping(value = "/admin/pets")
     public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
                                      @RequestParam(name = "breed", required = false) String breed,
                                      @RequestParam(name = "gender", required = false) String gender,
                                      @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                      @RequestParam(name = "searchOrder", required = false) String searchOrder,
-                                     @RequestParam(name = "status", required = false) String status,
+                                     @RequestParam(name = "find", required = false) String findValue,
                                      @RequestParam(name = "page", required = false) String page,
-                                     @RequestParam(name = "find", required = false) String find) {
+                                     @RequestParam(name = "minPrice", required = false) String minPrice,
+                                     @RequestParam(name = "maxPrice", required = false) String maxPrice,
+                                     @RequestParam(name = "status", required = false) String status) {
+
+        ModelAndView mav = new ModelAndView("admin/admin_pets");
+        final String locale = getLocale();
 
         if(page == null){
             page = "1";
         }
-
-        final String locale = getLocale();
-
-        ModelAndView mav = new ModelAndView("admin/admin_pets");
 
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
@@ -63,39 +65,19 @@ public class AdminController extends ParentController{
         gender = gender == null || gender.equals("any") ? null : gender;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
-        if (species != null || gender != null || searchCriteria != null || status != null) {
-            String maxPage = petService.getMaxAdminFilterPages(locale, species, breed, gender, status);
-            mav.addObject("maxPage", maxPage);
-
-            LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, spec: {}, breed: {}, gender: {}, status: {}, sCriteria: {}, sOrder: {}, page: {}",
-                    locale, species, breed, gender, status, searchCriteria, searchOrder, page);
-            List<Pet> petList = petService.adminFilteredList(locale, species, breed, gender, status, searchCriteria,
-                    searchOrder, page);
-            mav.addObject("pets_list", petList);
-
-        }else if(find != null){
-            String maxPage = petService.getAdminMaxSearchPages(locale,find);
-            mav.addObject("maxPage", maxPage);
-            List<Pet> petList = petService.adminSearchList(locale, find, page);
-            mav.addObject("pets_list", petList);
-
-        }else{
-            String maxPage = petService.getAdminMaxPages();
-            mav.addObject("maxPage", maxPage);
-            List<Pet> petList = petService.adminList(locale, page);
-            mav.addObject("pets_list", petList);
-        }
+        PetList petList = petService.adminPetList(locale, findValue, species, breed, gender, status, searchCriteria,
+                                                    searchOrder, minPrice, maxPrice, page);
 
         mav.addObject("currentPage", page);
-        mav.addObject("species_list", speciesService.speciesList(locale).toArray());
-        mav.addObject("breeds_list", speciesService.breedsList(locale).toArray());
-
-
+        mav.addObject("maxPage", petList.getMaxPage());
+        mav.addObject("pets_list", petList);
+        mav.addObject("species_list", petList.getSpecies());
+        mav.addObject("breeds_list", petList.getBreeds());
 
         return mav;
     }
 
-    @RequestMapping(value = "/admi/pet/{id}")
+    @RequestMapping(value = "/admin/pet/{id}")
     public ModelAndView getSinglePet(@PathVariable("id") long id){
 
         final ModelAndView mav = new ModelAndView("/admin/admin_single_pet");
@@ -106,15 +88,19 @@ public class AdminController extends ParentController{
     }
 
 
-    @RequestMapping(value ="/admi/upload-pet", method = { RequestMethod.GET })
+    @RequestMapping(value ="/admin/upload-pet", method = { RequestMethod.GET })
     public ModelAndView uploadPetForm(@ModelAttribute("adminUploadPetForm") final AdminUploadPetForm userForm) {
-        return new ModelAndView("admin/admin_upload_pet")
-                .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
-                .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray())
-                .addObject("users_list",userService.list(getLocale()).toArray());
+        ModelAndView mav = new ModelAndView("admin/admin_upload_pet");
+        String locale = getLocale();
+
+        BreedList breedList = speciesService.breedsList(locale);
+        mav.addObject("species_list", breedList.getSpecies().toArray());
+        mav.addObject("breeds_list", breedList.toArray());
+        mav.addObject("users_list", userService.list(locale).toArray());
+        return mav;
     }
 
-    @RequestMapping(value = "/admi/upload-pet", method = { RequestMethod.POST })
+    @RequestMapping(value = "/admin/upload-pet", method = { RequestMethod.POST })
     public ModelAndView uploadPet(@Valid @ModelAttribute("adminUploadPetForm") final AdminUploadPetForm petForm,
                                   final BindingResult errors, HttpServletRequest request) {
 
@@ -150,60 +136,61 @@ public class AdminController extends ParentController{
             return uploadPetForm(petForm).addObject("pet_error", true);
         }
 
-        return new ModelAndView("redirect:/admi/pet/" + opPet.get().getId());
+
+        return new ModelAndView("redirect:/admin/pet/" + opPet.get().getId());
     }
 
-    @RequestMapping(value = "/admi/pet/{id}/remove", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/pet/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
          petService.removePetAdmin(id);
          LOGGER.debug("Pet {} updated as removed", id);
-         return new ModelAndView("redirect:/admi/pets");
+         return new ModelAndView("redirect:/admin/pets");
 
     }
 
-    @RequestMapping(value = "/admi/pet/{id}/sell-adopt", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/pet/{id}/sell-adopt", method = {RequestMethod.POST})
     public ModelAndView petUpdateSold(@PathVariable("id") long id) {
         petService.sellPetAdmin(id);
         LOGGER.debug("Pet {} updated as sold", id);
-        return new ModelAndView("redirect:/admi/pets");
+        return new ModelAndView("redirect:/admin/pets");
     }
 
-    @RequestMapping(value = "/admi/pet/{id}/recover", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/pet/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
         petService.recoverPetAdmin(id);
         LOGGER.debug("Pet {} updated as recovered", id);
-        return new ModelAndView("redirect:/admi/pets");
+        return new ModelAndView("redirect:/admin/pets");
     }
 
 
 //    USERS ENDPOINTS
-    @RequestMapping(value = "/admi/users")
-    public ModelAndView getUsersAdmin(@RequestParam(name = "page", required = false) String page,
-                                      @RequestParam(name = "find", required = false) String find) {
-        if(page == null){
-            page = "1";
-        }
+@RequestMapping(value = "/admin/users")
+public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = false) String status,
+                                  @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
+                                  @RequestParam(name = "searchOrder", required = false) String searchOrder,
+                                  @RequestParam(name = "page", required = false) String page,
+                                  @RequestParam(name = "find", required = false) String findValue) {
 
-        ModelAndView mav = new ModelAndView("admin/admin_users");
-        mav.addObject("currentPage", page);
+    ModelAndView mav = new ModelAndView("admin/admin_users");
+    final String locale = getLocale();
 
-        if(find != null){
-            String maxPage = userService.getAdminMaxSearchPages(getLocale(), find);
-            mav.addObject("maxPage", maxPage);
-            List<User> userList = userService.adminSearchList(getLocale(), find, page);
-            mav.addObject("users_list", userList);
-
-        }else{
-            String maxPage = userService.getAdminUserPages();
-            mav.addObject("maxPage", maxPage);
-            List<User> userList = userService.adminUserList(getLocale(), page);
-            mav.addObject("users_list", userList);
-        }
-
-        return mav;
+    if(page == null){
+        page = "1";
     }
 
-    @RequestMapping(value = "/admi/user/{id}")
+    status = status == null || status.equals("any") ? null : status;
+    searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
+
+    UserList userList = userService.adminUserList(locale, findValue, status, searchCriteria, searchOrder, page);
+
+    mav.addObject("currentPage", page);
+    mav.addObject("maxPage", userList.getMaxPage());
+    mav.addObject("users_list", userList);
+
+    return mav;
+}
+
+    @RequestMapping(value = "/admin/user/{id}")
     public ModelAndView getSingleUser(@PathVariable("id") long id,
                                       @RequestParam(name = "page", required = false) String page){
 
@@ -222,60 +209,95 @@ public class AdminController extends ParentController{
     }
 
 
+    @RequestMapping(value ="/admin/upload-user", method = { RequestMethod.GET })
+    public ModelAndView uploadUserForm(@ModelAttribute("registerForm") final UserForm userForm) {
+        return new ModelAndView("admin/admin_upload_user");
+    }
+
+    @RequestMapping(value = "/admin/upload-user", method = { RequestMethod.POST })
+    public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm,
+                                   final BindingResult errors, HttpServletRequest request) {
+
+        final String locale = getLocale();
+
+        if (errors.hasErrors()) {
+            errors.getAllErrors().forEach(error -> LOGGER.debug("{}", error.toString()));
+            return uploadUserForm(userForm);
+        }
+
+        Optional<User> opUser;
+        try {
+            opUser = userService.adminCreate(locale, userForm.getUsername(), userForm.getPassword(),
+                    userForm.getMail(), userForm.getPhone());
+        } catch (DuplicateUserException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return uploadUserForm(userForm)
+                    .addObject("duplicatedUsername", ex.isDuplicatedUsername())
+                    .addObject("duplicatedMail", ex.isDuplicatedMail());
+        }
+        if (opUser == null || !opUser.isPresent()) {
+            LOGGER.warn("User creation failed. User returned from creation is {}", opUser==null? "null":"empty");
+            return uploadUserForm(userForm).addObject("generalError", true);
+        }
+
+        return new ModelAndView("redirect:/admin/users");
+    }
+
+
+    @RequestMapping(value = "/admin/user/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView userUpdateDelete(@PathVariable("id") long id) {
+        userService.removeAdmin(id);
+        LOGGER.debug("User {} updated as deleted", id);
+        return new ModelAndView("redirect:/admin/users");
+
+    }
+
+    @RequestMapping(value = "/admin/user/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView userUpdateRecover(@PathVariable("id") long id) {
+        userService.recoverAdmin(id);
+        LOGGER.debug("User {} updated as recovered", id);
+        return new ModelAndView("redirect:/admin/users");
+    }
+
+
+
+
 //    REQUESTS ENDPOINTS
-    @RequestMapping(value = "/admi/requests")
+    @RequestMapping(value = "/admin/requests")
     public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
                                          @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                          @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                          @RequestParam(name = "page", required = false) String page,
-                                         @RequestParam(name = "find", required = false) String find) {
+                                         @RequestParam(name = "find", required = false) String findValue) {
+
+        ModelAndView mav = new ModelAndView("admin/admin_requests");
+        final String locale = getLocale();
+
         if(page == null){
             page = "1";
         }
 
-        final String locale = getLocale();
-
-        ModelAndView mav = new ModelAndView("admin/admin_requests");
-        mav.addObject("currentPage", page);
-
-
         status = status == null || status.equals("any") ? null : status;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
-        if ( searchCriteria != null || status != null) {
-            String maxPage = requestService.getAdminMaxFilterPages(locale, status);
-            mav.addObject("maxPage", maxPage);
+        RequestList requestList = requestService.adminRequestList(locale, findValue, status, searchCriteria, searchOrder, page);
 
-            LOGGER.debug("Requesting filtered pet list of parameters: locale: {}, status: {}, sCriteria: {}, sOrder: {}, page: {}",
-                    locale, status, searchCriteria, searchOrder, page);
-            List<Request> requestList = requestService.adminFilteredList(locale, status, searchCriteria,
-                    searchOrder, page);
-            mav.addObject("requests_list", requestList);
-
-        }else if(find != null){
-            String maxPage = requestService.getAdminMaxSearchPages(locale, find);
-            mav.addObject("maxPage", maxPage);
-            List<Request> requestList = requestService.adminSearchList(locale, find, page);
-            mav.addObject("requests_list", requestList);
-
-        }else{
-            String maxPage = requestService.getAdminRequestPages(locale);
-            mav.addObject("maxPage", maxPage);
-            List<Request> requestList = requestService.adminRequestList(locale, page);
-            mav.addObject("requests_list", requestList);
-        }
+        mav.addObject("currentPage", page);
+        mav.addObject("maxPage", requestList.getMaxPage());
+        mav.addObject("requests_list", requestList);
 
         return mav;
     }
 
-    @RequestMapping(value ="/admi/upload-request", method = { RequestMethod.GET })
+    @RequestMapping(value ="/admin/upload-request", method = { RequestMethod.GET })
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
+        String language = getLocale();
         return new ModelAndView("admin/admin_upload_request")
-                .addObject("pets_list", petService.listAll(getLocale()))
-                .addObject("users_list",userService.list(getLocale()).toArray());
+                .addObject("pets_list", petService.listAll(language))
+                .addObject("users_list",userService.list(language).toArray());
     }
 
-    @RequestMapping(value = "/admi/upload-request", method = { RequestMethod.POST })
+    @RequestMapping(value = "/admin/upload-request", method = { RequestMethod.POST })
     public ModelAndView uploadRequest(@Valid @ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm,
                                       final BindingResult errors, HttpServletRequest request) {
 
@@ -291,22 +313,43 @@ public class AdminController extends ParentController{
         }
 
 
-        return new ModelAndView("redirect:/admi/requests");
+        return new ModelAndView("redirect:/admin/requests");
     }
 
-    @RequestMapping(value = "/admi/request/{id}/cancel", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/request/{id}/cancel", method = {RequestMethod.POST})
     public ModelAndView requestUpdateCanceled(@PathVariable("id") long id) {
         requestService.cancelRequestAdmin(id);
         LOGGER.debug("Request {} updated as canceled", id);
-        return new ModelAndView("redirect:/admi/requests");
+        return new ModelAndView("redirect:/admin/requests");
 
     }
 
-    @RequestMapping(value = "/admi/request/{id}/recover", method = {RequestMethod.POST})
+    @RequestMapping(value = "/admin/request/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView requestUpdateRecover(@PathVariable("id") long id) {
         requestService.recoverRequestAdmin(id);
         LOGGER.debug("Request {} updated as recovered", id);
-        return new ModelAndView("redirect:/admi/requests");
+        return new ModelAndView("redirect:/admin/requests");
+    }
+
+    @RequestMapping(value ="/admin/request/{id}/edit", method = { RequestMethod.GET })
+    public ModelAndView editRequest(@PathVariable("id") long id) {
+
+        Optional<Request> request = requestService.findById(id,getLocale());
+        if(!request.isPresent()){
+            return new ModelAndView("error-views/404");
+        }
+
+        return new ModelAndView("admin/admin_edit_request")
+                .addObject("request", request.get());
+    }
+
+    @RequestMapping(value = "/admin/request/{id}/edit", method = { RequestMethod.POST })
+    public ModelAndView uploadRequest(@PathVariable("id") long id,
+                                      @RequestParam(name = "newStatus", required = false) String newStatus) {
+
+        requestService.adminUpdateStatus(id,newStatus);
+
+        return new ModelAndView("redirect:/admin/requests");
     }
 
 }

@@ -2,17 +2,15 @@ package ar.edu.itba.paw.services;
 
 
 import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.models.Contact;
-import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.naming.Context;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,11 +18,6 @@ import java.util.stream.Stream;
 public class RequestServiceImpl implements RequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestServiceImpl.class);
-
-    private final int PENDING_STATUS = 1;
-    private final int ACCEPTED_STATUS = 2;
-    private final int REJECTED_STATUS = 3;
-    private final int CANCELED_STATUS = 4;
 
     private final String DEFAULT_LOCALE = "es_AR";
 
@@ -37,8 +30,6 @@ public class RequestServiceImpl implements RequestService {
     private MailService mailService;
     @Autowired
     private UserService userService;
-
-    private final int PENDING = 1;
 
     @Override
     public Optional<Request> findById(long id, String language) {
@@ -56,26 +47,31 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> adminRequestList(String language,String page){
-        return requestDao.adminRequestList(language, page).collect(Collectors.toList());
+    public RequestList adminRequestList(String language, String findValue, String status, String searchCriteria, String searchOrder, String page){
+        if (findValue == null) return adminFilteredList(language, status, searchCriteria, searchOrder, page);
+        return adminFind(language, findValue, page);
     }
 
     @Override
-    public List<Request> adminSearchList(String language, String find, String page) {
-        return requestDao.adminSearchList(language, find, page).collect(Collectors.toList());
+    public RequestList adminFind(String language, String findValue, String page) {
+        List<Request> list = requestDao.adminSearchList(language, findValue, page).collect(Collectors.toList()); //1 is admin
+        String maxPage = getAdminMaxSearchPages(language, findValue);
+        return new RequestList(list, maxPage);
     }
 
     @Override
-    public List<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
-        return requestDao.adminFilteredList(language,status,searchCriteria,searchOrder,page).collect(Collectors.toList());
+    public RequestList adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        List<Request> list = requestDao.adminFilteredList(language, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+        String maxPage = getAdminMaxFilterPages(language, status);
+        return new RequestList(list, maxPage);
     }
 
     @Override
     public Optional<Request> create(long userId, long petId, String locale) {
         ArrayList<Integer> statusList = new ArrayList<Integer>() {{
-            add(ACCEPTED_STATUS);
-            add(REJECTED_STATUS);
-            add(PENDING_STATUS);
+            add(RequestStatus.ACCEPTED.getValue());
+            add(RequestStatus.REJECTED.getValue());
+            add(RequestStatus.PENDING.getValue());
         }};
         if (requestDao.findIdByStatus(petId, userId, statusList).count() > 0) {
             LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", userId, petId);
@@ -87,7 +83,7 @@ public class RequestServiceImpl implements RequestService {
             return Optional.empty();
         }
 
-        Optional<Request> opRequest = requestDao.create(userId, petId, PENDING, locale);
+        Optional<Request> opRequest = requestDao.create(userId, petId, RequestStatus.PENDING.getValue(), locale);
         if (!opRequest.isPresent()) {
             LOGGER.warn("Request creation from user {} to pet {} failed", userId, petId);
             return Optional.empty();
@@ -101,8 +97,16 @@ public class RequestServiceImpl implements RequestService {
         }
         final Contact contact = opContact.get();
 
-        mailService.sendMail(contact.getEmail(), getMailMessage(locale, "subject", request),
-                getMailMessage(locale, "body", request));
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+
+        arguments.put("requestURL", url + "/interests");
+        arguments.put("petURL", url + "/pet/" + request.getPetId());
+        arguments.put("ownerUsername", request.getOwnerUsername());
+        arguments.put("ownerURL", url + "/user/" + request.getOwnerId());
+        arguments.put("petName", request.getPetName());
+
+        mailService.sendMail(contact.getEmail(), arguments, "request");
 
         return opRequest;
     }
@@ -132,7 +136,7 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        requestDao.updateStatus(id, CANCELED_STATUS);
+        requestDao.updateStatus(id, RequestStatus.CANCELED.getValue());
 /*
         final Optional<Request> opRequest = requestDao.findById(id, locale);
         if (!opRequest.isPresent()) {
@@ -156,9 +160,18 @@ public class RequestServiceImpl implements RequestService {
         final Contact contact = opContact.get();
         final User recipient = opRecipient.get();
 
-        mailService.sendMail(recipient.getMail(), getMailMessage("subjectCancel", request, contact, locale),
-                getMailMessage("bodyCancel", request, contact, locale));
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+
+        arguments.put("URL", url );
+        arguments.put("petURL", url + "/pet/" + request.getPetId());
+        arguments.put("ownerUsername", request.getOwnerUsername());
+        arguments.put("ownerURL", url +  "/user/" + request.getOwnerId());
+        arguments.put("petName", request.getPetName());
+
+        mailService.sendMail(recipient.getMail(), arguments, "request_cancel");
 */
+
         LOGGER.debug("Request {} canceled by user {}", id, ownerId);
         return true;
     }
@@ -173,11 +186,11 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        requestDao.updateStatus(id, ACCEPTED_STATUS);
+        requestDao.updateStatus(id, RequestStatus.ACCEPTED.getValue());
 
         final Optional<Request> opRequest = requestDao.findById(id, locale);
         if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, ACCEPTED_STATUS, ownerId);
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, RequestStatus.ACCEPTED.getValue(), ownerId);
             return false;
         }
         final Request request = opRequest.get();
@@ -197,8 +210,17 @@ public class RequestServiceImpl implements RequestService {
         final Contact contact = opContact.get();
         final User recipient = opRecipient.get();
 
-        mailService.sendMail(recipient.getMail(), getMailMessage("subjectAccept", request, contact, locale),
-                getMailMessage("bodyAccept", request, contact, locale));
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+
+        arguments.put("URL", url );
+        arguments.put("petURL", url + "/pet/" + request.getPetId());
+        arguments.put("ownerUsername", contact.getUsername());
+        arguments.put("contactEmail", contact.getEmail());
+        arguments.put("ownerURL", url +  "/user/" + request.getOwnerId());
+        arguments.put("petName", request.getPetName());
+
+        mailService.sendMail(recipient.getMail(), arguments, "request_accept");
 
         LOGGER.debug("Request {} accepted by user {}", id, ownerId);
         return true;
@@ -213,11 +235,11 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        requestDao.updateStatus(id, REJECTED_STATUS);
+        requestDao.updateStatus(id, RequestStatus.REJECTED.getValue());
 
         final Optional<Request> opRequest = requestDao.findById(id, locale);
         if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, REJECTED_STATUS, ownerId);
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, RequestStatus.REJECTED.getValue(), ownerId);
             return false;
         }
         final Request request = opRequest.get();
@@ -237,72 +259,86 @@ public class RequestServiceImpl implements RequestService {
         final Contact contact = opContact.get();
         final User recipient = opRecipient.get();
 
-        mailService.sendMail(recipient.getMail(), getMailMessage("subjectReject", request, contact, locale),
-                getMailMessage("bodyReject", request, contact, locale));
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+
+        arguments.put("URL", url );
+        arguments.put("petURL", url + "/pet/" + request.getPetId());
+        arguments.put("ownerUsername", contact.getUsername());
+        arguments.put("ownerURL", url + "/user/" + + request.getOwnerId());
+        arguments.put("petName", request.getPetName());
+
+        mailService.sendMail(recipient.getMail(), arguments, "request_reject");
 
         LOGGER.debug("Request {} rejected by user {}", id, ownerId);
         return true;
     }
 
     @Override
+    public boolean recover(long id, long ownerId, String locale){
+        LOGGER.debug("User {} attempting to recover request {}", ownerId, id);
+
+        if (!requestDao.isRequestOwner(id, ownerId)) {
+            LOGGER.warn("User {} is not Request {} target, Request not recovered", ownerId, id);
+            return false;
+        }
+
+        requestDao.updateStatus(id, RequestStatus.PENDING.getValue());
+
+        final Optional<Request> opRequest = requestDao.findById(id, locale);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, RequestStatus.PENDING.getValue(), ownerId);
+            return false;
+        }
+        final Request request = opRequest.get();
+
+        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
+        if (!opContact.isPresent()) {
+            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
+            return false;
+        }
+
+        final Optional<User> opRecipient = userService.findById(DEFAULT_LOCALE, request.getOwnerId());
+        if (!opRecipient.isPresent()) {
+            LOGGER.warn("Recipient user {} through request {} not found", request.getOwnerId(), request.getId());
+            return false;
+        }
+
+        LOGGER.debug("Request {} recovered by user {}", id, ownerId);
+        return true;
+    }
+
+    @Override
+    public void adminUpdateStatus(long id, String status) {
+        if(status.equals("pending")){
+            requestDao.updateStatus(id, RequestStatus.PENDING.getValue());
+        }else if(status.equals("accepted")){
+            requestDao.updateStatus(id, RequestStatus.ACCEPTED.getValue());
+        }else if(status.equals("rejected")){
+            requestDao.updateStatus(id, RequestStatus.REJECTED.getValue());
+        }else if(status.equals("canceled")){
+            requestDao.updateStatus(id, RequestStatus.CANCELED.getValue());
+        }
+    }
+
+    @Override
     public void cancelRequestAdmin(long requestId) {
-        requestDao.updateStatus(requestId, CANCELED_STATUS);
+        requestDao.updateStatus(requestId, RequestStatus.CANCELED.getValue());
     }
 
     @Override
     public void recoverRequestAdmin(long requestId) {
-        requestDao.updateStatus(requestId, PENDING_STATUS);
+        requestDao.updateStatus(requestId, RequestStatus.PENDING.getValue());
     }
 
     @Override
     public void cancelAllByOwner(long ownerId) {
-        requestDao.updateAllByOwner(ownerId, PENDING_STATUS, CANCELED_STATUS);
+        requestDao.updateAllByOwner(ownerId, RequestStatus.PENDING.getValue(), RequestStatus.CANCELED.getValue());
     }
 
     @Override
     public void cancelAllByPetOwner(long petOwnerId) {
-        requestDao.updateAllByPetOwner(petOwnerId, PENDING_STATUS, REJECTED_STATUS);
-    }
-
-    private String getMailMessage( String part, Request request, Contact contact, String locale){
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
-        switch(part){
-            case "subjectAccept":
-                if(locale.equals("en_US")){
-                    return "Hooray! Your request was accepted";
-                }else{
-                    return "¡Genial! Su solicitud fue aceptada";
-                }
-            case "bodyAccept":
-                if(locale.equals("en_US")){
-                    return "User " + contact.getUsername() + " has accepted your request for "+ request.getPetName() + "." +
-                            " To begin the process for getting your new pet, please contact " + contact.getEmail() + " and ask about " + request.getPetName() + "." +
-                            "\nFor more information, contact us at petsociety.contact@gmail.com or go to " + url + "." +
-                            "\nSincerely,\nPet Society Team.";
-                }else{
-                    return "El usuario " + contact.getUsername() + " ha aceptado su solicitud de "+ request.getPetName() + "." +
-                            "\nPara iniciar el proceso de conseguir su mascota, contáctese con " + contact.getEmail() + " y pregunte por " + request.getPetName() + "." +
-                            "\nPara más información, contáctese con petsociety.contact@gmail.com o vaya a " + url + "." +
-                            "\nSinceramente,\nEl equipo de Pet Society." ;
-                }
-            case "subjectReject":
-                if(locale.equals("en_US")){
-                    return "We're sorry, your request was rejected";
-                }else{
-                    return "Lo sentimos, su solicitud fue rechazada";
-                }
-            case "bodyReject":
-                if(locale.equals("en_US")){
-                    return "User " + contact.getUsername() + " has rejected your request for "+ request.getPetName() + "." +
-                            "\nFor more information, contact us at petsociety.contact@gmail.com or go to " + url + "." +
-                            "\nSincerely,\nPet Society Team.";
-                }else{
-                    return "El usuario " + contact.getUsername() + " ha rechazado su solicitud de "+ request.getPetName() + "." +
-                            "\nPara más información, contáctese con petsociety.contact@gmail.com o vaya a " + url + "." +
-                            "\nSinceramente,\nEl equipo de Pet Society." ;
-                }
-        }
-        return "";
+        requestDao.updateAllByPetOwner(petOwnerId, RequestStatus.PENDING.getValue(), RequestStatus.REJECTED.getValue());
     }
 
     @Override
@@ -320,27 +356,5 @@ public class RequestServiceImpl implements RequestService {
         return requestDao.getAdminMaxFilterPages(language, status);
     }
 
-    private String getMailMessage(String locale, String part, Request request){
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
-        switch(part){
-            case "subject":
-                if(locale.equals("en_US")){
-                    return "A user showed interest in one of your pets!";
-                }else{
-                    return "¡Un usuario mostró interés en una de sus mascotas!";
-                }
-            case "body":
-                if(locale.equals("en_US")){
-                    return "User " + request.getOwnerUsername() + " is interested in "+ request.getPetName() + "." +
-                            " Go to " + url + " to accept or reject his request!!" +
-                            "\nSincerely,\nPet Society Team.";
-                }else{
-                    return "El usuario " + request.getOwnerUsername() + " está interesado/a en "+ request.getPetName() +
-                            "¡¡Vaya a " + url + " para aceptar o rechazar su solicitud!!" +
-                            "\nSinceramente,\nEl equipo de Pet Society.";
-                }
-        }
-        return "";
-    }
 
 }

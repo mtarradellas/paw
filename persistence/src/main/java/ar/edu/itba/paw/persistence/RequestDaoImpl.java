@@ -60,7 +60,7 @@ public class RequestDaoImpl implements RequestDao {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                         "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                        "WHERE requests.ownerId = ? "
+                        "WHERE requests.ownerId = ? ORDER BY requests.status"
                 , new Object[]{ownerId}, REQUEST_MAPPER)
                 .stream();
     }
@@ -77,7 +77,13 @@ public class RequestDaoImpl implements RequestDao {
 
     @Override
     public Stream<Request> adminRequestList(String language, String page){
-        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
@@ -87,7 +93,13 @@ public class RequestDaoImpl implements RequestDao {
 
     @Override
     public Stream<Request> adminSearchList(String language, String findValue, String page) {
-        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(Integer.parseInt(page)-1));
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
         if(findValue.equals("")){
             return adminRequestList(language, page);
         }
@@ -107,6 +119,12 @@ public class RequestDaoImpl implements RequestDao {
 
     @Override
     public Stream<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
         if (status == null) {
             status = "(1,2,3,4)";
         } else if (status.equals("pending")) {
@@ -123,10 +141,13 @@ public class RequestDaoImpl implements RequestDao {
 
         Stream<Request> result;
 
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numValue - 1));
+        String limit = " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
+
         String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                "WHERE  requests.status IN " + status;
+                "WHERE  requests.status IN " + status + limit;
         if (searchCriteria == null) {
             result = jdbcTemplate.query(sql, REQUEST_MAPPER).stream();
         } else {
@@ -176,7 +197,6 @@ public class RequestDaoImpl implements RequestDao {
     @Override
     public void updateAllByOwner(long ownerId, int oldStatus, int newStatus) {
 
-        System.out.println("\n\n\n\n"+ownerId+"oldstatus: "+oldStatus+"new status "+newStatus+"\n\n\n\n\n");
         String sql = "UPDATE requests " +
                 "SET status = ? " +
                 "WHERE status = ? AND ownerId = ? ";
@@ -245,9 +265,12 @@ public class RequestDaoImpl implements RequestDao {
         else if(status.contains("pending")){
             status = "Pending";
         }
-        else {
+        else if(status.contains("rejected")) {
             status = "Rejected";
+        }else{
+            status = "Canceled";
         }
+
         String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +

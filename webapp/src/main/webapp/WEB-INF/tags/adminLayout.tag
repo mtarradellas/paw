@@ -24,8 +24,7 @@
 <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
 
 <nav class="navbar navbar-expand-lg admin-header">
-    <%--            TODO: cambiar el path del url--%>
-    <a class="navbar-brand" href="${pageContext.request.contextPath}/admi">
+    <a class="navbar-brand" href="${pageContext.request.contextPath}/admin">
         <img src="<c:url value="/resources/images/logo.png"/>" alt="logo" height="70" width="70"/>
     </a>
 
@@ -34,25 +33,25 @@
 
             <li class="nav-item active">
                 <%--            TODO: cambiar el path del url--%>
-                <h1><a class="nav-link" href="${pageContext.request.contextPath}/admi" id="home-link">PET SOCIETY Admin</a></h1>
+                <h1><a class="nav-link" href="${pageContext.request.contextPath}/admin" id="home-link">PET SOCIETY Admin</a></h1>
             </li>
 
             <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admi/pets"><spring:message code="adminHeader.listPets"/></a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admin/pets"><spring:message code="adminHeader.listPets"/></a></h4>
             </li>
 
             <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admi/users"><spring:message code="adminHeader.listUsers"/></a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admin/users"><spring:message code="adminHeader.listUsers"/></a></h4>
             </li>
 
             <li class="nav-item">
-                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admi/requests"><spring:message code="adminHeader.listRequests"/></a></h4>
+                <h4><a class="nav-link" href="${pageContext.request.contextPath}/admin/requests"><spring:message code="adminHeader.listRequests"/></a></h4>
             </li>
 
 
         </ul>
 
-        <form class="form-inline my-2 my-lg-0" method="GET" action="${pageContext.request.contextPath}/admi/${item}">
+        <form class="form-inline my-2 my-lg-0" method="GET" action="${pageContext.request.contextPath}/admin/${item}">
             <input id="search-value" name="find" class="form-control mr-sm-2" type="search" placeholder="<spring:message code="search"/>" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" ><spring:message code="search"/></button>
         </form>

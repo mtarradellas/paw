@@ -47,12 +47,12 @@
         <c:choose>
             <c:when test="${empty loggedUser}">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0 pl-3">
-                    <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/register">Sign Up</a> </li>
-                    <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/login">Log In</a> </li>
+                    <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/register"><spring:message code="signup"/></a> </li>
+                    <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/login"><spring:message code="login"/></a> </li>
                 </ul>
             </c:when>
             <c:otherwise>
-                <c:out value="${loggedUser.username}"/> <a href="${pageContext.request.contextPath}/logout">Logout</a>
+                <c:out value="${loggedUser.username}"/> <a href="${pageContext.request.contextPath}/logout"><spring:message code="logout"/></a>
             </c:otherwise>
         </c:choose>
     </div>

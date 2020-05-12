@@ -1,6 +1,10 @@
 package ar.edu.itba.paw.webapp.controller;
+
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
@@ -12,18 +16,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 
 @Controller
 public class UserController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
-    String  page = "1";
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
@@ -35,12 +39,20 @@ public class UserController extends ParentController {
         if (page == null){
             page = "1";
         }
+        List<Pet> petsByUser = petService.getByUserId(locale, id, page).collect(Collectors.toList());
+        List<Pet> petsAvailableByUser = new ArrayList<>();
+        for (Pet pet : petsByUser) {
+            if(pet.getStatus().getId() == PetStatus.AVAILABLE.getValue()) {
+                petsAvailableByUser.add(pet);
+            }
+        }
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
         Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
-        mav.addObject("userPets", petService.getByUserId(locale, id, page));
+        mav.addObject("userPets", petsByUser.toArray());
+        mav.addObject("userAvailablePets", petsAvailableByUser);
         return mav;
     }
 
@@ -58,13 +70,15 @@ public class UserController extends ParentController {
 
         /* Filtered request list */
         if (status != null || searchCriteria != null) {
-            mav.addObject("requests_list",
-                    requestService.filterListByOwner(locale, user.getId(), status, searchCriteria, searchOrder).toArray());
+            List<Request> requestList = requestService.filterListByOwner(locale, user.getId(), status, searchCriteria, searchOrder).collect(Collectors.toList());
+            mav.addObject("requests_list", requestList);
+            mav.addObject("list_size", requestList.size());
         }
         /* Default request list */
         else {
-            mav.addObject("requests_list",
-                    requestService.listByOwner(locale, user.getId()).toArray());
+            List<Request> requestList = requestService.listByOwner(locale, user.getId()).collect(Collectors.toList());
+            mav.addObject("requests_list",requestList);
+            mav.addObject("list_size", requestList.size());
         }
         return mav;
     }
@@ -75,6 +89,17 @@ public class UserController extends ParentController {
         final String locale = getLocale();
 
         if (requestService.cancel(id, user.getId(), locale)) {
+            return new ModelAndView("redirect:/requests" );
+        }
+        return new ModelAndView("redirect:/403" );
+    }
+
+    @RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView recoverRequest(@PathVariable("id") long id) {
+        final User user = loggedUser();
+        final String locale = getLocale();
+
+        if (requestService.recover(id, user.getId(), locale)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -94,13 +119,15 @@ public class UserController extends ParentController {
 
         /* Filtered interest list */
         if(status != null || searchCriteria != null) {
-            mav.addObject("interests_list",
-                    requestService.filterListByPetOwner(locale, user.getId(), status, searchCriteria, searchOrder).toArray());
+            List<Request> requestList = requestService.filterListByPetOwner(locale, user.getId(), status, searchCriteria, searchOrder).collect(Collectors.toList());
+            mav.addObject("interests_list", requestList);
+            mav.addObject("list_size", requestList.size());
         }
         /* Default interest list */
         else{
-            mav.addObject("interests_list",
-                    requestService.listByPetOwner(locale, user.getId()).toArray());
+            List<Request> requestList = requestService.listByPetOwner(locale, user.getId()).collect(Collectors.toList());
+            mav.addObject("interests_list", requestList);
+            mav.addObject("list_size", requestList.size());
         }
         return mav;
     }
@@ -213,5 +240,18 @@ public class UserController extends ParentController {
         mav.addObject("string",
                 userService.findById(getLocale(),26).get().getStatus().getName());
         return mav;
+    }
+
+    //TODO
+    @RequestMapping(value = "/user/{id}/remove", method = {RequestMethod.POST})
+    public ModelAndView userUpdateRemoved(@PathVariable("id") long id) {
+        User user = loggedUser();
+        if (user != null && id == user.getId()) {
+            userService.removeUser(id);
+            LOGGER.debug("User {} updated as removed", id);
+            return new ModelAndView("redirect:/logout");
+        }
+        LOGGER.warn("User is not logged user, status not updated");
+        return new ModelAndView("redirect:/403");
     }
 }

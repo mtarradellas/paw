@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 public interface ImageService {
     Stream<Image> findByPetId(long id);
+    Integer quantityByPetId(long id);
     Optional<byte[]> getDataById(long id);
     Optional<Image> create(long petId, byte[] bytes, long userId);
     void delete(Integer id);

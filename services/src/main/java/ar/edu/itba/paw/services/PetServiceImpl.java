@@ -1,18 +1,20 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
+import ar.edu.itba.paw.interfaces.exception.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
+
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class PetServiceImpl implements PetService {
@@ -26,6 +28,8 @@ public class PetServiceImpl implements PetService {
     static final int USER_LEVEL = 0;
     static final int ADMIN_LEVEL = 1;
 
+    static final int MIN_IMAGES = 1;
+    static final int MAX_IMAGES = 5;
 
     @Autowired
     private PetDao petDao;
@@ -52,22 +56,6 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> list(String language,String page){
-
-        return petDao.list(language, page, USER_LEVEL).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Pet> listAll(String language) {
-        return petDao.listAll(language).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page) {
-        return petDao.adminFilteredList(language, specie, breed, gender, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
-    }
-
-    @Override
     public PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
         List<Pet> list = petDao.filteredList(language,species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page).collect(Collectors.toList());
         String maxPage = getMaxFilterPages(language, species, breed, gender, minPrice, maxPrice);
@@ -79,22 +67,48 @@ public class PetServiceImpl implements PetService {
         List<Pet> list = petDao.find(language, findValue, page, USER_LEVEL).collect(Collectors.toList());
         String maxPage = getMaxSearchPages(language, findValue);
         return new PetList(list, maxPage);
-
     }
 
     @Override
-    public List<Pet> getByUserId(String language, long ownerId, String page) {
-        return petDao.getByUserId(language, ownerId, page).collect(Collectors.toList());
+    public PetList adminPetList(String language, String findValue, String species, String  breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        if (findValue == null) return adminFilteredList(language, species, breed, gender, status, searchCriteria, searchOrder, minPrice, maxPrice, page);
+        return adminFind(language, findValue, status, page);
+    }
+
+    @Override
+    public PetList adminFilteredList(String language, String species, String breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+        List<Pet> list = petDao.adminFilteredList(language, species, breed, gender, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+        String maxPage = getMaxAdminFilterPages(language, species, breed, gender, status);
+        return new PetList(list, maxPage);
+    }
+
+    @Override
+    public PetList adminFind(String language, String findValue, String status, String page) {
+        List<Pet> list = petDao.find(language, findValue, page, 1).collect(Collectors.toList()); //1 is admin
+        String maxPage = getAdminMaxSearchPages(language, findValue);
+        return new PetList(list, maxPage);
+    }
+
+
+    @Override
+    public List<Pet> list(String language,String page){
+
+        return petDao.list(language, page, 0).collect(Collectors.toList());// 0 is user
+    }
+
+    @Override
+    public List<Pet> listAll(String language) {
+        return petDao.listAll(language).collect(Collectors.toList());
+    }
+
+    @Override
+    public Stream<Pet> getByUserId(String language, long ownerId, String page) {
+        return petDao.getByUserId(language, ownerId, page);
     }
 
     @Override
     public List<Pet> adminList(String language, String page) {
         return petDao.list(language, page, ADMIN_LEVEL).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Pet> adminSearchList(String language, String find, String page) {
-        return petDao.find(language, find, page, ADMIN_LEVEL).collect(Collectors.toList());
     }
 
     @Override
@@ -118,9 +132,9 @@ public class PetServiceImpl implements PetService {
         }
         Breed breed = opBreed.get();
 
-        Optional<Status> opStatus = petDao.findStatusById(language, AVAILABLE_STATUS);
+        Optional<Status> opStatus = petDao.findStatusById(language, PetStatus.AVAILABLE.getValue());
         if (!opStatus.isPresent()) {
-            LOGGER.warn("Status {} not found, pet creation failed", AVAILABLE_STATUS);
+            LOGGER.warn("Status {} not found, pet creation failed", PetStatus.AVAILABLE.getValue());
             return Optional.empty();
         }
         Status status = opStatus.get();
@@ -142,12 +156,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void removeAllByOwner(long ownerId) {
-        petDao.updateAllByOwner(ownerId, (int)REMOVED_STATUS);
+        petDao.updateAllByOwner(ownerId, PetStatus.REMOVED.getValue());
     }
 
     @Override
     public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                       boolean vaccinated, String gender, String description, Date birthDate, int price) {
+                       boolean vaccinated, String gender, String description, Date birthDate, int price) throws InvalidImageQuantityException {
         LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
                         "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
                 id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
@@ -164,11 +178,29 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("Breed {} not found, pet update failed", breedId);
             return Optional.empty();
         }
+        int toDelete;
+        if(imagesToDelete == null){
+            toDelete = 0;
+        }
+        else {
+            toDelete = imagesToDelete.size();
+        }
+        int previousImageQuantity = imageService.quantityByPetId(id);
+        System.out.println("\n\n\n\n"+ photos.size());
+        int finalImageQuantity = previousImageQuantity + photos.size() - toDelete;
+        if(finalImageQuantity < MIN_IMAGES || finalImageQuantity > MAX_IMAGES) {
+            throw new InvalidImageQuantityException("Pet must have between 1 and 5 images");
+        }
         if(imagesToDelete != null ) {
             LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
             imageService.delete(imagesToDelete);
         }
-
+        if(photos != null) {
+            for (byte[] photo : photos) {
+                LOGGER.debug("Adding image to pet {}", id);
+                imageService.create(id, photo, userId);
+            }
+        }
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
         Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
         if (!opPet.isPresent()){
@@ -177,10 +209,7 @@ public class PetServiceImpl implements PetService {
         }
         LOGGER.debug("Pet {} successfully updated", opPet.get());
 
-        for (byte[] photo : photos) {
-            LOGGER.debug("Adding image to pet {}", id);
-            imageService.create(opPet.get().getId(), photo, opPet.get().getOwnerId());
-        }
+
         return opPet;
     }
 
@@ -228,7 +257,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public boolean sellPet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
-            petDao.updateStatus(petId, SOLD_STATUS);
+            petDao.updateStatus(petId, PetStatus.SOLD.getValue());
             return true;
         }
         return false;
@@ -237,7 +266,16 @@ public class PetServiceImpl implements PetService {
     @Override
     public boolean removePet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
-            petDao.updateStatus(petId, REMOVED_STATUS);
+            petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean recoverPet(long petId, long userId) {
+        if (petDao.isPetOwner(petId, userId)) {
+            petDao.updateStatus(petId, PetStatus.AVAILABLE.getValue());
             return true;
         }
         return false;
@@ -245,16 +283,16 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void removePetAdmin(long petId) {
-        petDao.updateStatus(petId, REMOVED_STATUS);
+        petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
     }
 
     @Override
     public void sellPetAdmin(long petId) {
-        petDao.updateStatus(petId, SOLD_STATUS);
+        petDao.updateStatus(petId, PetStatus.SOLD.getValue());
     }
 
     @Override
     public void recoverPetAdmin(long petId) {
-        petDao.updateStatus(petId, AVAILABLE_STATUS);
+        petDao.updateStatus(petId, PetStatus.AVAILABLE.getValue());
     }
 }
