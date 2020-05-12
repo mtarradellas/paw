@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
@@ -56,5 +57,15 @@ public class LocationDaoImpl implements LocationDao {
                      "FROM provinces ";
 
         return jdbcTemplate.query(sql, PROVINCE_MAPPER);
+    }
+
+    @Override
+    public Optional<Department> findDepartmentById(long id) {
+        String sql = "SELECT departments.id AS id, departments.name AS name, departments.latitude AS latitude, departments.longitude AS longitude, " +
+                "provinces.id AS provId, provinces.name AS provName, provinces.latitude AS provLat, provinces.longitude AS provLon " +
+                "FROM departments INNER JOIN provinces ON departments.province = provinces.name " +
+                "WHERE departments.id = ?";
+
+        return jdbcTemplate.query(sql, new Object[] {id}, DEPARTMENT_MAPPER).stream().findFirst();
     }
 }

@@ -226,11 +226,10 @@ public class PetController extends ParentController {
         petForm.setDescription(pet.getDescription());
         petForm.setGender(pet.getGender());
 
-        //TODO: agregar province y department
-
         petForm.setPrice(pet.getPrice());
         petForm.setPetName(pet.getPetName());
-        petForm.setP
+        petForm.setProvince(pet.getProvince().getId());
+        petForm.setDepartment(pet.getDepartment().getId());
         petForm.setSpeciesId(pet.getSpecies().getId());
         petForm.setVaccinated(pet.isVaccinated());
         
@@ -285,8 +284,8 @@ public class PetController extends ParentController {
         try {
             /*TODO: change to receive province and department instead of location*/
              opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
-                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), null,
-                    editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
+                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getVaccinated(),
+                     editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice(), editPetForm.getDepartment());
         }
         catch(InvalidImageQuantityException ex) {
             LOGGER.warn(ex.getMessage());

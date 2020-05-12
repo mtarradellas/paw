@@ -37,6 +37,8 @@ public class PetServiceImpl implements PetService {
     private SpeciesDao speciesDao;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private LocationService locationService;
 
 
     @Override
@@ -118,6 +120,10 @@ public class PetServiceImpl implements PetService {
                 petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
 
 
+        if(!locationService.findDepartmentById(department).isPresent()){
+            LOGGER.warn("Department {} not found, pet update failed", department);
+            return Optional.empty();
+        }
         Optional<Species> opSpecies = speciesDao.findSpeciesById(language, speciesId);
         if (!opSpecies.isPresent()) {
             LOGGER.warn("Species {} not found, pet creation failed", speciesId);
@@ -165,13 +171,17 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId,
-                       boolean vaccinated, String gender, String description, Date birthDate, int price, int department) throws InvalidImageQuantityException {
-        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
-                        "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
-                id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+                       boolean vaccinated, String gender, String description, Date birthDate, int price, long department) throws InvalidImageQuantityException {
+        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, " +
+                        "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}, department: {},",
+                id, petName, speciesId, breedId, vaccinated, gender, description, birthDate, price, department);
 
         if(! petDao.isPetOwner(id, userId)) {
             LOGGER.warn("Logged user is not the owner of pet {}, update aborted", id);
+            return Optional.empty();
+        }
+        if(!locationService.findDepartmentById(department).isPresent()){
+            LOGGER.warn("Department {} not found, pet update failed", department);
             return Optional.empty();
         }
         if (!speciesDao.findSpeciesById(language, speciesId).isPresent()) {
@@ -205,7 +215,7 @@ public class PetServiceImpl implements PetService {
                 imageService.create(id, photo, userId);
             }
         }
-        petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+        petDao.update(id, petName, speciesId, breedId, vaccinated, gender, description, birthDate, price, department);
         Optional<Pet> opPet = petDao.findById(language, id);
         if (!opPet.isPresent()){
             LOGGER.debug("Pet {} update failed", id);
