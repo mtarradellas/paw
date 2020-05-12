@@ -150,15 +150,6 @@ public class UserController extends ParentController {
         return new ModelAndView("redirect:/403" );
     }
 
-    @RequestMapping(value = "/test")
-    public ModelAndView testUsers() {
-        final ModelAndView mav = new ModelAndView("views/test");
-        userService.removeUser(26);
-        mav.addObject("string",
-                userService.findById(getLocale(),26).get().getStatus().getName());
-        return mav;
-    }
-
     //TODO
     @RequestMapping(value = "/user/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView userUpdateRemoved(@PathVariable("id") long id) {

@@ -83,29 +83,18 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Optional<Pet> findById(String language, long id, int level) {
-        String sql;
-
-        if (level == 0) {
-            sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "images.id as imagesId, images.petId as petId, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                    "inner join images on images.petId = pets.id) inner join pet_status on pet_status.id = status " +
+    public Optional<Pet> findById(String language, long id) {
+        String sql = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                    "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                    "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                    "images.id AS imagesId, images.petId AS petId, " +
+                    "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                    "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                    "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                     "WHERE pets.id = ? ";
-
-        } else {
-            sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "images.id as imagesId, images.petId as petId, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) " +
-                    "inner join images on images.petId = pets.id) inner join pet_status on pet_status.id = status " +
-                    "WHERE pets.id = ?";
-        }
 
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql, new Object[]{id}, new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
@@ -138,13 +127,17 @@ public class PetDaoImpl implements PetDao {
 
         String pagePets = String.join(",", ids);
 
-        sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "images.id as imagesId, images.petId as petId, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
-                "where pets.id in (" + pagePets + ")";
+        sql = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                "WHERE pets.id IN (" + pagePets + ")";
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql,
                 new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
@@ -153,12 +146,16 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public Stream<Pet> listAll(String language) {
-        String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "images.id as imagesId, images.petId as petId, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ";
+        String sql = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " ;
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql,
                 new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
@@ -189,41 +186,43 @@ public class PetDaoImpl implements PetDao {
 
         if (level == 0) {
             String offset = Integer.toString(PETS_PER_PAGE * (numPageValue - 1));
-            sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
+            sql = "SELECT pets.id AS id "+
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                     "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " +
                     "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
                     " limit " + PETS_PER_PAGE + " offset " + offset;
         } else {
             String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numPageValue - 1));
-            sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
+            sql = "SELECT pets.id AS id "+
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                     "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " +
                     " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
         }
 
-        List<String> ids = jdbcTemplate.query(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, (resultSet, i) -> resultSet.getString("id"));
+        List<String> ids = jdbcTemplate.query(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, (resultSet, i) -> resultSet.getString("id"));
         if (ids.size() == 0) {
             return Stream.empty();
         }
         String pagePets = String.join(",", ids);
 
-        sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "images.id as imagesId, images.petId as petId, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
+        sql = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                 "WHERE (pets.id in (" + pagePets + "))";
 
         Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql,
@@ -283,12 +282,16 @@ public class PetDaoImpl implements PetDao {
         String pagePets = String.join(",", ids);
 
         //query to get the pets for the current page
-        String sqlWithPages = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "images.id as imagesId, images.petId as petId, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status " +
+        String sqlWithPages = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                 "WHERE (pets.id in (" + pagePets + ") ) ";
 
         if (searchCriteria == null) {
@@ -391,13 +394,16 @@ public class PetDaoImpl implements PetDao {
         String pagePets = String.join(",", ids);
 
         //query to get the pets for the current page
-        String sqlWithPages = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "images.id as imagesId, images.petId as petId, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                "from ((((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)" +
-                "inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ) " +
+        String sqlWithPages = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                 "WHERE (pets.id in (" + pagePets + ") ) " ;
 
 
@@ -454,13 +460,16 @@ public class PetDaoImpl implements PetDao {
                 return Stream.empty();
             }
             pagePets = String.join(",", ids);
-            sqlWithPages = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "images.id as imagesId, images.petId as petId, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from ((((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)" +
-                    "inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ) " +
+            sqlWithPages = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                    "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                    "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                    "images.id AS imagesId, images.petId AS petId, " +
+                    "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                    "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                    "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                     "WHERE (pets.id in (" + pagePets + ") ) " ;
 
             sqlWithPages += "ORDER BY " + searchCriteria;
@@ -480,12 +489,16 @@ public class PetDaoImpl implements PetDao {
         }
 
         String offset = Integer.toString(PETS_IN_USER_PAGE*(numValue-1));
-        String sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "pet_status.id as statusId, pet_status." + language + " as statusName, " +
-                "images.id as imagesId, images.petId as petId " +
-                "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) inner join pet_status on pet_status.id = status ";
+        String sql = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " ;
 
         List<String> ids = jdbcTemplate.query(sql + " WHERE ownerid = ?  limit " + PETS_IN_USER_PAGE + " offset " + offset,
 
@@ -503,8 +516,8 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Pet create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender,
-                      String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
+    public long create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender,
+                      String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, long departmentId) {
         final Map<String, Object> values = new HashMap<String, Object>() {{
             put("petName", petName);
             put("species", species.getId());
@@ -518,10 +531,11 @@ public class PetDaoImpl implements PetDao {
             put("price", price);
             put("ownerId", ownerId);
             put("status", status.getId());
+            put("department", departmentId);
         }};
-
-        final Number key = jdbcInsert.executeAndReturnKey(values);
-        return new Pet(key.longValue(), petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status);
+        long lo = jdbcInsert.executeAndReturnKey(values).longValue();
+        System.out.println("\n\n\n"  +lo);
+        return lo;
     }
 
     @Override

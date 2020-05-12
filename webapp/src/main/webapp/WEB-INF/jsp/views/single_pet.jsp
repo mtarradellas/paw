@@ -121,8 +121,10 @@
                                 value="${pet.breed.name}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.sex"/></b> <spring:message
                                 code="pet.${pet.gender}"/></li>
-                        <li class="list-group-item"><b><spring:message code="petCard.location"/></b> <c:out
-                                value="${pet.location}"/></li>
+                        <li class="list-group-item"><b><spring:message code="petCard.province"/></b> <c:out
+                                value="${pet.province.name}"/></li>
+                        <li class="list-group-item"><b><spring:message code="petCard.department"/></b> <c:out
+                                value="${pet.department.name}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.uploadDate"/></b> <c:out
                                 value="${pet.uploadDate}"/></li>
                     </ul>

@@ -41,12 +41,12 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Optional<Pet> findById(String language, long id) {
-        return petDao.findById(language, id, USER_LEVEL);
+        return petDao.findById(language, id);
     }
 
     @Override
     public Optional<Pet> adminFindById(String language, long id) {
-        return petDao.findById(language, id, ADMIN_LEVEL);
+        return petDao.findById(language, id);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated,
-                                String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, List<byte[]> photos) {
+                                String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos) {
         LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, location: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, upDate: {}, price: {}, owner: {}",
                 petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
 
@@ -139,14 +139,18 @@ public class PetServiceImpl implements PetService {
         }
         Status status = opStatus.get();
 
-        Pet pet = petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status);
-        LOGGER.debug("Pet {} successfully created", pet);
+        long id = petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status, department);
+        LOGGER.debug("Pet id: {} successfully created", id);
 
         for (byte[] photo : photos) {
-            imageService.create(pet.getId(), photo, ownerId);
+            imageService.create(id, photo, ownerId);
         }
-
-        return Optional.of(pet);
+        Optional<Pet> opPet = findById(language, id);
+        if(!opPet.isPresent()){
+            LOGGER.warn("Pet creation failed");
+            return Optional.empty();
+        }
+        return opPet;
     }
 
     @Override
@@ -202,7 +206,7 @@ public class PetServiceImpl implements PetService {
             }
         }
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
-        Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
+        Optional<Pet> opPet = petDao.findById(language, id);
         if (!opPet.isPresent()){
             LOGGER.debug("Pet {} update failed", id);
             return Optional.empty();
