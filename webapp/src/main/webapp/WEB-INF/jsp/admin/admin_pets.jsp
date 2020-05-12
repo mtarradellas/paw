@@ -191,7 +191,7 @@
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"
+                                                        <a href="<c:url value="/admin/pet/${pet.id}/edit-pet"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
                                                         <button type="submit" class="btn btn-danger are-you-sure">
@@ -207,7 +207,7 @@
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"
+                                                        <a href="<c:url value="/admin/pet/${pet.id}/edit-pet"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
                                                         <button type="submit"

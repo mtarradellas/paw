@@ -284,28 +284,6 @@ public class PetController extends ParentController {
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
 
-    private String getMailMessage( String part, Request request){
-        String locale = getLocale();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
-        switch(part){
-            case "subject":
-                if(locale.equals("en_US")){
-                    return "A user showed interest in one of your pets!";
-                }else{
-                    return "¡Un usuario mostró interés en una de sus mascotas!";
-                }
-            case "body":
-                if(locale.equals("en_US")){
-                    return "User " + request.getOwnerUsername() + " is interested in "+ request.getPetName() + "." +
-                            " Go to " + url + " to accept or reject his request!!" +
-                            "\nSincerely,\nPet Society Team.";
-                }else{
-                    return "El usuario " + request.getOwnerUsername() + " está interesado/a en "+ request.getPetName() +
-                            "¡¡Vaya a " + url + " para aceptar o rechazar su solicitud!!" +
-                            "\nSinceramente,\nEl equipo de Pet Society.";
-                }
-        }
-        return "";
-    }
+
 
 }
