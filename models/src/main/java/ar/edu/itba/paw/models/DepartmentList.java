@@ -9,9 +9,13 @@ public class DepartmentList extends AbstractList<Department> {
     private final Department[] departmentList;
     private final ProvinceList provinceList;
 
-    public DepartmentList(List<Department> departmentArray) {
+    public DepartmentList(List<Department> departments) {
         super();
-        departmentList = departmentArray.toArray(new Department[0]);
+        TreeSet<Department> departmentSet = new TreeSet<>();
+        departments.forEach(department -> {
+            departmentSet.add(department);
+        });
+        departmentList = departmentSet.toArray(new Department[0]);
         provinceList = new ProvinceList(this);
     }
 
@@ -32,4 +36,5 @@ public class DepartmentList extends AbstractList<Department> {
     public ProvinceList getProvinceList() {
         return provinceList;
     }
+
 }
