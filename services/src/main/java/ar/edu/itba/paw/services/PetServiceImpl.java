@@ -158,6 +158,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void removeAllByOwner(long ownerId) {
+        requestService.rejectAllByPetOwner(ownerId);
         petDao.updateAllByOwner(ownerId, PetStatus.REMOVED.getValue());
     }
 
@@ -268,7 +269,8 @@ public class PetServiceImpl implements PetService {
     @Override
     public boolean removePet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
-//            requestService.cancelAllByOwner();
+
+            requestService.rejectAllByPet(petId);
             petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
             return true;
         }
@@ -286,6 +288,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void removePetAdmin(long petId) {
+        requestService.rejectAllByPet(petId);
         petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
     }
 
