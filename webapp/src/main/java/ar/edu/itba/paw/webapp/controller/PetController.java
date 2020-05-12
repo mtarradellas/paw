@@ -215,17 +215,20 @@ public class PetController extends ParentController {
     public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
         Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
 
-        petForm.setBirthDate(pet.getBirthDate());
-        petForm.setBreedId(pet.getBreed().getId());
-        petForm.setDescription(pet.getDescription());
-        petForm.setGender(pet.getGender());
-        petForm.setLocation(pet.getLocation());
-        petForm.setPrice(pet.getPrice());
-        petForm.setPetName(pet.getPetName());
-        petForm.setSpeciesId(pet.getSpecies().getId());
-        petForm.setVaccinated(pet.isVaccinated());
-        
-        return editPetForm(petForm, id);
+        if(pet.getOwnerId() == loggedUser().getId()){
+            petForm.setBirthDate(pet.getBirthDate());
+            petForm.setBreedId(pet.getBreed().getId());
+            petForm.setDescription(pet.getDescription());
+            petForm.setGender(pet.getGender());
+            petForm.setLocation(pet.getLocation());
+            petForm.setPrice(pet.getPrice());
+            petForm.setPetName(pet.getPetName());
+            petForm.setSpeciesId(pet.getSpecies().getId());
+            petForm.setVaccinated(pet.isVaccinated());
+
+            return editPetForm(petForm, id);
+        }
+        return new ModelAndView("redirect:/403" );
     }
 
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
