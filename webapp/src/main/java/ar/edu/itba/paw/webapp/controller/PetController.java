@@ -167,6 +167,11 @@ public class PetController extends ParentController {
         String locale = getLocale();
 
         BreedList breedList = speciesService.breedsList(locale);
+        ProvinceList provinceList = locationService.provinceList();
+        DepartmentList departmentList = locationService.departmentList();
+
+        mav.addObject("province_list", provinceList.toArray());
+        mav.addObject("department_list", departmentList.toArray());
         mav.addObject("species_list", breedList.getSpecies().toArray());
         mav.addObject("breeds_list", breedList.toArray());
         return mav;
@@ -197,10 +202,12 @@ public class PetController extends ParentController {
             LOGGER.warn("Image bytes load from pet form failed");
             return uploadPetForm(petForm).addObject("image_error", true);
         }
-        /* TODO deshardcodear el department*/
+
+        /*TODO: change to receive province and department instead of location*/
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                          petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId(),15, photos);
+                          null, petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId(), petForm.getDepartment(), photos);
+
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
@@ -287,7 +294,7 @@ public class PetController extends ParentController {
     public ModelAndView testUsers() {
         final ModelAndView mav = new ModelAndView("views/test");
         mav.addObject("pet",
-                petService.findById(getLocale(),15).get());
+                petService.findById(getLocale(),9).get());
         return mav;
     }
 
