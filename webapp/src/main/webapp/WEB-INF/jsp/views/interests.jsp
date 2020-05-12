@@ -3,10 +3,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:message code="interestsTitle" var="titleVar"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
+<spring:message code="areYouSure.body" var="sureBody"/>
 <t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="container-fluid">
-            <jsp:include page="../parts/are-you-sure.jsp"/>
+            <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
             <jsp class="row">
                 <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp">
                     <jsp:param name="destination" value="interests"/>
@@ -105,8 +107,6 @@
         </div>
         </div>
         <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
-
-        <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
         <script src="<c:url value="/resources/js/interests.js"/>"></script>
     </jsp:body>
 </t:basicLayout>

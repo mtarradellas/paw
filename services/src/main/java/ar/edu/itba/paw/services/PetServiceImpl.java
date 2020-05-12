@@ -26,6 +26,8 @@ public class PetServiceImpl implements PetService {
     private SpeciesDao speciesDao;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private RequestService requestService;
 
 
     @Override
@@ -201,6 +203,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public boolean removePet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
+//            requestService.cancelAllByOwner();
             petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
             return true;
         }

@@ -7,12 +7,13 @@
 
 <spring:message code="petCard.someInfo" arguments="${pronoun}" var="someInfo"/>
 <spring:message code="petTitle" var="petTitle"/>
+<spring:message code="areYouSure.delete" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
 
 <t:adminLayout title="${petTitle}" item="pet">
     <jsp:body>
-        <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage' javaScriptEscape='true'/>
-        </span>
+        <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
+
         <div class="row">
             <div class=" col-md-10 offset-md-1">
                 <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image"
@@ -61,7 +62,7 @@
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0"
                                           action="<c:url value="/admin/pet/${pet.id}/remove"/>">
-                                        <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger">
+                                        <button type="submit" class="btn btn-danger are-you-sure">
                                             <spring:message code="petCard.remove"/></button>
                                     </form>
                                 </h1>
@@ -126,6 +127,6 @@
             </div>
         </div>
 
-
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     </jsp:body>
 </t:adminLayout>

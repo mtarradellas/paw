@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 public class AdminController extends ParentController{
@@ -200,11 +202,14 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
             page = "1";
         }
 
-        mav.addObject("user", userService.findById(getLocale(), id).orElseThrow(UserNotFoundException::new));
+        List<Pet> petsByUser = petService.getByUserId(getLocale(), id, page).collect(Collectors.toList());
+        Optional<User> opUser = userService.findById(getLocale(), id);
+        if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
+        mav.addObject("user", opUser.get());
+        mav.addObject("userPets", petsByUser.toArray());
+
         mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
         mav.addObject("currentPage", page);
-        mav.addObject("userPets", petService.getByUserId(getLocale(), id, page));
-
         return mav;
     }
 

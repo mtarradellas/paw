@@ -3,11 +3,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:message code="userTitle" var="title"/>
+<spring:message code="areYouSure.delete" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
 
 <t:basicLayout title="${title}">
-    <span id="confirmMessage" hidden>
-        <spring:message code='confirmMessage' javaScriptEscape='true'/>
-    </span>
+    <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
     <div class="container-fluid ">
         <div class=" col-md-10 offset-md-1">
             <div class="bg-light shadow ">
@@ -17,8 +17,8 @@
                         <c:if test="${(user.id eq loggedUser.id)}">
                             <h1 class="mt-2 ml-4">
                                 <form method="POST" class="m-0" action="<c:url value="/user/${id}/remove" />">
-                                    <button type="submit" onclick="confirmDelete(event)" name="action"
-                                            class="btn btn-danger">
+                                    <button type="submit" name="action"
+                                            class="btn btn-danger are-you-sure">
                                         <i class="fas fa-times mr-2"></i>
                                         <spring:message code="petCard.remove"/>
                                     </button>
@@ -38,13 +38,13 @@
                         </ul>
                     </c:if>
                     <c:if test="${loggedUser.id ne user.id}">
-                        <spring:message code="otherUserProfile"/>
+                        <h5 class="text-center"><b><spring:message code="otherUserProfile"/></b></h5>
                     </c:if>
                     <hr>
                     <div class="p-2">
 
-                        <h2><b><spring:message code="userPets"/></b> <c:if test="${loggedUser.id eq user.id}">
-                            <spring:message code="userPets.faded"/></c:if></h2>
+                        <h2><b><spring:message code="userPets"/></b>
+                            <spring:message code="userPets.faded"/></h2>
                         <c:if test="${not empty userPets}">
                             <div class="m-2 ">
                                 <c:if test="${maxPage ne 1}">
@@ -55,7 +55,6 @@
                         </c:if>
                         <div class="card-deck row">
 
-                            <c:if test="${loggedUser.id eq user.id}">
                             <c:forEach var="pet" items="${userPets}">
 
 
@@ -70,18 +69,6 @@
 
                                 </div>
                                 </c:forEach>
-                                </c:if>
-
-                                <c:if test="${loggedUser.id ne user.id}">
-                                    <c:forEach var="pet" items="${userAvailablePets}">
-
-                                        <div class="col-auto mb-3">
-
-                                            <t:animalCard pet="${pet}" level="user"/>
-
-                                        </div>
-                                    </c:forEach>
-                                </c:if>
 
                                 <c:if test="${empty userPets}">
                                     <div class="col-auto">
@@ -89,26 +76,26 @@
                                     </div>
                                 </c:if>
 
-                                                                </div>
-                                <c:if test="${not empty userPets}">
-                                    <div class="m-2 ">
-                                        <c:if test="${maxPage ne 1}">
-                                            <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
-                                                          baseURL="/user/${id}"/>
-                                        </c:if>
-                                    </div>
-                                </c:if>
-
                             </div>
-                            <hr>
+                            <c:if test="${not empty userPets}">
+                                <div class="m-2 ">
+                                    <c:if test="${maxPage ne 1}">
+                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
+                                                      baseURL="/user/${id}"/>
+                                    </c:if>
+                                </div>
+                            </c:if>
+
                         </div>
-                        <div class="p-4">
-                            <b><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></b>
-                        </div>
+                        <hr>
+                    </div>
+                    <div class="p-4">
+                        <b><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></b>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
-            <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
+        <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
 </t:basicLayout>

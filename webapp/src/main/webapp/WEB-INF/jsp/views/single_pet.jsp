@@ -11,11 +11,12 @@
 <spring:message code="petCard.meet" arguments="${petName}" var="meet"/>
 <spring:message code="argPrice" arguments="${cprice}" var="price"/>
 <spring:message code="petTitle" var="titleVar"/>
+<spring:message code="areYouSure.delete" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
 
 <t:basicLayout title="${titleVar}">
-    <span id="confirmMessage" hidden>
-        <spring:message code='confirmMessage' javaScriptEscape='true'/>
-    </span>
+    <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
+
     <div class="container-fluid">
         <div class=" col-md-10 offset-md-1 ">
             <div class="bg-light shadow ">
@@ -71,8 +72,8 @@
                                 </h1>
                                 <h1 class="mt-2 ml-4">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/remove" />">
-                                        <button type="submit" onclick="confirmDelete(event)" name="action"
-                                                class="btn btn-danger">
+                                        <button type="submit"  name="action"
+                                                class="btn btn-danger are-you-sure">
                                             <i class="fas fa-times mr-2"></i>
                                             <spring:message code="petCard.remove"/>
                                         </button>
@@ -181,6 +182,6 @@
         </div>
     </div>
 
-    <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
+    <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
 </t:basicLayout>
