@@ -78,6 +78,9 @@
                                         <form:label path="currentPassword" for="currentPassword">${passwordTxt}: </form:label>
                                         <form:input type="password" placeholder="${passwordTxt}" id="currentPassword" path="currentPassword" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="currentPassword" element="div" cssClass="invalid-feedback"/>
+                                        <c:if test="${not empty current_password_fail}">
+                                            <p class="text-error"><spring:message code="editUserForm.passwordIsIncorrect"/></p>
+                                        </c:if>
                                     </div>
                                 </spring:bind>
                             </div>
@@ -91,6 +94,7 @@
                                         <form:label path="newPassword" for="password">${passwordTxt}: </form:label>
                                         <form:input type="password" placeholder="${passwordTxt}" id="password" path="newPassword" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="newPassword" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors element="p" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
@@ -102,7 +106,6 @@
                                         <form:label path="repeatNewPassword" for="repeatPassword">${repeatPasswordTxt}: </form:label>
                                         <form:input placeholder="${repeatPasswordTxt}" type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
                                                     path="repeatNewPassword"/>
-                                        <form:errors element="p" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
