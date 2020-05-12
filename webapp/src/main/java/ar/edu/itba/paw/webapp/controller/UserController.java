@@ -52,7 +52,7 @@ public class UserController extends ParentController {
         Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
-        mav.addObject("userPets", petsByUser.toArray());
+        mav.addObject("userPets", petsByUser);
         mav.addObject("userAvailablePets", petsAvailableByUser);
         return mav;
     }
@@ -238,18 +238,8 @@ public class UserController extends ParentController {
         return new ModelAndView("redirect:/user/" + opUser.get().getId());
 
     }
-    
-    
-    @RequestMapping(value = "/test")
-    public ModelAndView testUsers() {
-        final ModelAndView mav = new ModelAndView("views/test");
-        userService.removeUser(26);
-        mav.addObject("string",
-                userService.findById(getLocale(),26).get().getStatus().getName());
-        return mav;
-    }
 
-    //TODO
+
     @RequestMapping(value = "/user/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView userUpdateRemoved(@PathVariable("id") long id) {
         User user = loggedUser();

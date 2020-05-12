@@ -7,14 +7,14 @@
 
 <spring:message var="titleTxt" code="editUserForm.title"/>
 
-<t:basicLayout title="${titleTxt}">
+<t:adminLayout title="${titleTxt}" item="users">
     <div class="row">
         <div class=" col-md-10 offset-md-1">
 
             <div class="bg-light shadow p-3">
                 <div class="p-2">
                     <h1>${titleTxt}</h1>
-                    <form:form modelAttribute="editUserForm" action="${pageContext.request.contextPath}/edit-user/${id}" method="post" enctype="multipart/form-data">
+                    <form:form modelAttribute="editUserForm" action="${pageContext.request.contextPath}/admin/user/${id}/edit" method="post" enctype="multipart/form-data">
 
                         <h3><spring:message code="editUserForm.basicForm"/></h3>
                         <div class="form-row p-1">
@@ -69,9 +69,9 @@
                         <hr>
 
                     </form:form>
-                    <form:form modelAttribute="editUserForm" action="${pageContext.request.contextPath}/edit-user/${id}" method="post" enctype="multipart/form-data">
+                    <form:form modelAttribute="editUserForm" action="${pageContext.request.contextPath}/admin/user/${id}/edit" method="post" enctype="multipart/form-data">
 
-                    <h3><spring:message code="editUserForm.passwordForm"/></h3>
+                        <h3><spring:message code="editUserForm.passwordForm"/></h3>
 
                         <div class="form-row p-1">
                             <div class="col">
@@ -130,4 +130,4 @@
     </div>
 
     <script src="<c:url value="/resources/js/edit_pet_view.js"/>"></script>
-</t:basicLayout>
+</t:adminLayout>

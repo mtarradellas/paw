@@ -2,13 +2,14 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<spring:message code="areYouSure.delete" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
 
 <spring:message code="adminTitle.pet" var="petTitle"/>
 <t:adminLayout title="${petTitle}" item="pets">
     <jsp:body>
-        <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage' javaScriptEscape='true'/>
-        </span>
+        <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
+
         <div class="container-fluid">
             <div class="row">
                     <%--                Filter Tools --%>
@@ -190,12 +191,11 @@
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"
+                                                        <a href="<c:url value="/admin/pet/${pet.id}/edit-pet"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
-                                                        <button type="submit" onclick="confirmDelete(event)"
-                                                                class="btn btn-danger"><spring:message
-                                                                code="petCard.remove"/></button>
+                                                        <button type="submit" class="btn btn-danger are-you-sure">
+                                                            <spring:message code="petCard.remove"/></button>
                                                     </form>
                                                 </c:if>
                                                 <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
@@ -207,7 +207,7 @@
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"
+                                                        <a href="<c:url value="/admin/pet/${pet.id}/edit-pet"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
                                                         <button type="submit"
@@ -241,7 +241,7 @@
                 </div>
             </div>
         </div>
-
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
         <script src="<c:url value="/resources/js/index.js"/>"></script>
     </jsp:body>
 </t:adminLayout>

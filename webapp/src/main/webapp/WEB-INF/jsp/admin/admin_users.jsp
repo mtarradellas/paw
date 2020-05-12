@@ -2,13 +2,14 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-
+<spring:message code="areYouSure.delete" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
 <spring:message code="adminTitle.user" var="userTitle"/>
+
 <t:adminLayout title="${userTitle}" item="users">
     <jsp:body>
-        <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage' javaScriptEscape='true' />
-        </span>
+        <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
+
         <div class="container-fluid">
             <div class="row">
 
@@ -134,7 +135,7 @@
                                                     <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/remove"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
-                                                        <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
+                                                        <button type="submit" class="btn btn-danger are-you-sure"><spring:message code="petCard.remove"/></button>
                                                     </form>
                                                 </c:if>
                                                 <c:if test="${ (user.status.id eq 3)}">
@@ -168,6 +169,6 @@
                 </div>
             </div>
         </div>
-
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     </jsp:body>
 </t:adminLayout>
