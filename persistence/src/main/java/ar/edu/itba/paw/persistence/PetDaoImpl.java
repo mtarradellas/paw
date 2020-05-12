@@ -186,30 +186,28 @@ public class PetDaoImpl implements PetDao {
 
         if (level == 0) {
             String offset = Integer.toString(PETS_PER_PAGE * (numPageValue - 1));
-            sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
+            sql = "SELECT pets.id AS id "+
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                     "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " +
                     "AND pets.status NOT IN " + HIDDEN_PETS_STATUS +
                     " limit " + PETS_PER_PAGE + " offset " + offset;
         } else {
             String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numPageValue - 1));
-            sql = "select pets.id as id, petName, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                    "species.id as speciesId," + "species." + language + " AS speciesName, " +
-                    "breeds.id as breedId, breeds.speciesId as breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                    "pet_status.id as statusId, pet_status." + language + " as statusName " +
-                    "from ((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id) inner join pet_status on pet_status.id = status " +
+            sql = "SELECT pets.id AS id "+
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
                     "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " +
                     " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
         }
 
-        List<String> ids = jdbcTemplate.query(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, (resultSet, i) -> resultSet.getString("id"));
+        List<String> ids = jdbcTemplate.query(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, (resultSet, i) -> resultSet.getString("id"));
         if (ids.size() == 0) {
             return Stream.empty();
         }
