@@ -372,5 +372,19 @@ public class UserDaoImpl implements UserDao {
         return findById(language, key.longValue());
     }
 
+    @Override
+    public List<Token> listTokens() {
+        String sql = "SELECT * " +
+                     "FROM tokens ";
+
+        return jdbcTemplate.query(sql, TOKEN_MAPPER);
+    }
+
+    @Override
+    public void cleanOldTokens() {
+        String sql = "DELETE FROM tokens " +
+                     "WHERE expirationdate < CURRENT_DATE ";
+        jdbcTemplate.update(sql);
+    }
 }
 

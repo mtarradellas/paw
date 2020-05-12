@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -23,9 +24,11 @@ public interface UserDao {
     Optional<Token> getToken(UUID uuid);
     boolean deleteToken(UUID uuid);
     Optional<User> findByToken(String language, UUID uuid);
+    List<Token> listTokens();
     String getAdminPages();
     String getAdminSearchPages(String language, String find);
     String getAdminMaxFilterPages(String language, String status);
     boolean updateStatus(long id, int status);
     boolean isAdmin(long userId);
+    void cleanOldTokens();
 }

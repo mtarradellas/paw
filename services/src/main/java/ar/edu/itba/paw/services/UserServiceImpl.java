@@ -7,8 +7,10 @@ import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +68,7 @@ public class UserServiceImpl implements UserService {
         return new UserList(list, maxPage);
     }
 
+    @Transactional
     @Override
     public Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
@@ -216,6 +219,7 @@ public class UserServiceImpl implements UserService {
         return userDao.isAdmin(userId);
     }
 
+    @Transactional
     @Override
     public void removeAdmin(long userId) {
         requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
@@ -224,6 +228,7 @@ public class UserServiceImpl implements UserService {
         userDao.updateStatus(userId, UserStatus.DELETED.getValue());
     }
 
+    @Transactional
     public void removeUser(long userId) {
         requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByOwner(userId);
@@ -266,5 +271,8 @@ public class UserServiceImpl implements UserService {
         return userDao.getAdminMaxFilterPages(language, status);
     }
 
-
+    @Scheduled(cron = "0 0 1 * * *")
+    public void cleanOldTokens() {
+        userDao.cleanOldTokens();
+    }
 }
