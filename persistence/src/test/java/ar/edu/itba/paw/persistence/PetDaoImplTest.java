@@ -52,21 +52,25 @@ public class PetDaoImplTest {
     @Autowired
     private DataSource ds;
 
-    private static final RowMapper<Pet> PET_MAPPER = (rs, rowNum) -> new Pet(
-            rs.getLong("id"),
-            rs.getString("petname"),
-            new Species(rs.getLong("species"), SPECIES.getName()),
-            new Breed(rs.getLong("breed"), BREED.getName(), SPECIES),
-            rs.getString("location"),
-            rs.getBoolean("vaccinated"),
-            rs.getString("gender"),
-            rs.getString("description"),
-            rs.getDate("birthDate"),
-            rs.getDate("uploadDate"),
-            rs.getInt("price"),
-            rs.getLong("ownerId"),
-            new Status(rs.getInt("status"), STATUS.getName())
-    );
+    private static final RowMapper<Pet> PET_MAPPER = (rs, rowNum) -> {
+        Province prov =new Province(rs.getLong("provinceId"), rs.getString("provinceName"), rs.getDouble("provinceLat"), rs.getDouble("provinceLong"));
+        return new Pet(
+                rs.getLong("id"),
+                rs.getString("petname"),
+                new Species(rs.getLong("species"), SPECIES.getName()),
+                new Breed(rs.getLong("breed"), BREED.getName(), SPECIES),
+                rs.getBoolean("vaccinated"),
+                rs.getString("gender"),
+                rs.getString("description"),
+                rs.getDate("birthDate"),
+                rs.getDate("uploadDate"),
+                rs.getInt("price"),
+                rs.getLong("ownerId"),
+                new Status(rs.getInt("status"), STATUS.getName()),
+                prov,
+                new Department(rs.getLong("departmentId"), rs.getString("departmentName"), rs.getDouble("departmentLat"), rs.getDouble("departmentLong"), prov)
+        );
+    };
 
     private PetDaoImpl petDaoImpl;
     private JdbcTemplate jdbcTemplate;
@@ -201,7 +205,6 @@ public class PetDaoImplTest {
         assertEquals(name, pet.getPetName());
         assertEquals(species, pet.getSpecies());
         assertEquals(breed, pet.getBreed());
-        assertEquals(location, pet.getLocation());
         assertEquals(vaccinated, pet.isVaccinated());
         assertEquals(gender, pet.getGender());
         assertEquals(description, pet.getDescription());
@@ -239,7 +242,7 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
 
         /**/
-        Optional<Pet> opPet = petDaoImpl.findById(LANG, ID, 0);
+        Optional<Pet> opPet = petDaoImpl.findById(LANG, ID);
 
         assertFalse(opPet.isPresent());
     }
@@ -252,7 +255,7 @@ public class PetDaoImplTest {
                 UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId());
 
         /**/
-        Optional<Pet> opPet = petDaoImpl.findById(LANG, id, 0);
+        Optional<Pet> opPet = petDaoImpl.findById(LANG, id);
 
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
         assertTrue(opPet.isPresent());
@@ -277,7 +280,6 @@ public class PetDaoImplTest {
         assertEquals(PET_NAME, pet.getPetName());
         assertEquals(SPECIES.getId(), pet.getSpecies().getId());
         assertEquals(BREED.getId(), pet.getBreed().getId());
-        assertEquals(LOCATION, pet.getLocation());
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());
@@ -306,7 +308,6 @@ public class PetDaoImplTest {
         assertEquals(PET_NAME, pet.getPetName());
         assertEquals(SPECIES.getId(), pet.getSpecies().getId());
         assertEquals(BREED.getId(), pet.getBreed().getId());
-        assertEquals(LOCATION, pet.getLocation());
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());
@@ -332,7 +333,6 @@ public class PetDaoImplTest {
         assertEquals(PET_NAME, pet.getPetName());
         assertEquals(SPECIES.getId(), pet.getSpecies().getId());
         assertEquals(BREED.getId(), pet.getBreed().getId());
-        assertEquals(LOCATION, pet.getLocation());
         assertEquals(VACCINATED, pet.isVaccinated());
         assertEquals(GENDER, pet.getGender());
         assertEquals(DESCRIPTION, pet.getDescription());

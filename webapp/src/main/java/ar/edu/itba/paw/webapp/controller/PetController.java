@@ -197,10 +197,10 @@ public class PetController extends ParentController {
             LOGGER.warn("Image bytes load from pet form failed");
             return uploadPetForm(petForm).addObject("image_error", true);
         }
-
+        /* TODO deshardcodear el department*/
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
                           petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId(), photos);
+                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId(),15, photos);
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
@@ -219,7 +219,6 @@ public class PetController extends ParentController {
         petForm.setBreedId(pet.getBreed().getId());
         petForm.setDescription(pet.getDescription());
         petForm.setGender(pet.getGender());
-        petForm.setLocation(pet.getLocation());
         petForm.setPrice(pet.getPrice());
         petForm.setPetName(pet.getPetName());
         petForm.setSpeciesId(pet.getSpecies().getId());
@@ -284,28 +283,12 @@ public class PetController extends ParentController {
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
 
-    private String getMailMessage( String part, Request request){
-        String locale = getLocale();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
-        switch(part){
-            case "subject":
-                if(locale.equals("en_US")){
-                    return "A user showed interest in one of your pets!";
-                }else{
-                    return "¡Un usuario mostró interés en una de sus mascotas!";
-                }
-            case "body":
-                if(locale.equals("en_US")){
-                    return "User " + request.getOwnerUsername() + " is interested in "+ request.getPetName() + "." +
-                            " Go to " + url + " to accept or reject his request!!" +
-                            "\nSincerely,\nPet Society Team.";
-                }else{
-                    return "El usuario " + request.getOwnerUsername() + " está interesado/a en "+ request.getPetName() +
-                            "¡¡Vaya a " + url + " para aceptar o rechazar su solicitud!!" +
-                            "\nSinceramente,\nEl equipo de Pet Society.";
-                }
-        }
-        return "";
+    @RequestMapping(value = "/test")
+    public ModelAndView testUsers() {
+        final ModelAndView mav = new ModelAndView("views/test");
+        mav.addObject("pet",
+                petService.findById(getLocale(),15).get());
+        return mav;
     }
 
 }

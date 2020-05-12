@@ -128,7 +128,7 @@ public class AdminController extends ParentController{
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
                 petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                birthDate, currentDate, petForm.getPrice(), petForm.getOwner(), photos);
+                birthDate, currentDate, petForm.getPrice(), petForm.getOwner(), 15, photos);
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
