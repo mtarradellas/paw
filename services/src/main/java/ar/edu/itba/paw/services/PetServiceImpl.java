@@ -298,4 +298,54 @@ public class PetServiceImpl implements PetService {
     public void recoverPetAdmin(long petId) {
         petDao.updateStatus(petId, PetStatus.AVAILABLE.getValue());
     }
+
+    @Override
+    public Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
+                                boolean vaccinated, String gender, String description, Date birthDate, int price) throws InvalidImageQuantityException {
+        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
+                        "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
+                id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+
+
+        if (!speciesDao.findSpeciesById(language, speciesId).isPresent()) {
+            LOGGER.warn("Species {} not found, pet update failed", speciesId);
+            return Optional.empty();
+        }
+        if (!speciesDao.findBreedById(language, breedId).isPresent()) {
+            LOGGER.warn("Breed {} not found, pet update failed", breedId);
+            return Optional.empty();
+        }
+        int toDelete;
+        if(imagesToDelete == null){
+            toDelete = 0;
+        }
+        else {
+            toDelete = imagesToDelete.size();
+        }
+        int previousImageQuantity = imageService.quantityByPetId(id);
+        int finalImageQuantity = previousImageQuantity + photos.size() - toDelete;
+        if(finalImageQuantity < MIN_IMAGES || finalImageQuantity > MAX_IMAGES) {
+            throw new InvalidImageQuantityException("Pet must have between 1 and 5 images");
+        }
+        if(imagesToDelete != null ) {
+            LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
+            imageService.delete(imagesToDelete);
+        }
+        if(photos != null) {
+            for (byte[] photo : photos) {
+                LOGGER.debug("Adding image to pet {}", id);
+                imageService.createAdmin(id, photo);
+            }
+        }
+        petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+        Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
+        if (!opPet.isPresent()){
+            LOGGER.debug("Pet {} update failed", id);
+            return Optional.empty();
+        }
+        LOGGER.debug("Pet {} successfully updated", opPet.get());
+
+
+        return opPet;
+    }
 }

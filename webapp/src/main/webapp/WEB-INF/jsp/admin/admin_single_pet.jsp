@@ -18,7 +18,7 @@
             <div class=" col-md-10 offset-md-1">
                 <div class="bg-light shadow">
                     <div class="p-2 bg-dark">
-                        <div class="row text-whitesmoke">
+                        <div class="row text-whitesmoke ">
                             <c:if test="${not empty pet.petName}">
                                 <h1 class="ml-4 ">
                                     <c:out value="${pet.petName}"/>
@@ -124,6 +124,22 @@
             </div>
         </div>
 
+        <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="" alt="Full sized image"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
         <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     </jsp:body>
 </t:adminLayout>

@@ -33,15 +33,15 @@
                             </h1>
                         </c:if>
                         <c:if test="${pet.status.id eq 3}">
-                            <h1 class="ml-1 "> (<spring:message code="status.sold"/>) </h1>
+                            <h1 class="ml-1 "> <spring:message code="pet.status.sold"/></h1>
                         </c:if>
                         <c:if test="${pet.status.id eq 2}">
-                            <h1 class="ml-1"> (<spring:message code="status.deleted"/>) </h1>
+                            <h1 class="ml-1"> <spring:message code="pet.status.removed"/> </h1>
                         </c:if>
                         <c:if test="${(pet.ownerId ne loggedUser.id)}">
                             <c:if test="${not requestExists}">
                                 <c:if test="${pet.status.id eq 1}">
-                                    <h1 class="mt-2 ml-4">
+                                    <h1 class="mt-2 ml-2">
                                         <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
                                             <button type="submit" name="action" class="btn btn-success">
                                                 <i class="fas fa-plus mr-2"></i>
@@ -53,7 +53,7 @@
                             </c:if>
                             <c:if test="${requestExists}">
                                 <c:if test="${pet.status.id eq 1}">
-                                    <h1 class="mt-2 ml-4">
+                                    <h1 class="mt-2 ml-2">
                                         <button type="button" class="btn btn-success" disabled>
                                             <spring:message code="petCard.alreadyRequested"/>
                                         </button>
@@ -70,7 +70,7 @@
                                         </button>
                                     </form>
                                 </h1>
-                                <h1 class="mt-2 ml-4">
+                                <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/remove" />">
                                         <button type="submit"  name="action"
                                                 class="btn btn-danger are-you-sure">
@@ -88,7 +88,7 @@
                                 </a>
                             </c:if>
                             <c:if test="${pet.status.id ne 1}">
-                                <h1 class="mt-2 ml-4">
+                                <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/recover" />">
                                         <button type="submit" name="action" class="btn btn-success">
                                             <spring:message code="petCard.recover"/>
@@ -99,7 +99,6 @@
                         </c:if>
                     </div>
                 </div>
-                <hr>
                 <div class="p-3">
                     <t:photosList images="${pet.images}"/>
                 </div>

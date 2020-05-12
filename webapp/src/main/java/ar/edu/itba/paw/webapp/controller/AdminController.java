@@ -162,6 +162,79 @@ public class AdminController extends ParentController{
         return new ModelAndView("redirect:/admin/pets");
     }
 
+    @RequestMapping(value = "/admin/pet/{id}/edit-pet", method = { RequestMethod.GET })
+    public ModelAndView editPet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
+        Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
+
+        petForm.setBirthDate(pet.getBirthDate());
+        petForm.setBreedId(pet.getBreed().getId());
+        petForm.setDescription(pet.getDescription());
+        petForm.setGender(pet.getGender());
+        petForm.setLocation(pet.getLocation());
+        petForm.setPrice(pet.getPrice());
+        petForm.setPetName(pet.getPetName());
+        petForm.setSpeciesId(pet.getSpecies().getId());
+        petForm.setVaccinated(pet.isVaccinated());
+
+        return editPetForm(petForm, id);
+    }
+
+    private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
+        String locale = getLocale();
+
+        BreedList breedList = speciesService.breedsList(locale);
+
+        return new ModelAndView("admin/admin_edit_pet")
+                .addObject("species_list", breedList.getSpecies().toArray())
+                .addObject("breeds_list", breedList.toArray())
+                .addObject("pet",
+                        petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
+                .addObject("id", id);
+    }
+
+    @RequestMapping(value = "/admin/pet/{id}/edit", method = { RequestMethod.POST })
+    public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
+                                final BindingResult errors, HttpServletRequest request,
+                                @PathVariable("id") long id) {
+
+        if (errors.hasErrors()) {
+            return editPetForm(editPetForm, id);
+        }
+        List<byte[]> photos = new ArrayList<>();
+        try {
+            for (MultipartFile photo : editPetForm.getPhotos()) {
+                if(!photo.isEmpty()) {
+                    try {
+                        photos.add(photo.getBytes());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        throw new ImageLoadException(ex);
+                    }
+                }
+            }
+        } catch (ImageLoadException ex) {
+            LOGGER.warn("Image bytes load from pet form failed");
+            return editPetForm(editPetForm, id).addObject("image_error", true);
+        }
+
+        Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
+        Optional<Pet> opPet;
+        try {
+            opPet = petService.adminUpdate(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
+                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
+                    editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
+        }
+        catch(InvalidImageQuantityException ex) {
+            LOGGER.warn(ex.getMessage());
+            return editPetForm(editPetForm, id).addObject("image_quantity_error", true);
+        }
+        if(!opPet.isPresent()){
+            LOGGER.warn("Pet could not be updated");
+            return new ModelAndView("redirect:/admin/pets");
+        }
+        return new ModelAndView("redirect:/admin/pet/" + opPet.get().getId());
+    }
+
 
 //    USERS ENDPOINTS
 @RequestMapping(value = "/admin/users")
@@ -261,82 +334,6 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
         LOGGER.debug("User {} updated as recovered", id);
         return new ModelAndView("redirect:/admin/users");
     }
-
-    @RequestMapping(value = "/admin/pet/{id}/edit-pet", method = { RequestMethod.GET })
-    public ModelAndView editPet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
-        Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
-
-        petForm.setBirthDate(pet.getBirthDate());
-        petForm.setBreedId(pet.getBreed().getId());
-        petForm.setDescription(pet.getDescription());
-        petForm.setGender(pet.getGender());
-        petForm.setLocation(pet.getLocation());
-        petForm.setPrice(pet.getPrice());
-        petForm.setPetName(pet.getPetName());
-        petForm.setSpeciesId(pet.getSpecies().getId());
-        petForm.setVaccinated(pet.isVaccinated());
-
-        return editPetForm(petForm, id);
-    }
-
-    private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
-        String locale = getLocale();
-
-        BreedList breedList = speciesService.breedsList(locale);
-
-        return new ModelAndView("admin/admin_edit_pet")
-                .addObject("species_list", breedList.getSpecies().toArray())
-                .addObject("breeds_list", breedList.toArray())
-                .addObject("pet",
-                        petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
-                .addObject("id", id);
-    }
-
-    @RequestMapping(value = "/admin/pet/{id}/edit", method = { RequestMethod.POST })
-    public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
-                                final BindingResult errors, HttpServletRequest request,
-                                @PathVariable("id") long id) {
-
-        if (errors.hasErrors()) {
-            return editPetForm(editPetForm, id);
-        }
-        List<byte[]> photos = new ArrayList<>();
-        try {
-            for (MultipartFile photo : editPetForm.getPhotos()) {
-                if(!photo.isEmpty()) {
-                    try {
-                        photos.add(photo.getBytes());
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        throw new ImageLoadException(ex);
-                    }
-                }
-            }
-        } catch (ImageLoadException ex) {
-            LOGGER.warn("Image bytes load from pet form failed");
-            return editPetForm(editPetForm, id).addObject("image_error", true);
-        }
-
-        Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
-        Optional<Pet> opPet;
-        try {
-            opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
-                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
-                    editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
-        }
-        catch(InvalidImageQuantityException ex) {
-            LOGGER.warn(ex.getMessage());
-            return editPetForm(editPetForm, id).addObject("image_quantity_error", true);
-        }
-        if(!opPet.isPresent()){
-            LOGGER.warn("Pet could not be updated");
-            return new ModelAndView("redirect:/");
-        }
-        return new ModelAndView("redirect:/admin/pet/" + opPet.get().getId());
-    }
-
-
-
 
 
     //    REQUESTS ENDPOINTS

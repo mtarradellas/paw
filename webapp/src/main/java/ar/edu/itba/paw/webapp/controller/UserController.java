@@ -47,7 +47,7 @@ public class UserController extends ParentController {
         Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
-        mav.addObject("userPets", petsByUser.toArray());
+        mav.addObject("userPets", petsByUser);
         mav.addObject("userAvailablePets", petsAvailableByUser);
         return mav;
     }

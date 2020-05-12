@@ -40,7 +40,6 @@
                     <c:if test="${loggedUser.id ne user.id}">
                         <h5 class="text-center"><b><spring:message code="otherUserProfile"/></b></h5>
                     </c:if>
-                    <hr>
                     <div class="p-2">
 
                         <h2><b><spring:message code="userPets"/></b>

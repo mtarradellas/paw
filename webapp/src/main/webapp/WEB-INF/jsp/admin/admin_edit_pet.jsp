@@ -11,7 +11,7 @@
         <div class=" col-md-10 offset-md-1">
             <div class="bg-light shadow p-3">
                 <div class="p-2">
-                    <form:form modelAttribute="editPetForm" action="${pageContext.request.contextPath}/edit-pet/${id}" method="post" enctype="multipart/form-data">
+                    <form:form modelAttribute="editPetForm" action="${pageContext.request.contextPath}/admin/pet/${id}/edit" method="post" enctype="multipart/form-data">
                         <h1>${titleTxt}</h1>
 
                         <div class="form-row p-1">
