@@ -225,6 +225,9 @@ public class PetController extends ParentController {
         petForm.setBreedId(pet.getBreed().getId());
         petForm.setDescription(pet.getDescription());
         petForm.setGender(pet.getGender());
+
+        //TODO: agregar province y department
+
         petForm.setPrice(pet.getPrice());
         petForm.setPetName(pet.getPetName());
         petForm.setP
@@ -239,9 +242,14 @@ public class PetController extends ParentController {
 
         BreedList breedList = speciesService.breedsList(locale);
 
+        ProvinceList provinceList = locationService.provinceList();
+        DepartmentList departmentList = locationService.departmentList();
+
         return new ModelAndView("views/pet_edit")
                 .addObject("species_list", breedList.getSpecies().toArray())
                 .addObject("breeds_list", breedList.toArray())
+                .addObject("province_list", provinceList.toArray())
+                .addObject("department_list", departmentList.toArray())
                 .addObject("pet",
                         petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
                 .addObject("id", id);
@@ -275,8 +283,9 @@ public class PetController extends ParentController {
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
         Optional<Pet> opPet;
         try {
+            /*TODO: change to receive province and department instead of location*/
              opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
-                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
+                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), null,
                     editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
         }
         catch(InvalidImageQuantityException ex) {
