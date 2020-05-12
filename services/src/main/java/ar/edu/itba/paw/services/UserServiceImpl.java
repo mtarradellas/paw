@@ -2,8 +2,8 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
-import ar.edu.itba.paw.models.Token;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +18,6 @@ import java.util.stream.Stream;
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-    private final int ACTIVE = 1;
-    private final int INACTIVE = 2;
-    private final int DELETED = 3;
-
 
     @Autowired
     private UserDao userDao;
@@ -51,19 +47,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> adminUserList(String language, String page){
-        return userDao.adminUserList(language, page).collect(Collectors.toList());
+    public UserList adminUserList(String locale, String findValue, String status, String searchCriteria, String searchOrder, String page){
+        if (findValue == null) return adminFilteredList(locale, status, searchCriteria, searchOrder, page);
+        return adminFind(locale, findValue, page);
     }
 
     @Override
-    public List<User> adminSearchList(String language, String find, String page) {
-        return userDao.adminSearchList(language,find,page).collect(Collectors.toList());
+    public UserList adminFind(String language, String findValue, String page) {
+        List<User> list = userDao.adminSearchList(language, findValue, page).collect(Collectors.toList());
+        String maxPage = getAdminMaxSearchPages(language, findValue);
+        return new UserList(list, maxPage);
+    }
+
+    @Override
+    public UserList adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        List<User> list = userDao.adminFilteredList(language, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
+        String maxPage = getAdminMaxFilterPages(language, status);
+        return new UserList(list, maxPage);
     }
 
     @Override
     public Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, INACTIVE);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, UserStatus.INACTIVE.getValue());
         if (!opUser.isPresent()) {
             LOGGER.warn("User DAO returned empty user");
             return opUser;
@@ -73,7 +79,17 @@ public class UserServiceImpl implements UserService {
 
         UUID uuid = UUID.randomUUID();
         createToken(uuid, opUser.get().getId());
-        mailService.sendMail(user.getMail(), activateAccountSubject(language), activateAccountBody(language, user, uuid));
+
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
+        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
+        urlToken += "?token=" + uuid;
+
+        arguments.put("URLToken", urlToken );
+        arguments.put("URL", url );
+        arguments.put("username",user.getUsername());
+
+        mailService.sendMail(user.getMail(), arguments, "activate_account");
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}, phone: {}", user.getId(), user.getUsername(), user.getMail(), user.getPhone());
         return opUser;
@@ -82,7 +98,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, ACTIVE);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, UserStatus.ACTIVE.getValue());
         if (!opUser.isPresent()) {
             LOGGER.warn("User DAO returned empty user");
             return opUser;
@@ -132,7 +148,7 @@ public class UserServiceImpl implements UserService {
         }
         /* TODO activate account */
 
-        if(!userDao.updateStatus(opUser.get().getId(), ACTIVE)) {
+        if(!userDao.updateStatus(opUser.get().getId(), UserStatus.ACTIVE.getValue())) {
             LOGGER.warn("Could not activate user {} account", opUser.get().getId());
             return Optional.empty();
         }
@@ -153,8 +169,17 @@ public class UserServiceImpl implements UserService {
 
         UUID uuid = UUID.randomUUID();
         createToken(uuid, user.getId());
-        mailService.sendMail(user.getMail(),resetPasswordSubject(locale),resetPasswordBody(locale, user,uuid));
 
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
+        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
+        urlToken += "?token=" + uuid;
+
+        arguments.put("URLToken", urlToken );
+        arguments.put("URL", url );
+        arguments.put("username",user.getUsername());
+
+        mailService.sendMail(user.getMail(), arguments, "reset_password");
         return opUser;
     }
 
@@ -192,11 +217,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void removeAdmin(long userId) {
+        requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
+        requestService.cancelAllByOwner(userId);
+        petService.removeAllByOwner(userId);
+        userDao.updateStatus(userId, UserStatus.DELETED.getValue());
+    }
+
     public void removeUser(long userId) {
         requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByOwner(userId);
         petService.removeAllByOwner(userId);
-        userDao.updateStatus(userId, DELETED);
+        userDao.updateStatus(userId, UserStatus.DELETED.getValue());
+    }
+
+    @Override
+    public void recoverAdmin(long userId) {
+        userDao.updateStatus(userId, UserStatus.ACTIVE.getValue());
     }
 
     @Override
@@ -224,59 +261,10 @@ public class UserServiceImpl implements UserService {
         return userDao.getAdminSearchPages(language, find);
     }
 
-    private String resetPasswordBody(String locale, User user, UUID uuid) {
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
-        url += "?token=" + uuid;
-        String body;
-        if(locale.equals("en_US")) {
-            body = "Hello " + user.getUsername() +
-                    ",\nPlease click the link below to reset your password\n"
-                    + url +
-                    "\nSincerely,\nPet Society Team.";
-        }
-        else{
-            body = "Hola " + user.getUsername() +
-                    ",\nPor favor haz click en el siguiente link para resetear tu contraseña\n"
-                    + url +
-                    "\nSinceramente,\nEl equipo de Pet Society.";
-        }
-        return body;
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+        return userDao.getAdminMaxFilterPages(language, status);
     }
 
-    private String resetPasswordSubject(String locale) {
-        String subject;
-        if(locale.equals("en_US")) {
-            subject = "Reset Your Password";
-        }
-        else { subject = "Resetea tu contraseña"; }
-        return subject;
-    }
 
-    private String activateAccountSubject(String locale) {
-        String subject;
-        if(locale.equals("en_US")) {
-            subject = "Activate your account";
-        }
-        else { subject = "Activa tu cuenta"; }
-        return subject;
-    }
-
-    private String activateAccountBody(String locale, User user, UUID uuid) {
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
-        url += "?token=" + uuid;
-        String body;
-        if(locale.equals("en_US")) {
-            body = "Hello " + user.getUsername() +
-                    ",\nPlease click the link below to activate your account\n"
-                    + url +
-                    "\nSincerely,\nPet Society Team.";
-        }
-        else{
-            body = "Hola " + user.getUsername() +
-                    ",\nPor favor haz click en el siguiente link para activar tu cuenta\n"
-                    + url +
-                    "\nSinceramente,\nEl equipo de Pet Society.";
-        }
-        return body;
-    }
 }

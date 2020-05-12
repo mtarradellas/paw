@@ -43,6 +43,13 @@ public class LoginAndRegisterController extends ParentController {
         return new ModelAndView("views/login");
     }
 
+    @RequestMapping("/login/error")
+    public ModelAndView failedLogin(){
+        ModelAndView mav = new ModelAndView("views/login");
+        mav.addObject("loginFailed", true);
+        return mav;
+    }
+
     @RequestMapping(value ="/register", method = { RequestMethod.GET })
     public ModelAndView registerForm(@ModelAttribute ("registerForm") final UserForm userForm) {
         return new ModelAndView("views/register");

@@ -13,7 +13,7 @@
 
                 <div class="bg-light shadow p-3">
                     <div class="p-2">
-                        <form:form modelAttribute="adminUploadPetForm" action="${pageContext.request.contextPath}/admi/upload-pet" method="post" enctype="multipart/form-data">
+                        <form:form modelAttribute="adminUploadPetForm" action="${pageContext.request.contextPath}/admin/upload-pet" method="post" enctype="multipart/form-data">
                             <h1>${addPetTitle}</h1>
 
                             <div class="form-row p-1">
@@ -79,7 +79,7 @@
                                             <form:select id="breedId" path="breedId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                                 <c:forEach var="breed" items="${breeds_list}">
-                                                    <form:option cssClass="species-${breed.speciesId}" value="${breed.id}">${breed.name}</form:option>
+                                                    <form:option cssClass="species-${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
                                             <form:errors path="breedId" element="div" cssClass="invalid-feedback"/>
@@ -143,11 +143,11 @@
                             </div>
                         </form:form>
 
+                        <div class="p-3">
+                            <a href="${pageContext.request.contextPath}/admin/pets"><spring:message code="goBackLists"/></a>
+                        </div>
+                    </div>
 
-                    </div>
-                    <div class="p-3">
-                        <a href="${pageContext.request.contextPath}/admi"><spring:message code="backToHome"/></a>
-                    </div>
                 </div>
             </div>
         </div>

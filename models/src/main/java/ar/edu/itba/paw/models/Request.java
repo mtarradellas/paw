@@ -21,6 +21,11 @@ public class Request {
         this.creationDate = creationDate;
     }
 
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", status: " + status + ", owner: " + ownerId + ", pet: " + petId + ", creationDate: " + creationDate + " }";
+    }
+
     public long getOwnerId() {
         return ownerId;
     }

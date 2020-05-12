@@ -15,7 +15,7 @@
 
                 <div class="col-md-2 search-tools">
                     <form class="card shadow p-3" method="get"
-                          action="${pageContext.request.contextPath}/admi/requests">
+                          action="${pageContext.request.contextPath}/admin/requests">
                         <div class="card-header">
                             <h5 class="card-title"><spring:message code="filter.options"/></h5>
                         </div>
@@ -46,8 +46,8 @@
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.pending"/></option>
-                                    <option value="pending"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('pending' eq param.status)}">
+                                    <option value="canceled"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('canceled' eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
@@ -89,7 +89,7 @@
 
                         <c:if test="${empty requests_list }">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/admi/requests"><spring:message
+                                <a href="${pageContext.request.contextPath}/admin/requests"><spring:message
                                         code="showFirst"/></a>
                             </div>
                         </c:if>
@@ -98,7 +98,7 @@
                                 <h2><spring:message code="admin.requestsListing"/> <spring:message code="showingResults"
                                                                                                    arguments="${requests_list.size()}"/>
                                     <a type="button" class="btn btn-success"
-                                       href="${pageContext.request.contextPath}/admi/upload-request">
+                                       href="${pageContext.request.contextPath}/admin/upload-request">
                                         <i class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></a>
                                 </h2>
                             </div>
@@ -107,13 +107,13 @@
                         <div class="m-2 ">
                             <c:if test="${maxPage ne 1}">
                                 <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
-                                              baseURL="${'/admi/requests/'}"/>
+                                              baseURL="${'/admin/requests/'}"/>
                             </c:if>
                         </div>
                         <div>
                             <c:if test="${not empty requests_list}">
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-5">
                                         <h5 class="text-left ml-4"><b><spring:message code="request"/></b></h5>
                                     </div>
                                     <div class="col-lg-2">
@@ -135,9 +135,9 @@
                                             </c:if>
                                     >
                                         <div class="row ">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-5">
                                                 <spring:message code="request.isInterested"
-                                                                arguments="${pageContext.request.contextPath}/admi/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admi/pet/${request.petId},${request.petName}"/>
+                                                                arguments="${pageContext.request.contextPath}/admin/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admin/pet/${request.petId},${request.petName}"/>
                                                 <small class="text-warning"> ${request.creationDate}</small>
                                             </div>
                                             <div class="col-lg-2">
@@ -150,18 +150,21 @@
                                                 <c:if test="${request.status.id eq 3}">
                                                     <spring:message code="request.rejected"/>
                                                 </c:if>
+                                                <c:if test="${request.status.id eq 4}">
+                                                    <spring:message code="request.canceled"/>
+                                                </c:if>
                                             </div>
-                                            <div class="col text-center ml-3">
+                                            <div class="col text-center ml-3 ">
                                                 <c:if test="${request.status.id eq 1 or request.status.id eq 2 or request.status.id eq 3}">
                                                     <form method="POST" class="m-0"
-                                                          action="<c:url value="/admi/request/${request.id}/cancel"/>">
-                                                        <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${request.ownerId}"/>"
+                                                          action="<c:url value="/admin/request/${request.id}/cancel"/>">
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.ownerId}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitUser"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${request.petId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.petId}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/request/<c:out value="${request.id}"/>/edit"
+                                                        <a href="${pageContext.request.contextPath}/admin/request/<c:out value="${request.id}"/>/edit"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
                                                         <button type="submit" onclick="confirmDelete(event)"
@@ -171,14 +174,14 @@
                                                 </c:if>
                                                 <c:if test="${request.status.id eq 4}">
                                                     <form method="POST" class="m-0"
-                                                          action="<c:url value="/admi/request/${request.id}/recover"/>">
-                                                        <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${request.ownerId}"/>"
+                                                          action="<c:url value="/admin/request/${request.id}/recover"/>">
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.ownerId}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitUser"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${request.petId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.petId}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admi/request/<c:out value="${request.id}"/>/edit"
+                                                        <a href="${pageContext.request.contextPath}/admin/request/<c:out value="${request.id}"/>/edit"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
                                                         <button type="submit"
@@ -195,7 +198,7 @@
                         <div class="m-2">
                             <c:if test="${maxPage ne 1}">
                                 <t:pagination currentPage="${currentPage}" maxPage="${maxPage}"
-                                              baseURL="${'/admi/requests/'}"/>
+                                              baseURL="${'/admin/requests/'}"/>
                             </c:if>
                         </div>
                     </div>

@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.interfaces;
 
+import java.io.StringWriter;
+import java.util.Map;
+
 public interface MailService {
-    void sendMail(String recipient, String subject, String body);
-    void sendMailWithAttachment(String to, String subject, String body, String fileToAttach);
+    void sendMail(String recipient, Map<String, Object> arguments, String mailType);
 }

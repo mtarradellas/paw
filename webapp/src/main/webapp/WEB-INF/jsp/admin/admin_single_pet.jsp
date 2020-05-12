@@ -44,16 +44,15 @@
                                     <spring:message code="pet.unnamed"/>
                                 </h1>
                             </c:if>
-
-                                <%--                                            TODO:falta--%>
+                            <h1 class="ml-1"> (<c:out value="${pet.status.name}"/>) </h1>
                             <c:if test="${pet.status.id eq 1}">
                                 <h1 class="mt-2 ml-4">
-                                    <a href="${pageContext.request.contextPath}/admi/pet/<c:out value="${pet.id}"/>/edit"
+                                    <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"
                                        type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
                                 </h1>
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0"
-                                          action="<c:url value="/admi/pet/${id}/sell-adopt" />">
+                                          action="<c:url value="/admin/pet/${id}/sell-adopt" />">
                                         <button type="submit" name="action" class="btn btn-success">
                                             <spring:message code="petCard.reserve"/>
                                         </button>
@@ -61,7 +60,7 @@
                                 </h1>
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0"
-                                          action="<c:url value="/admi/pet/${pet.id}/remove"/>">
+                                          action="<c:url value="/admin/pet/${pet.id}/remove"/>">
                                         <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger">
                                             <spring:message code="petCard.remove"/></button>
                                     </form>
@@ -70,7 +69,7 @@
                             <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
                                 <h1 class="mt-2 ml-4">
                                     <form method="POST" class="m-0"
-                                          action="<c:url value="/admi/pet/${pet.id}/recover"/>">
+                                          action="<c:url value="/admin/pet/${pet.id}/recover"/>">
                                         <button type="submit" class="btn btn-success">
                                             <spring:message code="petCard.recover"/></button>
                                     </form>
@@ -117,11 +116,11 @@
 
                     </div>
                     <c:set var="ownerId" value="${pet.ownerId}"/>
-                    <a href="${pageContext.request.contextPath}/admi/user/${ownerId}" class="p-2 m-3"><spring:message
+                    <a href="${pageContext.request.contextPath}/admin/user/${ownerId}" class="p-2 m-3"><spring:message
                             code="petCard.gotoOwnerPage"/></a>
 
                     <div class="p-4">
-                        <a href="${pageContext.request.contextPath}/admi"><spring:message code="backToHome"/></a>
+                        <a href="${pageContext.request.contextPath}/admin"><spring:message code="backToHome"/></a>
                     </div>
                 </div>
             </div>

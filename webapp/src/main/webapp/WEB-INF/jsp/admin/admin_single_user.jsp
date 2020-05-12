@@ -15,18 +15,25 @@
                 <div class="bg-light shadow p-3">
                     <div class="p-2 row">
                         <h1><c:out value="${user.username}"/>
-                                <%--            TODO: check if logged user equaks id from user page, if true, show button that redirects to edit user page
-                                                TODO: when redirected, check again if logged user is the one from the id, if it is not then disable the page--%>
-                                <%--            <a href="${pageContext.request.contextPath}/editUser/${user.id}"><spring:message code="editUser"/></button></h1>--%>
+                            (<c:out value="${user.status.name}"/>)
                         </h1>
-                        <h1 class="mt-2 ml-4">
-                            <a href="${pageContext.request.contextPath}/admi/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
-                        </h1>
-                        <h1 class="mt-2 ml-4">
-                            <form method="POST" class="m-0" action="<c:url value="/admi/user/${user.id}/remove"/>">
-                                <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
-                            </form>
-                        </h1>
+                        <c:if test="${(user.status.id eq 1) or (user.status.id eq 2)}">
+                            <h1 class="mt-2 ml-4">
+                                <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
+                            </h1>
+                            <h1 class="mt-2 ml-2">
+                                <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/remove"/>">
+                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
+                                </form>
+                            </h1>
+                        </c:if>
+                        <c:if test="${user.status.id eq 3}">
+                            <h1 class="mt-2 ml-2">
+                                <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/recover"/>">
+                                    <button type="submit" class="btn btn-success"><spring:message code="petCard.recover"/></button>
+                                </form>
+                            </h1>
+                        </c:if>
 
                     </div>
 
@@ -41,7 +48,7 @@
                             <c:if test="${not empty userPets}">
                                 <div class="m-2 ">
                                     <c:if test="${maxPage ne 1}">
-                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/admi/user/${id}"/>
+                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/admin/user/${id}"/>
                                     </c:if>
                                 </div>
                             </c:if>
@@ -50,7 +57,7 @@
                                 <c:forEach var="pet" items="${userPets}">
                                     <div class="col-auto mb-3">
 
-                                        <t:animalCard pet="${pet}"/>
+                                        <t:animalCard pet="${pet}" level="admin"/>
 
                                     </div>
                                 </c:forEach>
@@ -64,7 +71,7 @@
                             <c:if test="${not empty userPets}">
                                 <div class="m-2 ">
                                     <c:if test="${maxPage ne 1}">
-                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/admi/user/${id}"/>
+                                        <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="/admin/user/${id}"/>
                                     </c:if>
                                 </div>
                             </c:if>

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.RequestList;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +12,11 @@ public interface RequestService {
     Optional<Request> findById(long id, String language);
     Stream<Request> listByOwner(String language, long ownerId);
     Stream<Request> listByPetOwner(String language, long petOwnerId);
-    List<Request> adminRequestList(String language, String page);
-    List<Request> adminSearchList(String language,String find,String page);
-    List<Request> adminFilteredList(String language,String status,String searchCriteria,String searchOrder,String page);
+
+    RequestList adminRequestList(String language, String findValue, String status, String searchCriteria, String searchOrder, String page);
+    RequestList adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page);
+    RequestList adminFind(String language, String find, String page);
+
     String getAdminRequestPages(String language);
     String getAdminMaxSearchPages(String language,String find);
     String getAdminMaxFilterPages(String language, String status);
@@ -24,6 +27,8 @@ public interface RequestService {
     boolean cancel(long id, long ownerId, String locale);
     boolean accept(long id, long ownerId, String locale);
     boolean reject(long id, long ownerId, String locale);
+    boolean recover(long id, long ownerId, String locale);
+    void adminUpdateStatus(long id, String status);
     void cancelRequestAdmin(long requestId);
     void recoverRequestAdmin(long requestId);
     void cancelAllByOwner(long ownerId);

@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
@@ -26,6 +27,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +54,6 @@ public class PetController extends ParentController {
         if (page == null) {
             page = "1";
         }
-        mav.addObject("currentPage", page);
 
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
@@ -62,10 +63,12 @@ public class PetController extends ParentController {
         PetList petList = petService.petList(locale, findValue, species, breed, gender, searchCriteria,
                 searchOrder, minPrice, maxPrice, page);
 
+        mav.addObject("currentPage", page);
         mav.addObject("maxPage", petList.getMaxPage());
         mav.addObject("home_pet_list", petList.toArray());
         mav.addObject("species_list", petList.getSpecies().toArray());
         mav.addObject("breeds_list", petList.getBreeds().toArray());
+        mav.addObject("pets_list_size", petList.size());
         return mav;
     }
 
@@ -75,13 +78,26 @@ public class PetController extends ParentController {
         User user = loggedUser();
         String locale = getLocale();
         /* Check if user has already requested pet */
-        if (user != null) {
-            mav.addObject("requestExists", requestService.requestExists(id, user.getId(), locale));
+        if (user != null && !user.getRequestList().isEmpty()) {
+            Optional<Request> opRequest = user.getRequestList().stream().filter(request -> request.getPetId() == id).max(Comparator.comparing(Request::getCreationDate));
+            if (!opRequest.isPresent()) {
+                LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
+                mav.addObject("lastRequest", null);
+                mav.addObject("requestExists", false);
+            }
+            else {
+                LOGGER.debug("User {} last request status for pet {} is {}", user.getId(), id, opRequest.get().getId());
+                mav.addObject("lastRequest", opRequest.get().getStatus().getId());
+                mav.addObject("requestExists", true);
+            }
         } else {
+            LOGGER.debug("User is not authenticated or has no requests");
+            mav.addObject("lastRequest", null);
             mav.addObject("requestExists", false);
         }
-        mav.addObject("pet",
-                petService.findById(locale, id).orElseThrow(PetNotFoundException::new));
+        Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
+        mav.addObject("pet", pet);
+
         return mav;
     }
 
@@ -97,6 +113,7 @@ public class PetController extends ParentController {
         }
 
         /* TODO Generate exceptions for error handling */
+
         Optional<Request> opRequest =  requestService.create(user.getId(), id, locale);
         if (!opRequest.isPresent()) {
             mav.addObject("request_error", true);
@@ -122,6 +139,17 @@ public class PetController extends ParentController {
         if (user != null && petService.removePet(id, user.getId())) {
             LOGGER.debug("Pet {} updated as removed", id);
             return new ModelAndView("redirect:/");
+        }
+        LOGGER.warn("User is not pet owner, pet status not updated");
+        return new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/pet/{id}/recover", method = {RequestMethod.POST})
+    public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
+        User user = loggedUser();
+        if (user != null && petService.recoverPet(id, user.getId())) {
+            LOGGER.debug("Pet {} updated as recovered", id);
+            return new ModelAndView("redirect:/pet/{id}");
         }
         LOGGER.warn("User is not pet owner, pet status not updated");
         return new ModelAndView("redirect:/403");

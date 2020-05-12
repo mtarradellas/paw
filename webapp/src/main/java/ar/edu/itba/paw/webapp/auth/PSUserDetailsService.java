@@ -2,7 +2,7 @@ package ar.edu.itba.paw.webapp.auth;
 
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.UserStatus;
+import ar.edu.itba.paw.models.constants.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.GrantedAuthority;
