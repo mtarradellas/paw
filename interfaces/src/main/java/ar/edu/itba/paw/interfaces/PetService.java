@@ -45,5 +45,8 @@ public interface PetService {
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
     void removeAllByOwner(long ownerId);
+    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
+                boolean vaccinated, String gender, String description, Date birthDate, int price);
+    
 
 }

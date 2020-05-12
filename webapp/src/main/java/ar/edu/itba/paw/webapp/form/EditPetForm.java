@@ -1,9 +1,8 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.BreedIdMatch;
-
 import ar.edu.itba.paw.webapp.validators.FileSize;
-import ar.edu.itba.paw.webapp.validators.NotEmptyMultipart;
+import ar.edu.itba.paw.webapp.validators.ImageDimensions;
 import ar.edu.itba.paw.webapp.validators.SpeciesIdMatch;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,13 +12,13 @@ import javax.validation.constraints.*;
 import java.util.Date;
 import java.util.List;
 
+public class EditPetForm {
 
-public class UploadPetForm {
+    private List<Integer> imagesIdToDelete;
 
-    @Size(min=1, max=5)
     @NotNull
     @FileSize
-    @NotEmptyMultipart
+    @ImageDimensions
     private List<MultipartFile> photos;
 
     @Size(min = 2, max = 50)
@@ -52,6 +51,14 @@ public class UploadPetForm {
     @NotNull
     @Min(value=0)
     private Integer price;
+
+    public List<Integer> getImagesIdToDelete() {
+        return imagesIdToDelete;
+    }
+
+    public void setImagesIdToDelete(List<Integer> imagesIdToDelete) {
+        this.imagesIdToDelete = imagesIdToDelete;
+    }
 
     public List<MultipartFile> getPhotos() {
         return photos;

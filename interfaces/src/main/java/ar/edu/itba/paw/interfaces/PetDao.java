@@ -28,4 +28,6 @@ public interface PetDao {
     long getOwnerId(long petId);
     Optional<Status> findStatusById(String language, long id);
     void updateAllByOwner(long ownerId, int status);
+    void update(long id, String petName, long speciesId, long breedId, String location,
+                boolean vaccinated, String gender, String description, Date birthDate, int price);
 }
