@@ -186,6 +186,7 @@ public class PetServiceImpl implements PetService {
             toDelete = imagesToDelete.size();
         }
         int previousImageQuantity = imageService.quantityByPetId(id);
+        System.out.println("\n\n\n\n"+ photos.size());
         int finalImageQuantity = previousImageQuantity + photos.size() - toDelete;
         if(finalImageQuantity < MIN_IMAGES || finalImageQuantity > MAX_IMAGES) {
             throw new InvalidImageQuantityException("Pet must have between 1 and 5 images");
@@ -193,6 +194,12 @@ public class PetServiceImpl implements PetService {
         if(imagesToDelete != null ) {
             LOGGER.debug("Deleting from pet {} images {}", id, imagesToDelete);
             imageService.delete(imagesToDelete);
+        }
+        if(photos != null) {
+            for (byte[] photo : photos) {
+                LOGGER.debug("Adding image to pet {}", id);
+                imageService.create(id, photo, userId);
+            }
         }
         petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
         Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
@@ -202,12 +209,7 @@ public class PetServiceImpl implements PetService {
         }
         LOGGER.debug("Pet {} successfully updated", opPet.get());
 
-        if(photos != null) {
-            for (byte[] photo : photos) {
-                LOGGER.debug("Adding image to pet {}", id);
-                imageService.create(opPet.get().getId(), photo, opPet.get().getOwnerId());
-            }
-        }
+
         return opPet;
     }
 
