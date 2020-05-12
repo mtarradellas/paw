@@ -33,7 +33,6 @@ public class EditUserForm {
     @Size(min = 4, max = 50, groups = ChangePasswordEditUser.class)
     private String newPassword;
 
-    @Size(min = 4, max = 50, groups = ChangePasswordEditUser.class)
     private String repeatNewPassword;
 
     @Size(min = 4, max = 50, groups = BasicInfoEditUser.class)

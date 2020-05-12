@@ -96,18 +96,17 @@
                             </div>
 
                             <div class="col">
-                                <spring:bind path="repeatNewPassword">
+                                <spring:bind path="*">
                                     <div class="form-group">
                                         <spring:message code="editUserForm.repeatNewPassword" var="repeatPasswordTxt"/>
                                         <form:label path="repeatNewPassword" for="repeatPassword">${repeatPasswordTxt}: </form:label>
                                         <form:input placeholder="${repeatPasswordTxt}" type="password" id="repeatPassword" cssClass="form-control ${status.error || (not empty classError) ? 'is-invalid' : ''}"
                                                     path="repeatNewPassword"/>
-                                        <form:errors path="repeatNewPassword" element="div" cssClass="invalid-feedback"/>
+                                        <form:errors element="p" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
                         </div>
-                        <form:errors element="p" cssClass="text-error"/>
 
                         <div class="p-1">
                             <spring:message code="editUserForm.updatePassword" var="submitText"/>
