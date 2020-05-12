@@ -303,8 +303,13 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void cancelAllByPetOwner(long petOwnerId) {
+    public void rejectAllByPetOwner(long petOwnerId) {
         requestDao.updateAllByPetOwner(petOwnerId, RequestStatus.PENDING.getValue(), RequestStatus.REJECTED.getValue());
+    }
+
+    @Override
+    public void rejectAllByPet(long petId) {
+        requestDao.updateAllByPet(petId, RequestStatus.PENDING.getValue(), RequestStatus.REJECTED.getValue());
     }
 
     @Override

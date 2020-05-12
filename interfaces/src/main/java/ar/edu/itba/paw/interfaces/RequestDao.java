@@ -27,5 +27,6 @@ public interface RequestDao {
     Stream<Long> findIdByStatus(long petId, long ownerId, List<Integer> statusList);
     void updateAllByOwner(long ownerId, int oldStatus, int newStatus);
     void updateAllByPetOwner(long petOwnerId, int oldStatus, int newStatus);
+    void updateAllByPet(long petId, int oldStatus, int newStatus);
 }
 
