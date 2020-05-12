@@ -4,18 +4,17 @@ import ar.edu.itba.paw.webapp.validators.FieldsValueMatch;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @FieldsValueMatch.List({
         @FieldsValueMatch(
                 field = "password",
-                fieldMatch = "repeatPassword",
-                message = "Passwords do not match!"
+                fieldMatch = "repeatPassword"
         )
 })
 public class UserForm {
-
     @Size(min = 4, max = 50)
     @Pattern(regexp = "^[a-zA-Z0-9]+$")
     private String username;

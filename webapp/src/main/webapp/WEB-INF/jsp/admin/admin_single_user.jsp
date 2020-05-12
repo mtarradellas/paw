@@ -3,12 +3,13 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:message code="userTitle" var="userTitle"/>
+<spring:message code="areYouSure.delete" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
+
 <t:adminLayout title="${userTitle}" item="user">
     <jsp:body>
+        <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
 
-        <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage' javaScriptEscape='true' />
-        </span>
         <div class="row">
             <div class=" col-md-10 offset-md-1">
 
@@ -23,7 +24,7 @@
                             </h1>
                             <h1 class="mt-2 ml-2">
                                 <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/remove"/>">
-                                    <button type="submit" onclick="confirmDelete(event)" class="btn btn-danger"><spring:message code="petCard.remove"/></button>
+                                    <button type="submit" class="btn btn-danger are-you-sure"><spring:message code="petCard.remove"/></button>
                                 </form>
                             </h1>
                         </c:if>
@@ -39,9 +40,8 @@
 
                     <div class="p-2">
                         <ul class="list-group">
-                            <li class="list-group-item"><spring:message code="admin.petCard.id"/> <c:out value="${user.id}"/></li>
-                            <li class="list-group-item"><spring:message code="user.email"/> <c:out value="${user.mail}"/></li>
-                            <li class="list-group-item"><spring:message code="user.phone"/> <c:out value="${user.phone}"/></li>
+                            <li class="list-group-item"><b><spring:message code="admin.petCard.id"/></b> <c:out value="${user.id}"/></li>
+                            <li class="list-group-item"><b><spring:message code="user.email"/></b> <c:out value="${user.mail}"/></li>
                         </ul>
                         <div class="p-2">
                             <h2><spring:message code="pets"/></h2>
@@ -55,8 +55,12 @@
                             <div class="card-deck row">
 
                                 <c:forEach var="pet" items="${userPets}">
+                                    <c:if test="${pet.status.id eq 1}">
                                     <div class="col-auto mb-3">
-
+                                        </c:if>
+                                        <c:if test="${pet.status.id ne 1 }">
+                                        <div class="col-auto mb-3 resolved">
+                                            </c:if>
                                         <t:animalCard pet="${pet}" level="admin"/>
 
                                     </div>
@@ -85,6 +89,7 @@
                 </div>
             </div>
         </div>
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
 
     </jsp:body>
 </t:adminLayout>

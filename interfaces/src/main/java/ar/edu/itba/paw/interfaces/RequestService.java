@@ -32,5 +32,6 @@ public interface RequestService {
     void cancelRequestAdmin(long requestId);
     void recoverRequestAdmin(long requestId);
     void cancelAllByOwner(long ownerId);
-    void cancelAllByPetOwner(long petOwnerId);
+    void rejectAllByPetOwner(long petOwnerId);
+    void rejectAllByPet(long petId);
 }

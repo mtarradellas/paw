@@ -2,12 +2,14 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<spring:message code="areYouSure.cancel" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
+
 <spring:message code="requestsTitle" var="titleVar"/>
 <t:basicLayout title="${titleVar}">
     <jsp:body>
-        <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage.request.cancel' javaScriptEscape='true'/>
-        </span>
+        <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
         <div class="container-fluid">
             <div class="row">
                 <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp">
@@ -66,8 +68,8 @@
                                             <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
                                                type="button" class="btn btn-secondary"><spring:message
                                                     code="visitPet"/></a>
-                                            <button type="submit" name="newStatus" value="cancel" onclick="confirmDelete(event)"
-                                                    class="btn btn-danger"><spring:message code="cancel"/></button>
+                                            <button type="submit" name="newStatus" value="cancel"
+                                                    class="btn btn-danger are-you-sure"><spring:message code="cancel"/></button>
                                         </form>
                                     </div>
                                 </div>
@@ -143,7 +145,7 @@
                 </div>
             </div>
         </div>
-        <script src="<c:url value="/resources/js/admin_control.js"/>"></script>
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
         <script src="<c:url value="/resources/js/interests.js"/>"></script>
     </jsp:body>
 </t:basicLayout>

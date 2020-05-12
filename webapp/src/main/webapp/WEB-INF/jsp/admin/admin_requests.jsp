@@ -2,13 +2,14 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-
+<spring:message code="areYouSure.delete" var="sureBody"/>
+<spring:message code="areYouSure.title" var="sureTitle"/>
 <spring:message code="adminTitle.request" var="requestTitle"/>
+
 <t:adminLayout title="${requestTitle}" item="requests">
     <jsp:body>
-        <span id="confirmMessage" hidden>
-            <spring:message code='confirmMessage.request.cancel' javaScriptEscape='true'/>
-        </span>
+        <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
+
         <div class="container-fluid">
             <div class="row">
                     <%--                Filter Tools --%>
@@ -167,9 +168,8 @@
                                                         <a href="${pageContext.request.contextPath}/admin/request/<c:out value="${request.id}"/>/edit"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="edit"/></a>
-                                                        <button type="submit" onclick="confirmDelete(event)"
-                                                                class="btn btn-danger"><spring:message
-                                                                code="cancel"/></button>
+                                                        <button type="submit" class="btn btn-danger are-you-sure">
+                                                            <spring:message code="cancel"/></button>
                                                     </form>
                                                 </c:if>
                                                 <c:if test="${request.status.id eq 4}">
@@ -213,6 +213,7 @@
                 </div>
             </div>
         </div>
+        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
         <script src="<c:url value="/resources/js/interests.js"/>"></script>
     </jsp:body>
 </t:adminLayout>

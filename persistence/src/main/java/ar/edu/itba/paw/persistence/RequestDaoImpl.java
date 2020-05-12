@@ -213,6 +213,15 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
+    public void updateAllByPet(long petId, int oldStatus, int newStatus) {
+        String sql = "UPDATE requests " +
+                "SET status = ? " +
+                "FROM pets " +
+                "WHERE pets.id = requests.petId AND requests.status = ? AND pets.id = ? ";
+        jdbcTemplate.update(sql, newStatus, oldStatus, petId);
+    }
+
+    @Override
     public Optional<Request> create(long ownerId, long petId, int status, String language) {
 
         final Map<String, Object> values = new HashMap<>();

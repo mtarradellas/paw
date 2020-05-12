@@ -31,4 +31,6 @@ public interface UserDao {
     boolean updateStatus(long id, int status);
     boolean isAdmin(long userId);
     void cleanOldTokens();
+    void update(String language, long id, String username, String phone);
+    String matchesPassword(long id, String password);
 }
