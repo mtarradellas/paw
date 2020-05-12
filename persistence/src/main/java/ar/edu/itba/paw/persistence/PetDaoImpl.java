@@ -535,8 +535,9 @@ public class PetDaoImpl implements PetDao {
             put("status", status.getId());
             put("department", departmentId);
         }};
-
-        return jdbcInsert.executeAndReturnKey(values).longValue();
+        long lo = jdbcInsert.executeAndReturnKey(values).longValue();
+        System.out.println("\n\n\n"  +lo);
+        return lo;
     }
 
     @Override

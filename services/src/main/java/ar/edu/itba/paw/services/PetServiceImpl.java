@@ -140,15 +140,15 @@ public class PetServiceImpl implements PetService {
         Status status = opStatus.get();
 
         long id = petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status, department);
+        LOGGER.debug("Pet id: {} successfully created", id);
+
+        for (byte[] photo : photos) {
+            imageService.create(id, photo, ownerId);
+        }
         Optional<Pet> opPet = findById(language, id);
         if(!opPet.isPresent()){
             LOGGER.warn("Pet creation failed");
             return Optional.empty();
-        }
-        LOGGER.debug("Pet {} successfully created", opPet.get());
-
-        for (byte[] photo : photos) {
-            imageService.create(opPet.get().getId(), photo, ownerId);
         }
         return opPet;
     }

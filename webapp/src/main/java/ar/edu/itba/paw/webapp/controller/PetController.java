@@ -293,7 +293,7 @@ public class PetController extends ParentController {
     public ModelAndView testUsers() {
         final ModelAndView mav = new ModelAndView("views/test");
         mav.addObject("pet",
-                petService.findById(getLocale(),9).get());
+                petService.findById(getLocale(),20).get());
         return mav;
     }
 
