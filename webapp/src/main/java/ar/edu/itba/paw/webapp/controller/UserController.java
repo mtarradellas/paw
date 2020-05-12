@@ -1,23 +1,28 @@
 package ar.edu.itba.paw.webapp.controller;
-import ar.edu.itba.paw.models.Contact;
+
+import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-import ar.edu.itba.paw.webapp.exception.UserNotRequestOwnerException;
+import ar.edu.itba.paw.webapp.form.EditUserForm;
+import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
+import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 
 @Controller
@@ -150,6 +155,91 @@ public class UserController extends ParentController {
         return new ModelAndView("redirect:/403" );
     }
 
+    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.GET })
+    public ModelAndView editUserGet(@ModelAttribute("editUserForm") final EditUserForm editUserForm, @PathVariable("id") long id){
+        final String locale = getLocale();
+
+        if(loggedUser().getId() != id) {
+            return new ModelAndView("redirect:/403" );
+        }
+
+        return editUserForm(populateForm(editUserForm, id), id);
+    }
+
+    private EditUserForm populateForm(EditUserForm editUserForm, long id){
+
+        final String locale = getLocale();
+
+        User user = userService.findById(locale, id).orElseThrow(UserNotFoundException::new);
+
+        editUserForm.setPhone(user.getPhone());
+        editUserForm.setUsername(user.getUsername());
+
+        return editUserForm;
+    }
+
+    private ModelAndView editUserForm(@ModelAttribute("editUserForm") final EditUserForm editUserForm, long id) {
+        final String locale = getLocale();
+
+        return new ModelAndView("views/user_edit")
+                .addObject("user",
+                        userService.findById(locale, id).orElseThrow(UserNotFoundException::new))
+                .addObject("id", id);
+    }
+
+    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-basic-info"})
+    public ModelAndView editBasicInfo(@Validated({BasicInfoEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
+                                final BindingResult errors, HttpServletRequest request,
+                                @PathVariable("id") long id) {
+
+        if (errors.hasErrors()) {
+            return editUserForm(editUserForm, id);
+        }
+        if(loggedUser().getId() != id) {
+            return new ModelAndView("redirect:/403");
+        }
+        Optional<User> opUser;
+        try {
+             opUser = userService.update(getLocale(), id, editUserForm.getUsername(), editUserForm.getPhone());
+        } catch (DuplicateUserException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return editUserForm(editUserForm, id)
+                    .addObject("duplicatedUsername", ex.isDuplicatedUsername());
+        }
+        if(!opUser.isPresent()){
+            return new ModelAndView("redirect:/500");
+        }
+        authenticateUserAndSetSession(opUser.get().getUsername(),request);
+        return new ModelAndView("redirect:/user/" + opUser.get().getId());
+    }
+
+    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-password"})
+    public ModelAndView editPassword(@Validated({ChangePasswordEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
+                                 final BindingResult errors, HttpServletRequest request,
+                                 @PathVariable("id") long id) {
+
+        if (errors.hasErrors()) {
+            populateForm(editUserForm, id);
+            return editUserForm(editUserForm, id);
+        }
+        if(loggedUser().getId() != id) {
+            return new ModelAndView("redirect:/403");
+        }
+        Optional<User> opUser;
+        try {
+            opUser = userService.updatePassword(getLocale(), editUserForm.getCurrentPassword(), editUserForm.getNewPassword(), id);
+        }
+        catch(InvalidPasswordException ex) {
+            return editUserForm(editUserForm, id).addObject("current_password_fail", true);
+        }
+        if(!opUser.isPresent()){
+            return new ModelAndView("redirect:/500");
+        }
+        return new ModelAndView("redirect:/user/" + opUser.get().getId());
+
+    }
+    
+    
     @RequestMapping(value = "/test")
     public ModelAndView testUsers() {
         final ModelAndView mav = new ModelAndView("views/test");

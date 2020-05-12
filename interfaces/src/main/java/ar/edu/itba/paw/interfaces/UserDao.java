@@ -28,4 +28,6 @@ public interface UserDao {
     String getAdminMaxFilterPages(String language, String status);
     boolean updateStatus(long id, int status);
     boolean isAdmin(long userId);
+    void update(String language, long id, String username, String phone);
+    String matchesPassword(long id, String password);
 }

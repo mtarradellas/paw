@@ -352,6 +352,26 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public void update(String language, long id, String username, String phone) throws DuplicateUserException {
+        String sql = "UPDATE users " +
+                "SET username = ?, phone = ? " +
+                "WHERE id = ? ";
+        try {
+            jdbcTemplate.update(sql, username, phone, id);
+        } catch (DuplicateKeyException ex) {
+            if (ex.getMessage().contains("users_username_key")) throw new DuplicateUserException(DUPLICATE_USERNAME_ERROR, true, false);
+        }
+    }
+
+    @Override
+    public String matchesPassword(long id, String password) {
+        return jdbcTemplate.queryForObject("select password from users " +
+                        "WHERE id = ? " ,
+                new Object[] {id},
+                String.class) ;
+    }
+
+    @Override
     public Optional<User> create(String language, String username, String password, String mail, String phone, int status) throws DuplicateUserException {
         final Map<String, Object> values = new HashMap<>();
         values.put("username", username);
