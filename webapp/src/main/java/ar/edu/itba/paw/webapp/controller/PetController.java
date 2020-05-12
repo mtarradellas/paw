@@ -167,6 +167,11 @@ public class PetController extends ParentController {
         String locale = getLocale();
 
         BreedList breedList = speciesService.breedsList(locale);
+        ProvinceList provinceList = locationService.provinceList();
+        DepartmentList departmentList = locationService.departmentList();
+
+        mav.addObject("province_list", provinceList.toArray());
+        mav.addObject("department_list", departmentList.toArray());
         mav.addObject("species_list", breedList.getSpecies().toArray());
         mav.addObject("breeds_list", breedList.toArray());
         return mav;
@@ -198,8 +203,9 @@ public class PetController extends ParentController {
             return uploadPetForm(petForm).addObject("image_error", true);
         }
 
+        /*TODO: change to receive province and department instead of location*/
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                          petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                          null, petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
                           birthDate, currentDate, petForm.getPrice(), loggedUser().getId(), photos);
 
         if (!opPet.isPresent()) {
