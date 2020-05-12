@@ -40,9 +40,8 @@
 
                     <div class="p-2">
                         <ul class="list-group">
-                            <li class="list-group-item"><spring:message code="admin.petCard.id"/> <c:out value="${user.id}"/></li>
-                            <li class="list-group-item"><spring:message code="user.email"/> <c:out value="${user.mail}"/></li>
-                            <li class="list-group-item"><spring:message code="user.phone"/> <c:out value="${user.phone}"/></li>
+                            <li class="list-group-item"><b><spring:message code="admin.petCard.id"/></b> <c:out value="${user.id}"/></li>
+                            <li class="list-group-item"><b><spring:message code="user.email"/></b> <c:out value="${user.mail}"/></li>
                         </ul>
                         <div class="p-2">
                             <h2><spring:message code="pets"/></h2>

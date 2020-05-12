@@ -33,8 +33,6 @@
                         <ul class="list-group">
                             <li class="list-group-item"><b><spring:message code="user.email"/></b> <c:out
                                     value="${user.mail}"/></li>
-                            <li class="list-group-item"><b><spring:message code="user.phone"/></b> <c:out
-                                    value="${user.phone}"/></li>
                         </ul>
                     </c:if>
                     <c:if test="${loggedUser.id ne user.id}">

@@ -177,9 +177,9 @@ public class PetDaoImpl implements PetDao {
             return list(language, "1", level);
         }
 
-        int numValue = -1;
+        long numValue = -1;
         try {
-            numValue = Integer.parseInt(findValue);
+            numValue = Long.parseLong(findValue);
         } catch (NumberFormatException ignored) {
         }
 
@@ -548,7 +548,7 @@ public class PetDaoImpl implements PetDao {
             return maxPages(level);
         }
 
-        int numValue = -1;
+        long numValue = -1;
         boolean number = true;
         for (int i = 0; i < findValue.length(); i++) {
             if (!Character.isDigit(findValue.charAt(i))) {
@@ -556,7 +556,11 @@ public class PetDaoImpl implements PetDao {
             }
         }
         if (number) {
-            numValue = Integer.parseInt(findValue);
+            try {
+
+            } catch (NumberFormatException ignored) {
+                numValue = Long.parseLong(findValue);
+            }
         }
         String modifiedValue = "%" + findValue.toLowerCase() + "%";
         String sql;
