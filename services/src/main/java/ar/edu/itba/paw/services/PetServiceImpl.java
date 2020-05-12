@@ -164,8 +164,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                       boolean vaccinated, String gender, String description, Date birthDate, int price) throws InvalidImageQuantityException {
+    public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId,
+                       boolean vaccinated, String gender, String description, Date birthDate, int price, int department) throws InvalidImageQuantityException {
         LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
                         "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
                 id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);

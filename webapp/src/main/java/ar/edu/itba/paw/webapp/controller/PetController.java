@@ -227,6 +227,7 @@ public class PetController extends ParentController {
         petForm.setGender(pet.getGender());
         petForm.setPrice(pet.getPrice());
         petForm.setPetName(pet.getPetName());
+        petForm.setP
         petForm.setSpeciesId(pet.getSpecies().getId());
         petForm.setVaccinated(pet.isVaccinated());
         
