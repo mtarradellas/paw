@@ -114,13 +114,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> updatePassword(String language, String oldPassword, String newPassword, long id) throws InvalidPasswordException {
+        Optional<User>opUser = findById(language, id);
+        if(!opUser.isPresent()){
+            LOGGER.warn("DAO could not find user");
+            return Optional.empty();
+        }
         if(oldPassword != null){
             LOGGER.debug("Checking old password");
-            if(!userDao.matchesPassword(id, encoder.encode(oldPassword))){
+            if(! encoder.matches(oldPassword, opUser.get().getPassword())){
                 LOGGER.warn("Password does not match the current one");
                 throw new InvalidPasswordException("Password does not match the current one");
             }
         }
+        LOGGER.debug("Valid old password");
         if(userDao.updatePassword(encoder.encode(newPassword), id)){
             LOGGER.debug("Password updated");
             return userDao.findById(language, id);

@@ -364,11 +364,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean matchesPassword(long id, String password) {
-        return jdbcTemplate.queryForObject("select count(*) from users " +
-                        "WHERE id = ? AND password = ? " ,
-                new Object[] {id, password},
-                Integer.class) == 1;
+    public String matchesPassword(long id, String password) {
+        return jdbcTemplate.queryForObject("select password from users " +
+                        "WHERE id = ? " ,
+                new Object[] {id},
+                String.class) ;
     }
 
     @Override
