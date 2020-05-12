@@ -7,11 +7,9 @@ import ar.edu.itba.paw.models.constants.PetStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
+
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InvalidClassException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
@@ -89,16 +87,6 @@ public class PetServiceImpl implements PetService {
         List<Pet> list = petDao.find(language, findValue, page, 1).collect(Collectors.toList()); //1 is admin
         String maxPage = getAdminMaxSearchPages(language, findValue);
         return new PetList(list, maxPage);
-    }
-
-    @Override
-    public Optional<Pet> findById(String language, long id) {
-        return petDao.findById(language, id, 0);
-    }
-
-    @Override
-    public Optional<Pet> adminFindById(String language, long id) {
-        return petDao.findById(language, id, 1);
     }
 
 
