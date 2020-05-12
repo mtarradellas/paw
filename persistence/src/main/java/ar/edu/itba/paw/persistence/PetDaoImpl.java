@@ -679,8 +679,7 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public String getMaxUserPetsPages(long userId){
-        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? " +
-                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS, new Object[] {userId}, Integer.class);
+        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? ", new Object[] {userId}, Integer.class);
         pets = (int) Math.ceil((double) pets / PETS_IN_USER_PAGE);
         return pets.toString();
     }
