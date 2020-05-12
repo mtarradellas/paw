@@ -44,7 +44,7 @@
                                     <spring:message code="pet.unnamed"/>
                                 </h1>
                             </c:if>
-                            <h1> (<c:out value="${pet.status.name}"/>) </h1>
+                            <h1 class="ml-1"> (<c:out value="${pet.status.name}"/>) </h1>
                             <c:if test="${pet.status.id eq 1}">
                                 <h1 class="mt-2 ml-4">
                                     <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>/edit"

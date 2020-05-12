@@ -60,7 +60,7 @@ public class RequestDaoImpl implements RequestDao {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                         "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                        "WHERE requests.ownerId = ? "
+                        "WHERE requests.ownerId = ? ORDER BY requests.status"
                 , new Object[]{ownerId}, REQUEST_MAPPER)
                 .stream();
     }
@@ -265,9 +265,12 @@ public class RequestDaoImpl implements RequestDao {
         else if(status.contains("pending")){
             status = "Pending";
         }
-        else {
+        else if(status.contains("rejected")) {
             status = "Rejected";
+        }else{
+            status = "Canceled";
         }
+
         String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +

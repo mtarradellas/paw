@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class PetServiceImpl implements PetService {
@@ -90,8 +91,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> getByUserId(String language, long ownerId, String page) {
-        return petDao.getByUserId(language, ownerId, page).collect(Collectors.toList());
+    public Stream<Pet> getByUserId(String language, long ownerId, String page) {
+        return petDao.getByUserId(language, ownerId, page);
     }
 
     @Override
@@ -201,6 +202,15 @@ public class PetServiceImpl implements PetService {
     public boolean removePet(long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
             petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean recoverPet(long petId, long userId) {
+        if (petDao.isPetOwner(petId, userId)) {
+            petDao.updateStatus(petId, PetStatus.AVAILABLE.getValue());
             return true;
         }
         return false;

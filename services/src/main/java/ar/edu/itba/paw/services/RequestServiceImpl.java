@@ -274,6 +274,40 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public boolean recover(long id, long ownerId, String locale){
+        LOGGER.debug("User {} attempting to recover request {}", ownerId, id);
+
+        if (!requestDao.isRequestOwner(id, ownerId)) {
+            LOGGER.warn("User {} is not Request {} target, Request not recovered", ownerId, id);
+            return false;
+        }
+
+        requestDao.updateStatus(id, RequestStatus.PENDING.getValue());
+
+        final Optional<Request> opRequest = requestDao.findById(id, locale);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found after successfully updating status to {} by user {}", id, RequestStatus.PENDING.getValue(), ownerId);
+            return false;
+        }
+        final Request request = opRequest.get();
+
+        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
+        if (!opContact.isPresent()) {
+            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
+            return false;
+        }
+
+        final Optional<User> opRecipient = userService.findById(DEFAULT_LOCALE, request.getOwnerId());
+        if (!opRecipient.isPresent()) {
+            LOGGER.warn("Recipient user {} through request {} not found", request.getOwnerId(), request.getId());
+            return false;
+        }
+
+        LOGGER.debug("Request {} recovered by user {}", id, ownerId);
+        return true;
+    }
+
+    @Override
     public void adminUpdateStatus(long id, String status) {
         if(status.equals("pending")){
             requestDao.updateStatus(id, RequestStatus.PENDING.getValue());
