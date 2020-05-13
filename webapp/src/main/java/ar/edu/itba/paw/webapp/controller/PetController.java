@@ -46,7 +46,9 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "find", required = false) String findValue,
                                 @RequestParam(name = "page", required = false) String page,
                                 @RequestParam(name = "minPrice", required = false) String minPrice,
-                                @RequestParam(name = "maxPrice", required = false) String maxPrice) {
+                                @RequestParam(name = "maxPrice", required = false) String maxPrice,
+                                @RequestParam(name = "province", required = false) String province,
+                                @RequestParam(name = "department", required = false) String department) {
 
         final ModelAndView mav = new ModelAndView("index");
         final String locale = getLocale();
@@ -59,9 +61,10 @@ public class PetController extends ParentController {
         breed = breed == null || breed.equals("any") ? null : breed;
         gender = gender == null || gender.equals("any") ? null : gender;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
-
+//province and dep
         PetList petList = petService.petList(locale, findValue, species, breed, gender, searchCriteria,
-                searchOrder, minPrice, maxPrice, page);
+                searchOrder, minPrice, maxPrice, province, department, page);
+        DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petList.getMaxPage());
@@ -69,6 +72,8 @@ public class PetController extends ParentController {
         mav.addObject("species_list", petList.getSpecies().toArray());
         mav.addObject("breeds_list", petList.getBreeds().toArray());
         mav.addObject("pets_list_size", petList.size());
+        mav.addObject("province_list", departmentList.getProvinceList().toArray());
+        mav.addObject("department_list", departmentList.toArray());
         return mav;
     }
 
@@ -167,7 +172,6 @@ public class PetController extends ParentController {
         String locale = getLocale();
 
         BreedList breedList = speciesService.breedsList(locale);
-
         DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
@@ -207,7 +211,6 @@ public class PetController extends ParentController {
                            petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(), birthDate, currentDate,
                             petForm.getPrice(), loggedUser().getId(), petForm.getDepartment(), photos);
 
-
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
             return uploadPetForm(petForm).addObject("pet_error", true);
@@ -224,7 +227,6 @@ public class PetController extends ParentController {
         if(pet.getOwnerId() == loggedUser().getId()){
 
             DepartmentList departmentList = locationService.departmentList();
-
 
             petForm.setBirthDate(pet.getBirthDate());
             petForm.setBreedId(pet.getBreed().getId());
@@ -250,13 +252,12 @@ public class PetController extends ParentController {
 
         BreedList breedList = speciesService.breedsList(locale);
 
-        ProvinceList provinceList = locationService.provinceList();
         DepartmentList departmentList = locationService.departmentList();
 
         return new ModelAndView("views/pet_edit")
                 .addObject("species_list", breedList.getSpecies().toArray())
                 .addObject("breeds_list", breedList.toArray())
-                .addObject("province_list", provinceList.toArray())
+                .addObject("province_list", departmentList.getProvinceList().toArray())
                 .addObject("department_list", departmentList.toArray())
                 .addObject("pet",
                         petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
