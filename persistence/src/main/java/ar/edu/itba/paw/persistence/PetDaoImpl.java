@@ -409,7 +409,6 @@ public class PetDaoImpl implements PetDao {
             return Stream.empty();
         }
         String pagePets = String.join(",", ids);
-        System.out.println("leeeen\n\n\n"+ ids.size());
 
         //query to get the pets for the current page
         String sqlWithPages = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
@@ -429,7 +428,6 @@ public class PetDaoImpl implements PetDao {
 
             Map<Pet, List<Long>> imageMap = jdbcTemplate.query(  sqlWithPages, new PetMapExtractor());
             imageMap.forEach(Pet::setImages);
-            System.out.println("ddddddddddaaaaa\n\n\n"+imageMap.keySet().size());
             return imageMap.keySet().stream();
         }
         else {
@@ -552,7 +550,6 @@ public class PetDaoImpl implements PetDao {
             put("department", departmentId);
         }};
         long lo = jdbcInsert.executeAndReturnKey(values).longValue();
-        System.out.println("\n\n\n"  +lo);
         return lo;
     }
 
