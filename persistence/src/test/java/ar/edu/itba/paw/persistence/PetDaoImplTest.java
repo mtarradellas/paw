@@ -41,6 +41,7 @@ public class PetDaoImplTest {
     private static final Date BIRTH_DATE = null;
     private  java.sql.Date UPLOAD_DATE ;
     private static final int PRICE = 0;
+    private static final long DEPARTMENT = 15;
     private int OWNER_ID = 1;
     private static final Status STATUS = new Status(1, "Available");
 
@@ -171,14 +172,13 @@ public class PetDaoImplTest {
         jdbcInsertPetStatus.execute(sold);
     }
 
-    private long insertPet(long id, String name,  long species, long breed, String location, boolean vaccinated, String gender,
-                           String description, Date birthDate, Date uploadDate, int price, long ownerId, long status) {
+    private long insertPet(long id, String name,  long species, long breed, boolean vaccinated, String gender,
+                           String description, Date birthDate, Date uploadDate, int price, long ownerId, long status, long department) {
         final Map<String, Object> petValues = new HashMap<String, Object>() {{
             put("id", id);
             put("petName", name);
             put("species", species);
             put("breed", breed);
-            put("location", location);
             put("vaccinated", vaccinated);
             put("gender", gender);
             put("description", description);
@@ -187,6 +187,7 @@ public class PetDaoImplTest {
             put("price", price);
             put("ownerId", ownerId);
             put("status", status);
+            put("department", department);
         }};
         long key = jdbcInsertPet.executeAndReturnKey(petValues).longValue();
         byte[] bytes = new byte[] {(byte) 0x3f};
@@ -198,8 +199,8 @@ public class PetDaoImplTest {
         return key;
     }
 
-    private void assertPet(Pet pet, long id, String name, Species species, Breed breed, String location, boolean vaccinated, String gender,
-                           String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
+    private void assertPet(Pet pet, long id, String name, Species species, Breed breed, boolean vaccinated, String gender,
+                           String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, long department) {
 
         assertEquals(id, pet.getId());
         assertEquals(name, pet.getPetName());
@@ -251,8 +252,8 @@ public class PetDaoImplTest {
     public void testFindByIdExists() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-        long id = insertPet(ID, PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
-                UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId());
+        long id = insertPet(ID, PET_NAME, SPECIES.getId(), BREED.getId(), VACCINATED,GENDER,DESCRIPTION, BIRTH_DATE,
+                UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId(), DEPARTMENT);
 
         /**/
         Optional<Pet> opPet = petDaoImpl.findById(LANG, id);
@@ -260,8 +261,8 @@ public class PetDaoImplTest {
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
         assertTrue(opPet.isPresent());
         Pet pet = opPet.get();
-        assertPet(pet, id, PET_NAME, SPECIES, BREED, LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
-                UPLOAD_DATE, PRICE, OWNER_ID, STATUS);
+        assertPet(pet, id, PET_NAME, SPECIES, BREED, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
+                UPLOAD_DATE, PRICE, OWNER_ID, STATUS, DEPARTMENT);
     }
 
     @Test
@@ -295,8 +296,8 @@ public class PetDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
-        long id = insertPet(ID, PET_NAME, SPECIES.getId(), BREED.getId(), LOCATION, VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
-                UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId());
+        long id = insertPet(ID, PET_NAME, SPECIES.getId(), BREED.getId(), VACCINATED, GENDER, DESCRIPTION, BIRTH_DATE,
+                UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId(), DEPARTMENT);
 
         /**/
         Stream<Pet> petStream = petDaoImpl.filteredList("es_AR",SPECIES.getName(), BREED.getName(),

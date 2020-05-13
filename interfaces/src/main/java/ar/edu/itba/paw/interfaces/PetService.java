@@ -24,7 +24,8 @@ public interface PetService {
     List<Pet> adminList(String language, String page);
     List<Pet> listAll(String language);
 
-    Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos);
+    Optional<Pet> create(String language, String petName, long speciesId, long breedId, boolean vaccinated, String gender,
+                         String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos);
 
     Optional<Pet> findById(String language, long id);
     Optional<Pet> adminFindById(String language, long id);

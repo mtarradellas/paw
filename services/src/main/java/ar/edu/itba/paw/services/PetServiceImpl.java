@@ -114,10 +114,10 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated,
-                                String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos) {
-        LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, location: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, upDate: {}, price: {}, owner: {}",
-                petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+    public Optional<Pet> create(String language, String petName, long speciesId, long breedId,boolean vaccinated, String gender,
+                                String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos) {
+        LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, upDate: {}, price: {}, owner: {}",
+                petName, speciesId, breedId, department, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
 
 
         if(!locationService.findDepartmentById(department).isPresent()){
@@ -145,7 +145,7 @@ public class PetServiceImpl implements PetService {
         }
         Status status = opStatus.get();
 
-        long id = petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status, department);
+        long id = petDao.create(petName, species, breed, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status, department);
         LOGGER.debug("Pet id: {} successfully created", id);
 
         for (byte[] photo : photos) {

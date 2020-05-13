@@ -15,7 +15,7 @@ public interface PetDao {
     Stream<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status, String searchCriteria, String searchOrder, String page);
     Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
     Stream<Pet> getByUserId(String language, long ownerId, String page);
-    long create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender,
+    long create(String petName, Species species, Breed breed, boolean vaccinated, String gender,
                String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, long departmentId);
     void updateStatus(long id, long newStatus);
     boolean isPetOwner(long petId, long userId);

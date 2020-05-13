@@ -516,13 +516,12 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public long create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender,
+    public long create(String petName, Species species, Breed breed, boolean vaccinated, String gender,
                       String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, long departmentId) {
         final Map<String, Object> values = new HashMap<String, Object>() {{
             put("petName", petName);
             put("species", species.getId());
             put("breed", breed.getId());
-            put("location", location);
             put("vaccinated", vaccinated);
             put("gender", gender);
             put("description", description);
