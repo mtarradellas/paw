@@ -79,12 +79,20 @@
                                         <spring:message code="uploadPetForm.province" var="provinceTxt"/>
 
                                         <form:label path="province" for="province">${provinceTxt}: </form:label>
-                                        <form:select id="province" data-child="department" path="province" cssClass="selector-parent custom-select ${status.error ? 'is-invalid' : ''}">
-                                            <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                            <c:forEach var="province" items="${province_list}">
-                                                <form:option value="${province.id}">${province.name}</form:option>
-                                            </c:forEach>
-                                        </form:select>
+                                        <div class="input-modifiable-div" data-current="${pet.department.province.id}">
+                                            <form:select id="province" data-child="department" path="province" cssClass="input-modifiable selector-parent custom-select ${status.error ? 'is-invalid' : ''}">
+                                                <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
+                                                <c:forEach var="province" items="${province_list}">
+                                                    <form:option value="${province.id}">${province.name}</form:option>
+                                                </c:forEach>
+                                            </form:select>
+                                            <a id="provinceIdReset" class="revert-input-anchor">
+                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
+                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </a>
+                                        </div>
                                         <form:errors path="province" element="div" cssClass="invalid-feedback"/>
                                     </div>
                                 </spring:bind>
@@ -95,12 +103,20 @@
                                         <spring:message code="uploadPetForm.department" var="departmentTxt"/>
 
                                         <form:label path="department" for="department">${departmentTxt}: </form:label>
-                                        <form:select id="department" path="department" cssClass="selector-child custom-select ${status.error ? 'is-invalid' : ''}">
-                                            <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                            <c:forEach var="department" items="${department_list}">
-                                                <form:option data-dependency="${department.province.id}" value="${department.id}">${department.name}</form:option>
-                                            </c:forEach>
-                                        </form:select>
+                                        <div class="input-modifiable-div" data-current="${pet.department.id}">
+                                            <form:select id="department" path="department" cssClass="input-modifiable selector-child custom-select ${status.error ? 'is-invalid' : ''}">
+                                                <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
+                                                <c:forEach var="department" items="${department_list}">
+                                                    <form:option data-dependency="${department.province.id}" value="${department.id}">${department.name}</form:option>
+                                                </c:forEach>
+                                            </form:select>
+                                            <a id="departmentIdReset" class="revert-input-anchor" data-revert-also="provinceIdReset">
+                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
+                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </a>
+                                        </div>
                                         <form:errors path="department" element="div" cssClass="invalid-feedback"/>
                                     </div>
                                 </spring:bind>
