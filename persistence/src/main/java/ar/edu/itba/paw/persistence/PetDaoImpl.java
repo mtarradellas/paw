@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 @Repository
 public class PetDaoImpl implements PetDao {
 
-    private static final int PETS_PER_PAGE = 12;
+    private static final int PETS_PER_PAGE = 16;
     private static final int PETS_IN_USER_PAGE = 4;
     private static final int ADMIN_SHOWCASE_ITEMS = 25;
 
