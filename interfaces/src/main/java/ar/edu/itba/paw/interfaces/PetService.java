@@ -33,7 +33,7 @@ public interface PetService {
 
     Optional<Pet> findById(String language, long id);
     Optional<Pet> adminFindById(String language, long id);
-    Stream<Pet> getByUserId(String language, long userId, String page);
+    PetList getByUserId(String language, long userId, String page);
     boolean sellPet(long petId, long userId);
     void sellPetAdmin(long petId);
     boolean removePet(long petId, long userId);

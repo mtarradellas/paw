@@ -28,7 +28,7 @@
         <c:if test="${level eq 'admin'}">
             <div class="row">
                 <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
-                   class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
+                   class="darkblue-action ml-2"><spring:message code="petCard.goToPage"/></a>
                 <c:if test="${pet.status.id ne 1}">
                     <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
                 </c:if>
@@ -39,7 +39,7 @@
         <c:if test="${level eq 'user'}">
             <div class="row">
                 <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>"
-                   class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
+                   class="darkblue-action ml-2"><spring:message code="petCard.goToPage"/></a>
                 <c:if test="${pet.status.id ne 1}">
                     <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
                 </c:if>
