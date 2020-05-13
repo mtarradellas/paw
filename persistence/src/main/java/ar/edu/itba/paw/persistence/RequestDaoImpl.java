@@ -19,6 +19,8 @@ public class RequestDaoImpl implements RequestDao {
 
     private static final String REQUESTS_TABLE = "requests";
 
+    private static final int ADMIN_SHOWCASE_ITEMS= 25;
+
     private JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -58,7 +60,7 @@ public class RequestDaoImpl implements RequestDao {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                         "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                         "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                        "WHERE requests.ownerId = ? "
+                        "WHERE requests.ownerId = ? ORDER BY requests.status"
                 , new Object[]{ownerId}, REQUEST_MAPPER)
                 .stream();
     }
@@ -74,49 +76,170 @@ public class RequestDaoImpl implements RequestDao {
     }
 
     @Override
-    public Optional<Request> create(long ownerId, long petId, int status, String language) {
-
-        /* Checks that owner of request is not also owner of pet */
-        Optional<Request> req = jdbcTemplate.query("SELECT ownerId, id FROM pets WHERE ownerId = ? AND id = ? "
-                , new Object[]{ownerId, petId}, REQUEST_MAPPER)
-                .stream().findFirst();
-
-        if(!req.isPresent()) {
-            final Map<String, Object> values = new HashMap<>();
-            values.put("ownerId", ownerId);
-            values.put("petId", petId);
-            values.put("status", status);
-            final Number key = jdbcInsert.executeAndReturnKey(values);
-            return findById(key.longValue(), language);
+    public Stream<Request> adminRequestList(String language, String page){
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
         }
-        return Optional.empty();
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
+        return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset, REQUEST_MAPPER)
+                .stream();
     }
 
     @Override
-    public Optional<Request> updateStatus(long id, long petOwnerId, String status, String language) {
-        Optional<Request> req = jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
-                        "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
-                        "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
-                        "WHERE requests.id = ? AND pets.ownerId = ? AND request_status.id = 1 "
-                , new Object[]{id, petOwnerId}, REQUEST_MAPPER)
-                .stream().findFirst();
-
-        if(req.isPresent()){
-            int newStatus = 1;
-            if (status.contains("accepted")) {
-                newStatus = 2;
-            }
-            else if (status.contains("rejected")) {
-                newStatus = 3;
-            }
-            jdbcTemplate.update("UPDATE requests " +
-                    "SET status = ? " +
-                    "WHERE id = ? ", new Object[]{newStatus, id});
-            return findById(id, language);
+    public Stream<Request> adminSearchList(String language, String findValue, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
         }
-        return Optional.empty();
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
+        if(findValue.equals("")){
+            return adminRequestList(language, page);
+        }
+
+        String modifiedValue = "%"+findValue.toLowerCase()+"%";
+        return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                " WHERE  (LOWER(request_status."+ language +") LIKE ?) OR" +
+                "(LOWER(users.username) LIKE ?) OR (LOWER(pets.petname) LIKE ?)" +
+                " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset,
+                new Object[] { modifiedValue ,modifiedValue, modifiedValue},
+                REQUEST_MAPPER)
+                .stream();
+
     }
 
+    @Override
+    public Stream<Request> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
+        int numValue = 1;
+        try {
+            numValue = Integer.parseInt(page);
+        } catch (NumberFormatException ignored) {
+        }
+
+        if (status == null) {
+            status = "(1,2,3,4)";
+        } else if (status.equals("pending")) {
+            status = "(1)";
+        } else if (status.equals("accepted")) {
+            status = "(2)";
+        } else if (status.equals("rejected")) {
+            status = "(3)";
+        } else if (status.equals("canceled")) {
+            status = "(4)";
+        } else{
+            status = "(100)";
+        }
+
+        Stream<Request> result;
+
+        String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS * (numValue - 1));
+        String limit = " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
+
+        String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
+                "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
+                "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
+                "WHERE  requests.status IN " + status + limit;
+        if (searchCriteria == null) {
+            result = jdbcTemplate.query(sql, REQUEST_MAPPER).stream();
+        } else {
+            if (searchCriteria.contains("date")) {
+                searchCriteria = "requests.creationDate";
+            }
+            else if (searchCriteria.contains("petName")) {
+                searchCriteria = "pets.petName";
+            }
+            else { /* Default criteria */
+                searchCriteria = "requests.creationDate";
+            }
+            if (searchOrder == null || searchOrder.toLowerCase().contains("asc")) {
+                searchOrder = "ASC";
+            } else {
+                searchOrder = "DESC";
+            }
+            searchCriteria = searchCriteria + " " + searchOrder;
+            sql = sql + " ORDER BY " + searchCriteria;
+
+            result = jdbcTemplate.query(sql ,  REQUEST_MAPPER).stream();
+        }
+
+        return result;
+
+    }
+
+    @Override
+    public Stream<Long> findIdByStatus(long petId, long ownerId, List<Integer> statusList) {
+        if (statusList.isEmpty()) {
+            return Stream.empty();
+        }
+        StringBuilder status = new StringBuilder().append(" (").append(statusList.get(0));
+        statusList.remove(0);
+        for (Integer statusId : statusList) {
+            status.append(",").append(statusId);
+        }
+        status.append(") ");
+
+        String sql = "SELECT id " +
+                     "FROM requests " +
+                     "WHERE petId = ? AND ownerId = ? AND status IN " + status;
+
+        return jdbcTemplate.query(sql, new Object[] {petId, ownerId}, (rs, rowNum) -> new Long(rs.getLong("id"))).stream();
+    }
+
+    @Override
+    public void updateAllByOwner(long ownerId, int oldStatus, int newStatus) {
+
+        String sql = "UPDATE requests " +
+                "SET status = ? " +
+                "WHERE status = ? AND ownerId = ? ";
+        jdbcTemplate.update(sql, newStatus, oldStatus, ownerId);
+    }
+
+    @Override
+    public void updateAllByPetOwner(long petOwnerId, int oldStatus, int newStatus) {
+        String sql = "UPDATE requests " +
+                "SET status = ? " +
+                "FROM pets " +
+                "WHERE pets.id = requests.petId AND requests.status = ? AND pets.ownerId = ? ";
+        jdbcTemplate.update(sql, newStatus, oldStatus, petOwnerId);
+    }
+
+    @Override
+    public void updateAllByPet(long petId, int oldStatus, int newStatus) {
+        String sql = "UPDATE requests " +
+                "SET status = ? " +
+                "FROM pets " +
+                "WHERE pets.id = requests.petId AND requests.status = ? AND pets.id = ? ";
+        jdbcTemplate.update(sql, newStatus, oldStatus, petId);
+    }
+
+    @Override
+    public Optional<Request> create(long ownerId, long petId, int status, String language) {
+
+        final Map<String, Object> values = new HashMap<>();
+        values.put("ownerId", ownerId);
+        values.put("petId", petId);
+        values.put("status", status);
+        final Number key = jdbcInsert.executeAndReturnKey(values);
+
+        return findById(key.longValue(), language);
+    }
+
+    @Override
+    public void updateStatus(long id, long newStatus) {
+        String sql = "UPDATE requests " +
+                "SET status = ? " +
+                "WHERE id = ? ";
+        jdbcTemplate.update(sql, newStatus, id);
+    }
 
     public Optional<Request> getRequestByOwnerAndPetId(long ownerId, long petId, String language) {
         return jdbcTemplate.query("SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId,  " +
@@ -140,16 +263,6 @@ public class RequestDaoImpl implements RequestDao {
         return filterList(language,userIdFilter,petOwnerId,status,searchCriteria,searchOrder);
     }
 
-    @Override
-    public boolean delete(long id, long ownerId) {
-        Integer count = jdbcTemplate.queryForObject("SELECT count(id) FROM requests WHERE id = ? and ownerId = ? "
-                , new Object[]{id, ownerId}, Integer.class);
-        if(count == 0){
-            return false;
-        }
-        return jdbcTemplate.update("DELETE FROM requests WHERE id =?",new Object[]{id}) == 1;
-    }
-
     private Stream<Request> filterList (String language, String userIdFilter, long userId, String status, String searchCriteria, String searchOrder){
         Stream<Request> result;
         if (status == null) {
@@ -161,9 +274,12 @@ public class RequestDaoImpl implements RequestDao {
         else if(status.contains("pending")){
             status = "Pending";
         }
-        else {
+        else if(status.contains("rejected")) {
             status = "Rejected";
+        }else{
+            status = "Canceled";
         }
+
         String sql = "SELECT requests.id as id,  requests.ownerId as ownerId, users.username as ownerUsername, petId, " +
                 "creationDate, request_status.id as statusId , request_status." + language + " as statusName, pets.petname as petName " +
                 "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id)inner join pets on pets.id = requests.petId) " +
@@ -194,5 +310,75 @@ public class RequestDaoImpl implements RequestDao {
         return result;
     }
 
+    @Override
+    public String getAdminRequestPages(String language){
+        Integer requests = jdbcTemplate.queryForObject("select count(*) from requests" ,
+                Integer.class);
+
+        requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+        return requests.toString();
+    }
+
+    @Override
+    public String getAdminMaxSearchPages(String language, String findValue){
+            if (findValue.equals("")) {
+                return getAdminRequestPages(language);
+            }
+
+            String modifiedValue = "%" + findValue.toLowerCase() + "%";
+
+            Integer requests = jdbcTemplate.queryForObject("select count(*)  " +
+                            "FROM (((requests inner join request_status on requests.status = request_status.id) inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId)" +
+                            " WHERE  (LOWER(request_status." + language + ") LIKE ?) OR" +
+                            "(LOWER(users.username) LIKE ?) OR (LOWER(pets.petname) LIKE ?)",
+                    new Object[]{modifiedValue, modifiedValue, modifiedValue},
+                    Integer.class);
+            requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+            return requests.toString();
+    }
+
+    @Override
+    public String getAdminMaxFilterPages(String language, String status) {
+        if (status == null) {
+            status = "(1,2,3,4)";
+        } else if (status.equals("pending")) {
+            status = "(1)";
+        } else if (status.equals("accepted")) {
+            status = "(2)";
+        } else if (status.equals("rejected")) {
+            status = "(3)";
+        } else if (status.equals("canceled")) {
+            status = "(4)";
+        } else{
+            status = "(100)";
+        }
+
+        Integer requests = jdbcTemplate.queryForObject("select count(*) " +
+                        "FROM (((requests inner join request_status on requests.status = request_status.id) " +
+                        "inner join users on requests.ownerid = users.id) inner join pets on pets.id = requests.petId) " +
+                        "WHERE requests.status IN " + status,
+                Integer.class);
+
+        requests = (int) Math.ceil((double) requests / ADMIN_SHOWCASE_ITEMS);
+        return requests.toString();
+    }
+
+    @Override
+    public boolean isRequestOwner(long id, long userId) {
+        String sql = "SELECT COUNT(id) " +
+                "FROM requests " +
+                "WHERE id = ? AND ownerId = ? ";
+        Integer owner = jdbcTemplate.queryForObject(sql, new Object[] {id, userId}, Integer.class);
+        return owner == 1;
+    }
+
+    @Override
+    public boolean isRequestTarget(long id, long userId) {
+        String sql = "SELECT COUNT(pets.ownerid) " +
+                "FROM requests inner join pets on requests.petId = pets.id " +
+                "WHERE requests.id = ? AND pets.ownerId = ?";
+        Integer owner = jdbcTemplate.queryForObject(sql, new Object[] {id, userId}, Integer.class);
+        return owner == 1;
+    }
 }
 

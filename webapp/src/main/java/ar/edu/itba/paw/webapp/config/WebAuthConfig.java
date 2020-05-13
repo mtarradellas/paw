@@ -2,9 +2,11 @@ package ar.edu.itba.paw.webapp.config;
 
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -12,12 +14,21 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 @EnableWebSecurity
 @Configuration
 @ComponentScan("ar.edu.itba.paw.webapp.auth")
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("classpath:rememberMeToken.txt")
+    private Resource token;
 
     @Autowired
     private PSUserDetailsService userDetailsService;
@@ -35,19 +46,19 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login", "/register").anonymous()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").authenticated()
-                .antMatchers("/pet/*/request","/interests","/requests").authenticated()
+                .antMatchers("/upload-pet").authenticated()
+                .antMatchers("/pet/*/request","/interests/**","/requests/**").authenticated()
                 .antMatchers("/**").permitAll()
             .and().formLogin()
                 .loginPage("/login")
                 .usernameParameter("username")
                 .passwordParameter("password")
+                .failureUrl("/login/error")
                 .defaultSuccessUrl("/", false)
             .and().rememberMe()
                 .rememberMeParameter("rememberme")
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-                .key("E5826585E87659EAE6567BEC3F93D")
-                /* User OpenSSL para generar una clave 1024/2048/4k caracteres, guardarlo en src/main/resources
-                *  cargarlo y usarlo como key */
+                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(365))
+                .key(readToken())
             .and().logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
@@ -59,11 +70,22 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(final WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/css/**", "/js/**", "/img/**", "/favicon.ico", "/403");
+                .antMatchers("/resources/**", "/img/**", "/favicon.ico", "/403");
     }
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private String readToken() {
+        StringBuilder contentBuilder = new StringBuilder();
+        try (Stream<String> tokenStream = Files.lines(token.getFile().toPath(), StandardCharsets.UTF_8)) {
+            tokenStream.forEach(contentBuilder::append);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contentBuilder.toString();
     }
 }

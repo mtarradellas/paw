@@ -13,10 +13,31 @@
             <div class="form-group">
                 <label for="filter-status"><spring:message code="request.status"/></label>
                 <select name="status" class="form-control" id="filter-status">
-                    <option value="any"><spring:message code="filter.any"/></option>
-                    <option value="accepted"><spring:message code="request.accepted"/></option>
-                    <option value="rejected"><spring:message code="request.rejected"/></option>
-                    <option value="pending"><spring:message code="request.pending"/></option>
+                    <option value="any"
+                            <c:if test="${(not empty param.status) && (param.status eq 'any')}">
+                                selected
+                            </c:if>
+                    ><spring:message code="filter.any"/></option>
+                    <option value="accepted"
+                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('accepted' eq param.status)}">
+                                selected
+                            </c:if>
+                    ><spring:message code="request.accepted"/></option>
+                    <option value="rejected"
+                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('rejected' eq param.status)}">
+                                selected
+                            </c:if>
+                    ><spring:message code="request.rejected"/></option>
+                    <option value="pending"
+                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('pending' eq param.status)}">
+                                selected
+                            </c:if>
+                    ><spring:message code="request.pending"/></option>
+                    <option value="canceled"
+                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('canceled' eq param.status)}">
+                                selected
+                            </c:if>
+                    ><spring:message code="request.canceled"/></option>
                 </select>
             </div>
             <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>

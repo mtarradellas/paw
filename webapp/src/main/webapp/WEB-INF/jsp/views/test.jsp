@@ -5,8 +5,13 @@
     <title>test</title>
 </head>
 <body>
-<%--<c:forEach items="${request_list}" var="r">--%>
-<h1><c:out value="${bool}"/></h1>
+<%--<c:forEach items="${users}" var="user">--%>
+<h1><c:out value="${pet.id}"/></h1>
+<h1><c:out value="${pet.petName}"/></h1>
+<h1><c:out value="${pet.status.name}"/></h1>
+<h1><c:out value="${pet.province.name}"/></h1>
+<h1><c:out value="${pet.department.name}"/></h1>
+<%--<h1><c:out value="${user.status.name}"/></h1>--%>
 
 
 <%--</c:forEach>--%>

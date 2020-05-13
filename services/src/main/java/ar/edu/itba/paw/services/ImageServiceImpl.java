@@ -2,10 +2,13 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.ImageDao;
 import ar.edu.itba.paw.interfaces.ImageService;
+import ar.edu.itba.paw.interfaces.PetDao;
+import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.models.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -13,6 +16,8 @@ import java.util.stream.Stream;
 public class ImageServiceImpl implements ImageService {
     @Autowired
     private ImageDao imageDao;
+    @Autowired
+    private PetDao petDao;
 
     @Override
     public Stream<Image> findByPetId(long id) {
@@ -20,8 +25,37 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public Integer quantityByPetId(long id) {
+        return this.imageDao.quantityByPetId(id);
+    }
+
+    @Override
     public Optional<byte[]> getDataById(long id) {
         return this.imageDao.getDataById(id);
     }
 
+    @Override
+    public Optional<Image> createAdmin(long petId, byte[] bytes) {
+        return imageDao.create(petId, bytes);
+    }
+
+    @Override
+    public Optional<Image> create(long petId, byte[] bytes, long userId) {
+        if (petDao.isPetOwner(petId, userId)) {
+            return imageDao.create(petId, bytes);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void delete(Integer id) {
+        this.imageDao.delete(id);
+    }
+
+    @Override
+    public void delete(List<Integer> ids) {
+        for (Integer id: ids) {
+            this.imageDao.delete(id);
+        }
+    }
 }

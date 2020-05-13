@@ -1,38 +1,63 @@
 package ar.edu.itba.paw.models;
 
+import java.util.List;
+
 public class User {
     private long id;
     private String username;
     private String password;
     private String mail;
-    private String phone;
+    private Status status;
+    private List<Request> requestList;
 
-    public User(String username, String mail, String phone) {
+    public User(String username, String mail) {
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
     }
 
-    public User(long id, String username, String mail, String phone) {
+    public User(long id, String username, String mail) {
         this.id = id;
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
     }
 
-    public User(String username, String password, String mail, String phone) {
+    public User(String username, String password, String mail) {
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
         this.password = password;
     }
 
-    public User(long id, String username, String password, String mail, String phone) {
+    public User(long id, String username, String password, String mail, Status status) {
         this.id = id;
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
         this.password = password;
+        this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id && username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + (int) id;
+        hash = 31 * hash + username.hashCode();
+        return hash;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public long getId() {
@@ -67,12 +92,12 @@ public class User {
         this.mail = mail;
     }
 
-    public String getPhone() {
-        return phone;
+    public List<Request> getRequestList() {
+        return requestList;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setRequestList(List<Request> requestList) {
+        this.requestList = requestList;
     }
 
 }

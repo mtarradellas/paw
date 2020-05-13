@@ -1,18 +1,18 @@
-package ar.edu.itba.paw.webapp.form.customValidators;
+package ar.edu.itba.paw.webapp.validators;
 
 import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class FieldsValueMatchValidator implements ConstraintValidator<FieldsValueMatch, Object> {
+public class FieldsValueDifferentValidator implements ConstraintValidator<FieldsValueDifferent, Object> {
 
     private String field;
-    private String fieldMatch;
+    private String otherField;
 
-    public void initialize(FieldsValueMatch constraintAnnotation) {
+    public void initialize(FieldsValueDifferent constraintAnnotation) {
         this.field = constraintAnnotation.field();
-        this.fieldMatch = constraintAnnotation.fieldMatch();
+        this.otherField = constraintAnnotation.otherField();
     }
 
     public boolean isValid(Object value,
@@ -21,12 +21,11 @@ public class FieldsValueMatchValidator implements ConstraintValidator<FieldsValu
         Object fieldValue = new BeanWrapperImpl(value)
                 .getPropertyValue(field);
         Object fieldMatchValue = new BeanWrapperImpl(value)
-                .getPropertyValue(fieldMatch);
+                .getPropertyValue(otherField);
 
-        if (fieldValue != null) {
-            return fieldValue.equals(fieldMatchValue);
-        } else {
-            return fieldMatchValue == null;
+        if (fieldValue != null && fieldMatchValue != null) {
+            return !fieldValue.equals(fieldMatchValue);
         }
+        return true;
     }
 }

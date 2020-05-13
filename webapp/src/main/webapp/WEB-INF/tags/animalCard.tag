@@ -1,7 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@tag description="Animal card" pageEncoding="UTF-8"%>
-<%@attribute name="pet" required="true" type="ar.edu.itba.paw.models.Pet"%>
+<%@tag description="Animal card" pageEncoding="UTF-8" %>
+<%@attribute name="pet" required="true" type="ar.edu.itba.paw.models.Pet" %>
+<%@attribute name="level" required="true" type="java.lang.String" %>
 
 <c:set var="cprice" scope="application" value="${pet.price}"/>
 
@@ -24,7 +25,26 @@
             <spring:message code="petCard.sex"/> <spring:message code="pet.${pet.gender}"/>
         </p>
 
-        <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link"><spring:message code="petCard.goToPage"/></a>
+        <c:if test="${level eq 'admin'}">
+            <div class="row">
+                <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
+                   class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
+                <c:if test="${pet.status.id ne 1}">
+                    <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
+                </c:if>
+
+
+            </div>
+        </c:if>
+        <c:if test="${level eq 'user'}">
+            <div class="row">
+                <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>"
+                   class="darkblue-action"><spring:message code="petCard.goToPage"/></a>
+                <c:if test="${pet.status.id ne 1}">
+                    <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
+                </c:if>
+            </div>
+        </c:if>
     </div>
     <div class="card-footer">
         <h6><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></h6>

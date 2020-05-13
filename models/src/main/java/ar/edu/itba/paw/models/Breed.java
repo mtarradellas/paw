@@ -1,18 +1,32 @@
 package ar.edu.itba.paw.models;
 
-public class Breed {
+public class Breed implements Comparable<Breed>{
     private long id;
-    private long speciesId;
+    private Species species;
     private String name;
 
 
-    public Breed(long id, long speciesId, String name) {
+    public Breed(long id, String name, Species species) {
         this.id = id;
-        this.speciesId = speciesId;
         this.name = name;
+        this.species = species;
     }
 
     public Breed() {}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        Breed breed = (Breed) o;
+        return id == breed.id;
+    }
+
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + ", species: " + species + " }";
+    }
 
     public long getId() {
         return id;
@@ -22,12 +36,12 @@ public class Breed {
         this.id = id;
     }
 
-    public long getSpeciesId() {
-        return speciesId;
+    public Species getSpecies() {
+        return species;
     }
 
-    public void setSpeciesId(long speciesId) {
-        this.speciesId = speciesId;
+    public void setSpecies(Species species) {
+        this.species = species;
     }
 
     public String getName() {
@@ -36,5 +50,10 @@ public class Breed {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int compareTo(Breed o) {
+        return name.compareTo(o.name);
     }
 }
