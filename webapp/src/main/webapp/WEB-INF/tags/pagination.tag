@@ -39,7 +39,7 @@
             </c:if>
         </c:url>
         <c:if test="${currentPage > 1}">
-            <li class="page-item"><a class="page-link" href="<c:out value="${prev}" />" >prev</a></li>
+            <li class="page-item"><a class="page-link" href="<c:out value="${prev}" />" ><spring:message code="prev"/> </a></li>
         </c:if>
 
         <c:forEach begin="1" end="${maxPage}" step="1" varStatus="i">
@@ -120,7 +120,7 @@
             </c:if>
         </c:url>
         <c:if test="${currentPage + 1 <= maxPage}">
-            <li class="page-item"><a class="page-link" href="<c:out value="${next}" />" >Next</a></li>
+            <li class="page-item"><a class="page-link" href="<c:out value="${next}" />" ><spring:message code="next"/></a></li>
         </c:if>
     </ul>
 
