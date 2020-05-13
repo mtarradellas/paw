@@ -19,8 +19,8 @@ public interface UserService {
     UserList adminUserList(String language, String findValue, String status, String searchCriteria, String searchOrder, String page);
     UserList adminFind(String language, String find, String page);
     UserList adminFilteredList(String language,String status,String searchCriteria,String searchOrder,String page);
-    Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
-    Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
+    Optional<User> create(String language, String username, String password, String mail) throws DuplicateUserException;
+    Optional<User> adminCreate(String language, String username, String password, String mail) throws DuplicateUserException;
     Optional<User> findByMail(String language, String mail);
     Optional<User> updatePassword(String language, String oldPassword, String newPassword, long id) throws InvalidPasswordException;
     boolean createToken(UUID uuid, long userId);
@@ -37,5 +37,5 @@ public interface UserService {
     void removeAdmin(long userId);
     void recoverAdmin(long userId);
     void removeUser(long userId);
-    Optional<User> update(String language, long id, String username, String phone) throws DuplicateUserException;
+    Optional<User> update(String language, long id, String username) throws DuplicateUserException;
 }

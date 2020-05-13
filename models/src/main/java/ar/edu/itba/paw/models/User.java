@@ -7,35 +7,30 @@ public class User {
     private String username;
     private String password;
     private String mail;
-    private String phone;
     private Status status;
     private List<Request> requestList;
 
-    public User(String username, String mail, String phone) {
+    public User(String username, String mail) {
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
     }
 
-    public User(long id, String username, String mail, String phone) {
+    public User(long id, String username, String mail) {
         this.id = id;
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
     }
 
-    public User(String username, String password, String mail, String phone) {
+    public User(String username, String password, String mail) {
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
         this.password = password;
     }
 
-    public User(long id, String username, String password, String mail, String phone, Status status) {
+    public User(long id, String username, String password, String mail, Status status) {
         this.id = id;
         this.username = username;
         this.mail = mail;
-        this.phone = phone;
         this.password = password;
         this.status = status;
     }
@@ -95,14 +90,6 @@ public class User {
 
     public void setMail(String mail) {
         this.mail = mail;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public List<Request> getRequestList() {

@@ -67,7 +67,7 @@ public class LoginAndRegisterController extends ParentController {
         Optional<User> opUser;
         try {
             opUser = userService.create(locale, userForm.getUsername(), userForm.getPassword(),
-                    userForm.getMail(), userForm.getPhone());
+                    userForm.getMail());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return registerForm(userForm)

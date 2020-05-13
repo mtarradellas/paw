@@ -20,7 +20,6 @@ public class UserMapExtractor implements ResultSetExtractor<Map<User, List<Reque
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("mail"),
-                    rs.getString("phone"),
                     new Status(rs.getInt("statusId"), rs.getString("statusName"))
             );
             Request request = null;
