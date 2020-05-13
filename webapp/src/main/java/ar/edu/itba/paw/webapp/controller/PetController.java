@@ -221,19 +221,22 @@ public class PetController extends ParentController {
     public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
         Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
 
-        petForm.setBirthDate(pet.getBirthDate());
-        petForm.setBreedId(pet.getBreed().getId());
-        petForm.setDescription(pet.getDescription());
-        petForm.setGender(pet.getGender());
+        if(pet.getOwnerId() == loggedUser().getId()){
+            petForm.setBirthDate(pet.getBirthDate());
+            petForm.setBreedId(pet.getBreed().getId());
+            petForm.setDescription(pet.getDescription());
+            petForm.setGender(pet.getGender());
+            petForm.setProvince(pet.getProvince().getId());
+            petForm.setDepartment(pet.getDepartment().getId());
+            petForm.setPrice(pet.getPrice());
+            petForm.setPetName(pet.getPetName());
+            petForm.setSpeciesId(pet.getSpecies().getId());
+            petForm.setVaccinated(pet.isVaccinated());
 
-        petForm.setPrice(pet.getPrice());
-        petForm.setPetName(pet.getPetName());
-        petForm.setProvince(pet.getProvince().getId());
-        petForm.setDepartment(pet.getDepartment().getId());
-        petForm.setSpeciesId(pet.getSpecies().getId());
-        petForm.setVaccinated(pet.isVaccinated());
-        
-        return editPetForm(petForm, id);
+            return editPetForm(petForm, id);
+        }
+        return new ModelAndView("redirect:/403" );
+
     }
 
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
@@ -282,7 +285,6 @@ public class PetController extends ParentController {
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
         Optional<Pet> opPet;
         try {
-            /*TODO: change to receive province and department instead of location*/
              opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
                     editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getVaccinated(),
                      editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice(), editPetForm.getDepartment());
@@ -298,6 +300,7 @@ public class PetController extends ParentController {
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
 
+
     @RequestMapping(value = "/test")
     public ModelAndView testUsers() {
         final ModelAndView mav = new ModelAndView("views/test");
@@ -305,5 +308,6 @@ public class PetController extends ParentController {
                 petService.findById(getLocale(),20).get());
         return mav;
     }
+
 
 }

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.UserList;
@@ -21,7 +22,7 @@ public interface UserService {
     Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException;
     Optional<User> findByMail(String language, String mail);
-    boolean updatePassword(String newPassword, long id);
+    Optional<User> updatePassword(String language, String oldPassword, String newPassword, long id) throws InvalidPasswordException;
     boolean createToken(UUID uuid, long userId);
     Optional<Token> getToken(UUID uuid);
     boolean deleteToken(UUID uuid);
@@ -36,4 +37,5 @@ public interface UserService {
     void removeAdmin(long userId);
     void recoverAdmin(long userId);
     void removeUser(long userId);
+    Optional<User> update(String language, long id, String username, String phone) throws DuplicateUserException;
 }

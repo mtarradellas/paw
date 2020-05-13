@@ -2,13 +2,16 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
+import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +69,7 @@ public class UserServiceImpl implements UserService {
         return new UserList(list, maxPage);
     }
 
+    @Transactional
     @Override
     public Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
@@ -112,8 +116,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updatePassword(String newPassword, long id) {
-        return userDao.updatePassword(encoder.encode(newPassword), id);
+    public Optional<User> updatePassword(String language, String oldPassword, String newPassword, long id) throws InvalidPasswordException {
+        Optional<User>opUser = findById(language, id);
+        if(!opUser.isPresent()){
+            LOGGER.warn("DAO could not find user");
+            return Optional.empty();
+        }
+        if(oldPassword != null){
+            LOGGER.debug("Checking old password");
+            if(! encoder.matches(oldPassword, opUser.get().getPassword())){
+                LOGGER.warn("Password does not match the current one");
+                throw new InvalidPasswordException("Password does not match the current one");
+            }
+        }
+        LOGGER.debug("Valid old password");
+        if(userDao.updatePassword(encoder.encode(newPassword), id)){
+            LOGGER.debug("Password updated");
+            return userDao.findById(language, id);
+        }
+        LOGGER.warn("DAO could not update password");
+        return Optional.empty();
     }
 
     @Override
@@ -146,7 +168,6 @@ public class UserServiceImpl implements UserService {
             LOGGER.warn("User of token {} not found", uuid);
             return Optional.empty();
         }
-        /* TODO activate account */
 
         if(!userDao.updateStatus(opUser.get().getId(), UserStatus.ACTIVE.getValue())) {
             LOGGER.warn("Could not activate user {} account", opUser.get().getId());
@@ -204,8 +225,10 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
         final User user = opUser.get();
-
-        updatePassword(password, user.getId());
+        try {
+            updatePassword(language,null, password, user.getId());
+        }
+        catch(InvalidPasswordException ignored){}
         deleteToken(uuid);
 
         return opUser;
@@ -216,16 +239,18 @@ public class UserServiceImpl implements UserService {
         return userDao.isAdmin(userId);
     }
 
+    @Transactional
     @Override
     public void removeAdmin(long userId) {
-        requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
+        requestService.rejectAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByOwner(userId);
         petService.removeAllByOwner(userId);
         userDao.updateStatus(userId, UserStatus.DELETED.getValue());
     }
 
+    @Transactional
     public void removeUser(long userId) {
-        requestService.cancelAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
+        requestService.rejectAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByOwner(userId);
         petService.removeAllByOwner(userId);
         userDao.updateStatus(userId, UserStatus.DELETED.getValue());
@@ -234,6 +259,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void recoverAdmin(long userId) {
         userDao.updateStatus(userId, UserStatus.ACTIVE.getValue());
+    }
+
+    @Override
+    public Optional<User> update(String language, long id, String username, String phone) throws DuplicateUserException {
+
+        LOGGER.debug("Attempting user {} update with username: {}, phone: {}", id, username, phone);
+        userDao.update(language, id, username, phone);
+        Optional<User> opUser = findById(language, id);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("Error finding user with id {}", id);
+            return opUser;
+        }
+        LOGGER.debug("Successfully updated user; id: {} username: {}, phone: {}", opUser.get().getId(), opUser.get().getUsername(), opUser.get().getPhone());
+        return opUser;
     }
 
     @Override
@@ -266,5 +305,8 @@ public class UserServiceImpl implements UserService {
         return userDao.getAdminMaxFilterPages(language, status);
     }
 
-
+    @Scheduled(cron = "0 0 1 * * *")
+    public void cleanOldTokens() {
+        userDao.cleanOldTokens();
+    }
 }

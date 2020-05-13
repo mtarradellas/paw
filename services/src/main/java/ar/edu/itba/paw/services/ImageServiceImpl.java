@@ -35,6 +35,11 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public Optional<Image> createAdmin(long petId, byte[] bytes) {
+        return imageDao.create(petId, bytes);
+    }
+
+    @Override
     public Optional<Image> create(long petId, byte[] bytes, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
             return imageDao.create(petId, bytes);
