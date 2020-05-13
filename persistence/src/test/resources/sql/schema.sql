@@ -21,13 +21,13 @@ password VARCHAR(255) NOT NULL,
 mail VARCHAR(255) NOT NULL UNIQUE,
 status INTEGER references user_status(id)
 );
-CREATE TABLE provinces(
+CREATE TABLE IF NOT EXISTS provinces(
 id INTEGER PRIMARY KEY,
 name VARCHAR(256) UNIQUE,
 latitude FLOAT(8),
 longitude FLOAT(8)
 );
-CREATE TABLE departments(
+CREATE TABLE IF NOT EXISTS departments(
 id INTEGER PRIMARY KEY,
 name VARCHAR(256),
 latitude FLOAT(8),
