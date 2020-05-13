@@ -17,12 +17,23 @@ public class Department implements Comparable<Department>{
         this.province = province;
     }
 
+    public Department(long id, String name, Province province) {
+        this.id = id;
+        this.name = name;
+        this.province = province;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Department that = (Department) o;
         return id == that.id;
+    }
+
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + ", prov: " + province + " }";
     }
 
     @Override

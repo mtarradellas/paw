@@ -50,8 +50,8 @@ public class PetDaoImplTest {
 
     private final String LANG = "en_us";
 
-    private int OTHER_SPECIES_ID;
-    private int OTHER_BREED_ID;
+    private static long OTHER_SPECIES_ID = SPECIES.getId() + 1;
+    private static long OTHER_BREED_ID = BREED.getId() + 1;
 
     @Autowired
     private DataSource ds;
@@ -97,27 +97,34 @@ public class PetDaoImplTest {
         petDaoImpl = new PetDaoImpl(ds);
         jdbcTemplate = new JdbcTemplate(ds);
 
+        /* PET */
         jdbcInsertPet = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(PETS_TABLE)
                 .usingGeneratedKeyColumns("id");
+        /* USER */
         jdbcInsertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(USERS_TABLE)
                 .usingGeneratedKeyColumns("id");
+        /* SPECIES */
         jdbcInsertSpecies = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(SPECIES_TABLE)
-                .usingGeneratedKeyColumns("id");
+                .withTableName(SPECIES_TABLE);
+        /* BREED */
         jdbcInsertBreed = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(BREEDS_TABLE)
-                .usingGeneratedKeyColumns("id");
+                .withTableName(BREEDS_TABLE);
+        /* IMAGE */
         jdbcInsertImage = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(IMAGES_TABLE)
                 .usingGeneratedKeyColumns("id");
+        /* USER STATUS*/
         jdbcInsertUserStatus = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(USER_STATUS_TABLE);
+        /* PROVINCE */
         jdbcInsertProvince = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(PROVINCES_TABLE);
+        /* DEPARTMENT */
         jdbcInsertDepartment = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(DEPARTMENTS_TABLE);
+        /* PET STATUS */
         jdbcInsertPetStatus = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(PET_STATUS_TABLE);
 
@@ -140,12 +147,14 @@ public class PetDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, SPECIES_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_STATUS_TABLE);
+        /* USER STATUS */
         final Map<String, Object> userStatusValues = new HashMap<String, Object>() {{
             put("id", 1);
             put("en_US", "Active");
             put("es_AR", "Activo");
         }};
         jdbcInsertUserStatus.execute(userStatusValues);
+        /* PROVINCES */
         final Map<String, Object> provincesValues = new HashMap<String, Object>() {{
             put("id", 1);
             put("name", PROVINCE.getName());
@@ -153,6 +162,7 @@ public class PetDaoImplTest {
             put("longitude", PROVINCE.getLongitude());
         }};
         jdbcInsertProvince.execute(provincesValues);
+        /* DEPARTMENTS */
         final Map<String, Object> departmentValues = new HashMap<String, Object>() {{
             put("id", 1);
             put("name", DEPARTMENT.getName());
@@ -161,6 +171,7 @@ public class PetDaoImplTest {
             put("province", PROVINCE.getName());
         }};
         jdbcInsertDepartment.execute(departmentValues);
+        /* USER */
         final Map<String, Object> userValues = new HashMap<String, Object>() {{
             put("username", "pet_test_username");
             put("password", "pet_test_password");
@@ -168,29 +179,36 @@ public class PetDaoImplTest {
             put("status", 1);
         }};
         OWNER_ID = jdbcInsertUser.executeAndReturnKey(userValues).intValue();
+        /* SPECIES */
         final Map<String, Object> speciesValues = new HashMap<String, Object>() {{
+            put("id", SPECIES.getId());
             put("es_ar", SPECIES.getName());
             put("en_us", SPECIES.getName());
         }};
-        SPECIES.setId(jdbcInsertSpecies.executeAndReturnKey(speciesValues).intValue());
-        BREED.setSpecies(SPECIES);
+        jdbcInsertSpecies.execute(speciesValues);
+        /* BREED */
         final Map<String, Object> breedValues = new HashMap<String, Object>() {{
+            put("id", BREED.getId());
             put("speciesId", BREED.getSpecies().getId());
             put("es_ar", BREED.getName());
             put("en_us", BREED.getName());
         }};
-        BREED.setId(jdbcInsertBreed.executeAndReturnKey(breedValues).intValue());
+        jdbcInsertBreed.execute(breedValues);
+        /* OTHER SPECIES*/
         final Map<String, Object> otherSpeciesValues = new HashMap<String, Object>() {{
+            put("id", OTHER_SPECIES_ID);
             put("es_ar", "other");
             put("en_us", "other");
         }};
-        OTHER_SPECIES_ID = jdbcInsertSpecies.executeAndReturnKey(otherSpeciesValues).intValue();
+        jdbcInsertSpecies.execute(otherSpeciesValues);
+        /* OTHER BREED */
         final Map<String, Object> otherBreedValues = new HashMap<String, Object>() {{
-            put("speciesId", OTHER_SPECIES_ID);
+            put("id", OTHER_BREED_ID);
             put("es_ar", "other");
             put("en_us", "other");
         }};
-        OTHER_BREED_ID = jdbcInsertBreed.executeAndReturnKey(otherBreedValues).intValue();
+        jdbcInsertBreed.execute(otherBreedValues);
+        /* PET STATUS */
         final Map<String, Object> available = new HashMap<String, Object>() {{
             put("id", 1);
             put("en_US", "Available");
@@ -309,9 +327,10 @@ public class PetDaoImplTest {
                 UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId(), DEPARTMENT.getId());
 
         /**/
-        Stream<Pet> petStream = petDaoImpl.filteredList(LANG, SPECIES.getName(), null,
+        Stream<Pet> petStream = petDaoImpl.filteredList(LANG, String.valueOf(SPECIES.getId()), null,
                                                 null, null, null,null,
                                                 null, null, null, null);
+
         List<Pet> petList = petStream.collect(Collectors.toList());
 
         assertEquals(1, petList.size());
@@ -329,7 +348,7 @@ public class PetDaoImplTest {
                 UPLOAD_DATE, PRICE, OWNER_ID, STATUS.getId(), DEPARTMENT.getId());
 
         /**/
-        Stream<Pet> petStream = petDaoImpl.filteredList(LANG, SPECIES.getName(), BREED.getName(),
+        Stream<Pet> petStream = petDaoImpl.filteredList(LANG, String.valueOf(SPECIES.getId()), String.valueOf(BREED.getId()),
                 null, null, null,null,
                 null, null, null, null);
         List<Pet> petList = petStream.collect(Collectors.toList());
