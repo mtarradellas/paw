@@ -98,7 +98,7 @@
 
         </div>
 
-        <script src="<c:url value="/resources/js/index.js"/>"></script>
+        <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
 
     </jsp:body>
 </t:basicLayout>

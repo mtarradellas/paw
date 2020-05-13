@@ -79,7 +79,7 @@
                                         <spring:message code="uploadPetForm.province" var="provinceTxt"/>
 
                                         <form:label path="province" for="province">${provinceTxt}: </form:label>
-                                        <form:select id="province" path="province" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                        <form:select id="province" data-child="department" path="province" cssClass="selector-parent custom-select ${status.error ? 'is-invalid' : ''}">
                                             <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                             <c:forEach var="province" items="${province_list}">
                                                 <form:option value="${province.id}">${province.name}</form:option>
@@ -95,10 +95,10 @@
                                         <spring:message code="uploadPetForm.department" var="departmentTxt"/>
 
                                         <form:label path="department" for="department">${departmentTxt}: </form:label>
-                                        <form:select id="department" path="department" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                        <form:select id="department" path="department" cssClass="selector-child custom-select ${status.error ? 'is-invalid' : ''}">
                                             <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                             <c:forEach var="department" items="${department_list}">
-                                                <form:option data-province="${department.province.id}" value="${department.id}">${department.name}</form:option>
+                                                <form:option data-dependency="${department.province.id}" value="${department.id}">${department.name}</form:option>
                                             </c:forEach>
                                         </form:select>
                                         <form:errors path="department" element="div" cssClass="invalid-feedback"/>
@@ -114,13 +114,13 @@
                                         <spring:message code="uploadPetForm.speciesName" var="speciesIdTxt"/>
                                         <form:label path="speciesId" for="speciesId">${speciesIdTxt}: </form:label>
                                         <div class="input-modifiable-div" data-current="${pet.species.id}">
-                                            <form:select id="speciesId" path="speciesId" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
+                                            <form:select id="speciesId" data-child="breedId" path="speciesId" cssClass="selector-parent input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                                 <c:forEach var="species" items="${species_list}">
                                                     <form:option value="${species.id}">${species.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
-                                            <a class="revert-input-anchor">
+                                            <a id="speciesIdReset" class="revert-input-anchor">
                                                 <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                     <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
                                                     <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
@@ -135,13 +135,13 @@
                                         <spring:message code="uploadPetForm.breedName" var="breedIdTxt"/>
                                         <form:label path="breedId" for="breedId">${breedIdTxt}: </form:label>
                                         <div class="input-modifiable-div" data-current="${pet.breed.id}">
-                                            <form:select id="breedId" path="breedId" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
+                                            <form:select id="breedId" path="breedId" cssClass="selector-child input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                                 <c:forEach var="breed" items="${breeds_list}">
-                                                    <form:option cssClass="species-${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
+                                                    <form:option data-dependency="${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
-                                            <a class="revert-input-anchor">
+                                            <a class="revert-input-anchor" data-revert-also="speciesIdReset">
                                                 <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                     <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
                                                     <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
@@ -249,5 +249,7 @@
         </div>
     </div>
 
+    <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
+    <script src="<c:url value="/resources/js/revert_change.js"/>"></script>
     <script src="<c:url value="/resources/js/edit_pet_view.js"/>"></script>
 </t:basicLayout>

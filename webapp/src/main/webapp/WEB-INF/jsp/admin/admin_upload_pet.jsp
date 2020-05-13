@@ -151,6 +151,6 @@
                 </div>
             </div>
         </div>
-        <script src="<c:url value="/resources/js/upload_pet.js"/>"></script>
+        <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
     </jsp:body>
 </t:adminLayout>
