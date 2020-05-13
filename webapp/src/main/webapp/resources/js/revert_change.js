@@ -24,7 +24,7 @@ function clickRevertButton(buttonSelector){
         $("#"+revertAlsoButton).trigger("click");
     }
 
-    input.val("" + div.data("current")).trigger("click");
+    input.val("" + div.data("current")).trigger("click").trigger("change");
 
     div.removeClass("input-modified");
 

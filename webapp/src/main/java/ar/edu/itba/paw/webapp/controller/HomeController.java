@@ -14,11 +14,4 @@ public class HomeController extends ParentController {
                     .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
                     .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
     }
-
-    @RequestMapping("/contact")
-    public ModelAndView getContact() {
-        DepartmentList departmentList = locationService.departmentList();
-        return new ModelAndView("views/contact").addObject("provinces", departmentList.getProvinceList());
-    }
-
 }

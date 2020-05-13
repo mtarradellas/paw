@@ -114,7 +114,7 @@
                     </div>
                     <hr>
                     <c:set var="ownerId" value="${pet.ownerId}"/>
-                    <a href="${pageContext.request.contextPath}/user/${ownerId}"
+                    <a href="${pageContext.request.contextPath}/admin/user/${ownerId}"
                        class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
 
 

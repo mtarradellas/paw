@@ -45,7 +45,7 @@ public class UserDaoImplTest {
             rs.getString("username"),
             rs.getString("password"),
             rs.getString("mail"),
-            new Status(rs.getInt("status"),rs.getString("statusName"))
+            new Status(rs.getInt("status"), "Active")
     );
 
     private UserDaoImpl userDaoImpl;
@@ -63,6 +63,8 @@ public class UserDaoImplTest {
         jdbcInsertUserStatus = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(USER_STATUS_TABLE);
 
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_STATUS_TABLE);
         final Map<String, Object> active = new HashMap<String, Object>() {{
             put("id", 1);
             put("en_US", "Active");

@@ -2,7 +2,7 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message code="accessDenied" var="titleVar"/>
+<spring:message code="accessDeniedTitle" var="titleVar"/>
 
 <t:basicLayout title="${titleVar}">
     <jsp:body>
