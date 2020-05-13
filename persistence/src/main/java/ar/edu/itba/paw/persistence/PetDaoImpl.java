@@ -74,12 +74,12 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public void update(long id, String petName, long speciesId, long breedId, String location, boolean vaccinated,
-                       String gender, String description, Date birthDate, int price) {
+    public void update(long id, String petName, long speciesId, long breedId, boolean vaccinated, String gender,
+                       String description, Date birthDate, int price, long department) {
         String sql = "UPDATE pets " +
-                "SET petName = ?, species = ?, breed = ?, location = ?, vaccinated = ?, gender = ?, description = ?, birthDate = ?, price = ?  " +
+                "SET petName = ?, species = ?, breed = ?, department = ?, vaccinated = ?, gender = ?, description = ?, birthDate = ?, price = ?  " +
                 "WHERE id = ? ";
-        jdbcTemplate.update(sql, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price, id);
+        jdbcTemplate.update(sql, petName, speciesId, breedId, department, vaccinated, gender, description, birthDate, price, id);
     }
 
     @Override
@@ -174,9 +174,9 @@ public class PetDaoImpl implements PetDao {
             return list(language, "1", level);
         }
 
-        int numValue = -1;
+        long numValue = -1;
         try {
-            numValue = Integer.parseInt(findValue);
+            numValue = Long.parseLong(findValue);
         } catch (NumberFormatException ignored) {
         }
 
@@ -516,13 +516,12 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public long create(String petName, Species species, Breed breed, String location, boolean vaccinated, String gender,
+    public long create(String petName, Species species, Breed breed, boolean vaccinated, String gender,
                       String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, long departmentId) {
         final Map<String, Object> values = new HashMap<String, Object>() {{
             put("petName", petName);
             put("species", species.getId());
             put("breed", breed.getId());
-            put("location", location);
             put("vaccinated", vaccinated);
             put("gender", gender);
             put("description", description);
@@ -562,7 +561,7 @@ public class PetDaoImpl implements PetDao {
             return maxPages(level);
         }
 
-        int numValue = -1;
+        long numValue = -1;
         boolean number = true;
         for (int i = 0; i < findValue.length(); i++) {
             if (!Character.isDigit(findValue.charAt(i))) {
@@ -570,24 +569,32 @@ public class PetDaoImpl implements PetDao {
             }
         }
         if (number) {
-            numValue = Integer.parseInt(findValue);
+            try {
+
+            } catch (NumberFormatException ignored) {
+                numValue = Long.parseLong(findValue);
+            }
         }
         String modifiedValue = "%" + findValue.toLowerCase() + "%";
         String sql;
 
         if (level == 0) {
             sql = "select count(distinct pets.id) " +
-                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                    "WHERE (LOWER(species." + language + ") LIKE ?  " +
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                    "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) "  +
                     "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
         } else {
             sql = "select count(distinct pets.id) " +
-                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                    "WHERE (LOWER(species." + language + ") LIKE ?  " +
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                    "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) ";
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " ;
         }
 
 
@@ -693,8 +700,7 @@ public class PetDaoImpl implements PetDao {
 
     @Override
     public String getMaxUserPetsPages(long userId){
-        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? " +
-                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS, new Object[] {userId}, Integer.class);
+        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? ", new Object[] {userId}, Integer.class);
         pets = (int) Math.ceil((double) pets / PETS_IN_USER_PAGE);
         return pets.toString();
     }

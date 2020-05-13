@@ -24,7 +24,8 @@ public interface PetService {
     List<Pet> adminList(String language, String page);
     List<Pet> listAll(String language);
 
-    Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos);
+    Optional<Pet> create(String language, String petName, long speciesId, long breedId, boolean vaccinated, String gender,
+                         String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos);
 
     Optional<Pet> findById(String language, long id);
     Optional<Pet> adminFindById(String language, long id);
@@ -45,7 +46,12 @@ public interface PetService {
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
     void removeAllByOwner(long ownerId);
+
     boolean isPetOwner(long petId, long userId);
-    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                boolean vaccinated, String gender, String description, Date birthDate, int price);
+    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+                         long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
+
+    Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+                              long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
+
 }
