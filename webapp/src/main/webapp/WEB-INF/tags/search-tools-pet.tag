@@ -15,8 +15,8 @@
             <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
             <div class="form-group">
                 <label for="filter-species"><spring:message code="pet.species"/></label>
-                <select name="species" class="form-control" id="filter-species">
-                        <option value="any"><spring:message code="filter.any"/></option>
+                <select data-child="filter-breed" name="species" class="selector-parent form-control" id="filter-species">
+                        <option value="-1"><spring:message code="filter.any"/></option>
                         <c:forEach items="${species_list}" var="speciesValue">
                             <c:set var="speciesId">${speciesValue.id}</c:set>
                             <option value="${speciesValue.id}"
@@ -35,12 +35,12 @@
                             disabled
                         </c:if>
                 >
-                    <option class="species-any" value="any"><spring:message code="filter.any"/></option>
+                    <option class="species-any" value="-1"><spring:message code="filter.any"/></option>
 
                     <c:forEach items="${breeds_list}" var="breed">
                         <c:set var="breedId">${breed.id}</c:set>
                         <c:set var="speciesId">${breed.species.id}</c:set>
-                        <option class="species-${breed.species.id}" value="${breed.id}"
+                        <option data-dependency="${breed.species.id}" value="${breed.id}"
                                 <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesId ne param.species)}">style="display: none;"</c:if>
                                 <c:if test="${(not empty param.breed) && (param.breed ne 'any') && (breedId eq param.breed)}">selected</c:if>
                         >
@@ -69,7 +69,7 @@
 
                 <label for="filter-gender"><spring:message code="pet.sex"/></label>
                 <select name="gender" class="form-control" id="filter-gender">
-                    <option value="any"><spring:message code="filter.any"/></option>
+                    <option value="-1"><spring:message code="filter.any"/></option>
                     <option value="male"
                             <c:if test="${(not empty param.gender) && (param.gender eq 'male')}">selected</c:if>
                     ><spring:message code="pet.male"/></option>
@@ -80,8 +80,8 @@
             </div>
             <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
-            <select name="searchCriteria" class="form-control" id="search-criteria">
-                <option value="any"><spring:message code="filter.any"/></option>
+            <select data-child="search-order" name="searchCriteria" class="selector-parent form-control" id="search-criteria">
+                <option value="-1"><spring:message code="filter.any"/></option>
                 <option value="species"
                         <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'species')}">selected</c:if>
                 ><spring:message code="pet.species"/></option>
