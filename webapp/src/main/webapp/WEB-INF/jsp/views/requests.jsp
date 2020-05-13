@@ -23,8 +23,7 @@
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                 <c:choose>
                                     <c:when test="${(empty param.status || param.status eq 'any')
-                                        && (empty param.searchCriteria || param.searchCriteria eq 'any')
-                               }">
+                                        && (empty param.searchCriteria || param.searchCriteria eq 'any')}">
                                         <c:url var="homeUrl" value="/"/>
                                         <spring:message code="request.emptyRequests"/>
                                         <a href="${homeUrl}"><spring:message code="request.goToHome"/></a>

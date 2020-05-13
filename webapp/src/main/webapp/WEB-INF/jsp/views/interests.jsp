@@ -23,6 +23,10 @@
                                     <a href="${pageContext.request.contextPath}/interests"><spring:message
                                             code="removeFilters"/></a>
                                 </c:if>
+                                <c:if test="${(empty param.status) and (empty param.searchCriteria) and (empty param.searchOrder) }">
+                                    <a href="${pageContext.request.contextPath}/upload-pet">
+                                        <spring:message code="request.addPets"/></a>
+                                </c:if>
                             </div>
                         </c:if>
                         <c:if test="${not empty interests_list}">
