@@ -62,6 +62,8 @@ public class PetController extends ParentController {
         gender = gender == null || gender.equals("any") ? null : gender;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 //province and dep
+
+
         PetList petList = petService.petList(locale, findValue, species, breed, gender, searchCriteria,
                 searchOrder, minPrice, maxPrice, province, department, page);
         DepartmentList departmentList = locationService.departmentList();
@@ -208,8 +210,8 @@ public class PetController extends ParentController {
         }
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                           petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(), birthDate, currentDate,
-                            petForm.getPrice(), loggedUser().getId(), petForm.getDepartment(), photos);
+                           petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId(), petForm.getDepartment(), photos);
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
@@ -292,7 +294,6 @@ public class PetController extends ParentController {
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
         Optional<Pet> opPet;
         try {
-            /*TODO: change to receive province and department instead of location*/
              opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
                     editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getVaccinated(),
                      editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice(), editPetForm.getDepartment());

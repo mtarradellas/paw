@@ -56,7 +56,7 @@
                                     <spring:message code="uploadPetForm.province" var="provinceTxt"/>
 
                                     <form:label path="province" for="province">${provinceTxt}: </form:label>
-                                    <form:select id="province" path="province" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="province" data-child="department" path="province" cssClass="selector-parent custom-select ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="province" items="${province_list}">
                                             <form:option value="${province.id}">${province.name}</form:option>
@@ -75,7 +75,7 @@
                                     <form:select id="department" path="department" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="department" items="${department_list}">
-                                            <form:option data-province="${department.province.id}" value="${department.id}">${department.name}</form:option>
+                                            <form:option data-dependency="${department.province.id}" value="${department.id}">${department.name}</form:option>
                                         </c:forEach>
                                     </form:select>
                                     <form:errors path="department" element="div" cssClass="invalid-feedback"/>
@@ -89,7 +89,7 @@
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.speciesName" var="speciesIdTxt"/>
                                     <form:label path="speciesId" for="speciesId">${speciesIdTxt}: </form:label>
-                                    <form:select id="speciesId" path="speciesId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                    <form:select id="speciesId" data-child="breedId" path="speciesId" cssClass="selector-parent custom-select ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="species" items="${species_list}">
                                             <form:option value="${species.id}">${species.name}</form:option>
@@ -105,7 +105,7 @@
                                     <form:select id="breedId" path="breedId" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
                                         <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
                                         <c:forEach var="breed" items="${breeds_list}">
-                                            <form:option cssClass="species-${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
+                                            <form:option data-dependency="${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
                                         </c:forEach>
                                     </form:select>
                                     <form:errors path="breedId" element="div" cssClass="invalid-feedback"/>
@@ -168,5 +168,5 @@
         </div>
     </div>
 
-    <script src="<c:url value="/resources/js/upload_pet.js"/>"></script>
+    <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
 </t:basicLayout>

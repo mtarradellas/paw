@@ -8,11 +8,11 @@
 
 <t:basicLayout title="${title}">
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
-    <div class="container-fluid ">
-        <div class=" col-md-10 offset-md-1">
-            <div class="bg-light shadow ">
-                <div class="p-2 bg-dark">
-                    <div class="row text-whitesmoke">
+        <div class="container-fluid ">
+            <div class=" col-md-10 offset-md-1">
+                <div class="bg-light shadow ">
+                    <div class="p-2 bg-dark">
+                        <div class="row text-whitesmoke">
                         <h1 class="ml-4"><c:out value="${user.username}"/></h1>
                         <c:if test="${(user.id eq loggedUser.id)}">
                             <h1 class="mt-2 ml-4">
@@ -27,8 +27,8 @@
                         </c:if>
                     </div>
                 </div>
+                <hr>
                 <div class="p-2">
-                    <hr>
                     <c:if test="${loggedUser.id eq user.id}">
                         <ul class="list-group">
                             <li class="list-group-item"><b><spring:message code="user.email"/></b> <c:out
@@ -45,6 +45,7 @@
                     <c:if test="${loggedUser.id ne user.id}">
                         <h5 class="text-center"><b><spring:message code="otherUserProfile"/></b></h5>
                     </c:if>
+                    <hr>
                     <div class="p-2">
 
                         <h2><b><spring:message code="userPets"/></b>

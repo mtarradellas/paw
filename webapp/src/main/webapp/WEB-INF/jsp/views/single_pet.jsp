@@ -99,6 +99,7 @@
                         </c:if>
                     </div>
                 </div>
+                <hr>
                 <div class="p-3">
                     <t:photosList images="${pet.images}"/>
                 </div>

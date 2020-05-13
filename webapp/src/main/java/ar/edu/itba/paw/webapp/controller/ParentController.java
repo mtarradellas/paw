@@ -41,8 +41,8 @@ public class ParentController {
     RequestService requestService;
     @Autowired
     LocationService locationService;
-
-    private PSUserDetailsService userDetailsService;
+    @Autowired
+    PSUserDetailsService userDetailsService;
 
 
     protected String getLocale() {

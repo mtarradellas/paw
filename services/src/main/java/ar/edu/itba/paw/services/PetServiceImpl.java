@@ -209,7 +209,6 @@ public class PetServiceImpl implements PetService {
             toDelete = imagesToDelete.size();
         }
         int previousImageQuantity = imageService.quantityByPetId(id);
-        System.out.println("\n\n\n\n"+ photos.size());
         int finalImageQuantity = previousImageQuantity + photos.size() - toDelete;
         if(finalImageQuantity < MIN_IMAGES || finalImageQuantity > MAX_IMAGES) {
             throw new InvalidImageQuantityException("Pet must have between 1 and 5 images");
@@ -329,8 +328,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId,
-                                boolean vaccinated, String gender, String description, Date birthDate, int price, long department) throws InvalidImageQuantityException {
+    public Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+                                     long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department) throws InvalidImageQuantityException {
         LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, department: {}, " +
                         "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
                 id, petName, speciesId, breedId, department, vaccinated, gender, description, birthDate, price);
