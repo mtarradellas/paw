@@ -617,7 +617,7 @@ public class PetDaoImpl implements PetDao {
         }
 
 
-        Integer pets = jdbcTemplate.queryForObject(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, Integer.class);
+        Integer pets = jdbcTemplate.queryForObject(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, Integer.class);
 
         if(level == 0){
             pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
