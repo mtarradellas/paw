@@ -71,9 +71,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> create(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
-        LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, UserStatus.INACTIVE.getValue());
+    public Optional<User> create(String language, String username, String password, String mail) throws DuplicateUserException {
+        LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, UserStatus.INACTIVE.getValue());
         if (!opUser.isPresent()) {
             LOGGER.warn("User DAO returned empty user");
             return opUser;
@@ -95,14 +95,14 @@ public class UserServiceImpl implements UserService {
 
         mailService.sendMail(user.getMail(), arguments, "activate_account");
 
-        LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}, phone: {}", user.getId(), user.getUsername(), user.getMail(), user.getPhone());
+        LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}", user.getId(), user.getUsername(), user.getMail());
         return opUser;
     }
 
     @Override
-    public Optional<User> adminCreate(String language, String username, String password, String mail, String phone) throws DuplicateUserException {
-        LOGGER.debug("Attempting user creation with username: {}, mail: {}, phone: {}", username, mail, phone);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, phone, UserStatus.ACTIVE.getValue());
+    public Optional<User> adminCreate(String language, String username, String password, String mail) throws DuplicateUserException {
+        LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
+        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, UserStatus.ACTIVE.getValue());
         if (!opUser.isPresent()) {
             LOGGER.warn("User DAO returned empty user");
             return opUser;
@@ -262,16 +262,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> update(String language, long id, String username, String phone) throws DuplicateUserException {
+    public Optional<User> update(String language, long id, String username) throws DuplicateUserException {
 
-        LOGGER.debug("Attempting user {} update with username: {}, phone: {}", id, username, phone);
-        userDao.update(language, id, username, phone);
+        LOGGER.debug("Attempting user {} update with username: {}", id, username);
+        userDao.update(language, id, username);
         Optional<User> opUser = findById(language, id);
         if (!opUser.isPresent()) {
             LOGGER.warn("Error finding user with id {}", id);
             return opUser;
         }
-        LOGGER.debug("Successfully updated user; id: {} username: {}, phone: {}", opUser.get().getId(), opUser.get().getUsername(), opUser.get().getPhone());
+        LOGGER.debug("Successfully updated user; id: {} username: {}", opUser.get().getId(), opUser.get().getUsername());
         return opUser;
     }
 

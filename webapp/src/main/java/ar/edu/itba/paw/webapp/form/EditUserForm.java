@@ -39,23 +39,12 @@ public class EditUserForm {
     @Pattern(regexp = "^[a-zA-Z0-9]+$", groups = BasicInfoEditUser.class)
     private String username;
 
-    @Pattern(regexp = "^[0-9]+$", groups = BasicInfoEditUser.class)
-    private String phone;
-
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public String getCurrentPassword() {

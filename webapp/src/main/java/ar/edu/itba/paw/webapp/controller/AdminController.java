@@ -308,7 +308,7 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
         Optional<User> opUser;
         try {
             opUser = userService.adminCreate(locale, userForm.getUsername(), userForm.getPassword(),
-                    userForm.getMail(), userForm.getPhone());
+                    userForm.getMail());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return uploadUserForm(userForm)
@@ -352,7 +352,6 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
 
         User user = userService.findById(locale, id).orElseThrow(UserNotFoundException::new);
 
-        editUserForm.setPhone(user.getPhone());
         editUserForm.setUsername(user.getUsername());
 
         return editUserForm;
@@ -378,7 +377,7 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
         }
         Optional<User> opUser;
         try {
-            opUser = userService.update(getLocale(), id, editUserForm.getUsername(), editUserForm.getPhone());
+            opUser = userService.update(getLocale(), id, editUserForm.getUsername());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return editUserForm(editUserForm, id)

@@ -19,7 +19,6 @@ id SERIAL PRIMARY KEY,
 username VARCHAR(255) NOT NULL UNIQUE,
 password VARCHAR(255) NOT NULL,
 mail VARCHAR(255) NOT NULL UNIQUE,
-phone VARCHAR(255),
 status INTEGER references user_status(id)
 );
 CREATE TABLE IF NOT EXISTS pet_status (

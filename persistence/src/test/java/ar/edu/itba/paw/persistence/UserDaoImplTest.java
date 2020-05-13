@@ -37,7 +37,6 @@ public class UserDaoImplTest {
     private static final String USERNAME = "user_test_name";
     private static final String PASSWORD = "user_test_password";
     private static final String MAIL = "user_test_@mail";
-    private static final String PHONE = "11111111";
     private static final String LOCALE = "en_US";
     private static final int USER_STATUS_ACTIVE = 1;
 
@@ -46,7 +45,6 @@ public class UserDaoImplTest {
             rs.getString("username"),
             rs.getString("password"),
             rs.getString("mail"),
-            rs.getString("phone"),
             new Status(rs.getInt("status"),rs.getString("statusName"))
     );
 
@@ -85,23 +83,21 @@ public class UserDaoImplTest {
         jdbcInsertUserStatus.execute(deleted);
     }
 
-    private void insertUser(long id, String username, String password, String mail, String phone, int status) {
+    private void insertUser(long id, String username, String password, String mail, int status) {
         final Map<String, Object> values = new HashMap<>();
         values.put("id", id);
         values.put("username", username);
         values.put("password", password);
         values.put("mail", mail);
-        values.put("phone", phone);
         values.put("status", status);
         jdbcInsert.execute(values);
     }
 
-    private void assertUser(User user, long id, String username, String password, String mail, String phone, int status) {
+    private void assertUser(User user, long id, String username, String password, String mail, int status) {
         assertEquals(id, user.getId());
         assertEquals(username, user.getUsername());
         assertEquals(password, user.getPassword());
         assertEquals(mail, user.getMail());
-        assertEquals(phone, user.getPhone());
         assertEquals(status, user.getStatus().getId());
     }
 
@@ -117,12 +113,12 @@ public class UserDaoImplTest {
     @Test
     public void testFindByIdExists() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
-        insertUser(ID, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        insertUser(ID, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
 
         Optional<User> opUser = userDaoImpl.findById(LOCALE, ID);
 
         assertTrue(opUser.isPresent());
-        assertUser(opUser.get(), ID, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        assertUser(opUser.get(), ID, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
     }
 
     @Test
@@ -137,12 +133,12 @@ public class UserDaoImplTest {
     @Test
     public void testFindByUsernameExists() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
-        insertUser(ID, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        insertUser(ID, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
 
         Optional<User> opUser = userDaoImpl.findByUsername(LOCALE, USERNAME);
 
         assertTrue(opUser.isPresent());
-        assertUser(opUser.get(), ID, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        assertUser(opUser.get(), ID, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
     }
 
     @Test
@@ -157,18 +153,18 @@ public class UserDaoImplTest {
     @Test
     public void testFindByMailExists() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
-        insertUser(ID, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        insertUser(ID, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
 
         Optional<User> opUser = userDaoImpl.findByMail(LOCALE, MAIL);
 
         assertTrue(opUser.isPresent());
-        assertUser(opUser.get(), ID, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        assertUser(opUser.get(), ID, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
     }
 
     @Test
     public void testUpdatePasswordExists() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
-        insertUser(ID, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        insertUser(ID, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
 
         boolean updated = userDaoImpl.updatePassword("new_psw", ID);
 
@@ -196,8 +192,8 @@ public class UserDaoImplTest {
     @Test
     public void testListExists() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
-        insertUser(ID, USERNAME, PASSWORD, MAIL, PHONE,USER_STATUS_ACTIVE);
-        insertUser(2, "other_user", "other_psw", "other_mail", "other_phone", USER_STATUS_ACTIVE);
+        insertUser(ID, USERNAME, PASSWORD, MAIL,USER_STATUS_ACTIVE);
+        insertUser(2, "other_user", "other_psw", "other_mail", USER_STATUS_ACTIVE);
 
         List<User> userList = userDaoImpl.list(LOCALE).collect(Collectors.toList());
 
@@ -208,7 +204,7 @@ public class UserDaoImplTest {
     public void testCreateUser() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
 
-        Optional<User> opUser = userDaoImpl.create(LOCALE, USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+        Optional<User> opUser = userDaoImpl.create(LOCALE, USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
 
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, USER_TABLE));
         assertTrue(opUser.isPresent());
@@ -216,8 +212,8 @@ public class UserDaoImplTest {
         assertTrue(jdbcOpUser.isPresent());
         User jdbcUser = jdbcOpUser.get();
         assertUser(opUser.get(), jdbcUser.getId(), jdbcUser.getUsername(),
-                jdbcUser.getPassword(), jdbcUser.getMail(), jdbcUser.getPhone(), USER_STATUS_ACTIVE);
-        assertUser(opUser.get(), jdbcUser.getId(), USERNAME, PASSWORD, MAIL, PHONE, USER_STATUS_ACTIVE);
+                jdbcUser.getPassword(), jdbcUser.getMail(), USER_STATUS_ACTIVE);
+        assertUser(opUser.get(), jdbcUser.getId(), USERNAME, PASSWORD, MAIL, USER_STATUS_ACTIVE);
     }
 
     /* TODO Test tokens */
