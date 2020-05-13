@@ -373,7 +373,7 @@ public class PetDaoImpl implements PetDao {
         String offset = Integer.toString(PETS_PER_PAGE*(numValue-1));
         String limit = " limit "+ PETS_PER_PAGE + " offset " + offset;
 
-        String sql = "SELECT pets.id as id " +
+        String sql = "SELECT distinct(pets.id) as id " +
                 "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
                 "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
                 "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
@@ -383,7 +383,7 @@ public class PetDaoImpl implements PetDao {
                 "AND lower(cast(provinces.id as char(20))) LIKE ? " +
                 "AND lower(cast(departments.id as char(20))) LIKE ? " +
                 "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
-                ;
+
         if(minP != -1 || maxP != -1) {
             if (minP == -1 && maxP != -1) {
                 sql += " AND price <= ?  ";
@@ -409,7 +409,7 @@ public class PetDaoImpl implements PetDao {
             return Stream.empty();
         }
         String pagePets = String.join(",", ids);
-
+        System.out.println("leeeen\n\n\n"+ ids.size());
 
         //query to get the pets for the current page
         String sqlWithPages = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
@@ -429,6 +429,7 @@ public class PetDaoImpl implements PetDao {
 
             Map<Pet, List<Long>> imageMap = jdbcTemplate.query(  sqlWithPages, new PetMapExtractor());
             imageMap.forEach(Pet::setImages);
+            System.out.println("ddddddddddaaaaa\n\n\n"+imageMap.keySet().size());
             return imageMap.keySet().stream();
         }
         else {
