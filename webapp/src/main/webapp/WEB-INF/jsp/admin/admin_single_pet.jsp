@@ -104,9 +104,10 @@
                                     code="yesNo.${pet.vaccinated}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.price"/> <spring:message
                                     code="argPrice" arguments="${pet.price}"/></li>
-                            <li class="list-group-item"><spring:message code="petCard.location"/> <c:out
-                                    value="${pet.location}"/></li>
-                                <%--                                        TODO:Falta la location BIEN cuando lo hayamos implementado en backend--%>
+                            <li class="list-group-item"><spring:message code="petCard.province"/> <c:out
+                                    value="${pet.province.name}"/></li>
+                            <li class="list-group-item"><spring:message code="petCard.department"/> <c:out
+                                    value="${pet.department.name}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.uploadDate"/> <c:out
                                     value="${pet.uploadDate}"/></li>
                             <li class="list-group-item"><spring:message code="admin.petCard.status"/> <c:out
