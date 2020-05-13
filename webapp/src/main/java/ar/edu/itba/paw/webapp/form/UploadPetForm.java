@@ -51,7 +51,6 @@ public class UploadPetForm {
 
     @NotNull
     @Min(value=0)
-    @Max(value = 10)
     private Integer price;
 
     public List<MultipartFile> getPhotos() {
