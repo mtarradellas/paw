@@ -128,6 +128,6 @@
             </div>
         </div>
     </div>
-
+    <script src="<c:url value="/resources/js/revert_change.js"/>"></script>
     <script src="<c:url value="/resources/js/edit_pet_view.js"/>"></script>
 </t:basicLayout>
