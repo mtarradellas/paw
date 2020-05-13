@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.validators.BreedIdMatch;
+import ar.edu.itba.paw.webapp.validators.*;
 
-import ar.edu.itba.paw.webapp.validators.FileSize;
-import ar.edu.itba.paw.webapp.validators.NotEmptyMultipart;
-import ar.edu.itba.paw.webapp.validators.SpeciesIdMatch;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,13 +24,16 @@ public class AdminUploadPetForm {
     private String petName;
 
     @SpeciesIdMatch
-    private Integer speciesId;
+    private Long speciesId;
 
     @BreedIdMatch
-    private Integer breedId;
+    private Long breedId;
 
-    @Size(min = 3, max = 50)
-    private String location;
+    @DepartmentIdMatch
+    private Long department;
+
+    @ProvinceIdMatch
+    private Long province;
 
     @NotNull
     private Boolean vaccinated;
@@ -72,28 +72,20 @@ public class AdminUploadPetForm {
         this.petName = petName;
     }
 
-    public Integer getSpeciesId() {
+    public Long getSpeciesId() {
         return speciesId;
     }
 
-    public void setSpeciesId(Integer speciesId) {
+    public void setSpeciesId(Long speciesId) {
         this.speciesId = speciesId;
     }
 
-    public Integer getBreedId() {
+    public Long getBreedId() {
         return breedId;
     }
 
-    public void setBreedId(Integer breedId) {
+    public void setBreedId(Long breedId) {
         this.breedId = breedId;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public Boolean getVaccinated() {
@@ -142,5 +134,21 @@ public class AdminUploadPetForm {
 
     public void setOwner(Long owner) {
         this.owner = owner;
+    }
+
+    public Long getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Long department) {
+        this.department = department;
+    }
+
+    public Long getProvince() {
+        return province;
+    }
+
+    public void setProvince(Long province) {
+        this.province = province;
     }
 }

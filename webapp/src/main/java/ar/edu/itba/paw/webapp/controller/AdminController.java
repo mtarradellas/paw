@@ -93,6 +93,10 @@ public class AdminController extends ParentController{
         String locale = getLocale();
 
         BreedList breedList = speciesService.breedsList(locale);
+        DepartmentList departmentList = locationService.departmentList();
+
+        mav.addObject("province_list", departmentList.getProvinceList().toArray());
+        mav.addObject("department_list", departmentList.toArray());
         mav.addObject("species_list", breedList.getSpecies().toArray());
         mav.addObject("breeds_list", breedList.toArray());
         mav.addObject("users_list", userService.list(locale).toArray());
@@ -127,8 +131,8 @@ public class AdminController extends ParentController{
         }
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                birthDate, currentDate, petForm.getPrice(), petForm.getOwner(), 15, photos);
+                 petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                birthDate, currentDate, petForm.getPrice(), petForm.getOwner(), petForm.getDepartment(), photos);
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");

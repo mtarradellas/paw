@@ -204,7 +204,7 @@ public class PetController extends ParentController {
         }
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                          null, petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                           petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
                           birthDate, currentDate, petForm.getPrice(), loggedUser().getId(), petForm.getDepartment(), photos);
 
 
