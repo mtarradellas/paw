@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.PetList;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
@@ -40,20 +41,14 @@ public class UserController extends ParentController {
         if (page == null){
             page = "1";
         }
-        List<Pet> petsByUser = petService.getByUserId(locale, id, page).collect(Collectors.toList());
-        List<Pet> petsAvailableByUser = new ArrayList<>();
-        for (Pet pet : petsByUser) {
-            if(pet.getStatus().getId() == PetStatus.AVAILABLE.getValue()) {
-                petsAvailableByUser.add(pet);
-            }
-        }
+        PetList petsByUser = petService.getByUserId(locale, id, page);
+
         mav.addObject("currentPage", page);
-        mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
+        mav.addObject("maxPage", petsByUser.getMaxPage());
         Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
         mav.addObject("userPets", petsByUser);
-        mav.addObject("userAvailablePets", petsAvailableByUser);
         return mav;
     }
 

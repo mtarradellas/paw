@@ -115,8 +115,10 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Stream<Pet> getByUserId(String language, long ownerId, String page) {
-        return petDao.getByUserId(language, ownerId, page);
+    public PetList getByUserId(String language, long ownerId, String page) {
+        String maxPages = getMaxUserPetsPages(ownerId);
+
+        return new PetList(petDao.getByUserId(language, ownerId, page).collect(Collectors.toList()), maxPages);
     }
 
     @Override

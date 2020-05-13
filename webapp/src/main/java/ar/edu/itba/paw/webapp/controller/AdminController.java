@@ -281,18 +281,18 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
                                       @RequestParam(name = "page", required = false) String page){
 
         final ModelAndView mav = new ModelAndView("/admin/admin_single_user");
-
+        String locale = getLocale();
         if(page == null){
             page = "1";
         }
 
-        List<Pet> petsByUser = petService.getByUserId(getLocale(), id, page).collect(Collectors.toList());
-        Optional<User> opUser = userService.findById(getLocale(), id);
+        PetList petsByUser = petService.getByUserId(locale, id, page);
+        Optional<User> opUser = userService.findById(locale, id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
-        mav.addObject("userPets", petsByUser.toArray());
+        mav.addObject("userPets", petsByUser);
 
-        mav.addObject("maxPage", petService.getMaxUserPetsPages(id));
+        mav.addObject("maxPage", petsByUser.getMaxPage());
         mav.addObject("currentPage", page);
         return mav;
     }
