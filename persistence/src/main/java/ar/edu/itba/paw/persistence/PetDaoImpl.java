@@ -576,17 +576,21 @@ public class PetDaoImpl implements PetDao {
 
         if (level == 0) {
             sql = "select count(distinct pets.id) " +
-                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                    "WHERE (LOWER(species." + language + ") LIKE ?  " +
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                    "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) "  +
                     "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
         } else {
             sql = "select count(distinct pets.id) " +
-                    "from (((pets inner join species on pets.species = species.id) inner join breeds on breed = breeds.id)inner join images on images.petid = pets.id) " +
-                    "WHERE (LOWER(species." + language + ") LIKE ?  " +
+                    "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                    "WHERE (LOWER(species." + language + ") LIKE ? " +
                     "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(location) LIKE ? OR price = ? ) ";
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " ;
         }
 
 
