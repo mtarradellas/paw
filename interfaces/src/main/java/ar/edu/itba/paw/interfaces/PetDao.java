@@ -25,7 +25,8 @@ public interface PetDao {
     String maxPages(int level);
     String maxSearchPages(String language, String findValue, int level);
     String maxAdminFilterPages(String language,String specieFilter,String breedFilter,String genderFilter,String statusFilter);
-    String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice);
+    String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
+                          String maxPrice, String province, String department);
     String getMaxUserPetsPages(long userId);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);

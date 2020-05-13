@@ -12,12 +12,16 @@ import java.util.stream.Stream;
 
 public interface PetService {
 
-    PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String province, String department, String page);
-    PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String province, String department, String page);
+    PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria,
+                    String searchOrder, String minPrice, String maxPrice, String province, String department, String page);
+    PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder,
+                         String minPrice, String maxPrice, String province, String department, String page);
     PetList find(String language, String findValue, String page);
 
-    PetList adminPetList(String language, String findValue, String species, String breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
-    PetList adminFilteredList(String language, String species, String breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
+    PetList adminPetList(String language, String findValue, String species, String breed, String gender, String status,
+                         String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
+    PetList adminFilteredList(String language, String species, String breed, String gender, String status, String searchCriteria,
+                              String searchOrder, String minPrice, String maxPrice, String page);
     PetList adminFind(String language, String findValue, String status, String page);
 
     List<Pet> list(String language, String page);
@@ -39,7 +43,8 @@ public interface PetService {
     String getMaxPages();
     String getMaxSearchPages(String language, String findValue);
     String getMaxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
-    String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice);
+    String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
+                             String maxPrice, String province, String department);
     String getMaxUserPetsPages(long userId);
     String getAdminMaxPages();
     String getAdminMaxSearchPages(String language,String find);

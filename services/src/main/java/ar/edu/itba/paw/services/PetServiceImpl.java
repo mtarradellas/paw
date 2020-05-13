@@ -66,9 +66,12 @@ public class PetServiceImpl implements PetService {
     @Override
     public PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder,
                                 String minPrice, String maxPrice, String province, String department, String page) {
+        LOGGER.debug("Filter parameters: species: {}, breed: {}, gender: {}, searchCriteria: {}, searchOrder: {}, minPrice: {}, " +
+                "maxPrice: {}, province: {}, department: {}",species, breed, gender, searchCriteria, searchOrder,
+                minPrice, maxPrice,  province, department);
         List<Pet> list = petDao.filteredList(language,species, breed, gender, searchCriteria, searchOrder,
                 minPrice, maxPrice,  province, department, page).collect(Collectors.toList());
-        String maxPage = getMaxFilterPages(language, species, breed, gender, minPrice, maxPrice);
+        String maxPage = getMaxFilterPages(language, species, breed, gender, minPrice, maxPrice, province, department);
         return new PetList(list, maxPage);
     }
 
@@ -246,8 +249,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice) {
-        return petDao.maxFilterPages(language, specieFilter, breedFilter, genderFilter, minPrice, maxPrice);
+    public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice, String province, String department) {
+        return petDao.maxFilterPages(language, specieFilter, breedFilter, genderFilter, minPrice, maxPrice, province, department);
     }
 
     @Override

@@ -57,12 +57,12 @@ public class PetController extends ParentController {
             page = "1";
         }
 
-        species = species == null || species.equals("any") ? null : species;
-        breed = breed == null || breed.equals("any") ? null : breed;
-        gender = gender == null || gender.equals("any") ? null : gender;
-        searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
-//province and dep
-
+        species = species == null || species.equals("-1") ? null : species;
+        breed = breed == null || breed.equals("-1") ? null : breed;
+        gender = gender == null || gender.equals("-1") ? null : gender;
+        searchCriteria = searchCriteria == null || searchCriteria.equals("-1") ? null : searchCriteria;
+        province = province == null || province.equals("-1") ? null : province;
+        department = department == null || department.equals("-1") ? null : department;
 
         PetList petList = petService.petList(locale, findValue, species, breed, gender, searchCriteria,
                 searchOrder, minPrice, maxPrice, province, department, page);
