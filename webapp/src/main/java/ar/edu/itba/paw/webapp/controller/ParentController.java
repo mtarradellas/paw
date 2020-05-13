@@ -40,7 +40,10 @@ public class ParentController {
     @Autowired
     RequestService requestService;
     @Autowired
-    private PSUserDetailsService userDetailsService;
+    LocationService locationService;
+    @Autowired
+    PSUserDetailsService userDetailsService;
+
 
     protected String getLocale() {
         Locale locale = LocaleContextHolder.getLocale();

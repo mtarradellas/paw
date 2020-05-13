@@ -7,7 +7,7 @@
 <t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="center">
-            <img src="<c:url value="/resources/images/access_denied.png.png"/>" alt="page_not_found" height="600" width="600"/>
+            <img src="<c:url value="/resources/images/access_denied.png"/>" alt="wrong_method" height="600" width="600"/>
         </div>
         <div class="center">
             <h2 class="align-content-center align"><b><spring:message code="wrongMethod.page"/></b> </h2>

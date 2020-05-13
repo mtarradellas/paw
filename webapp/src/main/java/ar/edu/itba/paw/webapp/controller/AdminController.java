@@ -35,7 +35,6 @@ public class AdminController extends ParentController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
-    //TODO: cambiar el path del mapping para que te redireccion correctamente
     @RequestMapping(value = "/admin")
     public ModelAndView getAdminHome() {
         return new ModelAndView("admin/admin");
@@ -98,6 +97,10 @@ public class AdminController extends ParentController{
         String locale = getLocale();
 
         BreedList breedList = speciesService.breedsList(locale);
+        DepartmentList departmentList = locationService.departmentList();
+
+        mav.addObject("province_list", departmentList.getProvinceList().toArray());
+        mav.addObject("department_list", departmentList.toArray());
         mav.addObject("species_list", breedList.getSpecies().toArray());
         mav.addObject("breeds_list", breedList.toArray());
         mav.addObject("users_list", userService.list(locale).toArray());
@@ -132,8 +135,8 @@ public class AdminController extends ParentController{
         }
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                petForm.getLocation(), petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                birthDate, currentDate, petForm.getPrice(), petForm.getOwner(), photos);
+                 petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
+                birthDate, currentDate, petForm.getPrice(), petForm.getOwner(), petForm.getDepartment(), photos);
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
@@ -174,7 +177,8 @@ public class AdminController extends ParentController{
         petForm.setBreedId(pet.getBreed().getId());
         petForm.setDescription(pet.getDescription());
         petForm.setGender(pet.getGender());
-        petForm.setLocation(pet.getLocation());
+        petForm.setProvince(pet.getProvince().getId());
+        petForm.setDepartment(pet.getDepartment().getId());
         petForm.setPrice(pet.getPrice());
         petForm.setPetName(pet.getPetName());
         petForm.setSpeciesId(pet.getSpecies().getId());
@@ -187,13 +191,17 @@ public class AdminController extends ParentController{
         String locale = getLocale();
 
         BreedList breedList = speciesService.breedsList(locale);
+        ProvinceList provinceList = locationService.provinceList();
+        DepartmentList departmentList = locationService.departmentList();
 
         return new ModelAndView("admin/admin_edit_pet")
                 .addObject("species_list", breedList.getSpecies().toArray())
                 .addObject("breeds_list", breedList.toArray())
                 .addObject("pet",
                         petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
-                .addObject("id", id);
+                .addObject("id", id)
+                .addObject("province_list", provinceList.toArray())
+                .addObject("department_list", departmentList.toArray());
     }
 
     @RequestMapping(value = "/admin/pet/{id}/edit", method = { RequestMethod.POST })
@@ -225,11 +233,12 @@ public class AdminController extends ParentController{
         Optional<Pet> opPet;
         try {
             opPet = petService.adminUpdate(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
-                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getLocation(),
-                    editPetForm.getVaccinated(), editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice());
+                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getVaccinated(),
+                    editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice(), editPetForm.getDepartment());
         }
         catch(InvalidImageQuantityException ex) {
             LOGGER.warn(ex.getMessage());
+
             return editPetForm(editPetForm, id).addObject("image_quantity_error", true);
         }
         if(!opPet.isPresent()){

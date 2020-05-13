@@ -12,19 +12,24 @@ import java.util.stream.Stream;
 
 public interface PetService {
 
-    PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
-    PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
+    PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria,
+                    String searchOrder, String minPrice, String maxPrice, String province, String department, String page);
+    PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder,
+                         String minPrice, String maxPrice, String province, String department, String page);
     PetList find(String language, String findValue, String page);
 
-    PetList adminPetList(String language, String findValue, String species, String breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
-    PetList adminFilteredList(String language, String species, String breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
+    PetList adminPetList(String language, String findValue, String species, String breed, String gender, String status,
+                         String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
+    PetList adminFilteredList(String language, String species, String breed, String gender, String status, String searchCriteria,
+                              String searchOrder, String minPrice, String maxPrice, String page);
     PetList adminFind(String language, String findValue, String status, String page);
 
     List<Pet> list(String language, String page);
     List<Pet> adminList(String language, String page);
     List<Pet> listAll(String language);
 
-    Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, List<byte[]> photos);
+    Optional<Pet> create(String language, String petName, long speciesId, long breedId, boolean vaccinated, String gender,
+                         String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos);
 
     Optional<Pet> findById(String language, long id);
     Optional<Pet> adminFindById(String language, long id);
@@ -38,16 +43,20 @@ public interface PetService {
     String getMaxPages();
     String getMaxSearchPages(String language, String findValue);
     String getMaxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
-    String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice);
+    String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
+                             String maxPrice, String province, String department);
     String getMaxUserPetsPages(long userId);
     String getAdminMaxPages();
     String getAdminMaxSearchPages(String language,String find);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
     void removeAllByOwner(long ownerId);
-    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                boolean vaccinated, String gender, String description, Date birthDate, int price);
-    Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                boolean vaccinated, String gender, String description, Date birthDate, int price);
+
+    boolean isPetOwner(long petId, long userId);
+    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+                         long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
+
+    Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+                              long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
 
 }

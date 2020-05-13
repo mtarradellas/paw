@@ -52,22 +52,7 @@
                                 </spring:bind>
                             </div>
                             <div class="col">
-                                <spring:bind path="location">
-                                    <div class="form-group">
-                                        <spring:message code="uploadPetForm.location" var="locationTxt"/>
-                                        <form:label path="location" for="location">${locationTxt}: </form:label>
-                                        <div class="input-modifiable-div" data-current="${pet.location}">
-                                            <form:input placeholder="${locationTxt}" type="text" id="location" path="location" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
-                                            <a class="revert-input-anchor">
-                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
-                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                        <form:errors path="location" element="div" cssClass="text-error"/>
-                                    </div>
-                                </spring:bind>
+
                                 <spring:bind path="price">
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
@@ -82,6 +67,40 @@
                                             </a>
                                         </div>
                                         <form:errors path="price" element="div" cssClass="text-error"/>
+                                    </div>
+                                </spring:bind>
+                            </div>
+                        </div>
+                        <div class="form-row p-1">
+                            <div class="col">
+                                <spring:bind path="province">
+                                    <div class="form-group">
+                                        <spring:message code="uploadPetForm.province" var="provinceTxt"/>
+
+                                        <form:label path="province" for="province">${provinceTxt}: </form:label>
+                                        <form:select id="province" path="province" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                            <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
+                                            <c:forEach var="province" items="${province_list}">
+                                                <form:option value="${province.id}">${province.name}</form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                        <form:errors path="province" element="div" cssClass="invalid-feedback"/>
+                                    </div>
+                                </spring:bind>
+                            </div>
+                            <div class="col">
+                                <spring:bind path="department">
+                                    <div class="form-group">
+                                        <spring:message code="uploadPetForm.department" var="departmentTxt"/>
+
+                                        <form:label path="department" for="department">${departmentTxt}: </form:label>
+                                        <form:select id="department" path="department" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                            <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
+                                            <c:forEach var="department" items="${department_list}">
+                                                <form:option data-province="${department.province.id}" value="${department.id}">${department.name}</form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                        <form:errors path="department" element="div" cssClass="invalid-feedback"/>
                                     </div>
                                 </spring:bind>
                             </div>

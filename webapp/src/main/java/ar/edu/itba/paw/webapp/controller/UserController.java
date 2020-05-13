@@ -155,6 +155,7 @@ public class UserController extends ParentController {
         return new ModelAndView("redirect:/403" );
     }
 
+
     @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.GET })
     public ModelAndView editUserGet(@ModelAttribute("editUserForm") final EditUserForm editUserForm, @PathVariable("id") long id){
         final String locale = getLocale();

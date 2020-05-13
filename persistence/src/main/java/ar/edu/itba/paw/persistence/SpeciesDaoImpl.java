@@ -17,17 +17,11 @@ import java.util.stream.Stream;
 @Repository
 public class SpeciesDaoImpl implements SpeciesDao {
 
-    private static final String PET_TABLE = "pets";
-
     private JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
     public SpeciesDaoImpl(final DataSource ds) {
         jdbcTemplate = new JdbcTemplate(ds);
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(PET_TABLE)
-                .usingGeneratedKeyColumns("id");
     }
     private static final RowMapper<Species> SPECIES_MAPPER = (rs, rowNum) -> new Species(
             rs.getInt("id"),

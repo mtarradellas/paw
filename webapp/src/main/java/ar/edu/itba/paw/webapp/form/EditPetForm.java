@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.validators.BreedIdMatch;
-import ar.edu.itba.paw.webapp.validators.FileSize;
-import ar.edu.itba.paw.webapp.validators.ImageDimensions;
-import ar.edu.itba.paw.webapp.validators.SpeciesIdMatch;
+import ar.edu.itba.paw.webapp.validators.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,8 +28,11 @@ public class EditPetForm {
     @BreedIdMatch
     private Long breedId;
 
-    @Size(min = 3, max = 50)
-    private String location;
+    @ProvinceIdMatch
+    private Long province;
+
+    @DepartmentIdMatch
+    private Long department;
 
     @NotNull
     private Boolean vaccinated;
@@ -51,6 +51,22 @@ public class EditPetForm {
     @NotNull
     @Min(value=0)
     private Integer price;
+
+    public Long getProvince() {
+        return province;
+    }
+
+    public void setProvince(Long province) {
+        this.province = province;
+    }
+
+    public Long getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Long department) {
+        this.department = department;
+    }
 
     public List<Integer> getImagesIdToDelete() {
         return imagesIdToDelete;
@@ -90,14 +106,6 @@ public class EditPetForm {
 
     public void setBreedId(Long breedId) {
         this.breedId = breedId;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public Boolean getVaccinated() {

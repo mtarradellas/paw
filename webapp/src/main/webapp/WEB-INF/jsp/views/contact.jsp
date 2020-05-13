@@ -11,6 +11,10 @@
                     <div class="shadow p-3 mb-5 rounded card-color">
                         <h1 class="title-style"><spring:message code="contact.contactUs"/></h1>
                     </div>
+                        <c:forEach items="${provinces}" var="prov">
+                            <h1><c:out value="${prov.id}"/></h1>
+                            <h1><c:out value="${prov.name}"/></h1>
+                        </c:forEach>
                     <h6 class="title-style"><b><spring:message code="contact.subtitle"/></b></h6>
                     <div class="row mt-1">
                         <div class="col-md-12">

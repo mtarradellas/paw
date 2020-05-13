@@ -38,29 +38,40 @@ public class PetServiceImpl implements PetService {
     @Autowired
     private ImageService imageService;
     @Autowired
+    private LocationService locationService;
+    @Autowired
     private RequestService requestService;
+
 
 
     @Override
     public Optional<Pet> findById(String language, long id) {
-        return petDao.findById(language, id, USER_LEVEL);
+        return petDao.findById(language, id);
     }
 
     @Override
     public Optional<Pet> adminFindById(String language, long id) {
-        return petDao.findById(language, id, ADMIN_LEVEL);
+        return petDao.findById(language, id);
     }
 
     @Override
-    public PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
-        if (findValue == null) return filteredList(language, species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page);
+    public PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria,
+                           String searchOrder, String minPrice, String maxPrice, String province, String department, String page) {
+
+        if (findValue == null) return filteredList(language, species, breed, gender, searchCriteria, searchOrder,
+                minPrice, maxPrice, province, department, page);
         return find(language, findValue, page);
     }
 
     @Override
-    public PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
-        List<Pet> list = petDao.filteredList(language,species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page).collect(Collectors.toList());
-        String maxPage = getMaxFilterPages(language, species, breed, gender, minPrice, maxPrice);
+    public PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder,
+                                String minPrice, String maxPrice, String province, String department, String page) {
+        LOGGER.debug("Filter parameters: species: {}, breed: {}, gender: {}, searchCriteria: {}, searchOrder: {}, minPrice: {}, " +
+                "maxPrice: {}, province: {}, department: {}",species, breed, gender, searchCriteria, searchOrder,
+                minPrice, maxPrice,  province, department);
+        List<Pet> list = petDao.filteredList(language,species, breed, gender, searchCriteria, searchOrder,
+                minPrice, maxPrice,  province, department, page).collect(Collectors.toList());
+        String maxPage = getMaxFilterPages(language, species, breed, gender, minPrice, maxPrice, province, department);
         return new PetList(list, maxPage);
     }
 
@@ -114,12 +125,16 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> create(String language, String petName, long speciesId, long breedId, String location, boolean vaccinated,
-                                String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, List<byte[]> photos) {
-        LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, location: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, upDate: {}, price: {}, owner: {}",
-                petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
+    public Optional<Pet> create(String language, String petName, long speciesId, long breedId,boolean vaccinated, String gender,
+                                String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos) {
+        LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, upDate: {}, price: {}, owner: {}",
+                petName, speciesId, breedId, department, vaccinated, gender, description, birthDate, uploadDate, price, ownerId);
 
 
+        if(!locationService.findDepartmentById(department).isPresent()){
+            LOGGER.warn("Department {} not found, pet update failed", department);
+            return Optional.empty();
+        }
         Optional<Species> opSpecies = speciesDao.findSpeciesById(language, speciesId);
         if (!opSpecies.isPresent()) {
             LOGGER.warn("Species {} not found, pet creation failed", speciesId);
@@ -141,14 +156,18 @@ public class PetServiceImpl implements PetService {
         }
         Status status = opStatus.get();
 
-        Pet pet = petDao.create(petName, species, breed, location, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status);
-        LOGGER.debug("Pet {} successfully created", pet);
+        long id = petDao.create(petName, species, breed, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, status, department);
+        LOGGER.debug("Pet id: {} successfully created", id);
 
         for (byte[] photo : photos) {
-            imageService.create(pet.getId(), photo, ownerId);
+            imageService.create(id, photo, ownerId);
         }
-
-        return Optional.of(pet);
+        Optional<Pet> opPet = findById(language, id);
+        if(!opPet.isPresent()){
+            LOGGER.warn("Pet creation failed");
+            return Optional.empty();
+        }
+        return opPet;
     }
 
     @Override
@@ -163,14 +182,18 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                       boolean vaccinated, String gender, String description, Date birthDate, int price) throws InvalidImageQuantityException {
-        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
-                        "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
-                id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+    public Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId,
+                       boolean vaccinated, String gender, String description, Date birthDate, int price, long department) throws InvalidImageQuantityException {
+        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, " +
+                        "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}, department: {},",
+                id, petName, speciesId, breedId, vaccinated, gender, description, birthDate, price, department);
 
         if(! petDao.isPetOwner(id, userId)) {
             LOGGER.warn("Logged user is not the owner of pet {}, update aborted", id);
+            return Optional.empty();
+        }
+        if(!locationService.findDepartmentById(department).isPresent()){
+            LOGGER.warn("Department {} not found, pet update failed", department);
             return Optional.empty();
         }
         if (!speciesDao.findSpeciesById(language, speciesId).isPresent()) {
@@ -189,7 +212,6 @@ public class PetServiceImpl implements PetService {
             toDelete = imagesToDelete.size();
         }
         int previousImageQuantity = imageService.quantityByPetId(id);
-        System.out.println("\n\n\n\n"+ photos.size());
         int finalImageQuantity = previousImageQuantity + photos.size() - toDelete;
         if(finalImageQuantity < MIN_IMAGES || finalImageQuantity > MAX_IMAGES) {
             throw new InvalidImageQuantityException("Pet must have between 1 and 5 images");
@@ -204,8 +226,8 @@ public class PetServiceImpl implements PetService {
                 imageService.create(id, photo, userId);
             }
         }
-        petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
-        Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
+        petDao.update(id, petName, speciesId, breedId, vaccinated, gender, description, birthDate, price, department);
+        Optional<Pet> opPet = petDao.findById(language, id);
         if (!opPet.isPresent()){
             LOGGER.debug("Pet {} update failed", id);
             return Optional.empty();
@@ -227,8 +249,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice) {
-        return petDao.maxFilterPages(language, specieFilter, breedFilter, genderFilter, minPrice, maxPrice);
+    public String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice, String maxPrice, String province, String department) {
+        return petDao.maxFilterPages(language, specieFilter, breedFilter, genderFilter, minPrice, maxPrice, province, department);
     }
 
     @Override
@@ -303,11 +325,17 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName, long speciesId, long breedId, String location,
-                                boolean vaccinated, String gender, String description, Date birthDate, int price) throws InvalidImageQuantityException {
-        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, location: {}, " +
+    public boolean isPetOwner(long petId, long userId) {
+        return petDao.isPetOwner(petId, userId);
+
+    }
+
+    @Override
+    public Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+                                     long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department) throws InvalidImageQuantityException {
+        LOGGER.debug("Attempting user update of pet {} with: petName: {}, speciesId: {}, breedId: {}, department: {}, " +
                         "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}",
-                id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
+                id, petName, speciesId, breedId, department, vaccinated, gender, description, birthDate, price);
 
 
         if (!speciesDao.findSpeciesById(language, speciesId).isPresent()) {
@@ -340,8 +368,8 @@ public class PetServiceImpl implements PetService {
                 imageService.createAdmin(id, photo);
             }
         }
-        petDao.update(id, petName, speciesId, breedId, location, vaccinated, gender, description, birthDate, price);
-        Optional<Pet> opPet = petDao.findById(language, id, USER_LEVEL);
+        petDao.update(id, petName, speciesId, breedId, vaccinated, gender, description, birthDate, price, department);
+        Optional<Pet> opPet = petDao.findById(language, id);
         if (!opPet.isPresent()){
             LOGGER.debug("Pet {} update failed", id);
             return Optional.empty();
