@@ -48,8 +48,7 @@
                     <hr>
                     <div class="p-2">
 
-                        <h2><b><spring:message code="userPets"/></b>
-                            <spring:message code="userPets.faded"/></h2>
+                        <h2><b><spring:message code="userPets"/></b></h2>
                         <c:if test="${not empty userPets}">
                             <div class="m-2 ">
                                 <c:if test="${maxPage ne 1}">
