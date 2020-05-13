@@ -71,8 +71,8 @@ public class PetController extends ParentController {
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petList.getMaxPage());
         mav.addObject("home_pet_list", petList.toArray());
-        mav.addObject("species_list", petList.getSpecies().toArray());
-        mav.addObject("breeds_list", petList.getBreeds().toArray());
+        mav.addObject("species_list", speciesService.speciesList(locale).toArray());
+        mav.addObject("breeds_list", speciesService.breedsList(locale).toArray());
         mav.addObject("pets_list_size", petList.size());
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
         mav.addObject("department_list", departmentList.toArray());
