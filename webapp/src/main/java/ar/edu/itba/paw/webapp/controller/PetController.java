@@ -308,15 +308,4 @@ public class PetController extends ParentController {
         }
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
-
-
-    @RequestMapping(value = "/test")
-    public ModelAndView testUsers() {
-        final ModelAndView mav = new ModelAndView("views/test");
-        mav.addObject("pet",
-                petService.findById(getLocale(),20).get());
-        return mav;
-    }
-
-
 }
