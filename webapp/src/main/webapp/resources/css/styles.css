@@ -331,3 +331,53 @@ html,body {
     display: inline;
     vertical-align: middle;
 }
+
+.custom-navbar a{
+    text-decoration: none;
+    color: white;
+}
+
+.custom-navbar a:hover{
+    text-decoration: none;
+    color: #909090;
+    cursor: pointer;
+}
+
+.custom-navbar ul {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+}
+
+.custom-navbar li {
+    margin-top: 30px;
+}
+
+.custom-navbar {
+    display: flex;
+    background-color: #222831;
+    padding: 40px 0;
+}
+
+.custom-navbar .nav-right {
+
+}
+
+.custom-navbar .nav-left {
+
+}
+
+.custom-navbar span{
+    color: white;
+    font-size: 30px;
+}
+
+@media only screen and (min-width: 1230px) {
+    .custom-navbar ul  {
+        flex-direction: row;
+    }
+
+    .custom-navbar li {
+        margin: auto 15px;
+    }
+}
