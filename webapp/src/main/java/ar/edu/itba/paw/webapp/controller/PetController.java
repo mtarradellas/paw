@@ -222,6 +222,10 @@ public class PetController extends ParentController {
         Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
 
         if(pet.getOwnerId() == loggedUser().getId()){
+
+            DepartmentList departmentList = locationService.departmentList();
+
+
             petForm.setBirthDate(pet.getBirthDate());
             petForm.setBreedId(pet.getBreed().getId());
             petForm.setDescription(pet.getDescription());
@@ -233,7 +237,9 @@ public class PetController extends ParentController {
             petForm.setSpeciesId(pet.getSpecies().getId());
             petForm.setVaccinated(pet.isVaccinated());
 
-            return editPetForm(petForm, id);
+            return editPetForm(petForm, id)
+                    .addObject("province_list", departmentList.getProvinceList().toArray())
+                    .addObject("department_list", departmentList.toArray());
         }
         return new ModelAndView("redirect:/403" );
 
