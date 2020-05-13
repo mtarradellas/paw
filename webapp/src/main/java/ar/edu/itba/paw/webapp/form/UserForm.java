@@ -29,9 +29,6 @@ public class UserForm {
     @Email
     private String mail;
 
-    @Pattern(regexp = "^[0-9]+$")
-    private String phone;
-
     public String getUsername() {
         return username;
     }
@@ -63,13 +60,5 @@ public class UserForm {
 
     public void setMail(String mail) {
         this.mail = mail;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 }

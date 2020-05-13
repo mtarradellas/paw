@@ -33,15 +33,6 @@ public class UserDaoImpl implements UserDao {
     private final SimpleJdbcInsert jdbcInsert;
     private final SimpleJdbcInsert jdbcInsertToken;
 
-//    private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
-//            rs.getLong("id"),
-//            rs.getString("username"),
-//            rs.getString("password"),
-//            rs.getString("mail"),
-//            rs.getString("phone"),
-//            new Status(rs.getInt("status"),rs.getString("statusName"))
-//    );
-
     private static final RowMapper<Token> TOKEN_MAPPER = (rs, rowNum) -> new Token(
             rs.getLong("id"),
             (UUID)rs.getObject("token"),
@@ -62,7 +53,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(String language, long id) {
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                         "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                         "pets.id AS petId, pets.petName as petName " +
                      "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
@@ -77,7 +68,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByUsername(String language, String username) {
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                 "pets.id AS petId, pets.petName as petName " +
                 "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
@@ -93,7 +84,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByMail(String language, String mail) {
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                 "pets.id AS petId, pets.petName as petName " +
                 "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
@@ -133,7 +124,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByToken(String language, UUID uuid) {
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                 "pets.id AS petId, pets.petName as petName " +
                 "FROM ((users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
@@ -148,7 +139,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Stream<User> list(String language) {
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                 "pets.id AS petId, pets.petName as petName " +
                 "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
@@ -170,7 +161,7 @@ public class UserDaoImpl implements UserDao {
 
         String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
 
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                 "pets.id AS petId, pets.petName as petName " +
                 "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
@@ -198,13 +189,13 @@ public class UserDaoImpl implements UserDao {
         String modifiedValue = "%" + findValue.toLowerCase() + "%";
         String offset = Integer.toString(ADMIN_SHOWCASE_ITEMS*(numValue-1));
 
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                 "pets.id AS petId, pets.petName as petName " +
                 "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
                 "(requests INNER JOIN request_status ON requests.status = request_status.id) INNER JOIN pets ON requests.petId = pets.id) " +
                 "ON users.id = requests.ownerId " +
-                "WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) " +
+                "WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) " +
                 " limit " + ADMIN_SHOWCASE_ITEMS + " offset " + offset;
 
         Map<User, List<Request>> requestMap = jdbcTemplate.query(sql, new Object[] {modifiedValue, modifiedValue, modifiedValue},
@@ -248,7 +239,7 @@ public class UserDaoImpl implements UserDao {
         }
         String pageUsers = String.join(",", ids);
 
-        String sql = "SELECT users.id AS id, username, password, mail, phone, users.status AS statusId, user_status." + language + " AS statusName, " +
+        String sql = "SELECT users.id AS id, username, password, mail, users.status AS statusId, user_status." + language + " AS statusName, " +
                 "requests.id AS requestId, requests.creationDate AS requestCreationDate, requests.status AS requestStatusId, request_status." + language + " AS requestStatusName, " +
                 "pets.id AS petId, pets.petName as petName " +
                 "FROM (users INNER JOIN user_status ON users.status = user_status.id) LEFT JOIN ( " +
@@ -305,7 +296,7 @@ public class UserDaoImpl implements UserDao {
         String modifiedValue = "%"+findValue.toLowerCase()+"%";
 
         Integer users = jdbcTemplate.queryForObject("select count(*) from users " +
-                        "WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) OR (LOWER(phone) LIKE ? ) " ,
+                        "WHERE (LOWER(username) LIKE ? ) OR (LOWER(mail) LIKE ? ) " ,
                 new Object[] { modifiedValue ,modifiedValue,modifiedValue},
                 Integer.class);
 
@@ -352,12 +343,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void update(String language, long id, String username, String phone) throws DuplicateUserException {
+    public void update(String language, long id, String username) throws DuplicateUserException {
         String sql = "UPDATE users " +
-                "SET username = ?, phone = ? " +
+                "SET username = ? " +
                 "WHERE id = ? ";
         try {
-            jdbcTemplate.update(sql, username, phone, id);
+            jdbcTemplate.update(sql, username, id);
         } catch (DuplicateKeyException ex) {
             if (ex.getMessage().contains("users_username_key")) throw new DuplicateUserException(DUPLICATE_USERNAME_ERROR, true, false);
         }
@@ -372,12 +363,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> create(String language, String username, String password, String mail, String phone, int status) throws DuplicateUserException {
+    public Optional<User> create(String language, String username, String password, String mail, int status) throws DuplicateUserException {
         final Map<String, Object> values = new HashMap<>();
         values.put("username", username);
         values.put("password", password);
         values.put("mail", mail);
-        values.put("phone", phone);
         values.put("status", status);
         Number key;
 

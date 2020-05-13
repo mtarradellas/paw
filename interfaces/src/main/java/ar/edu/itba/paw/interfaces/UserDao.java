@@ -17,7 +17,7 @@ public interface UserDao {
     Stream<User> adminUserList(String language, String page);
     Stream<User> adminSearchList(String language, String find, String page);
     Stream<User> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page);
-    Optional<User> create(String language, String username, String password, String mail, String phone, int status) throws DuplicateUserException;
+    Optional<User> create(String language, String username, String password, String mail, int status) throws DuplicateUserException;
     Optional<User> findByMail(String language, String mail);
     boolean updatePassword(String newPassword, long id);
     boolean createToken(UUID uuid, long userId, Date expirationDate);
@@ -31,6 +31,6 @@ public interface UserDao {
     boolean updateStatus(long id, int status);
     boolean isAdmin(long userId);
     void cleanOldTokens();
-    void update(String language, long id, String username, String phone);
+    void update(String language, long id, String username);
     String matchesPassword(long id, String password);
 }
