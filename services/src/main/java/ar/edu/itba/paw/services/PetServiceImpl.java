@@ -55,14 +55,19 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
-        if (findValue == null) return filteredList(language, species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page);
+    public PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria,
+                           String searchOrder, String minPrice, String maxPrice, String province, String department, String page) {
+
+        if (findValue == null) return filteredList(language, species, breed, gender, searchCriteria, searchOrder,
+                minPrice, maxPrice, province, department, page);
         return find(language, findValue, page);
     }
 
     @Override
-    public PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
-        List<Pet> list = petDao.filteredList(language,species, breed, gender, searchCriteria, searchOrder, minPrice, maxPrice, page).collect(Collectors.toList());
+    public PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder,
+                                String minPrice, String maxPrice, String province, String department, String page) {
+        List<Pet> list = petDao.filteredList(language,species, breed, gender, searchCriteria, searchOrder,
+                minPrice, maxPrice,  province, department, page).collect(Collectors.toList());
         String maxPage = getMaxFilterPages(language, species, breed, gender, minPrice, maxPrice);
         return new PetList(list, maxPage);
     }

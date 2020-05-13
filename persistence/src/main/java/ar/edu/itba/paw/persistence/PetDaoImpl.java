@@ -329,19 +329,25 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
+    public Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter,
+                                    String searchCriteria, String searchOrder, String minPrice, String maxPrice,
+                                    String province, String department, String page) {
         int numValue = 1;
         try {
             numValue = Integer.parseInt(page);
-        } catch (NumberFormatException ignored) {
-        }
-
-
+        } catch (NumberFormatException ignored) {}
+        int prov = -1;
+        try {
+            prov = Integer.parseInt(province);
+        } catch (NumberFormatException ignored) {}
+        int dep = -1;
+        try {
+            dep = Integer.parseInt(department);
+        } catch (NumberFormatException ignored) {}
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
         }
-
         int minP = -1;
         int maxP = -1;
         try {
