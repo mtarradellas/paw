@@ -8,7 +8,8 @@
         <div class="container-fluid">
             <div class="row">
 
-                <t:search-tools-pet breeds_list="${breeds_list}" species_list="${species_list}"/>
+                <t:search-tools-pet breeds_list="${breeds_list}" species_list="${species_list}"
+                                    province_list="${province_list}" department_list="${department_list}"/>
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
