@@ -16,12 +16,22 @@ public class Province implements Comparable<Province>{
         this.longitude = longitude;
     }
 
+    public Province(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Province province = (Province) o;
         return id == province.id;
+    }
+
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + " }";
     }
 
     @Override

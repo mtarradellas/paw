@@ -373,13 +373,7 @@ public class PetDaoImpl implements PetDao {
         String offset = Integer.toString(PETS_PER_PAGE*(numValue-1));
         String limit = " limit "+ PETS_PER_PAGE + " offset " + offset;
 
-        String sql = "SELECT distinct(pets.id) as id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
-                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
-                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
-                "images.id AS imagesId, images.petId AS petId, " +
-                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
-                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
-                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+        String sql = "SELECT distinct(pets.id) as id " +
                 "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
                 "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
                 "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +

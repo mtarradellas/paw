@@ -63,7 +63,7 @@ public class Pet {
     @Override
     public String toString() {
         return "{ id: " + id + ", name: " + petName + ", species: " + species + ", breed: " + breed +
-                ", owner: " + ownerId + ", status: " + status + " }";
+                ", owner: " + ownerId + ", status: " + status + ", dept: " + department + ", prov: " + province + " }";
     }
 
     public long getId() {
