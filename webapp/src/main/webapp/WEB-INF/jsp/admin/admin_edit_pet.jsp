@@ -143,6 +143,44 @@
                                         <form:errors path="speciesId" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
+
+                                <spring:bind path="birthDate">
+                                    <div class="form-group">
+                                        <spring:message code="uploadPetForm.birthDate" var="birthDateTxt"/>
+                                        <form:label path="birthDate" for="birthDate">${birthDateTxt}: </form:label>
+                                        <div class="input-modifiable-div" data-current="${pet.birthDate}">
+                                            <form:input type="date" id="birthDate" path="birthDate" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
+                                            <a class="revert-input-anchor">
+                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
+                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                        <form:errors path="birthDate" element="div" cssClass="text-error"/>
+                                    </div>
+                                </spring:bind>
+                                <spring:bind path="gender">
+                                    <div class="form-group">
+                                        <spring:message code="uploadPetForm.gender" var="genderTxt"/>
+                                        <form:label path="gender" for="gender">${genderTxt}: </form:label>
+                                        <div class="input-modifiable-div" data-current="${pet.gender}">
+                                            <form:select id="gender" path="gender" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
+                                                <form:option value="male"><spring:message code="uploadPetForm.male"/></form:option>
+                                                <form:option value="female"><spring:message code="uploadPetForm.female"/></form:option>
+                                            </form:select>
+                                            <a class="revert-input-anchor">
+                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
+                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                        <form:errors path="gender" element="div" cssClass="text-error"/>
+                                    </div>
+                                </spring:bind>
+                            </div>
+                            <div class="col">
                                 <spring:bind path="breedId">
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.breedName" var="breedIdTxt"/>
@@ -164,24 +202,6 @@
                                         <form:errors path="breedId" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
-                                <spring:bind path="birthDate">
-                                    <div class="form-group">
-                                        <spring:message code="uploadPetForm.birthDate" var="birthDateTxt"/>
-                                        <form:label path="birthDate" for="birthDate">${birthDateTxt}: </form:label>
-                                        <div class="input-modifiable-div" data-current="${pet.birthDate}">
-                                            <form:input type="date" id="birthDate" path="birthDate" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
-                                            <a class="revert-input-anchor">
-                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
-                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                        <form:errors path="birthDate" element="div" cssClass="text-error"/>
-                                    </div>
-                                </spring:bind>
-                            </div>
-                            <div class="col">
                                 <spring:bind path="vaccinated">
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.vaccinated" var="vaccinatedTxt"/>
@@ -201,26 +221,6 @@
                                         </div>
 
                                         <form:errors path="vaccinated" element="div" cssClass="text-error"/>
-                                    </div>
-                                </spring:bind>
-
-                                <spring:bind path="gender">
-                                    <div class="form-group">
-                                        <spring:message code="uploadPetForm.gender" var="genderTxt"/>
-                                        <form:label path="gender" for="gender">${genderTxt}: </form:label>
-                                        <div class="input-modifiable-div" data-current="${pet.gender}">
-                                            <form:select id="gender" path="gender" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
-                                                <form:option value="male"><spring:message code="uploadPetForm.male"/></form:option>
-                                                <form:option value="female"><spring:message code="uploadPetForm.female"/></form:option>
-                                            </form:select>
-                                            <a class="revert-input-anchor">
-                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
-                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                        <form:errors path="gender" element="div" cssClass="text-error"/>
                                     </div>
                                 </spring:bind>
                             </div>
