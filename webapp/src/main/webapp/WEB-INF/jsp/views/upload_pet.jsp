@@ -98,6 +98,30 @@
                                     <form:errors path="speciesId" element="div" cssClass="invalid-feedback"/>
                                 </div>
                             </spring:bind>
+
+                            <spring:bind path="birthDate">
+                                <div class="form-group">
+                                    <spring:message code="uploadPetForm.birthDate" var="birthDateTxt"/>
+                                    <form:label path="birthDate" for="birthDate">${birthDateTxt}: </form:label>
+                                    <form:input type="date" id="birthDate" path="birthDate" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                    <form:errors path="birthDate" element="div" cssClass="invalid-feedback"/>
+                                </div>
+                            </spring:bind>
+
+                            <spring:bind path="gender">
+                                <div class="form-group">
+                                    <spring:message code="uploadPetForm.gender" var="genderTxt"/>
+                                    <form:label path="gender" for="gender">${genderTxt}: </form:label>
+                                    <form:select id="gender" path="gender" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
+                                        <form:option value="male"><spring:message code="uploadPetForm.male"/></form:option>
+                                        <form:option value="female"><spring:message code="uploadPetForm.female"/></form:option>
+                                    </form:select>
+                                    <form:errors path="gender" element="div" cssClass="invalid-feedback"/>
+                                </div>
+                            </spring:bind>
+
+                        </div>
+                        <div class="col">
                             <spring:bind path="breedId">
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.breedName" var="breedIdTxt"/>
@@ -111,16 +135,7 @@
                                     <form:errors path="breedId" element="div" cssClass="invalid-feedback"/>
                                 </div>
                             </spring:bind>
-                            <spring:bind path="birthDate">
-                                <div class="form-group">
-                                    <spring:message code="uploadPetForm.birthDate" var="birthDateTxt"/>
-                                    <form:label path="birthDate" for="birthDate">${birthDateTxt}: </form:label>
-                                    <form:input type="date" id="birthDate" path="birthDate" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
-                                    <form:errors path="birthDate" element="div" cssClass="invalid-feedback"/>
-                                </div>
-                            </spring:bind>
-                        </div>
-                        <div class="col">
+
                             <spring:bind path="vaccinated">
                                 <div class="form-group">
                                     <spring:message code="uploadPetForm.vaccinated" var="vaccinatedTxt"/>
@@ -130,18 +145,6 @@
                                         <form:option value="${false}"><spring:message code="boolean.No"/></form:option>
                                     </form:select>
                                     <form:errors path="vaccinated" element="div" cssClass="invalid-feedback"/>
-                                </div>
-                            </spring:bind>
-
-                            <spring:bind path="gender">
-                                <div class="form-group">
-                                    <spring:message code="uploadPetForm.gender" var="genderTxt"/>
-                                    <form:label path="gender" for="gender">${genderTxt}: </form:label>
-                                    <form:select id="gender" path="gender" cssClass="custom-select ${status.error ? 'is-invalid' : ''}">
-                                        <form:option value="male"><spring:message code="uploadPetForm.male"/></form:option>
-                                        <form:option value="female"><spring:message code="uploadPetForm.female"/></form:option>
-                                    </form:select>
-                                    <form:errors path="gender" element="div" cssClass="invalid-feedback"/>
                                 </div>
                             </spring:bind>
 

@@ -272,9 +272,11 @@
 //        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
 //
 //        /**/
+
 //        Stream<Pet> petStream = petDaoImpl.filteredList("es_ar", SPECIES.getName(), null,
 //                                                null, "species", "asc","0", "6000","1");
 //        List<Pet> petList = petStream.collect(Collectors.toList());
+
 //
 //        assertEquals(1, petList.size());
 //        Pet pet = petList.get(0);
