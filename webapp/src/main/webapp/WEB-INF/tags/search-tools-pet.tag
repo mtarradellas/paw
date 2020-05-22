@@ -11,11 +11,8 @@
 
 <div class="col-md-2 search-tools">
     <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/">
-        <div class="card-header">
-            <h5 class="card-title"><spring:message code="filter.options"/></h5>
-        </div>
+
         <div class="card-body">
-            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
             <div class="form-group">
                 <label for="filter-species"><spring:message code="pet.species"/></label>
                 <select data-child="filter-breed" name="species" class="selector-parent form-control" id="filter-species">
@@ -110,7 +107,6 @@
 
                 </select>
             </div>
-            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
             <select data-child="search-order" name="searchCriteria" class="selector-parent form-control" id="search-criteria">
                 <option value="-1"><spring:message code="filter.any"/></option>
