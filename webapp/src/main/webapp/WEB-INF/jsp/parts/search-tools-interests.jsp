@@ -5,11 +5,8 @@
 
 <div class="col-md-2 search-tools">
     <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/${param.destination}">
-        <div class="card-header">
-            <h5 class="card-title"><spring:message code="filter.options"/></h5>
-        </div>
+
         <div class="card-body">
-            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
             <div class="form-group">
                 <label for="filter-status"><spring:message code="request.status"/></label>
                 <select name="status" class="form-control" id="filter-status">
@@ -40,7 +37,6 @@
                     ><spring:message code="request.canceled"/></option>
                 </select>
             </div>
-            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
             <select name="searchCriteria" class="form-control" id="search-criteria">
                 <option value="any"><spring:message code="filter.any"/></option>
