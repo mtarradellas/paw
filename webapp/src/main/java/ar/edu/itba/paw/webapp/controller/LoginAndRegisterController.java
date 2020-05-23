@@ -83,7 +83,7 @@ public class LoginAndRegisterController extends ParentController {
     }
 
     @RequestMapping(value ="/account-activation", method = { RequestMethod.GET })
-    public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString) {
+    public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString, HttpServletRequest request) {
         UUID uuid = UUID.fromString(tokenString);
 
         /* TODO create exceptions for better error handling */
@@ -94,7 +94,9 @@ public class LoginAndRegisterController extends ParentController {
             return new ModelAndView("views/activation_email_invalid");
         }
 
-        return new ModelAndView("redirect:/login");
+        authenticateUserAndSetSession(opUser.get().getUsername(), request);
+
+        return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(value ="/request-password-reset", method = { RequestMethod.GET })
