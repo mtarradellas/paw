@@ -62,6 +62,13 @@ public class AdminController extends ParentController{
             page = "1";
         }
 
+        if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+            mav.addObject("wrongSearch", true);
+            findValue = "";
+        }else{
+            mav.addObject("wrongSearch", false);
+        }
+
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
         status = status == null || status.equals("any") ? null : status;
@@ -264,6 +271,13 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
         page = "1";
     }
 
+    if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+        mav.addObject("wrongSearch", true);
+        findValue = "";
+    }else{
+        mav.addObject("wrongSearch", false);
+    }
+
     status = status == null || status.equals("any") ? null : status;
     searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
@@ -439,6 +453,13 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
 
         if(page == null){
             page = "1";
+        }
+
+        if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+            mav.addObject("wrongSearch", true);
+            findValue = "";
+        }else{
+            mav.addObject("wrongSearch", false);
         }
 
         status = status == null || status.equals("any") ? null : status;
