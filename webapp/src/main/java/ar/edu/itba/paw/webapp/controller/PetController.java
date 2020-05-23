@@ -177,10 +177,18 @@ public class PetController extends ParentController {
 
         ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
         BufferedImage bufferedImage = ImageIO.read(bis);
-        BufferedImage cropped = bufferedImage.getSubimage(0, 0, 250, 250); //Falta la matematica para ver
-                                                                                        // el corte donde se hace
+        int height = bufferedImage.getHeight(), width = bufferedImage.getWidth();
+
+        BufferedImage cropped = bufferedImage;
+        int diff = Math.abs(height-width);
+        if(width>height){
+            cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
+        }else{ if(width<height)
+            cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write( cropped, "jpg", baos );
+        ImageIO.write(cropped, "jpg", baos );
         baos.flush();
         byte[] imageInByte = baos.toByteArray();
         baos.close();
