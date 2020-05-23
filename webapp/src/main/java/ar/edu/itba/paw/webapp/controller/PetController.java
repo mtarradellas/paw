@@ -22,8 +22,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -164,8 +169,22 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
-    byte[] getImageWithMediaType(@PathVariable("id") long id) {
-        return imageService.getDataById(id).orElse(null);
+    byte[] getImageWithMediaType(@PathVariable("id") long id) throws IOException {
+        byte[] byteImage = imageService.getDataById(id).orElse(null);
+        if(byteImage == null){
+            return byteImage;
+        }
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
+        BufferedImage bufferedImage = ImageIO.read(bis);
+        BufferedImage cropped = bufferedImage.getSubimage(0, 0, 250, 250); //Falta la matematica para ver
+                                                                                        // el corte donde se hace
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write( cropped, "jpg", baos );
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+        return imageInByte;
     }
 
     @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
