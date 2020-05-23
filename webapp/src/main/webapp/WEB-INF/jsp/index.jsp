@@ -31,7 +31,7 @@
                                         <b><spring:message code="searchFor" arguments="${findValue}"/> </b>
                                     </c:if>
 
-                                    <spring:message code="showingResults" arguments="${pets_list_size}"/>
+                                    <spring:message code="totalResults" arguments="${totalPets}"/>
                                 </h2>
                             </div>
                             <div class="col-md-1 align-self-end">

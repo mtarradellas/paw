@@ -42,7 +42,7 @@ public class AdminController extends ParentController{
 
 
 
-//    PETS ENDPOINTS
+//  ###############################################    PETS ENDPOINTS    ###############################################
     @RequestMapping(value = "/admin/pets")
     public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
                                      @RequestParam(name = "breed", required = false) String breed,
@@ -83,7 +83,6 @@ public class AdminController extends ParentController{
         mav.addObject("pets_list", petList);
         mav.addObject("species_list", petList.getSpecies());
         mav.addObject("breeds_list", petList.getBreeds());
-
         return mav;
     }
 
@@ -256,9 +255,9 @@ public class AdminController extends ParentController{
     }
 
 
-//    USERS ENDPOINTS
-@RequestMapping(value = "/admin/users")
-public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = false) String status,
+//  ###############################################    USER ENDPOINTS    ###############################################
+    @RequestMapping(value = "/admin/users")
+    public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = false) String status,
                                   @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                   @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                   @RequestParam(name = "page", required = false) String page,
@@ -440,7 +439,7 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
     }
 
 
-    //    REQUESTS ENDPOINTS
+//  #############################################    REQUESTS ENDPOINTS    #############################################
     @RequestMapping(value = "/admin/requests")
     public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
                                          @RequestParam(name = "searchCriteria", required = false) String searchCriteria,

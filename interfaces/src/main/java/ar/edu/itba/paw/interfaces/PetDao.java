@@ -22,12 +22,12 @@ public interface PetDao {
                String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, long departmentId);
     void updateStatus(long id, long newStatus);
     boolean isPetOwner(long petId, long userId);
-    String maxPages(int level);
-    String maxSearchPages(String language, String findValue, int level);
-    String maxAdminFilterPages(String language,String specieFilter,String breedFilter,String genderFilter,String statusFilter);
-    String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
-                          String maxPrice, String province, String department);
-    String getMaxUserPetsPages(long userId);
+    int maxPetsAmount(int level);
+    int maxFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
+                              String maxPrice, String province, String department);
+    int maxAdminFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
+    int maxSearchPetsAmount(String language, String findValue, int level);
+    int maxUserPetsAmount(long userId);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
     Optional<Status> findStatusById(String language, long id);
