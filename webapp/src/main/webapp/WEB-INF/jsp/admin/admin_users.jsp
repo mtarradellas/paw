@@ -8,6 +8,14 @@
 
 <t:adminLayout title="${userTitle}" item="users">
     <jsp:body>
+        <c:if test="${wrongSearch}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <spring:message code="wrongSearch"/>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </c:if>
         <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
 
         <div class="container-fluid">
@@ -76,23 +84,31 @@
                     </form>
                 </div>
 
-                <div class="col-lg-8">
+                <div class="col">
                     <div class="shadow p-3 bg-white rounded">
+                        <div class="row">
+                            <div class="col">
+                                <c:if test="${empty users_list }">
+                                    <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                        <a href="${pageContext.request.contextPath}/admin/users"><spring:message code="showFirst"/></a>
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty users_list}">
+                                    <div>
+                                        <h2><spring:message code="admin.usersListing" /> <spring:message code="showingResults" arguments="${users_list.size()}"/>
+                                            <a type="button" class="btn btn-success"
+                                               href="${pageContext.request.contextPath}/admin/upload-user">
+                                                <i class="fas fa-plus mr-2"></i><spring:message code="addUser"/></a>
+                                        </h2>
+                                    </div>
+                                </c:if>
+                            </div>
+                            <div class="col-md-1 align-self-end">
+                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                        data-toggle="modal" data-target="#help"><b>?</b></button>
+                            </div>
+                        </div>
 
-                        <c:if test="${empty users_list }">
-                            <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/admin/users"><spring:message code="showFirst"/></a>
-                            </div>
-                        </c:if>
-                        <c:if test="${not empty users_list}">
-                            <div>
-                                <h2><spring:message code="admin.usersListing" /> <spring:message code="showingResults" arguments="${users_list.size()}"/>
-                                    <a type="button" class="btn btn-success"
-                                       href="${pageContext.request.contextPath}/admin/upload-user">
-                                        <i class="fas fa-plus mr-2"></i><spring:message code="addUser"/></a>
-                                </h2>
-                            </div>
-                        </c:if>
 
                         <div class="m-2 ">
                             <c:if test="${maxPage ne 1}">
@@ -155,12 +171,27 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="shadow p-3 bg-white rounded">
-                        <h4><b><spring:message code="guide.role"/></b></h4>
-                        <p><spring:message code="guide.role.description"/></p>
-                        <h4><b><spring:message code="guide.color"/></b></h4>
-                        <p><spring:message code="guide.color.description"/></p>
+                <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpTitle"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="helpTitle"><spring:message code="help.title"/></h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h4><b><spring:message code="guide.role"/></b></h4>
+                                <p><spring:message code="guide.role.description"/></p>
+                                <h4><b><spring:message code="guide.color"/></b></h4>
+                                <p><spring:message code="guide.color.description"/></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

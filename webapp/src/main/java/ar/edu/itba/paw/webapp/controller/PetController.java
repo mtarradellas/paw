@@ -13,6 +13,7 @@ import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -22,8 +23,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -57,6 +63,13 @@ public class PetController extends ParentController {
             page = "1";
         }
 
+        if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+            mav.addObject("wrongSearch", true);
+            findValue = "";
+        }else{
+            mav.addObject("wrongSearch", false);
+        }
+
         species = species == null || species.equals("-1") ? null : species;
         breed = breed == null || breed.equals("-1") ? null : breed;
         gender = gender == null || gender.equals("-1") ? null : gender;
@@ -76,6 +89,7 @@ public class PetController extends ParentController {
         mav.addObject("pets_list_size", petList.size());
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
         mav.addObject("department_list", departmentList.toArray());
+        mav.addObject("findValue", findValue);
         return mav;
     }
 
@@ -164,8 +178,31 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
-    byte[] getImageWithMediaType(@PathVariable("id") long id) {
-        return imageService.getDataById(id).orElse(null);
+    byte[] getImageWithMediaType(@PathVariable("id") long id) throws IOException {
+        byte[] byteImage = imageService.getDataById(id).orElse(null);
+        if(byteImage == null){
+            return byteImage;
+
+        }
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
+        BufferedImage bufferedImage = ImageIO.read(bis);
+        int height = bufferedImage.getHeight(), width = bufferedImage.getWidth();
+
+        BufferedImage cropped = bufferedImage;
+        int diff = Math.abs(height-width);
+        if(width>height){
+            cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
+        }else{ if(width<height)
+            cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(cropped, "jpg", baos );
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+        return imageInByte;
     }
 
     @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })

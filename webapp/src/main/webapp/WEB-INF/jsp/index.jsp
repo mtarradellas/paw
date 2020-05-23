@@ -5,6 +5,14 @@
 <spring:message code="indexTitle" var="titleVar"/>
 <t:basicLayout title="${titleVar}">
     <jsp:body>
+        <c:if test="${wrongSearch}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <spring:message code="wrongSearch"/>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </c:if>
         <div class="container-fluid">
             <div class="row">
 
@@ -15,8 +23,15 @@
                     <div class="shadow p-3 bg-white rounded">
                         <div class="row">
                             <div class="col">
-                                <h2><b><spring:message code="indexMessage"/></b> <spring:message code="showingResults"
-                                                                                                 arguments="${pets_list_size}"/>
+                                <h2>
+                                    <c:if test="${empty findValue}">
+                                        <b><spring:message code="indexMessage"/></b>
+                                    </c:if>
+                                    <c:if test="${not empty findValue}">
+                                        <b><spring:message code="searchFor" arguments="${findValue}"/> </b>
+                                    </c:if>
+
+                                    <spring:message code="showingResults" arguments="${pets_list_size}"/>
                                 </h2>
                             </div>
                             <div class="col-md-1 align-self-end">
