@@ -51,8 +51,7 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String findValue,
                                 @RequestParam(name = "page", required = false) String page,
-                                @RequestParam(name = "minPrice", required = false) String minPrice,
-                                @RequestParam(name = "maxPrice", required = false) String maxPrice,
+                                @RequestParam(name = "priceRange", required = false) String priceRange,
                                 @RequestParam(name = "province", required = false) String province,
                                 @RequestParam(name = "department", required = false) String department) {
 
@@ -68,6 +67,37 @@ public class PetController extends ParentController {
             findValue = "";
         }else{
             mav.addObject("wrongSearch", false);
+        }
+
+        String minPrice,maxPrice;
+
+        if(priceRange == null || priceRange.equals("-1")){
+            minPrice = "-1";
+            maxPrice = "-1";
+        }else if (priceRange.equals("0")){
+            minPrice = "0";
+            maxPrice = "0";
+        }else if (priceRange.equals("1")){
+            minPrice = "1";
+            maxPrice = "5000";
+        }else if (priceRange.equals("2")){
+            minPrice = "5000";
+            maxPrice = "10000";
+        }else if (priceRange.equals("3")){
+            minPrice = "10000";
+            maxPrice = "15000";
+        }else if (priceRange.equals("4")){
+            minPrice = "15000";
+            maxPrice = "20000";
+        }else if (priceRange.equals("5")){
+            minPrice = "20000";
+            maxPrice = "25000";
+        }else if (priceRange.equals("6")){
+            minPrice = "25000";
+            maxPrice = "-1";
+        }else{
+            minPrice = "-1";
+            maxPrice = "-1";
         }
 
         species = species == null || species.equals("-1") ? null : species;
