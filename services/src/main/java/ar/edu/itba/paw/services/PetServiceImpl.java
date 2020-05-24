@@ -89,6 +89,11 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public List<String> autocompleteFind(String language, String findValue){
+        return petDao.autocompleteFind(language, findValue).collect(Collectors.toList());
+    }
+
+    @Override
     public PetList adminPetList(String language, String findValue, String species, String  breed, String gender, String status, String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page) {
         if (findValue == null) return adminFilteredList(language, species, breed, gender, status, searchCriteria, searchOrder, minPrice, maxPrice, page);
         return adminFind(language, findValue, status, page);

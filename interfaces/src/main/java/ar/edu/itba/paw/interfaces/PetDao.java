@@ -34,4 +34,5 @@ public interface PetDao {
     void updateAllByOwner(long ownerId, int status);
     void update(long id, String petName, long speciesId, long breedId, boolean vaccinated, String gender,
                 String description, Date birthDate, int price, long department);
+    Stream<String> autocompleteFind(String language, String findValue);
 }

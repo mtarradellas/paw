@@ -66,4 +66,5 @@ public interface PetService {
     Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
                               long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
 
+    List<String> autocompleteFind(String language, String findValue);
 }

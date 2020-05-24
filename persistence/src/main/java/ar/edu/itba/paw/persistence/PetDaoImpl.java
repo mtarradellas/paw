@@ -16,10 +16,7 @@ import org.springframework.util.StringUtils;
 import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -229,6 +226,45 @@ public class PetDaoImpl implements PetDao {
                 new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
         return imageMap.keySet().stream();
+    }
+
+    @Override
+    public Stream<String> autocompleteFind(String language, String findValue) {
+        Set<String> autocompleteValues = new HashSet<>();
+
+        long numValue = -1;
+        try {
+            numValue = Long.parseLong(findValue);
+        } catch (NumberFormatException ignored) {
+        }
+        String modifiedValue = "%" + findValue.toLowerCase() + "%";
+
+        String sql = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name "+
+                "WHERE (LOWER(species." + language + ") LIKE ? " +
+                "OR LOWER(breeds." + language + ") LIKE ? " +
+                "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
+
+        Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, new PetMapExtractor());
+        for(Pet pet : imageMap.keySet()){
+            autocompleteValues.add(pet.getPetName());
+            autocompleteValues.add(pet.getDepartment().getName());
+            autocompleteValues.add(pet.getProvince().getName());
+            autocompleteValues.add(Integer.toString(pet.getPrice()));
+            autocompleteValues.add(pet.getBreed().getName());
+            autocompleteValues.add(pet.getSpecies().getName());
+        }
+
+        return autocompleteValues.stream();
     }
 
     @Override

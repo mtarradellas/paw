@@ -13,6 +13,7 @@ import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
+import com.google.gson.Gson;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -122,6 +124,23 @@ public class PetController extends ParentController {
         mav.addObject("totalPets", petList.getTotalPetsAmount());
         return mav;
     }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET, headers="Accept=*/*")
+    @ResponseBody
+    public void search(HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        List<String> searchValues = petService.autocompleteFind(getLocale(),request.getParameter("term"));
+        response.setContentType("application/json");
+
+        final String param = request.getParameter("term");
+        final List<AutoCompleteData> result = new ArrayList<>();
+        for (final String country : searchValues) {
+            if (country.toLowerCase().contains(param.toLowerCase())) {
+                result.add(new AutoCompleteData(country, country));
+            }
+        }
+        response.getWriter().write(new Gson().toJson(result));
+    }
+
 
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {
