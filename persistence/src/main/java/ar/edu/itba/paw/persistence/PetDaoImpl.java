@@ -732,19 +732,11 @@ public class PetDaoImpl implements PetDao {
         }
 
         long numValue = -1;
-        boolean number = true;
-        for (int i = 0; i < findValue.length(); i++) {
-            if (!Character.isDigit(findValue.charAt(i))) {
-                number = false;
-            }
+        try {
+            numValue = Long.parseLong(findValue);
+        } catch (NumberFormatException ignored) {
         }
-        if (number) {
-            try {
 
-            } catch (NumberFormatException ignored) {
-                numValue = Long.parseLong(findValue);
-            }
-        }
         String modifiedValue = "%" + findValue.toLowerCase() + "%";
         String sql;
 
@@ -766,7 +758,6 @@ public class PetDaoImpl implements PetDao {
                     "OR LOWER(breeds." + language + ") LIKE ? " +
                     "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " ;
         }
-
 
         return jdbcTemplate.queryForObject(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, Integer.class);
     }
