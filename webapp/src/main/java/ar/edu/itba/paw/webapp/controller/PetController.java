@@ -13,6 +13,7 @@ import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
+import com.google.gson.Gson;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -51,8 +53,7 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String findValue,
                                 @RequestParam(name = "page", required = false) String page,
-                                @RequestParam(name = "minPrice", required = false) String minPrice,
-                                @RequestParam(name = "maxPrice", required = false) String maxPrice,
+                                @RequestParam(name = "priceRange", required = false) String priceRange,
                                 @RequestParam(name = "province", required = false) String province,
                                 @RequestParam(name = "department", required = false) String department) {
 
@@ -68,6 +69,37 @@ public class PetController extends ParentController {
             findValue = "";
         }else{
             mav.addObject("wrongSearch", false);
+        }
+
+        String minPrice,maxPrice;
+
+        if(priceRange == null || priceRange.equals("-1")){
+            minPrice = "-1";
+            maxPrice = "-1";
+        }else if (priceRange.equals("0")){
+            minPrice = "0";
+            maxPrice = "0";
+        }else if (priceRange.equals("1")){
+            minPrice = "1";
+            maxPrice = "5000";
+        }else if (priceRange.equals("2")){
+            minPrice = "5000";
+            maxPrice = "10000";
+        }else if (priceRange.equals("3")){
+            minPrice = "10000";
+            maxPrice = "15000";
+        }else if (priceRange.equals("4")){
+            minPrice = "15000";
+            maxPrice = "20000";
+        }else if (priceRange.equals("5")){
+            minPrice = "20000";
+            maxPrice = "25000";
+        }else if (priceRange.equals("6")){
+            minPrice = "25000";
+            maxPrice = "-1";
+        }else{
+            minPrice = "-1";
+            maxPrice = "-1";
         }
 
         species = species == null || species.equals("-1") ? null : species;
@@ -86,12 +118,29 @@ public class PetController extends ParentController {
         mav.addObject("home_pet_list", petList.toArray());
         mav.addObject("species_list", speciesService.speciesList(locale).toArray());
         mav.addObject("breeds_list", speciesService.breedsList(locale).toArray());
-        mav.addObject("pets_list_size", petList.size());
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
         mav.addObject("department_list", departmentList.toArray());
         mav.addObject("findValue", findValue);
+        mav.addObject("totalPets", petList.getTotalPetsAmount());
         return mav;
     }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET, headers="Accept=*/*")
+    @ResponseBody
+    public void search(HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        List<String> searchValues = petService.autocompleteFind(getLocale(),request.getParameter("term"));
+        response.setContentType("application/json");
+
+        final String param = request.getParameter("term");
+        final List<AutoCompleteData> result = new ArrayList<>();
+        for (final String country : searchValues) {
+            if (country.toLowerCase().contains(param.toLowerCase())) {
+                result.add(new AutoCompleteData(country, country));
+            }
+        }
+        response.getWriter().write(new Gson().toJson(result));
+    }
+
 
     @RequestMapping(value = "/pet/{id}")
     public ModelAndView getIdPet(@PathVariable("id") long id) {

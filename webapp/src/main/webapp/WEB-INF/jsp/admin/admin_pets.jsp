@@ -137,9 +137,7 @@
 
                                 <c:if test="${not empty pets_list}">
                                     <div>
-                                        <h2><spring:message code="admin.petsListing"/> <spring:message
-                                                code="showingResults"
-                                                arguments="${pets_list.size()}"/>
+                                        <h2><spring:message code="admin.petsListing"/>
                                             <a type="button" class="btn btn-success"
                                                href="${pageContext.request.contextPath}/admin/upload-pet"
                                             ><i class="fas fa-plus mr-2"></i><spring:message code="addPet"/></a>

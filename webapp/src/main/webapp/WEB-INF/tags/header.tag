@@ -36,8 +36,8 @@
             </c:if>
         </ul>
 
-        <form class="form-inline pt-1 my-2 my-lg-0" method="GET" action="${pageContext.request.contextPath}/">
-            <input id="search-value" name="find" class="form-control mr-sm-2" type="search"
+        <form class="form-inline pt-1 my-2 my-lg-0 ui-widget" method="GET" action="${pageContext.request.contextPath}/">
+            <input id="search-value" name="find" class="form-control mr-sm-2" path="search" type="search"
                    placeholder="<spring:message code="search"/>" aria-label="Search"
             <c:if test="${not empty findValue}">
                 value="${findValue}"
@@ -61,4 +61,27 @@
             </c:otherwise>
         </c:choose>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $(function() {
+                $("#search-value").autocomplete({
+                    source: function(request, response) {
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/search',
+                            type: "GET",
+                            data: { term: request.term },
+
+                            dataType: "json",
+
+                            success: function(data) {
+                                response(data);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
 </nav>

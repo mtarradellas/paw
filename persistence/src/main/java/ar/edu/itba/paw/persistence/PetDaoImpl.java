@@ -16,10 +16,7 @@ import org.springframework.util.StringUtils;
 import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -229,6 +226,45 @@ public class PetDaoImpl implements PetDao {
                 new PetMapExtractor());
         imageMap.forEach(Pet::setImages);
         return imageMap.keySet().stream();
+    }
+
+    @Override
+    public Stream<String> autocompleteFind(String language, String findValue) {
+        Set<String> autocompleteValues = new HashSet<>();
+
+        long numValue = -1;
+        try {
+            numValue = Long.parseLong(findValue);
+        } catch (NumberFormatException ignored) {
+        }
+        String modifiedValue = "%" + findValue.toLowerCase() + "%";
+
+        String sql = "SELECT pets.id AS id, petName, vaccinated, gender, description, birthDate, uploadDate, price, ownerId, " +
+                "species.id AS speciesId," + "species." + language + " AS speciesName, " +
+                "breeds.id AS breedId, breeds.speciesId AS breedSpeciesID, " + "breeds." + language + " AS breedName, " +
+                "images.id AS imagesId, images.petId AS petId, " +
+                "pet_status.id AS statusId, pet_status." + language + " AS statusName, " +
+                "provinces.id AS provinceId, provinces.name AS provinceName, provinces.latitude AS provinceLat, provinces.longitude AS provinceLong, " +
+                "departments.id AS departmentId, departments.name AS departmentName, departments.latitude AS departmentLat, departments.longitude AS departmentLong " +
+                "FROM (((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                "INNER JOIN images on images.petId = pets.id) INNER JOIN pet_status ON pet_status.id = status) " +
+                "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name "+
+                "WHERE (LOWER(species." + language + ") LIKE ? " +
+                "OR LOWER(breeds." + language + ") LIKE ? " +
+                "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " +
+                "AND pets.status NOT IN " + HIDDEN_PETS_STATUS ;
+
+        Map<Pet, List<Long>> imageMap = jdbcTemplate.query(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, new PetMapExtractor());
+        for(Pet pet : imageMap.keySet()){
+            autocompleteValues.add(pet.getPetName());
+            autocompleteValues.add(pet.getDepartment().getName());
+            autocompleteValues.add(pet.getProvince().getName());
+            autocompleteValues.add(Integer.toString(pet.getPrice()));
+            autocompleteValues.add(pet.getBreed().getName());
+            autocompleteValues.add(pet.getSpecies().getName());
+        }
+
+        return autocompleteValues.stream();
     }
 
     @Override
@@ -569,117 +605,19 @@ public class PetDaoImpl implements PetDao {
     }
 
     @Override
-    public String maxPages(int level) {
+    public int maxPetsAmount(int level) {
         String sql;
         if (level == 0) {
             sql = "select count(*) from pets WHERE pets.status NOT IN " + HIDDEN_PETS_STATUS;
         } else {
             sql = "select count(*) from pets ";
         }
-        Integer pets = jdbcTemplate.queryForObject(sql, Integer.class);
-
-        if(level == 0){
-            pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
-        }else{
-            pets = (int) Math.ceil((double) pets / ADMIN_SHOWCASE_ITEMS);
-        }
-        return pets.toString();
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     @Override
-    public String maxSearchPages(String language, String findValue, int level) {
-        if (findValue.equals("")) {
-            return maxPages(level);
-        }
-
-        long numValue = -1;
-        boolean number = true;
-        for (int i = 0; i < findValue.length(); i++) {
-            if (!Character.isDigit(findValue.charAt(i))) {
-                number = false;
-            }
-        }
-        if (number) {
-            try {
-
-            } catch (NumberFormatException ignored) {
-                numValue = Long.parseLong(findValue);
-            }
-        }
-        String modifiedValue = "%" + findValue.toLowerCase() + "%";
-        String sql;
-
-        if (level == 0) {
-            sql = "select count(distinct pets.id) " +
-                    "FROM ((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
-                    "INNER JOIN pet_status ON pet_status.id = status) " +
-                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
-                    "WHERE (LOWER(species." + language + ") LIKE ? " +
-                    "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) "  +
-                    "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
-        } else {
-            sql = "select count(distinct pets.id) " +
-                    "FROM ((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
-                    "INNER JOIN pet_status ON pet_status.id = status) " +
-                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
-                    "WHERE (LOWER(species." + language + ") LIKE ? " +
-                    "OR LOWER(breeds." + language + ") LIKE ? " +
-                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " ;
-        }
-
-
-        Integer pets = jdbcTemplate.queryForObject(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, Integer.class);
-
-        if(level == 0){
-            pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
-        }else{
-            pets = (int) Math.ceil((double) pets / ADMIN_SHOWCASE_ITEMS);
-        }
-        return pets.toString();
-    }
-
-    @Override
-    public String maxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter) {
-        if (specieFilter == null) {
-            specieFilter = "%";
-            breedFilter = "%";
-        }
-        if (breedFilter == null) {
-            breedFilter = "%";
-        }
-
-        if (genderFilter == null) {
-            genderFilter = "%";
-        }
-        if (statusFilter == null) {
-            statusFilter = "(1,2,3)";
-        } else if (statusFilter.equals("deleted")) {
-            statusFilter = "(2, 3)";
-        } else if (statusFilter.equals("exists")) {
-            statusFilter = "(1)";
-        }else{
-            statusFilter = "(100)";
-        }
-
-        Integer pets = jdbcTemplate.queryForObject("select count( distinct pets.id) " +
-                        "FROM ((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
-                        "INNER JOIN pet_status ON pet_status.id = status) " +
-                        "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
-                        "WHERE (species.id::text) LIKE ? " +
-                        "AND (breeds.id::text) LIKE ? " +
-                        "AND lower(gender) LIKE ?  " +
-                        "AND pets.status IN " + statusFilter,
-                new Object[]{specieFilter, breedFilter, genderFilter},
-                Integer.class);
-
-        pets = (int) Math.ceil((double) pets / ADMIN_SHOWCASE_ITEMS);
-        return pets.toString();
-    }
-
-    @Override
-    public String maxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
-                                 String maxPrice, String province, String department) {
+    public int maxFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
+                                     String maxPrice, String province, String department){
         if(specieFilter == null) {
             specieFilter = "%";
             breedFilter = "%";
@@ -747,16 +685,87 @@ public class PetDaoImpl implements PetDao {
         }
 
 
-        pets = (int) Math.ceil((double) pets / PETS_PER_PAGE);
-
-        return pets.toString();
+        return pets;
     }
 
     @Override
-    public String getMaxUserPetsPages(long userId){
-        Integer pets = jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? ", new Object[] {userId}, Integer.class);
-        pets = (int) Math.ceil((double) pets / PETS_IN_USER_PAGE);
-        return pets.toString();
+    public int maxAdminFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter){
+        if (specieFilter == null) {
+            specieFilter = "%";
+            breedFilter = "%";
+        }
+        if (breedFilter == null) {
+            breedFilter = "%";
+        }
+
+        if (genderFilter == null) {
+            genderFilter = "%";
+        }
+        if (statusFilter == null) {
+            statusFilter = "(1,2,3)";
+        } else if (statusFilter.equals("deleted")) {
+            statusFilter = "(2, 3)";
+        } else if (statusFilter.equals("exists")) {
+            statusFilter = "(1)";
+        }else{
+            statusFilter = "(100)";
+        }
+
+        Integer pets = jdbcTemplate.queryForObject("select count( distinct pets.id) " +
+                        "FROM ((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                        "INNER JOIN pet_status ON pet_status.id = status) " +
+                        "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                        "WHERE (species.id::text) LIKE ? " +
+                        "AND (breeds.id::text) LIKE ? " +
+                        "AND lower(gender) LIKE ?  " +
+                        "AND pets.status IN " + statusFilter,
+                new Object[]{specieFilter, breedFilter, genderFilter},
+                Integer.class);
+
+        return pets;
+    }
+
+    @Override
+    public int maxSearchPetsAmount(String language, String findValue, int level){
+        if (findValue.equals("")) {
+            return maxPetsAmount(level);
+        }
+
+        long numValue = -1;
+        try {
+            numValue = Long.parseLong(findValue);
+        } catch (NumberFormatException ignored) {
+        }
+
+        String modifiedValue = "%" + findValue.toLowerCase() + "%";
+        String sql;
+
+        if (level == 0) {
+            sql = "select count(distinct pets.id) " +
+                    "FROM ((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                    "WHERE (LOWER(species." + language + ") LIKE ? " +
+                    "OR LOWER(breeds." + language + ") LIKE ? " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) "  +
+                    "AND pets.status NOT IN " + HIDDEN_PETS_STATUS;
+        } else {
+            sql = "select count(distinct pets.id) " +
+                    "FROM ((((pets INNER JOIN species ON pets.species = species.id) INNER JOIN breeds ON breed = breeds.id) " +
+                    "INNER JOIN pet_status ON pet_status.id = status) " +
+                    "INNER JOIN departments ON pets.department  = departments.id) INNER JOIN provinces ON departments.province = provinces.name " +
+                    "WHERE (LOWER(species." + language + ") LIKE ? " +
+                    "OR LOWER(breeds." + language + ") LIKE ? " +
+                    "OR LOWER(petName) LIKE ? OR LOWER(provinces.name) LIKE ? OR LOWER(departments.name) LIKE ? OR price = ? ) " ;
+        }
+
+        return jdbcTemplate.queryForObject(sql, new Object[]{modifiedValue, modifiedValue, modifiedValue, modifiedValue, modifiedValue, numValue}, Integer.class);
+    }
+
+
+    @Override
+    public int maxUserPetsAmount(long userId){
+        return jdbcTemplate.queryForObject("select count(*) from pets where ownerId = ? ", new Object[] {userId}, Integer.class);
     }
 
     @Override

@@ -31,7 +31,7 @@
                                         <b><spring:message code="searchFor" arguments="${findValue}"/> </b>
                                     </c:if>
 
-                                    <spring:message code="showingResults" arguments="${pets_list_size}"/>
+                                    <spring:message code="totalResults" arguments="${totalPets}"/>
                                 </h2>
                             </div>
                             <div class="col-md-1 align-self-end">
@@ -114,6 +114,10 @@
 
         </div>
 
+        <link rel="stylesheet" href="<c:url value="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css"/>"/>
+        
+        <script src="<c:url value="http://code.jquery.com/jquery-1.10.2.js"/>"> </script>
+        <script src="<c:url value="http://code.jquery.com/ui/1.10.3/jquery-ui.js"/>"></script>
         <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
 
     </jsp:body>
