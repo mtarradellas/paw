@@ -14,15 +14,17 @@ public class Pet {
     private boolean vaccinated;
     private Date uploadDate;
     private int price;
-    private String location;
     private String description;
     private long ownerId;
     private Status status;
     private List<Long> images;
+    private Province province;
+    private Department department;
 
     public Pet() {}
 
-    public Pet(long id, String petName, Species species, Breed breed, String location, boolean vaccinated, String gender, String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status) {
+    public Pet(long id, String petName, Species species, Breed breed, boolean vaccinated, String gender,
+               String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, Province province, Department department) {
         this.id = id;
         this.petName = petName;
         this.species = species;
@@ -32,11 +34,12 @@ public class Pet {
         this.vaccinated = vaccinated;
         this.uploadDate = uploadDate;
         this.price = price;
-        this.location = location;
         this.description = description;
         this.ownerId = ownerId;
         this.status = status;
         this.images = new ArrayList<>();
+        this.province = province;
+        this.department = department;
     }
 
     @Override
@@ -55,6 +58,12 @@ public class Pet {
         hash = 31 * hash + (int) id;
         hash = 31 * hash + (int) ownerId;
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", name: " + petName + ", species: " + species + ", breed: " + breed +
+                ", owner: " + ownerId + ", status: " + status + ", dept: " + department + ", prov: " + province + " }";
     }
 
     public long getId() {
@@ -129,14 +138,6 @@ public class Pet {
         this.price = price;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -167,5 +168,21 @@ public class Pet {
 
     public void setImages(List<Long> images) {
         this.images = images;
+    }
+
+    public Province getProvince() {
+        return province;
+    }
+
+    public void setProvince(Province province) {
+        this.province = province;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }

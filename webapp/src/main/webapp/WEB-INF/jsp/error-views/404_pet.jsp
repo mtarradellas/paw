@@ -10,7 +10,7 @@
                 <img src="<c:url value="/resources/images/pet_not_found.png"/>" alt="pet_not_found" height="600" width="600"/>
             </div>
             <div class="center">
-                <h1 class="align-content-center align"><b><spring:message code="notFound.pet"/></b> </h1>
+                <h2 class="align-content-center align"><b><spring:message code="notFound.pet"/></b> </h2>
             </div>
             <div class="center">
                 <h4><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></h4>

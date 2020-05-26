@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.models.DepartmentList;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,12 +20,4 @@ public class HomeController extends ParentController {
                     .addObject("species_list", speciesService.speciesList(getLocale()).toArray())
                     .addObject("breeds_list", speciesService.breedsList(getLocale()).toArray());
     }
-
-    @RequestMapping("/contact")
-    public ModelAndView getContact() {
-        return new ModelAndView("views/contact");
-    }
-
-
-
 }

@@ -21,7 +21,7 @@
                             ${species.name}
                             <ul>
                                 <c:forEach items="${breeds_list}" var="breed" varStatus="i">
-                                    <c:if test="${breed.speciesId eq species.id}">
+                                    <c:if test="${breed.species.id eq species.id}">
                                         <li>${breed.name}</li>
                                     </c:if>
                                 </c:forEach>

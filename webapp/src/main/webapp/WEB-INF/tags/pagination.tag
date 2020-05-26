@@ -19,6 +19,12 @@
             <c:if test="${not empty param.gender}">
                 <c:param name="gender" value="${param.gender}"/>
             </c:if>
+            <c:if test="${not empty param.minPrice}">
+                <c:param name="minPrice" value="${param.minPrice}"/>
+            </c:if>
+            <c:if test="${not empty param.maxPrice}">
+                <c:param name="maxPrice" value="${param.maxPrice}"/>
+            </c:if>
             <c:if test="${not empty param.searchCriteria}">
                 <c:param name="searchCriteria" value="${param.searchCriteria}"/>
             </c:if>
@@ -28,9 +34,12 @@
             <c:if test="${not empty param.find}">
                 <c:param name="find" value="${param.find}"/>
             </c:if>
+            <c:if test="${not empty param.status}">
+                <c:param name="status" value="${param.status}"/>
+            </c:if>
         </c:url>
         <c:if test="${currentPage > 1}">
-            <li class="page-item"><a class="page-link" href="<c:out value="${prev}" />" >prev</a></li>
+            <li class="page-item"><a class="page-link" href="<c:out value="${prev}" />" ><spring:message code="prev"/> </a></li>
         </c:if>
 
         <c:forEach begin="1" end="${maxPage}" step="1" varStatus="i">
@@ -50,6 +59,12 @@
                         <c:if test="${not empty param.gender}">
                             <c:param name="gender" value="${param.gender}"/>
                         </c:if>
+                        <c:if test="${not empty param.minPrice}">
+                            <c:param name="minPrice" value="${param.minPrice}"/>
+                        </c:if>
+                        <c:if test="${not empty param.maxPrice}">
+                            <c:param name="maxPrice" value="${param.maxPrice}"/>
+                        </c:if>
                         <c:if test="${not empty param.searchCriteria}">
                             <c:param name="searchCriteria" value="${param.searchCriteria}"/>
                         </c:if>
@@ -58,6 +73,12 @@
                         </c:if>
                         <c:if test="${not empty param.find}">
                             <c:param name="find" value="${param.find}"/>
+                        </c:if>
+                        <c:if test="${not empty param.status}">
+                            <c:param name="status" value="${param.status}"/>
+                        </c:if>
+                        <c:if test="${not empty param.reqstatus}">
+                            <c:param name="reqstatus" value="${param.reqstatus}"/>
                         </c:if>
                     </c:url>
                     <li class="page-item"><a class="page-link" href='<c:out value="${url}" />'>${i.index}</a></li>
@@ -76,6 +97,12 @@
             <c:if test="${not empty param.gender}">
                 <c:param name="gender" value="${param.gender}"/>
             </c:if>
+            <c:if test="${not empty param.minPrice}">
+                <c:param name="minPrice" value="${param.minPrice}"/>
+            </c:if>
+            <c:if test="${not empty param.maxPrice}">
+                <c:param name="maxPrice" value="${param.maxPrice}"/>
+            </c:if>
             <c:if test="${not empty param.searchCriteria}">
                 <c:param name="searchCriteria" value="${param.searchCriteria}"/>
             </c:if>
@@ -85,9 +112,15 @@
             <c:if test="${not empty param.find}">
                 <c:param name="find" value="${param.find}"/>
             </c:if>
+            <c:if test="${not empty param.status}">
+                <c:param name="status" value="${param.status}"/>
+            </c:if>
+            <c:if test="${not empty param.reqstatus}">
+                <c:param name="reqstatus" value="${param.reqstatus}"/>
+            </c:if>
         </c:url>
         <c:if test="${currentPage + 1 <= maxPage}">
-            <li class="page-item"><a class="page-link" href="<c:out value="${next}" />" >Next</a></li>
+            <li class="page-item"><a class="page-link" href="<c:out value="${next}" />" ><spring:message code="next"/></a></li>
         </c:if>
     </ul>
 

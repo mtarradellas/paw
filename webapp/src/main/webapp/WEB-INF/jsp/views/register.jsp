@@ -53,14 +53,6 @@
                         </c:if>
                     </div>
                 </spring:bind>
-                <spring:bind path="phone">
-                    <div class="form-group">
-                        <spring:message code="register.phone" var="phoneTxt"/>
-                        <form:label path="phone" for="phone">${phoneTxt}: </form:label>
-                        <form:input type="text" placeholder="${phoneTxt}" id="phone" cssClass="form-control ${status.error ? 'is-invalid' : ''}" path="phone"/>
-                        <form:errors path="phone" element="div" cssClass="invalid-feedback"/>
-                    </div>
-                </spring:bind>
                 <div class="p-2">
                     <spring:message code="register.submit" var="submitText"/>
                     <input type="submit" class="btn btn-primary" value="${submitText}"/>

@@ -31,7 +31,6 @@
 
         <script src="<c:url value="/resources/bootstrap-4.3.1/js/bootstrap.js"/>"></script>
         <script crossorigin="anonymous" src="<c:url value="https://kit.fontawesome.com/865baf5b70.js"/>"></script>
-        <script src="<c:url value="/resources/js/header.js"/>"></script>
 
     </body>
 </html>

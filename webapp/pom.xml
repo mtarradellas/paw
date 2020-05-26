@@ -19,6 +19,16 @@
   <dependencies>
 
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
     </dependency>
@@ -126,6 +136,15 @@
       <artifactId>mail</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -150,9 +169,11 @@
           <version>2.22.1</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <configuration>
-            <packagingExcludes>**/logback-test.xml</packagingExcludes>
+<!--            TODO uncomment for production-->
+<!--            <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
           </configuration>
           <version>3.2.2</version>
         </plugin>
