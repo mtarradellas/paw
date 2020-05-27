@@ -5,15 +5,18 @@
     <title>test</title>
 </head>
 <body>
-<%--<c:forEach items="${users}" var="user">--%>
-<h1><c:out value="${pet.id}"/></h1>
-<h1><c:out value="${pet.petName}"/></h1>
-<h1><c:out value="${pet.status.name}"/></h1>
-<h1><c:out value="${pet.province.name}"/></h1>
-<h1><c:out value="${pet.department.name}"/></h1>
-<%--<h1><c:out value="${user.status.name}"/></h1>--%>
+<%--<h1><c:out value="${species_list.size()}"/></h1>--%>
+<%--<c:forEach items="${species_list}" var="species">--%>
+    <h1><c:out value="${species.id}"/></h1>
+    <h1><c:out value="${species.name}"/></h1>
+    <h1><c:out value="${breed.name}"/></h1>
+    <h1><c:out value="${breed.name}"/></h1>
+<%--    <h1><c:out value="${species.breedList.size()}"/></h1>--%>
+<%--</c:forEach>--%>
 
-
+<%--<h1><c:out value="${breed_list.size()}"/></h1>--%>
+<%--<c:forEach items="${breed_list}" var="breed">--%>
+<%--    <h1><c:out value="${breed.species.name}"/></h1>--%>
 <%--</c:forEach>--%>
 </body>
 </html>

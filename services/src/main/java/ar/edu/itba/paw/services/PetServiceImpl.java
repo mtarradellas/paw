@@ -150,14 +150,14 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("Department {} not found, pet update failed", department);
             return Optional.empty();
         }
-        Optional<Species> opSpecies = speciesDao.findSpeciesById(language, speciesId);
+        Optional<Species> opSpecies = speciesDao.findSpeciesById(speciesId);
         if (!opSpecies.isPresent()) {
             LOGGER.warn("Species {} not found, pet creation failed", speciesId);
             return Optional.empty();
         }
         Species species = opSpecies.get();
 
-        Optional<Breed> opBreed = speciesDao.findBreedById(language, breedId);
+        Optional<Breed> opBreed = speciesDao.findBreedById(breedId);
         if (!opBreed.isPresent()) {
             LOGGER.warn("Breed {} not found, pet creation failed", breedId);
             return Optional.empty();
@@ -211,11 +211,11 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("Department {} not found, pet update failed", department);
             return Optional.empty();
         }
-        if (!speciesDao.findSpeciesById(language, speciesId).isPresent()) {
+        if (!speciesDao.findSpeciesById(speciesId).isPresent()) {
             LOGGER.warn("Species {} not found, pet update failed", speciesId);
             return Optional.empty();
         }
-        if (!speciesDao.findBreedById(language, breedId).isPresent()) {
+        if (!speciesDao.findBreedById(breedId).isPresent()) {
             LOGGER.warn("Breed {} not found, pet update failed", breedId);
             return Optional.empty();
         }
@@ -397,11 +397,11 @@ public class PetServiceImpl implements PetService {
                 id, petName, speciesId, breedId, department, vaccinated, gender, description, birthDate, price);
 
 
-        if (!speciesDao.findSpeciesById(language, speciesId).isPresent()) {
+        if (!speciesDao.findSpeciesById(speciesId).isPresent()) {
             LOGGER.warn("Species {} not found, pet update failed", speciesId);
             return Optional.empty();
         }
-        if (!speciesDao.findBreedById(language, breedId).isPresent()) {
+        if (!speciesDao.findBreedById(breedId).isPresent()) {
             LOGGER.warn("Breed {} not found, pet update failed", breedId);
             return Optional.empty();
         }
