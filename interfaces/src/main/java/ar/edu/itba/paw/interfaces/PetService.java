@@ -40,14 +40,21 @@ public interface PetService {
     boolean recoverPet(long petId, long userId);
     void removePetAdmin(long petId);
     void recoverPetAdmin(long petId);
+    int getPetsAmount();
+    int getAdminPetsAmount();
+    int getSearchPetsAmount(String language, String findValue);
+    int getAdminSearchPetsAmount(String language, String findValue);
+    int getFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
+                              String maxPrice, String province, String department);
+    int getAdminFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
+    int userPetsAmount(long userId);
     String getMaxPages();
-    String getMaxSearchPages(String language, String findValue);
-    String getMaxAdminFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
-    String getMaxFilterPages(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
-                             String maxPrice, String province, String department);
-    String getMaxUserPetsPages(long userId);
+    String getMaxSearchPages(int pets);
+    String getMaxAdminFilterPages(int pets);
+    String getMaxFilterPages(int pets);
+    String getMaxUserPetsPages(int pets);
     String getAdminMaxPages();
-    String getAdminMaxSearchPages(String language,String find);
+    String getAdminMaxSearchPages(int pets);
     Optional<Contact> getPetContact(long petId);
     long getOwnerId(long petId);
     void removeAllByOwner(long ownerId);
@@ -59,4 +66,5 @@ public interface PetService {
     Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
                               long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
 
+    List<String> autocompleteFind(String language, String findValue);
 }

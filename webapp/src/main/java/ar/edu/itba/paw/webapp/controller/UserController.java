@@ -49,6 +49,7 @@ public class UserController extends ParentController {
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
         mav.addObject("userPets", petsByUser);
+        mav.addObject("totalPets", petsByUser.getTotalPetsAmount());
         return mav;
     }
 

@@ -8,6 +8,14 @@
 <spring:message code="adminTitle.pet" var="petTitle"/>
 <t:adminLayout title="${petTitle}" item="pets">
     <jsp:body>
+        <c:if test="${wrongSearch}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <spring:message code="wrongSearch"/>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </c:if>
         <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
 
         <div class="container-fluid">
@@ -116,26 +124,34 @@
                     </form>
                 </div>
 
-                <div class="col-lg-8">
+                <div class="col">
                     <div class="shadow p-3 bg-white rounded">
+                        <div class="row">
+                            <div class="col">
+                                <c:if test="${empty pets_list }">
+                                    <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                        <a href="${pageContext.request.contextPath}/admin/pets"><spring:message
+                                                code="showFirst"/></a>
+                                    </div>
+                                </c:if>
 
-                        <c:if test="${empty pets_list }">
-                            <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/admin/pets"><spring:message
-                                        code="showFirst"/></a>
+                                <c:if test="${not empty pets_list}">
+                                    <div>
+                                        <h2><spring:message code="admin.petsListing"/>
+                                            <a type="button" class="btn btn-success"
+                                               href="${pageContext.request.contextPath}/admin/upload-pet"
+                                            ><i class="fas fa-plus mr-2"></i><spring:message code="addPet"/></a>
+                                        </h2>
+                                    </div>
+                                </c:if>
                             </div>
-                        </c:if>
+                            <div class="col-md-1 align-self-end">
+                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                        data-toggle="modal" data-target="#help"><b>?</b></button>
+                            </div>
 
-                        <c:if test="${not empty pets_list}">
-                            <div>
-                                <h2><spring:message code="admin.petsListing"/> <spring:message code="showingResults"
-                                                                                               arguments="${pets_list.size()}"/>
-                                    <a type="button" class="btn btn-success"
-                                       href="${pageContext.request.contextPath}/admin/upload-pet"
-                                    ><i class="fas fa-plus mr-2"></i><spring:message code="addPet"/></a>
-                                </h2>
-                            </div>
-                        </c:if>
+                        </div>
+
 
                         <div class="m-2 ">
                             <c:if test="${maxPage ne 1}">
@@ -158,8 +174,8 @@
                                 <c:forEach var="pet" items="${pets_list}">
                                     <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
                                     <li     <c:if test="${(pet.status.id eq 1)}">
-                                                class="list-group-item"
-                                            </c:if>
+                                        class="list-group-item"
+                                    </c:if>
                                             <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
                                                 class="list-group-item resolved"
                                             </c:if>
@@ -226,13 +242,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="shadow p-3 bg-white rounded">
-                        <h4><b><spring:message code="guide.role"/></b></h4>
-                        <p><spring:message code="guide.role.description"/></p>
-                        <h4><b><spring:message code="guide.color"/></b></h4>
-                        <p><spring:message code="guide.color.description"/></p>
 
+                <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpTitle"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="helpTitle"><spring:message code="help.title"/></h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h4><b><spring:message code="guide.role"/></b></h4>
+                                <p><spring:message code="guide.role.description"/></p>
+                                <h4><b><spring:message code="guide.color"/></b></h4>
+                                <p><spring:message code="guide.color.description"/></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
