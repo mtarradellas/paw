@@ -8,12 +8,14 @@ public class PetList extends AbstractList<Pet> {
     private final SpeciesList speciesList;
     private final BreedList breedList;
     private final String maxPage;
+    private final int totalPetsAmount;
 
-    public PetList(List<Pet> petArray, String maxPage) {
+    public PetList(List<Pet> petArray, String maxPage, int totalPetsAmount) {
         petList = petArray.toArray(new Pet[0]);
         this.maxPage = maxPage;
         this.speciesList = new SpeciesList(this);
         this.breedList = new BreedList(this);
+        this.totalPetsAmount = totalPetsAmount;
     }
 
     public Pet get(int index) {
@@ -40,5 +42,9 @@ public class PetList extends AbstractList<Pet> {
 
     public String getMaxPage() {
         return maxPage;
+    }
+
+    public int getTotalPetsAmount() {
+        return totalPetsAmount;
     }
 }

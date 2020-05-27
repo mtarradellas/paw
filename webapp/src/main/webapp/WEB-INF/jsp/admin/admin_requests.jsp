@@ -8,6 +8,14 @@
 
 <t:adminLayout title="${requestTitle}" item="requests">
     <jsp:body>
+        <c:if test="${wrongSearch}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <spring:message code="wrongSearch"/>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </c:if>
         <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
 
         <div class="container-fluid">
@@ -17,11 +25,8 @@
                 <div class="col-md-2 search-tools">
                     <form class="card shadow p-3" method="get"
                           action="${pageContext.request.contextPath}/admin/requests">
-                        <div class="card-header">
-                            <h5 class="card-title"><spring:message code="filter.options"/></h5>
-                        </div>
+
                         <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
                             <div class="form-group">
                                 <label for="filter-status"><spring:message code="request.status"/></label>
                                 <select name="status" class="form-control" id="filter-status">
@@ -54,7 +59,6 @@
                                     ><spring:message code="request.canceled"/></option>
                                 </select>
                             </div>
-                            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
                             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
                             <select name="searchCriteria" class="form-control" id="search-criteria">
                                 <option value="any"><spring:message code="filter.any"/></option>
@@ -85,25 +89,32 @@
                     </form>
                 </div>
 
-                <div class="col-lg-8">
+                <div class="col">
                     <div class="shadow p-3 bg-white rounded">
+                        <div class="row">
+                            <div class="col">
+                                <c:if test="${empty requests_list }">
+                                    <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
+                                        <a href="${pageContext.request.contextPath}/admin/requests"><spring:message
+                                                code="showFirst"/></a>
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty requests_list}">
+                                    <div>
+                                        <h2><spring:message code="admin.requestsListing"/>
+                                            <a type="button" class="btn btn-success"
+                                               href="${pageContext.request.contextPath}/admin/upload-request">
+                                                <i class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></a>
+                                        </h2>
+                                    </div>
+                                </c:if>
+                            </div>
+                            <div class="col-md-1 align-self-end">
+                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                        data-toggle="modal" data-target="#help"><b>?</b></button>
+                            </div>
+                        </div>
 
-                        <c:if test="${empty requests_list }">
-                            <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
-                                <a href="${pageContext.request.contextPath}/admin/requests"><spring:message
-                                        code="showFirst"/></a>
-                            </div>
-                        </c:if>
-                        <c:if test="${not empty requests_list}">
-                            <div>
-                                <h2><spring:message code="admin.requestsListing"/> <spring:message code="showingResults"
-                                                                                                   arguments="${requests_list.size()}"/>
-                                    <a type="button" class="btn btn-success"
-                                       href="${pageContext.request.contextPath}/admin/upload-request">
-                                        <i class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></a>
-                                </h2>
-                            </div>
-                        </c:if>
 
                         <div class="m-2 ">
                             <c:if test="${maxPage ne 1}">
@@ -128,9 +139,10 @@
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="request" items="${requests_list}">
                                     <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
-                                    <li     <c:if test="${(request.status.id eq 1) or (request.status.id eq 2) or (request.status.id eq 3)}">
-                                                class="list-group-item"
-                                            </c:if>
+                                    <li     <c:if
+                                            test="${(request.status.id eq 1) or (request.status.id eq 2) or (request.status.id eq 3)}">
+                                        class="list-group-item"
+                                    </c:if>
                                             <c:if test="${(request.status.id eq 4)}">
                                                 class="list-group-item resolved"
                                             </c:if>
@@ -203,12 +215,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="shadow p-3 bg-white rounded">
-                        <h4><b><spring:message code="guide.role"/></b></h4>
-                        <p><spring:message code="guide.role.description"/></p>
-                        <h4><b><spring:message code="guide.color"/></b></h4>
-                        <p><spring:message code="guide.color.description"/></p>
+
+                <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpTitle"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="helpTitle"><spring:message code="help.title"/></h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h4><b><spring:message code="guide.role"/></b></h4>
+                                <p><spring:message code="guide.role.description"/></p>
+                                <h4><b><spring:message code="guide.color"/></b></h4>
+                                <p><spring:message code="guide.color.description"/></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -42,7 +42,7 @@ public class AdminController extends ParentController{
 
 
 
-//    PETS ENDPOINTS
+//  ###############################################    PETS ENDPOINTS    ###############################################
     @RequestMapping(value = "/admin/pets")
     public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
                                      @RequestParam(name = "breed", required = false) String breed,
@@ -62,6 +62,13 @@ public class AdminController extends ParentController{
             page = "1";
         }
 
+        if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+            mav.addObject("wrongSearch", true);
+            findValue = "";
+        }else{
+            mav.addObject("wrongSearch", false);
+        }
+
         species = species == null || species.equals("any") ? null : species;
         breed = breed == null || breed.equals("any") ? null : breed;
         status = status == null || status.equals("any") ? null : status;
@@ -76,7 +83,6 @@ public class AdminController extends ParentController{
         mav.addObject("pets_list", petList);
         mav.addObject("species_list", petList.getSpecies());
         mav.addObject("breeds_list", petList.getBreeds());
-
         return mav;
     }
 
@@ -96,7 +102,7 @@ public class AdminController extends ParentController{
         ModelAndView mav = new ModelAndView("admin/admin_upload_pet");
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedsList(locale);
+        BreedList breedList = speciesService.breedsList();
         DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
@@ -190,7 +196,7 @@ public class AdminController extends ParentController{
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedsList(locale);
+        BreedList breedList = speciesService.breedsList();
         ProvinceList provinceList = locationService.provinceList();
         DepartmentList departmentList = locationService.departmentList();
 
@@ -249,9 +255,9 @@ public class AdminController extends ParentController{
     }
 
 
-//    USERS ENDPOINTS
-@RequestMapping(value = "/admin/users")
-public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = false) String status,
+//  ###############################################    USER ENDPOINTS    ###############################################
+    @RequestMapping(value = "/admin/users")
+    public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = false) String status,
                                   @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                   @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                   @RequestParam(name = "page", required = false) String page,
@@ -262,6 +268,13 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
 
     if(page == null){
         page = "1";
+    }
+
+    if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+        mav.addObject("wrongSearch", true);
+        findValue = "";
+    }else{
+        mav.addObject("wrongSearch", false);
     }
 
     status = status == null || status.equals("any") ? null : status;
@@ -426,7 +439,7 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
     }
 
 
-    //    REQUESTS ENDPOINTS
+//  #############################################    REQUESTS ENDPOINTS    #############################################
     @RequestMapping(value = "/admin/requests")
     public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
                                          @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
@@ -439,6 +452,13 @@ public ModelAndView getUsersAdmin(@RequestParam(name = "status", required = fals
 
         if(page == null){
             page = "1";
+        }
+
+        if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+            mav.addObject("wrongSearch", true);
+            findValue = "";
+        }else{
+            mav.addObject("wrongSearch", false);
         }
 
         status = status == null || status.equals("any") ? null : status;

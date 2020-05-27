@@ -35,8 +35,8 @@ public class PetDaoImplTest {
 
     private static final long ID = 1;
     private static final String PET_NAME = "pet_test_name";
-    private static final Species SPECIES = new Species(1, "pet_test_species");
-    private static final Breed BREED = new Breed(1,  "pet_test_breed", SPECIES);
+    private static final Species SPECIES = new Species(Long.valueOf(1), "pet_test_species");
+    private static final Breed BREED = new Breed(Long.valueOf(1),  "pet_test_breed", SPECIES);
     private static final Boolean VACCINATED = false;
     private static final String GENDER = "pet_test_gender";
     private static final String DESCRIPTION = "pet_test_description";

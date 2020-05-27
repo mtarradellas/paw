@@ -11,11 +11,8 @@
 
 <div class="col-md-2 search-tools">
     <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/">
-        <div class="card-header">
-            <h5 class="card-title"><spring:message code="filter.options"/></h5>
-        </div>
+
         <div class="card-body">
-            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter"/></h6>
             <div class="form-group">
                 <label for="filter-species"><spring:message code="pet.species"/></label>
                 <select data-child="filter-breed" name="species" class="selector-parent form-control" id="filter-species">
@@ -52,21 +49,37 @@
 
                 </select>
 
-                <label for="price-filter"><spring:message code="pet.price"/></label>
-                <div class="row" id="price-filter">
-                    <div class="col pr-0">
-                        <spring:message var="minPriceTxt" code="searchTool.minPrice"/>
-                        <input id="min-price" placeholder="${minPriceTxt}" class="form-control" name="minPrice" type="number"
-                            value="${param.minPrice}"
-                        >
-                    </div>
-                    <div class="col pl-0">
-                        <spring:message var="maxPriceTxt" code="searchTool.maxPrice"/>
-                        <input id="max-price" placeholder="${maxPriceTxt}" class="form-control ml-1" name="maxPrice" type="number"
-                               value="${param.maxPrice}"
-                        >
-                    </div>
-                </div>
+                <label for="filter-price"><spring:message code="pet.price"/></label>
+                <select  name="priceRange" class=" form-control" id="filter-price">
+                    <option value="-1"><spring:message code="filter.any"/></option>
+                    <option value="0"
+                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '0')}">selected</c:if>
+                    ><spring:message code="pet.forAdoption"/></option>
+                    <option value="1"
+                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '1')}">selected</c:if>
+                    ><spring:message code="argPrice" arguments="1"/>-<spring:message code="argPrice" arguments="5000"/>
+                    </option>
+                    <option value="2"
+                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '2')}">selected</c:if>
+                    ><spring:message code="argPrice" arguments="5000"/>-<spring:message code="argPrice" arguments="10000"/>
+                    </option>
+                    <option value="3"
+                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '3')}">selected</c:if>
+                    ><spring:message code="argPrice" arguments="10000"/>-<spring:message code="argPrice" arguments="15000"/>
+                    </option>
+                    <option value="4"
+                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '4')}">selected</c:if>
+                    ><spring:message code="argPrice" arguments="15000"/>-<spring:message code="argPrice" arguments="20000"/>
+                    </option>
+                    <option value="5"
+                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '5')}">selected</c:if>
+                    ><spring:message code="argPrice" arguments="20000"/>-<spring:message code="argPrice" arguments="25000"/>
+                    </option>
+                    <option value="6"
+                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '6')}">selected</c:if>
+                    ><spring:message code="argPrice" arguments="25000"/>+
+                    </option>
+                </select>
 
 
                 <label for="filter-gender"><spring:message code="pet.sex"/></label>
@@ -110,7 +123,6 @@
 
                 </select>
             </div>
-            <h6 class="card-subtitle mb-2 text-muted"><spring:message code="filter.orderBy"/></h6>
             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
             <select data-child="search-order" name="searchCriteria" class="selector-parent form-control" id="search-criteria">
                 <option value="-1"><spring:message code="filter.any"/></option>
@@ -130,6 +142,7 @@
                         <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'breed')}">selected</c:if>
                 ><spring:message code="pet.breed"/></option>
             </select>
+
             <label for="search-order"><spring:message code="filter.order"/></label>
             <select name="searchOrder" class="form-control" id="search-order"
                     <c:if test="${(empty param.searchCriteria) || (param.searchCriteria eq 'any')}">

@@ -69,7 +69,6 @@ public class UserServiceImpl implements UserService {
         return new UserList(list, maxPage);
     }
 
-    @Transactional
     @Override
     public Optional<User> create(String language, String username, String password, String mail) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
@@ -239,7 +238,6 @@ public class UserServiceImpl implements UserService {
         return userDao.isAdmin(userId);
     }
 
-    @Transactional
     @Override
     public void removeAdmin(long userId) {
         requestService.rejectAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
@@ -248,7 +246,6 @@ public class UserServiceImpl implements UserService {
         userDao.updateStatus(userId, UserStatus.DELETED.getValue());
     }
 
-    @Transactional
     public void removeUser(long userId) {
         requestService.rejectAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByOwner(userId);

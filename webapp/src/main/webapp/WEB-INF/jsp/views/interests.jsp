@@ -13,10 +13,17 @@
                 <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp">
                     <jsp:param name="destination" value="interests"/>
                 </jsp:include>
-                <div class="col-lg-8">
+                <div class="col">
                     <div class="shadow p-3 bg-white rounded">
-                        <h2><spring:message code="interest.title"/> <spring:message code="showingResults"
-                                                                                   arguments="${list_size}"/></h2>
+                        <div class="row">
+                            <h2 class="col"><spring:message code="interest.title"/> <spring:message code="showingResults"
+                                                                                        arguments="${list_size}"/></h2>
+                            <div class="col-md-1 align-self-end">
+                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                        data-toggle="modal" data-target="#help"><b>?</b></button>
+                            </div>
+                        </div>
+
                         <c:if test="${empty interests_list }">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                 <c:if test="${(not empty param.status) or (not empty param.searchCriteria) or (not empty param.searchOrder) }">
@@ -100,16 +107,32 @@
                         </c:forEach>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="shadow p-3 bg-white rounded">
-                        <h4><b><spring:message code="interests.help.title"/></b></h4>
+        </div>
+
+        <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpTitle"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="helpTitle"><spring:message code="help.title"/></h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h2><b><spring:message code="interests.help.title"/></b></h2>
                         <p><spring:message code="interests.help.body"/></p>
-                        <h4><b><spring:message code="interests.help.filter.title"/></b></h4>
+                        <h2><b><spring:message code="interests.help.filter.title"/></b></h2>
                         <p><spring:message code="interests.help.filter.body"/></p>
                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                        </button>
+                    </div>
                 </div>
+            </div>
         </div>
-        </div>
+
         <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
         <script src="<c:url value="/resources/js/interests.js"/>"></script>
     </jsp:body>

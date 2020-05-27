@@ -47,6 +47,13 @@
                                         <form:errors path="price" element="div" cssClass="invalid-feedback"/>
                                     </div>
                                 </spring:bind>
+                                <spring:bind path="price">
+                                    <div class="form-group">
+                                        <spring:message code="uploadPetForm.forAdoption" var="adoptTxt"/>
+                                        <form:checkbox path="price" value="0" id="adopt" />
+                                        <form:label path="price" for="price">${adoptTxt}</form:label>
+                                    </div>
+                                </spring:bind>
                             </div>
                     </div>
                     <div class="form-row p-1">
@@ -170,6 +177,6 @@
             </div>
         </div>
     </div>
-
+    <script src="<c:url value="/resources/js/pet_upload.js"/>"></script>
     <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
 </t:basicLayout>
