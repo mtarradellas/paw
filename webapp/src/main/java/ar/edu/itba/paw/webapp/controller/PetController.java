@@ -71,8 +71,8 @@ public class PetController extends ParentController {
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petList.getMaxPage());
         mav.addObject("home_pet_list", petList.toArray());
-        mav.addObject("species_list", speciesService.speciesList(locale).toArray());
-        mav.addObject("breeds_list", speciesService.breedsList(locale).toArray());
+        mav.addObject("species_list", speciesService.speciesList().toArray());
+        mav.addObject("breeds_list", speciesService.breedsList().toArray());
         mav.addObject("pets_list_size", petList.size());
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
         mav.addObject("department_list", departmentList.toArray());
@@ -173,7 +173,7 @@ public class PetController extends ParentController {
         ModelAndView mav = new ModelAndView("views/upload_pet");
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedsList(locale);
+        BreedList breedList = speciesService.breedsList();
         DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
@@ -252,7 +252,7 @@ public class PetController extends ParentController {
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedsList(locale);
+        BreedList breedList = speciesService.breedsList();
 
         DepartmentList departmentList = locationService.departmentList();
 
