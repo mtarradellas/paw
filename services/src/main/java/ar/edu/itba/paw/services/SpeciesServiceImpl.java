@@ -24,29 +24,35 @@ public class SpeciesServiceImpl implements SpeciesService {
 
 
     @Override
-    public SpeciesList speciesList(String locale) {
+    public List<Species> speciesList(String locale) {
         List<Species> speciesList = speciesDao.speciesList(PAGE, PAGE_SIZE);
-        speciesList.forEach(s -> s.setName(locale));
+        speciesList.forEach(s -> {
+                    s.setName(locale);
+                    List<Breed> bList = s.getBreedList();
+                    bList.forEach(b -> b.setName(locale));
+                    bList.sort(Breed::compareTo);
+                }
+        );
         speciesList.sort(Species::compareTo);
-        return new SpeciesList(speciesList);
+        return speciesList;
     }
 
     @Override
-    public SpeciesList speciesList() {
-        return new SpeciesList(speciesDao.speciesList(PAGE, PAGE_SIZE));
+    public List<Species> speciesList() {
+        return speciesDao.speciesList(PAGE, PAGE_SIZE);
     }
 
     @Override
-    public BreedList breedList(String locale) {
+    public List<Breed> breedList(String locale) {
         List<Breed> breedList = speciesDao.breedList(PAGE, PAGE_SIZE);
         breedList.forEach(b -> b.setName(locale));
         breedList.sort(Breed::compareTo);
-        return new BreedList(breedList);
+        return breedList;
     }
 
     @Override
-    public BreedList breedList() {
-        return new BreedList(speciesDao.breedList(PAGE, PAGE_SIZE));
+    public List<Breed> breedList() {
+        return speciesDao.breedList(PAGE, PAGE_SIZE);
     }
 
     @Override

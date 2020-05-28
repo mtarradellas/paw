@@ -21,7 +21,6 @@ public class HomeController extends ParentController {
     public ModelAndView test() {
         final String locale = getLocale();
         return new ModelAndView("views/test")
-
                 .addObject("provinces_list", locationService.provinceList().toArray());
 
     }

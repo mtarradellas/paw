@@ -7,13 +7,17 @@
 <body>
 <%--<h1><c:out value="${species_list.size()}"/></h1>--%>
 
-<c:forEach items="${provinces_list}" var="province">
-    <h1><c:out value="${province.id}"/></h1>
-    <h1><c:out value="${province.name}"/></h1>
-<%--    <h1><c:out value="${breed.name}"/></h1>--%>
+<c:forEach items="${species_list}" var="species">
+<%--    <h1><c:out value="${species.id}"/></h1>--%>
+    <h1><c:out value="${species.name}"/></h1>
+    <h1><c:out value="${species.breedList.size()}"/></h1>
+    <c:forEach items="${species.breedList}" var="breed">
+
+        <h1><c:out value="${breed.name}"/></h1>
 
 <%--    <h1><c:out value="${breed.name}"/></h1>--%>
 <%--    <h1><c:out value="${species.breedList.size()}"/></h1>--%>
+    </c:forEach>
 </c:forEach>
 
 <%--<h1><c:out value="${breed_list.size()}"/></h1>--%>
