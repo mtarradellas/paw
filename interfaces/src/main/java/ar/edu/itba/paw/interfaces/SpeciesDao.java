@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public interface SpeciesDao {
     List<Species> speciesList(int page, int pageSize);
-    List<Breed> breedsList(int page, int pageSize);
+    List<Breed> breedList(int page, int pageSize);
     Optional<Species> findSpeciesByName(String locale, String name);
     Optional<Breed> findBreedByName(String locale, String name);
     Optional<Species> findSpeciesById(long id);

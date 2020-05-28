@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.models;
 
-import java.util.AbstractList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 public class BreedList extends AbstractList<Breed> {
 

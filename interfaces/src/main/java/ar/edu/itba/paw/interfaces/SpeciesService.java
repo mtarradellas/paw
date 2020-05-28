@@ -10,10 +10,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface SpeciesService {
+    SpeciesList speciesList(String locale);
+    BreedList breedList(String locale);
     SpeciesList speciesList();
-    BreedList breedsList();
+    BreedList breedList();
     Optional<Species> findSpeciesByName(String locale, String name);
     Optional<Breed> findBreedByName(String locale, String name);
-    Optional<Species> findSpeciesById(long id);
-    Optional<Breed> findBreedById(long id);
+    Optional<Species> findSpeciesById(String locale, long id);
+    Optional<Breed> findBreedById(String locale, long id);
 }
