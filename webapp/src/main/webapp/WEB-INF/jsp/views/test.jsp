@@ -6,10 +6,12 @@
 </head>
 <body>
 <%--<h1><c:out value="${species_list.size()}"/></h1>--%>
+
 <c:forEach items="${provinces_list}" var="province">
     <h1><c:out value="${province.id}"/></h1>
     <h1><c:out value="${province.name}"/></h1>
 <%--    <h1><c:out value="${breed.name}"/></h1>--%>
+
 <%--    <h1><c:out value="${breed.name}"/></h1>--%>
 <%--    <h1><c:out value="${species.breedList.size()}"/></h1>--%>
 </c:forEach>

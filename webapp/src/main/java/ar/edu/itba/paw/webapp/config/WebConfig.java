@@ -158,8 +158,8 @@ public class WebConfig {
         jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
 
         // TODO remove for production
-//        jpaProperties.setProperty("hibernate.show_sql", "true");
-//        jpaProperties.setProperty("format_sql", "true");
+        jpaProperties.setProperty("hibernate.show_sql", "true");
+        jpaProperties.setProperty("format_sql", "true");
 
         entityFactory.setJpaProperties(jpaProperties);
 

@@ -102,7 +102,7 @@ public class AdminController extends ParentController{
         ModelAndView mav = new ModelAndView("admin/admin_upload_pet");
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedsList();
+        BreedList breedList = speciesService.breedList(locale);
         DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
@@ -196,7 +196,7 @@ public class AdminController extends ParentController{
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedsList();
+        BreedList breedList = speciesService.breedList(locale);
         ProvinceList provinceList = locationService.provinceList();
         DepartmentList departmentList = locationService.departmentList();
 
