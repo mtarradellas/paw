@@ -102,12 +102,14 @@ public class AdminController extends ParentController{
         ModelAndView mav = new ModelAndView("admin/admin_upload_pet");
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedList(locale);
+        List<Species> speciesList = speciesService.speciesList(locale);
+        List<Breed> breedList = speciesService.breedList(locale);
+
         DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
         mav.addObject("department_list", departmentList.toArray());
-        mav.addObject("species_list", breedList.getSpecies().toArray());
+        mav.addObject("species_list", speciesList.toArray());
         mav.addObject("breeds_list", breedList.toArray());
         mav.addObject("users_list", userService.list(locale).toArray());
         return mav;
@@ -196,12 +198,13 @@ public class AdminController extends ParentController{
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedList(locale);
+        List<Species> speciesList = speciesService.speciesList(locale);
+        List<Breed> breedList = speciesService.breedList(locale);
         ProvinceList provinceList = locationService.provinceList();
         DepartmentList departmentList = locationService.departmentList();
 
         return new ModelAndView("admin/admin_edit_pet")
-                .addObject("species_list", breedList.getSpecies().toArray())
+                .addObject("species_list", speciesList.toArray())
                 .addObject("breeds_list", breedList.toArray())
                 .addObject("pet",
                         petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
