@@ -21,6 +21,8 @@ public class Species implements Comparable<Species>{
     @Column(insertable = true, updatable = true)
     private List<Breed> breedList;
 
+    private String name;
+
     protected Species() {
         // Hibernate
     }
@@ -28,6 +30,7 @@ public class Species implements Comparable<Species>{
     public Species(String en_us, String es_ar) {
         this.en_us = en_us;
         this.es_ar = es_ar;
+        this.name = es_ar;
     }
 
     @Deprecated
@@ -35,6 +38,7 @@ public class Species implements Comparable<Species>{
         this.id = id;
         this.en_us = name;
         this.es_ar = name;
+        this.name = name;
     }
 
     @Override
@@ -56,7 +60,15 @@ public class Species implements Comparable<Species>{
     }
 
     public String getName() {
-        return en_us;
+        return name;
+    }
+
+    public void setName(String locale) {
+        if (locale.equalsIgnoreCase("en_us")) {
+            name = en_us;
+        } else {
+            name = es_ar;
+        }
     }
 
     public List<Breed> getBreedList() {

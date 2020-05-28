@@ -24,32 +24,56 @@ public class SpeciesServiceImpl implements SpeciesService {
 
 
     @Override
+    public SpeciesList speciesList(String locale) {
+        List<Species> speciesList = speciesDao.speciesList(PAGE, PAGE_SIZE);
+        speciesList.forEach(s -> s.setName(locale));
+        speciesList.sort(Species::compareTo);
+        return new SpeciesList(speciesList);
+    }
+
+    @Override
     public SpeciesList speciesList() {
         return new SpeciesList(speciesDao.speciesList(PAGE, PAGE_SIZE));
     }
 
     @Override
-    public BreedList breedsList() {
-        return new BreedList(speciesDao.breedsList(PAGE, PAGE_SIZE));
+    public BreedList breedList(String locale) {
+        List<Breed> breedList = speciesDao.breedList(PAGE, PAGE_SIZE);
+        breedList.forEach(b -> b.setName(locale));
+        breedList.sort(Breed::compareTo);
+        return new BreedList(breedList);
+    }
+
+    @Override
+    public BreedList breedList() {
+        return new BreedList(speciesDao.breedList(PAGE, PAGE_SIZE));
     }
 
     @Override
     public Optional<Species> findSpeciesByName(String locale, String name) {
-        return speciesDao.findSpeciesByName(locale, name);
+        Optional<Species> opSpecies = speciesDao.findSpeciesByName(locale, name);
+        opSpecies.ifPresent(species -> species.setName(locale));
+        return opSpecies;
     }
 
     @Override
     public Optional<Breed> findBreedByName(String locale, String name) {
-        return speciesDao.findBreedByName(locale, name);
+        Optional<Breed> opBreed = speciesDao.findBreedByName(locale, name);
+        opBreed.ifPresent(breed -> breed.setName(locale));
+        return opBreed;
     }
 
     @Override
-    public Optional<Species> findSpeciesById(long id) {
-        return speciesDao.findSpeciesById(id);
+    public Optional<Species> findSpeciesById(String locale, long id) {
+        Optional<Species> opSpecies = speciesDao.findSpeciesById(id);
+        opSpecies.ifPresent(species -> species.setName(locale));
+        return opSpecies;
     }
 
     @Override
-    public Optional<Breed> findBreedById(long id) {
-        return speciesDao.findBreedById(id);
+    public Optional<Breed> findBreedById(String locale, long id) {
+        Optional<Breed> opBreed = speciesDao.findBreedById(id);
+        opBreed.ifPresent(b -> b.setName(locale));
+        return opBreed;
     }
 }

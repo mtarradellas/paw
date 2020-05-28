@@ -11,15 +11,17 @@ public class HomeController extends ParentController {
 
     @RequestMapping("/available")
     public ModelAndView getAvailable() {
+        final String locale = getLocale();
         return new ModelAndView("views/available")
-                    .addObject("species_list", speciesService.speciesList().toArray())
-                    .addObject("breeds_list", speciesService.breedsList().toArray());
+                    .addObject("species_list", speciesService.speciesList(locale).toArray())
+                    .addObject("breeds_list", speciesService.breedList(locale).toArray());
     }
 
     @RequestMapping("/test")
     public ModelAndView test() {
+        final String locale = getLocale();
         return new ModelAndView("views/test")
-                .addObject("species", speciesService.findSpeciesById(1).orElseThrow(UserNotFoundException::new))
-                .addObject("breed", speciesService.findBreedById(1).orElseThrow(UserNotFoundException::new));
+                .addObject("species_list", speciesService.speciesList(locale).toArray())
+                .addObject("breed_list", speciesService.breedList(locale).toArray());
     }
 }

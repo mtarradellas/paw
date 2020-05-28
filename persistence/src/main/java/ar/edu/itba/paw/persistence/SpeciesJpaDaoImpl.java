@@ -3,9 +3,6 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.SpeciesDao;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Species;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -37,7 +34,7 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
     }
 
     @Override
-    public List<Breed> breedsList(int page, int pageSize) {
+    public List<Breed> breedList(int page, int pageSize) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM breeds");
         nativeQuery.setFirstResult((page - 1) * pageSize);
         nativeQuery.setMaxResults(pageSize);
