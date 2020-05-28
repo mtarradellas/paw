@@ -16,12 +16,4 @@ public class HomeController extends ParentController {
                     .addObject("species_list", speciesService.speciesList(locale).toArray())
                     .addObject("breeds_list", speciesService.breedList(locale).toArray());
     }
-
-    @RequestMapping("/test")
-    public ModelAndView test() {
-        final String locale = getLocale();
-        return new ModelAndView("views/test")
-                .addObject("species_list", speciesService.speciesList(locale).toArray())
-                .addObject("breed_list", speciesService.breedList(locale).toArray());
-    }
 }
