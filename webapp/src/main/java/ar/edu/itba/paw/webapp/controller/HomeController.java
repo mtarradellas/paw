@@ -19,7 +19,6 @@ public class HomeController extends ParentController {
     @RequestMapping("/test")
     public ModelAndView test() {
         return new ModelAndView("views/test")
-                .addObject("species", speciesService.findSpeciesById(1).orElseThrow(UserNotFoundException::new))
-                .addObject("breed", speciesService.findBreedById(1).orElseThrow(UserNotFoundException::new));
+                .addObject("provinces_list", locationService.provinceList().toArray());
     }
 }
