@@ -1,23 +1,20 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Objects;
 @Entity(name = "Provinces")
-public class Province implements Comparable<Province>{
+public class Province implements Comparable<Province>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "provinces_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "provinces_id_seq", name = "provinces_id_seq")
     private Long id;
 
-    @Column(length = 255, nullable = false)
-    private String en_us;
 
     @Column(length = 255, nullable = false)
-    private String es_ar;
+    private String name;
 
-    //private String name;
     @Column
     private double latitude;
 
@@ -28,25 +25,17 @@ public class Province implements Comparable<Province>{
         //Hibernate
     }
 
-    public Province(long id, String en_us, String es_ar, double latitude, double longitude) {
-        this.id = id;
-        this.en_us = en_us;
-        this.es_ar = es_ar;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
 
     public Province(long id, String name, double latitude, double longitude) {
         this.id = id;
-        this.en_us = name;
+        this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public Province(long id, String en_us, String es_ar) {
+    public Province(long id, String name, String es_ar) {
         this.id = id;
-        this.en_us = en_us;
-        this.es_ar = es_ar;
+        this.name = name;
     }
 
     @Override
@@ -59,7 +48,7 @@ public class Province implements Comparable<Province>{
 
     @Override
     public String toString() {
-        return "{ id: " + id + ", name: " + en_us + " }";
+        return "{ id: " + id + ", name: " + name+ " }";
     }
 
     @Override
@@ -81,11 +70,11 @@ public class Province implements Comparable<Province>{
     }
 
     public String getName() {
-        return en_us;
+        return name;
     }
 
     public void setName(String name) {
-        this.en_us = name;
+        this.name = name;
     }
 
     public Double getLatitude() {

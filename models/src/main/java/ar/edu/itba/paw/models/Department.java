@@ -12,12 +12,8 @@ public class Department implements Comparable<Department>{
     private Long id;
 
     @Column(length = 255, nullable = false)
-    private String en_us;
+    private String name;
 
-    @Column(length = 255, nullable = false)
-    private String es_ar;
-
-    //private String name;
     @Column
     private Double latitude;
 
@@ -25,39 +21,23 @@ public class Department implements Comparable<Department>{
     private Double longitude;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "province")
+    @JoinColumn(name = "province", referencedColumnName="name")
     private Province province;
 
     protected Department() {
         //Hibernate
     }
 
-    public Department(long id, String en_us, String es_ar, double latitude, double longitude, Province province) {
-        this.id = id;
-        this.en_us = en_us;
-        this.es_ar = es_ar;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.province = province;
-    }
-
-    public Department(long id, String en_us, String es_ar, Province province) {
-        this.id = id;
-        this.en_us = en_us;
-        this.es_ar = es_ar;
-        this.province = province;
-    }
-
     public Department(long id, String name, double latitude, double longitude) {
         this.id = id;
-        this.en_us = name;
+        this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
     public Department(long id, String name, double latitude, double longitude, Province province) {
         this.id = id;
-        this.en_us = name;
+        this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.province = province;
@@ -73,7 +53,7 @@ public class Department implements Comparable<Department>{
 
     @Override
     public String toString() {
-        return "{ id: " + id + ", name: " + en_us + ", prov: " + province + " }";
+        return "{ id: " + id + ", name: " + name + ", prov: " + province + " }";
     }
 
     @Override
@@ -95,11 +75,11 @@ public class Department implements Comparable<Department>{
     }
 
     public String getName() {
-        return en_us;
+        return name;
     }
 
     public void setName(String name) {
-        this.en_us = name;
+        this.name = name;
     }
 
     public Double getLatitude() {
