@@ -35,53 +35,57 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder encoder;
 
     @Override
-    public Optional<User> findById(String language, long id) {
-        return this.userDao.findById(language, id);
+    public List<User> list(int page, int pageSize) {
+        return userDao.list(page, pageSize);
     }
 
     @Override
-    public Optional<User> findByUsername(String language, String username) {
-        return this.userDao.findByUsername(language, username);
+    public List<User> filteredList(String find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        if (find == null) return userDao.filteredList(status, searchCriteria, searchOrder, page, pageSize);
+        return userDao.searchList(find, page, pageSize);
     }
 
     @Override
-    public Stream<User> list(String language) {
-        return this.userDao.list(language);
+    public int getListAmount() {
+        return userDao.getListAmount();
     }
 
     @Override
-    public UserList adminUserList(String locale, String findValue, String status, String searchCriteria, String searchOrder, String page){
-        if (findValue == null) return adminFilteredList(locale, status, searchCriteria, searchOrder, page);
-        return adminFind(locale, findValue, page);
+    public int getFilteredAmount(String find, UserStatus status) {
+        if (find == null) return userDao.getFilteredAmount(status);
+        return userDao.getSearchAmount(find);
     }
 
     @Override
-    public UserList adminFind(String language, String findValue, String page) {
-        List<User> list = userDao.adminSearchList(language, findValue, page).collect(Collectors.toList());
-        String maxPage = getAdminMaxSearchPages(language, findValue);
-        return new UserList(list, maxPage);
+    public Optional<User> findById(long id) {
+        return userDao.findById(id);
     }
 
     @Override
-    public UserList adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page) {
-        List<User> list = userDao.adminFilteredList(language, status, searchCriteria, searchOrder, page).collect(Collectors.toList());
-        String maxPage = getAdminMaxFilterPages(language, status);
-        return new UserList(list, maxPage);
+    public Optional<User> findByUsername(String username) {
+        return userDao.findByUsername(username);
     }
 
     @Override
-    public Optional<User> create(String language, String username, String password, String mail) throws DuplicateUserException {
+    public Optional<User> findByMail(String mail) {
+        return userDao.findByMail(mail);
+    }
+
+    @Override
+    public Optional<User> findByToken(UUID token) {
+        return userDao.findByToken(token);
+    }
+
+    @Override
+    public Optional<User> create(String username, String password, String mail) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, UserStatus.INACTIVE.getValue());
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User DAO returned empty user");
-            return opUser;
-        }
-
-        User user = opUser.get();
+        User user = userDao.create(username, encoder.encode(password), mail, UserStatus.INACTIVE);
 
         UUID uuid = UUID.randomUUID();
-        createToken(uuid, opUser.get().getId());
+        if (!createToken(uuid, user).isPresent()) {
+            LOGGER.warn("Token for user {} could not be created", user.getId());
+            return Optional.empty();
+        }
 
         Map<String, Object> arguments = new HashMap<>();
         String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
@@ -95,105 +99,80 @@ public class UserServiceImpl implements UserService {
         mailService.sendMail(user.getMail(), arguments, "activate_account");
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}", user.getId(), user.getUsername(), user.getMail());
-        return opUser;
+        return Optional.of(user);
     }
 
     @Override
-    public Optional<User> adminCreate(String language, String username, String password, String mail) throws DuplicateUserException {
-        LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
-        Optional<User> opUser = userDao.create(language, username, encoder.encode(password), mail, UserStatus.ACTIVE.getValue());
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User DAO returned empty user");
-            return opUser;
-        }
-        return opUser;
+    public Optional<User> update(User user) {
+        return userDao.update(user);
     }
 
     @Override
-    public Optional<User> findByMail(String language, String mail) {
-        return userDao.findByMail(language, mail);
-    }
-
-    @Override
-    public Optional<User> updatePassword(String language, String oldPassword, String newPassword, long id) throws InvalidPasswordException {
-        Optional<User>opUser = findById(language, id);
-        if(!opUser.isPresent()){
-            LOGGER.warn("DAO could not find user");
+    public Optional<User> updateUsername(User user, String username) throws DuplicateUserException {
+        LOGGER.debug("Attempting user {} update with username: {}", user.getId(), username);
+        user.setUsername(username);
+        Optional<User> opUpdatedUser = userDao.update(user);
+        if (!opUpdatedUser.isPresent()) {
+            LOGGER.warn("Failed to update username {} with new name {}", user.getId(), username);
             return Optional.empty();
         }
+        User updatedUser = opUpdatedUser.get();
+        LOGGER.debug("Successfully updated user; id: {} username: {}", updatedUser.getId(), updatedUser.getUsername());
+        return opUpdatedUser;
+    }
+
+    @Override
+    public Optional<User> updateStatus(User user, UserStatus status) {
+        LOGGER.debug("Attempting user {} update with status: {}", user.getId(), status.getValue());
+        user.setStatus(status);
+        Optional<User> opUpdatedUser = userDao.update(user);
+        if (!opUpdatedUser.isPresent()) {
+            LOGGER.warn("Failed to update username {} with new status {}", user.getId(), status.getValue());
+            return Optional.empty();
+        }
+        User updatedUser = opUpdatedUser.get();
+        LOGGER.debug("Successfully updated user; id: {} status: {}", updatedUser.getId(), updatedUser.getStatus().getValue());
+        return opUpdatedUser;
+    }
+
+    @Override
+    public Optional<User> updatePassword(User user, String oldPassword, String newPassword) throws InvalidPasswordException {
         if(oldPassword != null){
             LOGGER.debug("Checking old password");
-            if(! encoder.matches(oldPassword, opUser.get().getPassword())){
+            if(! encoder.matches(oldPassword, user.getPassword())){
                 LOGGER.warn("Password does not match the current one");
                 throw new InvalidPasswordException("Password does not match the current one");
             }
         }
         LOGGER.debug("Valid old password");
-        if(userDao.updatePassword(encoder.encode(newPassword), id)){
-            LOGGER.debug("Password updated");
-            return userDao.findById(language, id);
+        user.setPassword(encoder.encode(newPassword));
+        Optional<User> opUpdatedUser = userDao.update(user);
+        if(!opUpdatedUser.isPresent()){
+            LOGGER.warn("DAO could not update password");
+            return Optional.empty();
         }
-        LOGGER.warn("DAO could not update password");
-        return Optional.empty();
+        LOGGER.debug("Password updated");
+        return opUpdatedUser;
     }
 
     @Override
-    public boolean createToken(UUID uuid, long userId) {
-        Date tomorrow = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(tomorrow);
-        cal.add(Calendar.DATE, 1);
-        tomorrow = cal.getTime();
-        return userDao.createToken(uuid,userId,tomorrow);
-    }
-
-    @Override
-    public Optional<User> activateAccountWithToken(String language, UUID uuid) {
-        LOGGER.debug("Activating account token {}", uuid);
-
-        Optional<Token> opToken = getToken(uuid);
-        if (!opToken.isPresent()) {
-            LOGGER.warn("Token {} not found", uuid);
-            return Optional.empty();
-        }
-        final Token token = opToken.get();
-        if (new Date().after(token.getExpirationDate())) {
-            LOGGER.warn("Token {} has expired", uuid);
-            return Optional.empty();
-        }
-
-        Optional<User> opUser = findByToken(language, uuid);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User of token {} not found", uuid);
-            return Optional.empty();
-        }
-
-        if(!userDao.updateStatus(opUser.get().getId(), UserStatus.ACTIVE.getValue())) {
-            LOGGER.warn("Could not activate user {} account", opUser.get().getId());
-            return Optional.empty();
-        }
-        deleteToken(uuid);
-        return opUser;
-    }
-
-    @Override
-    public Optional<User> requestPasswordReset(String locale, String mail) {
+    public Optional<User> requestPasswordReset(String mail) {
         LOGGER.debug("Requesting password reset for mail {}", mail);
 
-        Optional<User> opUser = userDao.findByMail(locale, mail);
+        Optional<User> opUser = userDao.findByMail(mail);
         if (!opUser.isPresent()) {
             LOGGER.debug("User with mail {} not found", mail);
             return Optional.empty();
         }
         final User user = opUser.get();
 
-        UUID uuid = UUID.randomUUID();
-        createToken(uuid, user.getId());
+        UUID token = UUID.randomUUID();
+        createToken(token, user);
 
         Map<String, Object> arguments = new HashMap<>();
         String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
         String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
-        urlToken += "?token=" + uuid;
+        urlToken += "?token=" + token;
 
         arguments.put("URLToken", urlToken );
         arguments.put("URL", url );
@@ -204,8 +183,88 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> resetPassword(String language, UUID uuid, String password) {
+    public Optional<User> resetPassword(UUID uuid, String password) {
         LOGGER.debug("Resetting password for token {}", uuid);
+
+        Optional<Token> opToken = getToken(uuid);
+        if (!opToken.isPresent()) {
+            LOGGER.warn("Token {} not found", uuid);
+            return Optional.empty();
+        }
+        final Token token = opToken.get();
+
+        if (new Date().after(token.getExpirationDate())) {
+            LOGGER.warn("Token {} has expired", uuid);
+            userDao.deleteToken(uuid);
+            return Optional.empty();
+        }
+
+        Optional<User> opUser = findByToken(uuid);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User of token {} not found", uuid);
+            userDao.deleteToken(uuid);
+            return Optional.empty();
+        }
+        final User user = opUser.get();
+        Optional<User> updatedUser = Optional.empty();
+
+        try {
+            updatedUser = updatePassword(user, null, password);
+        }
+        catch(InvalidPasswordException ignored){}
+        deleteToken(uuid);
+
+        return updatedUser;
+    }
+
+    @Override
+    public Optional<User> adminCreate(String username, String password, String mail) throws DuplicateUserException {
+        LOGGER.debug("(Admin) Attempting user creation with username: {}, mail: {}", username, mail);
+        User user = userDao.create(username, encoder.encode(password), mail, UserStatus.ACTIVE);
+        return Optional.of(user);
+    }
+
+    @Override
+    public boolean isAdmin(User user) {
+        return userDao.isAdmin(user);
+    }
+
+    @Override
+    public boolean recoverUser(User user) {
+        return updateStatus(user, UserStatus.ACTIVE).isPresent();
+    }
+
+    @Override
+    public boolean removeUser(User user) {
+        requestService.rejectAllByPetOwner(user); //cancels all (pending) requests made to pets this user owns
+        requestService.cancelAllByUser(user);
+        petService.removeAllByOwner(user.getId());
+        return updateStatus(user, UserStatus.DELETED).isPresent();
+    }
+
+    @Override
+    public Optional<Token> getToken(UUID token) {
+        return userDao.findToken(token);
+    }
+
+    @Override
+    public Optional<Token> createToken(UUID token, User user) {
+        Date tomorrow = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(tomorrow);
+        cal.add(Calendar.DATE, 1);
+        tomorrow = cal.getTime();
+        return userDao.createToken(token, user, tomorrow);
+    }
+
+    @Override
+    public boolean deleteToken(UUID token) {
+        return userDao.deleteToken(token);
+    }
+
+    @Override
+    public Optional<User> activateAccountWithToken(UUID uuid) {
+        LOGGER.debug("Activating account token {}", uuid);
 
         Optional<Token> opToken = getToken(uuid);
         if (!opToken.isPresent()) {
@@ -215,91 +274,26 @@ public class UserServiceImpl implements UserService {
         final Token token = opToken.get();
         if (new Date().after(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
+            userDao.deleteToken(uuid);
             return Optional.empty();
         }
 
-        Optional<User> opUser = findByToken(language, uuid);
+        Optional<User> opUser = findByToken(uuid);
         if (!opUser.isPresent()) {
             LOGGER.warn("User of token {} not found", uuid);
+            userDao.deleteToken(uuid);
             return Optional.empty();
         }
-        final User user = opUser.get();
-        try {
-            updatePassword(language,null, password, user.getId());
+        User user = opUser.get();
+
+        if(!updateStatus(user, UserStatus.ACTIVE).isPresent()) {
+            LOGGER.warn("Could not activate user {} account", user.getId());
+            userDao.deleteToken(uuid);
+            return Optional.empty();
         }
-        catch(InvalidPasswordException ignored){}
+
         deleteToken(uuid);
-
         return opUser;
-    }
-
-    @Override
-    public boolean isAdmin(long userId) {
-        return userDao.isAdmin(userId);
-    }
-
-    @Override
-    public void removeAdmin(long userId) {
-        requestService.rejectAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
-        requestService.cancelAllByOwner(userId);
-        petService.removeAllByOwner(userId);
-        userDao.updateStatus(userId, UserStatus.DELETED.getValue());
-    }
-
-    public void removeUser(long userId) {
-        requestService.rejectAllByPetOwner(userId); //cancels all (pending) requests made to pets this user owns
-        requestService.cancelAllByOwner(userId);
-        petService.removeAllByOwner(userId);
-        userDao.updateStatus(userId, UserStatus.DELETED.getValue());
-    }
-
-    @Override
-    public void recoverAdmin(long userId) {
-        userDao.updateStatus(userId, UserStatus.ACTIVE.getValue());
-    }
-
-    @Override
-    public Optional<User> update(String language, long id, String username) throws DuplicateUserException {
-
-        LOGGER.debug("Attempting user {} update with username: {}", id, username);
-        userDao.update(language, id, username);
-        Optional<User> opUser = findById(language, id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("Error finding user with id {}", id);
-            return opUser;
-        }
-        LOGGER.debug("Successfully updated user; id: {} username: {}", opUser.get().getId(), opUser.get().getUsername());
-        return opUser;
-    }
-
-    @Override
-    public Optional<Token> getToken(UUID uuid) {
-        return userDao.getToken(uuid);
-    }
-
-    @Override
-    public boolean deleteToken(UUID uuid) {
-        return userDao.deleteToken(uuid);
-    }
-
-    @Override
-    public Optional<User> findByToken(String language, UUID uuid) {
-        return userDao.findByToken(language, uuid);
-    }
-
-    @Override
-    public String getAdminUserPages(){
-        return userDao.getAdminPages();
-    }
-
-    @Override
-    public String getAdminMaxSearchPages(String language, String find) {
-        return userDao.getAdminSearchPages(language, find);
-    }
-
-    @Override
-    public String getAdminMaxFilterPages(String language, String status) {
-        return userDao.getAdminMaxFilterPages(language, status);
     }
 
     @Scheduled(cron = "0 0 1 * * *")

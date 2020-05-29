@@ -1,11 +1,32 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
+
 public class Status {
+
     private int id;
+
+    private String en_us;
+
+    private String es_ar;
+
     private String name;
 
+    protected Status() {
+        // Hibernate
+    }
+
+    public Status(String en_us, String es_ar) {
+        this.en_us = en_us;
+        this.es_ar = es_ar;
+        this.name = es_ar;
+    }
+
+    @Deprecated
     public Status(int id, String name) {
         this.id = id;
+        this.en_us = name;
+        this.es_ar = name;
         this.name = name;
     }
 
@@ -27,15 +48,15 @@ public class Status {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String locale) {
+        if (locale.equalsIgnoreCase("en_us")) {
+            name = en_us;
+        } else {
+            name = es_ar;
+        }
     }
 }

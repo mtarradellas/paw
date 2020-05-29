@@ -60,7 +60,7 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
     public Optional<Breed> findBreedByName(String locale, String breed) {
         final String vLocale = validateLocale(locale);
         final String qStr = "from Breed as b where b." + vLocale + " = :breed";
-        final TypedQuery<Breed> query = em.createQuery(qStr, Breed.class);
+        final TypedQuery<Breed> query = em.createQuery(qStr,Breed.class);
         query.setParameter("breed", breed);
         return query.getResultList().stream().findFirst();
     }

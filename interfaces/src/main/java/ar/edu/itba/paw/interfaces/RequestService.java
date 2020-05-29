@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.interfaces;
 
+import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.RequestList;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,29 +12,29 @@ import java.util.stream.Stream;
 
 public interface RequestService {
 
-    Optional<Request> findById(long id, String language);
-    Stream<Request> listByOwner(String language, long ownerId);
-    Stream<Request> listByPetOwner(String language, long petOwnerId);
+    List<Request> list(int page, int pageSize);
+    List<Request> filteredList(User user, Pet pet, String find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
-    RequestList adminRequestList(String language, String findValue, String status, String searchCriteria, String searchOrder, String page);
-    RequestList adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page);
-    RequestList adminFind(String language, String find, String page);
+    int getListAmount();
+    int getFilteredListAmount(User user, Pet pet, String find, RequestStatus status);
 
-    String getAdminRequestPages(String language);
-    String getAdminMaxSearchPages(String language,String find);
-    String getAdminMaxFilterPages(String language, String status);
-    Optional<Request> create(long userId, long petId, String language);
-    boolean requestExists(long petId, long ownerId, String language);
-    Stream<Request> filterListByOwner(String language, long ownerId, String status, String searchCriteria, String searchOrder);
-    Stream<Request> filterListByPetOwner(String language, long petOwnerId, String status, String searchCriteria, String searchOrder);
-    boolean cancel(long id, long ownerId, String locale);
-    boolean accept(long id, long ownerId, String locale);
-    boolean reject(long id, long ownerId, String locale);
-    boolean recover(long id, long ownerId, String locale);
-    void adminUpdateStatus(long id, String status);
-    void cancelRequestAdmin(long requestId);
-    void recoverRequestAdmin(long requestId);
-    void cancelAllByOwner(long ownerId);
-    void rejectAllByPetOwner(long petOwnerId);
-    void rejectAllByPet(long petId);
+    Optional<Request> findById(long id);
+
+    Optional<Request> create(User user, Pet pet);
+    Optional<Request> update(Request request);
+
+    boolean  cancel(Request request, User user);
+    boolean  accept(Request request, User user);
+    boolean  reject(Request request, User user);
+    boolean recover(Request request, User user);
+
+    void adminUpdateStatus(Request request, RequestStatus status);
+    void  adminCancel(Request request);
+    void  adminAccept(Request request);
+    void  adminReject(Request request);
+    void adminRecover(Request request);
+
+    void cancelAllByUser(User user);
+    void rejectAllByPetOwner(User petOwner);
+    void rejectAllByPet(Pet pet);
 }

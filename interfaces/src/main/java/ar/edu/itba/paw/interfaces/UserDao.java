@@ -3,6 +3,7 @@ package ar.edu.itba.paw.interfaces;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.UserStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -11,26 +12,28 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public interface UserDao {
-    Optional<User> findById(String language, long id);
-    Optional<User> findByUsername(String language, String username);
-    Stream<User> list(String language);
-    Stream<User> adminUserList(String language, String page);
-    Stream<User> adminSearchList(String language, String find, String page);
-    Stream<User> adminFilteredList(String language, String status, String searchCriteria, String searchOrder, String page);
-    Optional<User> create(String language, String username, String password, String mail, int status) throws DuplicateUserException;
-    Optional<User> findByMail(String language, String mail);
-    boolean updatePassword(String newPassword, long id);
-    boolean createToken(UUID uuid, long userId, Date expirationDate);
-    Optional<Token> getToken(UUID uuid);
-    boolean deleteToken(UUID uuid);
-    Optional<User> findByToken(String language, UUID uuid);
+
+    List<User> list(int page, int pageSize);
+    List<User> searchList(String find, int page, int pageSize);
+    List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+
+    int getListAmount();
+    int getSearchAmount(String find);
+    int getFilteredAmount(UserStatus status);
+
+    Optional<User> findById(long id);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByMail(String mail);
+    Optional<User> findByToken(UUID token);
+
+    User create(String username, String password, String mail, UserStatus status);
+    Optional<User> update(User user);
+    boolean isAdmin(User user);
+
     List<Token> listTokens();
-    String getAdminPages();
-    String getAdminSearchPages(String language, String find);
-    String getAdminMaxFilterPages(String language, String status);
-    boolean updateStatus(long id, int status);
-    boolean isAdmin(long userId);
+    Optional<Token> findToken(UUID token);
+    Optional<Token> createToken(UUID token, User user, Date expirationDate);
+    boolean deleteToken(UUID token);
     void cleanOldTokens();
-    void update(String language, long id, String username);
-    String matchesPassword(long id, String password);
+
 }

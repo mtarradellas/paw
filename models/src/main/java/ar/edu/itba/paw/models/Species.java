@@ -11,14 +11,14 @@ public class Species implements Comparable<Species>{
     @SequenceGenerator(allocationSize = 1, sequenceName = "species_id_seq", name = "species_id_seq")
     private Long id;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String en_us;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String es_ar;
 
     @OneToMany(orphanRemoval = true, mappedBy = "species", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Column(insertable = true, updatable = true)
+    @Column
     private List<Breed> breedList;
 
     private String name;
