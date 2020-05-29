@@ -28,6 +28,8 @@ public class DepartmentIdMatchValidator implements ConstraintValidator<Departmen
 
         Stream<Department> departmentStream = locationService.departmentList().stream();
 
-        return departmentStream.anyMatch(p->val == p.getId());
+        boolean b = departmentStream.anyMatch(p-> val.equals(p.getId()));
+
+        return b;
     }
 }

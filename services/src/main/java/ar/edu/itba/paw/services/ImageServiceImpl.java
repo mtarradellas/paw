@@ -48,13 +48,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(Long id) {
         this.imageDao.delete(id);
     }
 
     @Override
-    public void delete(List<Integer> ids) {
-        for (Integer id: ids) {
+    public void delete(List<Long> ids) {
+        for (Long id: ids) {
             this.imageDao.delete(id);
         }
     }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class EditPetForm {
 
-    private List<Integer> imagesIdToDelete;
+    private List<Long> imagesIdToDelete;
 
     @NotNull
     @FileSize
@@ -68,11 +68,11 @@ public class EditPetForm {
         this.department = department;
     }
 
-    public List<Integer> getImagesIdToDelete() {
+    public List<Long> getImagesIdToDelete() {
         return imagesIdToDelete;
     }
 
-    public void setImagesIdToDelete(List<Integer> imagesIdToDelete) {
+    public void setImagesIdToDelete(List<Long> imagesIdToDelete) {
         this.imagesIdToDelete = imagesIdToDelete;
     }
 

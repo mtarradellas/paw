@@ -60,10 +60,10 @@ public interface PetService {
     void removeAllByOwner(long ownerId);
 
     boolean isPetOwner(long petId, long userId);
-    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Long> imagesToDelete, String petName,
                          long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
 
-    Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
+    Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Long> imagesToDelete, String petName,
                               long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
 
     List<String> autocompleteFind(String language, String findValue);
