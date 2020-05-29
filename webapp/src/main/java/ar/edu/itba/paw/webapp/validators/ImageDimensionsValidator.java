@@ -36,6 +36,8 @@ public class ImageDimensionsValidator implements ConstraintValidator<ImageDimens
             BufferedImage image;
             try{
                 image = ImageIO.read(file.getInputStream());
+                if(image == null)
+                    return false;
             }catch (IOException e){
                 return false;
             }
