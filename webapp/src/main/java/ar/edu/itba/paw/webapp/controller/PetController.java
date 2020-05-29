@@ -261,12 +261,13 @@ public class PetController extends ParentController {
         ModelAndView mav = new ModelAndView("views/upload_pet");
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedList(locale);
+        List<Species> speciesList = speciesService.speciesList(locale);
+        List<Breed> breedList = speciesService.breedList(locale);
         DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("province_list", departmentList.getProvinceList().toArray());
         mav.addObject("department_list", departmentList.toArray());
-        mav.addObject("species_list", breedList.getSpecies().toArray());
+        mav.addObject("species_list", speciesList.toArray());
         mav.addObject("breeds_list", breedList.toArray());
         return mav;
     }
@@ -340,12 +341,13 @@ public class PetController extends ParentController {
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
         String locale = getLocale();
 
-        BreedList breedList = speciesService.breedList(locale);
+        List<Species> speciesList = speciesService.speciesList(locale);
+        List<Breed> breedList = speciesService.breedList(locale);
 
         DepartmentList departmentList = locationService.departmentList();
 
         return new ModelAndView("views/pet_edit")
-                .addObject("species_list", breedList.getSpecies().toArray())
+                .addObject("species_list", speciesList.toArray())
                 .addObject("breeds_list", breedList.toArray())
                 .addObject("province_list", departmentList.getProvinceList().toArray())
                 .addObject("department_list", departmentList.toArray())

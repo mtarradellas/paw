@@ -12,7 +12,7 @@ public interface ImageService {
     Integer quantityByPetId(long id);
     Optional<byte[]> getDataById(long id);
     Optional<Image> create(long petId, byte[] bytes, long userId);
-    void delete(Integer id);
-    void delete(List<Integer> ids);
+    void delete(Long id);
+    void delete(List<Long> ids);
     Optional<Image> createAdmin(long petId, byte[] bytes);
 }
