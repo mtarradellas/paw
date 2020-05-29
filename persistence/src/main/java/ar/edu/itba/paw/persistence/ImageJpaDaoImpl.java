@@ -30,9 +30,9 @@ public class ImageJpaDaoImpl implements ImageDao {
     @Override
     public Integer quantityByPetId(Long id) {
         final String qStr = "select count(*) from Images as i where i.petId = :petId";
-        final TypedQuery<Integer> query = em.createQuery(qStr, Integer.class);
+        final TypedQuery<Long> query = em.createQuery(qStr, Long.class);
         query.setParameter("petId", id);
-        return query.getSingleResult();
+        return query.getSingleResult().intValue();
     }
 
     @Override
@@ -53,6 +53,7 @@ public class ImageJpaDaoImpl implements ImageDao {
         return Optional.of(image);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         Query query = em.createQuery("delete Images where id = :id");
@@ -60,6 +61,7 @@ public class ImageJpaDaoImpl implements ImageDao {
         query.executeUpdate();
     }
 
+    @Transactional
     @Override
     public void delete(List<Long> ids) {
         for (Long id: ids ) {
