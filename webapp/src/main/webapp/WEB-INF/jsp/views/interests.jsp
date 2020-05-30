@@ -36,7 +36,7 @@
                                 </c:if>
                             </div>
                         </c:if>
-                        <c:if test="${not empty interests_list}">
+                        <c:if test="${not empty interestList}">
                             <div class="row">
                                 <div class="col-lg-5">
                                     <h5 class="text-left"><b><spring:message code="request"/></b></h5>
@@ -51,7 +51,7 @@
                             <hr class="m-0">
 
                         </c:if>
-                        <c:forEach var="req" items="${interests_list}">
+                        <c:forEach var="req" items="${interestList}">
                             <c:if test="${req.status.id eq 1}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-5">

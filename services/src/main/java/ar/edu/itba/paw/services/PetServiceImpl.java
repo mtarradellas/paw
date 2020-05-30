@@ -348,10 +348,10 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public boolean removePet(long petId, long userId) {
+    public boolean removePet(String locale, long petId, long userId) {
         if (petDao.isPetOwner(petId, userId)) {
 
-            requestService.rejectAllByPet(petId);
+            requestService.rejectAllByPet(locale, petId);
             petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
             return true;
         }
@@ -368,8 +368,8 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public void removePetAdmin(long petId) {
-        requestService.rejectAllByPet(petId);
+    public void removePetAdmin(String locale, long petId) {
+        requestService.rejectAllByPet(locale, petId);
         petDao.updateStatus(petId, PetStatus.REMOVED.getValue());
     }
 

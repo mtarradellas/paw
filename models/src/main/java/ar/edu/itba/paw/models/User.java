@@ -5,7 +5,7 @@ import ar.edu.itba.paw.models.constants.UserStatus;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
+@Entity(name = "Users")
 public class User {
 
     @Id
@@ -25,7 +25,7 @@ public class User {
     @Enumerated(EnumType.ORDINAL)
     private UserStatus status;
 
-    @OneToMany(orphanRemoval = true, mappedBy = "ownerid", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Column
     private List<Request> requestList;
 
@@ -77,6 +77,11 @@ public class User {
         hash = 31 * hash + id.intValue();
         hash = 31 * hash + username.hashCode();
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        return "{ id: " + id + ", username: " + username + ", mail: " + mail + ", status: " + status + " }";
     }
 
     public UserStatus getStatus() {

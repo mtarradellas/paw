@@ -28,16 +28,16 @@ public interface UserService {
 
     Optional<User> create(String username, String password, String mail) throws DuplicateUserException;
     Optional<User> update(User user);
-    Optional<User> updateUsername(User user, String username) throws DuplicateUserException;
-    Optional<User> updateStatus(User user, UserStatus status);
-    Optional<User> updatePassword(User user, String oldPassword, String newPassword) throws InvalidPasswordException;
+    Optional<User> updateUsername(long id, String username) throws DuplicateUserException;
+    Optional<User> updateStatus(long id, UserStatus status);
+    Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException;
     Optional<User> requestPasswordReset(String mail);
     Optional<User> resetPassword(UUID token, String password);
 
     Optional<User> adminCreate(String username, String password, String mail) throws DuplicateUserException;
     boolean isAdmin(User user);
-    boolean recoverUser(User user);
-    boolean removeUser(User user);
+    boolean recoverUser(long id);
+    boolean removeUser(long id);
 
     Optional<Token> getToken(UUID token);
     Optional<Token> createToken(UUID token, User user);

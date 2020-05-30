@@ -5,6 +5,9 @@ import ar.edu.itba.paw.interfaces.exception.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.RequestStatus;
+import ar.edu.itba.paw.models.constants.UserStatus;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -34,6 +37,13 @@ import java.util.stream.Collectors;
 public class AdminController extends ParentController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
+
+    /* TODO placeholders for max number (no pagination) */
+    private static final int PAGE = 1;
+    private static final int PAGE_MAX = 500;
+
+    private static final int USER_PAGE_SIZE = 25;
+    private static final int REQ_PAGE_SIZE = 25;
 
     @RequestMapping(value = "/admin")
     public ModelAndView getAdminHome() {
@@ -111,7 +121,7 @@ public class AdminController extends ParentController{
         mav.addObject("department_list", departmentList.toArray());
         mav.addObject("species_list", speciesList.toArray());
         mav.addObject("breeds_list", breedList.toArray());
-        mav.addObject("users_list", userService.list(locale).toArray());
+        mav.addObject("users_list", userService.list(PAGE, PAGE_MAX).toArray());
         return mav;
     }
 
@@ -157,7 +167,8 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value = "/admin/pet/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
-         petService.removePetAdmin(id);
+        String locale = getLocale();
+         petService.removePetAdmin(locale, id);
          LOGGER.debug("Pet {} updated as removed", id);
          return new ModelAndView("redirect:/admin/pets");
 
@@ -264,30 +275,46 @@ public class AdminController extends ParentController{
                                   @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                   @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                   @RequestParam(name = "page", required = false) String page,
-                                  @RequestParam(name = "find", required = false) String findValue) {
+                                  @RequestParam(name = "find", required = false) String find) {
 
     ModelAndView mav = new ModelAndView("admin/admin_users");
-    final String locale = getLocale();
 
-    if(page == null){
-        page = "1";
+    int pageNum = 1;
+    if(page != null) {
+        try {
+            pageNum = Integer.parseInt(page);
+        } catch (NumberFormatException ex) {
+            throw new BadRequestException("Invalid page parameter");
+        }
     }
 
-    if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+    UserStatus userStatus = null;
+    if(status != null) {
+        try {
+            int idx = Integer.parseInt(status);
+            userStatus = UserStatus.values()[idx];
+            if (userStatus == null) throw new BadRequestException("Invalid status parameter");
+        } catch (NumberFormatException ex) {
+            throw new BadRequestException("Invalid status parameter");
+        }
+    }
+
+    if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")) {
         mav.addObject("wrongSearch", true);
-        findValue = "";
-    }else{
+        find = "";
+    } else {
         mav.addObject("wrongSearch", false);
     }
 
-    status = status == null || status.equals("any") ? null : status;
     searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
-    UserList userList = userService.adminUserList(locale, findValue, status, searchCriteria, searchOrder, page);
+    List<User> userList = userService.filteredList(find, userStatus, searchCriteria, searchOrder, pageNum, USER_PAGE_SIZE);
+    int userAmount = userService.getFilteredAmount(find, userStatus);
 
     mav.addObject("currentPage", page);
-    mav.addObject("maxPage", userList.getMaxPage());
-    mav.addObject("users_list", userList);
+    mav.addObject("userAmount", userAmount);
+    mav.addObject("userList", userList);
+    mav.addObject("maxPage", (int) Math.ceil((double) userAmount / USER_PAGE_SIZE));
 
     return mav;
 }
@@ -298,12 +325,18 @@ public class AdminController extends ParentController{
 
         final ModelAndView mav = new ModelAndView("/admin/admin_single_user");
         String locale = getLocale();
-        if(page == null){
-            page = "1";
+
+        int pageNum = 1;
+        if(page != null) {
+            try {
+                pageNum = Integer.parseInt(page);
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid page parameter");
+            }
         }
 
-        PetList petsByUser = petService.getByUserId(locale, id, page);
-        Optional<User> opUser = userService.findById(locale, id);
+        PetList petsByUser = petService.getByUserId(locale, id, String.valueOf(pageNum));
+        Optional<User> opUser = userService.findById(id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
         mav.addObject("userPets", petsByUser);
@@ -323,8 +356,6 @@ public class AdminController extends ParentController{
     public ModelAndView createUser(@Valid @ModelAttribute("registerForm") final UserForm userForm,
                                    final BindingResult errors, HttpServletRequest request) {
 
-        final String locale = getLocale();
-
         if (errors.hasErrors()) {
             errors.getAllErrors().forEach(error -> LOGGER.debug("{}", error.toString()));
             return uploadUserForm(userForm);
@@ -332,7 +363,7 @@ public class AdminController extends ParentController{
 
         Optional<User> opUser;
         try {
-            opUser = userService.adminCreate(locale, userForm.getUsername(), userForm.getPassword(),
+            opUser = userService.adminCreate(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -351,7 +382,7 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value = "/admin/user/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView userUpdateDelete(@PathVariable("id") long id) {
-        userService.removeAdmin(id);
+        userService.removeUser(id);
         LOGGER.debug("User {} updated as deleted", id);
         return new ModelAndView("redirect:/admin/users");
 
@@ -359,7 +390,7 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value = "/admin/user/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView userUpdateRecover(@PathVariable("id") long id) {
-        userService.recoverAdmin(id);
+        userService.recoverUser(id);
         LOGGER.debug("User {} updated as recovered", id);
         return new ModelAndView("redirect:/admin/users");
     }
@@ -373,9 +404,7 @@ public class AdminController extends ParentController{
 
     private EditUserForm populateForm(EditUserForm editUserForm, long id){
 
-        final String locale = getLocale();
-
-        User user = userService.findById(locale, id).orElseThrow(UserNotFoundException::new);
+        User user = userService.findById(id).orElseThrow(UserNotFoundException::new);
 
         editUserForm.setUsername(user.getUsername());
 
@@ -383,11 +412,10 @@ public class AdminController extends ParentController{
     }
 
     private ModelAndView editUserForm(@ModelAttribute("editUserForm") final EditUserForm editUserForm, long id) {
-        final String locale = getLocale();
 
         return new ModelAndView("admin/admin_edit_user")
                 .addObject("user",
-                        userService.findById(locale, id).orElseThrow(UserNotFoundException::new))
+                        userService.findById(id).orElseThrow(UserNotFoundException::new))
                 .addObject("id", id);
     }
 
@@ -402,7 +430,7 @@ public class AdminController extends ParentController{
         }
         Optional<User> opUser;
         try {
-            opUser = userService.update(getLocale(), id, editUserForm.getUsername());
+            opUser = userService.updateUsername(id, editUserForm.getUsername());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return editUserForm(editUserForm, id)
@@ -429,7 +457,7 @@ public class AdminController extends ParentController{
         }
         Optional<User> opUser;
         try {
-            opUser = userService.updatePassword(getLocale(), editUserForm.getCurrentPassword(), editUserForm.getNewPassword(), id);
+            opUser = userService.updatePassword(id, editUserForm.getCurrentPassword(), editUserForm.getNewPassword());
         }
         catch(InvalidPasswordException ex) {
             return editUserForm(editUserForm, id).addObject("current_password_fail", true);
@@ -448,29 +476,46 @@ public class AdminController extends ParentController{
                                          @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                          @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                          @RequestParam(name = "page", required = false) String page,
-                                         @RequestParam(name = "find", required = false) String findValue) {
+                                         @RequestParam(name = "find", required = false) String find) {
 
         ModelAndView mav = new ModelAndView("admin/admin_requests");
         final String locale = getLocale();
 
-        if(page == null){
-            page = "1";
+        int pageNum = 1;
+        if(page != null) {
+            try {
+                pageNum = Integer.parseInt(page);
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid page parameter");
+            }
         }
 
-        if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+        RequestStatus requestStatus = null;
+        if(status != null) {
+            try {
+                int idx = Integer.parseInt(status);
+                requestStatus = RequestStatus.values()[idx];
+                if (requestStatus == null) throw new BadRequestException("Invalid status parameter");
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid status parameter");
+            }
+        }
+
+        if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
             mav.addObject("wrongSearch", true);
-            findValue = "";
+            find = "";
         }else{
             mav.addObject("wrongSearch", false);
         }
 
-        status = status == null || status.equals("any") ? null : status;
         searchCriteria = searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria;
 
-        RequestList requestList = requestService.adminRequestList(locale, findValue, status, searchCriteria, searchOrder, page);
+        List<Request> requestList = requestService.filteredList(null, null, find, requestStatus,
+                searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+        int requestAmount = requestService.getFilteredListAmount(null, null, find, requestStatus);
 
-        mav.addObject("currentPage", page);
-        mav.addObject("maxPage", requestList.getMaxPage());
+        mav.addObject("currentPage", pageNum);
+        mav.addObject("maxPage", requestAmount);
         mav.addObject("requests_list", requestList);
 
         return mav;
@@ -478,34 +523,33 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value ="/admin/upload-request", method = { RequestMethod.GET })
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
-        String language = getLocale();
+        String locale = getLocale();
         return new ModelAndView("admin/admin_upload_request")
-                .addObject("pets_list", petService.listAll(language))
-                .addObject("users_list",userService.list(language).toArray());
+                .addObject("pets_list", petService.listAll(locale))
+                .addObject("users_list",userService.list(PAGE, PAGE_MAX).toArray());
     }
 
     @RequestMapping(value = "/admin/upload-request", method = { RequestMethod.POST })
     public ModelAndView uploadRequest(@Valid @ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm,
                                       final BindingResult errors, HttpServletRequest request) {
-
+        String locale = getLocale();
 
         if (errors.hasErrors()) {
             return uploadRequestForm(requestForm);
         }
 
-        Optional<Request> optionalRequest = requestService.create(requestForm.getUserId(),requestForm.getPetId(), getLocale());
+        Optional<Request> optionalRequest = requestService.create(locale, requestForm.getUserId(), requestForm.getPetId());
 
         if (!optionalRequest.isPresent()) {
             return uploadRequestForm(requestForm).addObject("request_error", true);
         }
-
 
         return new ModelAndView("redirect:/admin/requests");
     }
 
     @RequestMapping(value = "/admin/request/{id}/cancel", method = {RequestMethod.POST})
     public ModelAndView requestUpdateCanceled(@PathVariable("id") long id) {
-        requestService.cancelRequestAdmin(id);
+        requestService.adminCancel(id);
         LOGGER.debug("Request {} updated as canceled", id);
         return new ModelAndView("redirect:/admin/requests");
 
@@ -513,7 +557,7 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value = "/admin/request/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView requestUpdateRecover(@PathVariable("id") long id) {
-        requestService.recoverRequestAdmin(id);
+        requestService.adminRecover(id);
         LOGGER.debug("Request {} updated as recovered", id);
         return new ModelAndView("redirect:/admin/requests");
     }
@@ -521,7 +565,7 @@ public class AdminController extends ParentController{
     @RequestMapping(value ="/admin/request/{id}/edit", method = { RequestMethod.GET })
     public ModelAndView editRequest(@PathVariable("id") long id) {
 
-        Optional<Request> request = requestService.findById(id,getLocale());
+        Optional<Request> request = requestService.findById(id);
         if(!request.isPresent()){
             return new ModelAndView("error-views/404");
         }
@@ -532,9 +576,20 @@ public class AdminController extends ParentController{
 
     @RequestMapping(value = "/admin/request/{id}/edit", method = { RequestMethod.POST })
     public ModelAndView uploadRequest(@PathVariable("id") long id,
-                                      @RequestParam(name = "newStatus", required = false) String newStatus) {
+                                      @RequestParam(name = "newStatus", required = false) String status) {
 
-        requestService.adminUpdateStatus(id,newStatus);
+        RequestStatus requestStatus = null;
+        if(status != null) {
+            try {
+                int idx = Integer.parseInt(status);
+                requestStatus = RequestStatus.values()[idx];
+                if (requestStatus == null) throw new BadRequestException("Invalid status parameter");
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid status parameter");
+            }
+        }
+
+        requestService.adminUpdateStatus(id, requestStatus);
 
         return new ModelAndView("redirect:/admin/requests");
     }

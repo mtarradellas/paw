@@ -29,6 +29,6 @@ public class ProvinceIdMatchValidator implements ConstraintValidator<ProvinceIdM
 
         Stream<Province> provinceStream = locationService.provinceList().stream();
 
-        return provinceStream.anyMatch(p->val == p.getId());
+        return provinceStream.anyMatch(p-> val.equals(p.getId()));
     }
 }

@@ -53,6 +53,16 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
+    public List<Request> searchListByPetOwner(User user, Pet pet, String find, int page, int pageSize) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Request> filteredListByPetOwner(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        return new ArrayList<>();
+    }
+
+    @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM requests");
         return nativeQuery.getFirstResult();
@@ -65,6 +75,16 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public int getFilteredListAmount(User user, Pet pet, RequestStatus status) {
+        return 0;
+    }
+
+    @Override
+    public int getSearchListByPetOwnerAmount(User user, Pet pet, String find) {
+        return 0;
+    }
+
+    @Override
+    public int getFilteredListByPetOwnerAmount(User user, Pet pet, RequestStatus status) {
         return 0;
     }
 

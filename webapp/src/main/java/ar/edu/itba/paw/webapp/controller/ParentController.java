@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class ParentController {
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
             return null;
         }
-        return userService.findByUsername(getLocale(), auth.getName()).orElse(null);
+        return userService.findByUsername(auth.getName()).orElse(null);
     }
 
     public Authentication authenticateUserAndSetSession(String username, HttpServletRequest request){
@@ -80,6 +81,12 @@ public class ParentController {
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchUser() {
         return new ModelAndView("error-views/404_user");
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ModelAndView badRequest() {
+        return new ModelAndView("error-views/400");
     }
 
 }

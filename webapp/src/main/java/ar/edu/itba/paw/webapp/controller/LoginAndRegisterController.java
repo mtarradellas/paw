@@ -66,7 +66,7 @@ public class LoginAndRegisterController extends ParentController {
 
         Optional<User> opUser;
         try {
-            opUser = userService.create(locale, userForm.getUsername(), userForm.getPassword(),
+            opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -87,7 +87,7 @@ public class LoginAndRegisterController extends ParentController {
         UUID uuid = UUID.fromString(tokenString);
 
         /* TODO create exceptions for better error handling */
-        Optional<User> opUser = userService.activateAccountWithToken(getLocale(), uuid);
+        Optional<User> opUser = userService.activateAccountWithToken(uuid);
 
         if (!opUser.isPresent()) {
             LOGGER.warn("User could not activate token {}", tokenString);
@@ -113,7 +113,7 @@ public class LoginAndRegisterController extends ParentController {
             return requestResetPassword(mailForm);
         }
 
-        Optional<User> opUser = userService.requestPasswordReset(locale, mailForm.getMail());
+        Optional<User> opUser = userService.requestPasswordReset(mailForm.getMail());
 
         if (!opUser.isPresent()) {
             return requestResetPassword(mailForm).addObject("invalid_mail", true);
@@ -134,7 +134,7 @@ public class LoginAndRegisterController extends ParentController {
         UUID uuid = UUID.fromString(resetPasswordForm.getToken());
         String password = resetPasswordForm.getPassword();
 
-        Optional<User> opUser = userService.resetPassword(getLocale(), uuid, password);
+        Optional<User> opUser = userService.resetPassword(uuid, password);
 
         if (!opUser.isPresent()) {
             return new ModelAndView("views/token_has_expired");

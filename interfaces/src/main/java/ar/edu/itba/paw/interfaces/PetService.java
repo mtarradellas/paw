@@ -36,9 +36,9 @@ public interface PetService {
     PetList getByUserId(String language, long userId, String page);
     boolean sellPet(long petId, long userId);
     void sellPetAdmin(long petId);
-    boolean removePet(long petId, long userId);
+    boolean removePet(String locale, long petId, long userId);
     boolean recoverPet(long petId, long userId);
-    void removePetAdmin(long petId);
+    void removePetAdmin(String locale, long petId);
     void recoverPetAdmin(long petId);
     int getPetsAmount();
     int getAdminPetsAmount();

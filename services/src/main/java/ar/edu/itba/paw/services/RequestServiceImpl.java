@@ -38,8 +38,15 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> filteredList(User user, Pet pet, String find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        if (find == null) return requestDao.filteredList(user, pet, status, searchCriteria, searchOrder, page, pageSize);
-        return requestDao.searchList(user, pet, find, page, pageSize);
+        return requestDao.list(page, pageSize);
+//        if (find == null) return requestDao.filteredList(user, pet, status, searchCriteria, searchOrder, page, pageSize);
+//        return requestDao.searchList(user, pet, find, page, pageSize);
+    }
+
+    @Override
+    public List<Request> filteredListByPetOwner(User user, Pet pet, String find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        if (find == null) return requestDao.filteredListByPetOwner(user, pet, status, searchCriteria, searchOrder, page, pageSize);
+        return requestDao.searchListByPetOwner(user, pet, find, page, pageSize);
     }
 
     @Override
@@ -54,21 +61,42 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public int getFilteredListByPetOwnerAmount(User user, Pet pet, String find, RequestStatus status) {
+        if (find == null) return requestDao.getFilteredListByPetOwnerAmount(user, pet, status);
+        return requestDao.getSearchListByPetOwnerAmount(user, pet, find);
+    }
+
+    @Override
     public Optional<Request> findById(long id) {
         return requestDao.findById(id);
     }
 
     @Override
-    public Optional<Request> create(User user, Pet pet) {
+    public Optional<Request> create(String locale, long userId, long petId) {
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User {} not found", userId);
+            return Optional.empty();
+        }
+        User user = opUser.get();
+
+        Optional<Pet> opPet = petService.findById(locale, petId);
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet {} not found", petId);
+            return Optional.empty();
+        }
+        Pet pet = opPet.get();
+
+        if (pet.getOwnerId() == user.getId()) {
+            LOGGER.warn("User {} is pet {} owner, ignoring request", userId, petId);
+            return Optional.empty();
+        }
+
         List<Request> requestList = user.getRequestList();
         long pendingRequests = requestList.stream().filter(req -> !req.getStatus().equals(RequestStatus.CANCELED)).count();
 
         if (pendingRequests > 0) {
             LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
-            return Optional.empty();
-        }
-        if (petService.isPetOwner(pet.getId(), user.getId())) {
-            LOGGER.warn("User {} is the owner of the requested pet {}, ignoring request creation", user.getId(), pet.getId());
             return Optional.empty();
         }
 
@@ -101,8 +129,15 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean cancel(Request request, User user) {
-        LOGGER.debug("User {} attempting to cancel request {}", user.getId(), request.getId());
+    public boolean cancel(long id, User user) {
+        LOGGER.debug("User {} attempting to cancel request {}", user.getId(), id);
+
+        Optional<Request> opRequest = requestDao.findById(id);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found", id);
+            return false;
+        }
+        Request request = opRequest.get();
 
         if (!request.getUser().equals(user)) {
             LOGGER.warn("User {} is not Request {} owner, Request not canceled", user.getId(), request.getId());
@@ -120,8 +155,15 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean accept(Request request, User user) {
-        LOGGER.debug("User {} attempting to accept request {}", user.getId(), request.getId());
+    public boolean accept(long id, User user) {
+        LOGGER.debug("User {} attempting to accept request {}", user.getId(), id);
+
+        Optional<Request> opRequest = requestDao.findById(id);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found", id);
+            return false;
+        }
+        Request request = opRequest.get();
 
         if (!requestDao.isRequestTarget(request, user)) {
             LOGGER.warn("User {} is not Request {} target, Request not accepted", user.getId(), request.getId());
@@ -160,8 +202,15 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean reject(Request request, User user) {
-        LOGGER.debug("User {} attempting to reject request {}", user.getId(), request.getId());
+    public boolean reject(long id, User user) {
+        LOGGER.debug("User {} attempting to reject request {}", user.getId(), id);
+
+        Optional<Request> opRequest = requestDao.findById(id);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found", id);
+            return false;
+        }
+        Request request = opRequest.get();
 
         if (!requestDao.isRequestTarget(request, user)) {
             LOGGER.warn("User {} is not Request {} target, Request not rejected", user.getId(), request.getId());
@@ -199,8 +248,15 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean recover(Request request, User user){
-        LOGGER.debug("User {} attempting to recover request {}", user.getId(), request.getId());
+    public boolean recover(long id, User user){
+        LOGGER.debug("User {} attempting to recover request {}", user.getId(), id);
+
+        Optional<Request> opRequest = requestDao.findById(id);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found", id);
+            return false;
+        }
+        Request request = opRequest.get();
 
         if (!request.getUser().equals(user)) {
             LOGGER.warn("User {} is not Request {} target, Request not recovered", user.getId(), request.getId());
@@ -227,29 +283,35 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void adminUpdateStatus(Request request, RequestStatus status) {
+    public void adminUpdateStatus(long id, RequestStatus status) {
+        Optional<Request> opRequest = requestDao.findById(id);
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("Request {} not found", id);
+            return;
+        }
+        Request request = opRequest.get();
         request.setStatus(status);
         requestDao.update(request);
     }
 
     @Override
-    public void adminCancel(Request request) {
-        adminUpdateStatus(request, RequestStatus.CANCELED);
+    public void adminCancel(long id) {
+        adminUpdateStatus(id, RequestStatus.CANCELED);
     }
 
     @Override
-    public void adminAccept(Request request) {
-        adminUpdateStatus(request, RequestStatus.ACCEPTED);
+    public void adminAccept(long id) {
+        adminUpdateStatus(id, RequestStatus.ACCEPTED);
     }
 
     @Override
-    public void adminReject(Request request) {
-        adminUpdateStatus(request, RequestStatus.REJECTED);
+    public void adminReject(long id) {
+        adminUpdateStatus(id, RequestStatus.REJECTED);
     }
 
     @Override
-    public void adminRecover(Request request) {
-        adminUpdateStatus(request, RequestStatus.PENDING);
+    public void adminRecover(long id) {
+        adminUpdateStatus(id, RequestStatus.PENDING);
     }
 
     @Override
@@ -258,12 +320,24 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void rejectAllByPetOwner(User petOwner) {
+    public void rejectAllByPetOwner(long petOwnerId) {
+        Optional<User> opPetOwner = userService.findById(petOwnerId);
+        if(!opPetOwner.isPresent()) {
+            LOGGER.warn("User {} not found", petOwnerId);
+            return;
+        }
+        User petOwner = opPetOwner.get();
         requestDao.updateByStatusAndPetOwner(petOwner, RequestStatus.PENDING, RequestStatus.REJECTED);
     }
 
     @Override
-    public void rejectAllByPet(Pet pet) {
+    public void rejectAllByPet(String locale, long petId) {
+        Optional<Pet> opPet = petService.findById(locale, petId);
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet {} not found", petId);
+            return;
+        }
+        Pet pet = opPet.get();
         requestDao.updateByStatusAndPet(pet, RequestStatus.PENDING, RequestStatus.REJECTED);
     }
 

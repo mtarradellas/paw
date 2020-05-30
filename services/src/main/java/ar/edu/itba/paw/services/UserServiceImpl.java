@@ -41,8 +41,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> filteredList(String find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        if (find == null) return userDao.filteredList(status, searchCriteria, searchOrder, page, pageSize);
-        return userDao.searchList(find, page, pageSize);
+        return userDao.list(page, pageSize);
+//        if (find == null) return userDao.filteredList(status, searchCriteria, searchOrder, page, pageSize);
+//        return userDao.searchList(find, page, pageSize);
     }
 
     @Override
@@ -108,8 +109,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> updateUsername(User user, String username) throws DuplicateUserException {
-        LOGGER.debug("Attempting user {} update with username: {}", user.getId(), username);
+    public Optional<User> updateUsername(long id, String username) throws DuplicateUserException {
+        LOGGER.debug("Attempting user {} update with username: {}", id, username);
+
+        Optional<User> opUser = userDao.findById(id);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User {} not found", id);
+            return Optional.empty();
+        }
+        User user = opUser.get();
+
         user.setUsername(username);
         Optional<User> opUpdatedUser = userDao.update(user);
         if (!opUpdatedUser.isPresent()) {
@@ -122,8 +131,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> updateStatus(User user, UserStatus status) {
-        LOGGER.debug("Attempting user {} update with status: {}", user.getId(), status.getValue());
+    public Optional<User> updateStatus(long id, UserStatus status) {
+        LOGGER.debug("Attempting user {} update with status: {}", id, status.getValue());
+
+        Optional<User> opUser = userDao.findById(id);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User {} not found", id);
+            return Optional.empty();
+        }
+        User user = opUser.get();
+
         user.setStatus(status);
         Optional<User> opUpdatedUser = userDao.update(user);
         if (!opUpdatedUser.isPresent()) {
@@ -136,7 +153,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> updatePassword(User user, String oldPassword, String newPassword) throws InvalidPasswordException {
+    public Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException {
+        Optional<User> opUser = userDao.findById(id);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User {} not found", id);
+            return Optional.empty();
+        }
+        User user = opUser.get();
+
         if(oldPassword != null){
             LOGGER.debug("Checking old password");
             if(! encoder.matches(oldPassword, user.getPassword())){
@@ -209,7 +233,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> updatedUser = Optional.empty();
 
         try {
-            updatedUser = updatePassword(user, null, password);
+            updatedUser = updatePassword(user.getId(), null, password);
         }
         catch(InvalidPasswordException ignored){}
         deleteToken(uuid);
@@ -230,16 +254,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean recoverUser(User user) {
-        return updateStatus(user, UserStatus.ACTIVE).isPresent();
+    public boolean recoverUser(long id) {
+        Optional<User> opUser = userDao.findById(id);
+        if (!opUser.isPresent()) return false;
+        User user = opUser.get();
+        return updateStatus(user.getId(), UserStatus.ACTIVE).isPresent();
     }
 
     @Override
-    public boolean removeUser(User user) {
-        requestService.rejectAllByPetOwner(user); //cancels all (pending) requests made to pets this user owns
+    public boolean removeUser(long id) {
+        Optional<User> opUser = userDao.findById(id);
+        if (!opUser.isPresent()) return false;
+        User user = opUser.get();
+        requestService.rejectAllByPetOwner(user.getId()); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByUser(user);
         petService.removeAllByOwner(user.getId());
-        return updateStatus(user, UserStatus.DELETED).isPresent();
+        return updateStatus(user.getId(), UserStatus.DELETED).isPresent();
     }
 
     @Override
@@ -286,7 +316,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = opUser.get();
 
-        if(!updateStatus(user, UserStatus.ACTIVE).isPresent()) {
+        if(!updateStatus(user.getId(), UserStatus.ACTIVE).isPresent()) {
             LOGGER.warn("Could not activate user {} account", user.getId());
             userDao.deleteToken(uuid);
             return Optional.empty();

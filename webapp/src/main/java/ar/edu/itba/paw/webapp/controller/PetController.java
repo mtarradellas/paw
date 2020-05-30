@@ -159,7 +159,7 @@ public class PetController extends ParentController {
             }
             else {
                 LOGGER.debug("User {} last request status for pet {} is {}", user.getId(), id, opRequest.get().getId());
-                mav.addObject("lastRequest", opRequest.get().getStatus().getId());
+                mav.addObject("lastRequest", opRequest.get().getStatus());
                 mav.addObject("requestExists", true);
             }
         } else {
@@ -186,7 +186,7 @@ public class PetController extends ParentController {
 
         /* TODO Generate exceptions for error handling */
 
-        Optional<Request> opRequest =  requestService.create(user.getId(), id, locale);
+        Optional<Request> opRequest =  requestService.create(locale, user.getId(), id);
         if (!opRequest.isPresent()) {
             mav.addObject("request_error", true);
         }
@@ -208,7 +208,8 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
         User user = loggedUser();
-        if (user != null && petService.removePet(id, user.getId())) {
+        String locale = getLocale();
+        if (user != null && petService.removePet(locale, id, user.getId())) {
             LOGGER.debug("Pet {} updated as removed", id);
             return new ModelAndView("redirect:/");
         }

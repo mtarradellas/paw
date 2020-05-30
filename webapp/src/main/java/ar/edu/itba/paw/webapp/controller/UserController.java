@@ -7,6 +7,8 @@ import ar.edu.itba.paw.models.PetList;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.RequestStatus;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
@@ -31,6 +33,8 @@ public class UserController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    private static final int REQ_PAGE_SIZE = 25;
+
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
                              @RequestParam(name = "page", required = false) String page) {
@@ -45,7 +49,7 @@ public class UserController extends ParentController {
 
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petsByUser.getMaxPage());
-        Optional<User> opUser = userService.findById(locale, id);
+        Optional<User> opUser = userService.findById(id);
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         mav.addObject("user", opUser.get());
         mav.addObject("userPets", petsByUser);
@@ -56,26 +60,50 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/requests")
     public ModelAndView getRequests(@RequestParam(name = "status", required = false) String status,
                                     @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
-                                    @RequestParam(name = "searchOrder", required = false) String searchOrder) {
+                                    @RequestParam(name = "searchOrder", required = false) String searchOrder,
+                                    @RequestParam(name = "page", required = false) String page,
+                                    @RequestParam(name = "find", required = false) String find) {
 
         final ModelAndView mav = new ModelAndView("views/requests");
         final String locale = getLocale();
         final User user = loggedUser();
 
-        status = (status == null || status.equals("any") ? null : status);
+        int pageNum = 1;
+        if(page != null) {
+            try {
+                pageNum = Integer.parseInt(page);
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid page parameter");
+            }
+        }
+
+        RequestStatus requestStatus = null;
+        if(status != null) {
+            try {
+                int idx = Integer.parseInt(status);
+                requestStatus = RequestStatus.values()[idx];
+                if (requestStatus == null) throw new BadRequestException("Invalid status parameter");
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid status parameter");
+            }
+        }
+
+        if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")) {
+            mav.addObject("wrongSearch", true);
+            find = "";
+        } else {
+            mav.addObject("wrongSearch", false);
+        }
+
         searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
 
         /* Filtered request list */
         if (status != null || searchCriteria != null) {
-            List<Request> requestList = requestService.filterListByOwner(locale, user.getId(), status, searchCriteria, searchOrder).collect(Collectors.toList());
-            mav.addObject("requests_list", requestList);
-            mav.addObject("list_size", requestList.size());
-        }
-        /* Default request list */
-        else {
-            List<Request> requestList = requestService.listByOwner(locale, user.getId()).collect(Collectors.toList());
-            mav.addObject("requests_list",requestList);
-            mav.addObject("list_size", requestList.size());
+            List<Request> requestList = requestService.filteredList(user, null, find, requestStatus,
+                    searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+            int amount = requestService.getFilteredListAmount(user, null, find, requestStatus);
+            mav.addObject("requestList", requestList);
+            mav.addObject("amount", amount);
         }
         return mav;
     }
@@ -85,7 +113,7 @@ public class UserController extends ParentController {
         final User user = loggedUser();
         final String locale = getLocale();
 
-        if (requestService.cancel(id, user.getId(), locale)) {
+        if (requestService.cancel(id, user)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -96,7 +124,7 @@ public class UserController extends ParentController {
         final User user = loggedUser();
         final String locale = getLocale();
 
-        if (requestService.recover(id, user.getId(), locale)) {
+        if (requestService.recover(id, user)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -105,26 +133,50 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/interests")
     public ModelAndView getInterested(@RequestParam(name = "status", required = false) String status,
                                       @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
-                                      @RequestParam(name = "searchOrder", required = false) String searchOrder) {
+                                      @RequestParam(name = "searchOrder", required = false) String searchOrder,
+                                      @RequestParam(name = "page", required = false) String page,
+                                      @RequestParam(name = "find", required = false) String find) {
 
         final ModelAndView mav = new ModelAndView("views/interests");
         final User user = loggedUser();
         final String locale = getLocale();
 
-        status = (status == null || status.equals("any") ? null : status);
+        int pageNum = 1;
+        if(page != null) {
+            try {
+                pageNum = Integer.parseInt(page);
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid page parameter");
+            }
+        }
+
+        RequestStatus requestStatus = null;
+        if(status != null) {
+            try {
+                int idx = Integer.parseInt(status);
+                requestStatus = RequestStatus.values()[idx];
+                if (requestStatus == null) throw new BadRequestException("Invalid status parameter");
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid status parameter");
+            }
+        }
+
+        if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")) {
+            mav.addObject("wrongSearch", true);
+            find = "";
+        } else {
+            mav.addObject("wrongSearch", false);
+        }
+
         searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
 
         /* Filtered interest list */
         if(status != null || searchCriteria != null) {
-            List<Request> requestList = requestService.filterListByPetOwner(locale, user.getId(), status, searchCriteria, searchOrder).collect(Collectors.toList());
-            mav.addObject("interests_list", requestList);
-            mav.addObject("list_size", requestList.size());
-        }
-        /* Default interest list */
-        else{
-            List<Request> requestList = requestService.listByPetOwner(locale, user.getId()).collect(Collectors.toList());
-            mav.addObject("interests_list", requestList);
-            mav.addObject("list_size", requestList.size());
+            List<Request> requestList = requestService.filteredListByPetOwner(user, null, find, requestStatus,
+                    searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+            int amount = requestService.getFilteredListByPetOwnerAmount(user, null, find, requestStatus);
+            mav.addObject("interestList", requestList);
+            mav.addObject("amount", amount);
         }
         return mav;
     }
@@ -134,7 +186,7 @@ public class UserController extends ParentController {
         final User user = loggedUser();
         final String locale = getLocale();
 
-        if (requestService.accept(id, user.getId(), locale)) {
+        if (requestService.accept(id, user)) {
             return new ModelAndView("redirect:/interests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -145,7 +197,7 @@ public class UserController extends ParentController {
         final User user = loggedUser();
         final String locale = getLocale();
 
-        if (requestService.reject(id, user.getId(), locale)) {
+        if (requestService.reject(id, user)) {
             return new ModelAndView("redirect:/interests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -167,7 +219,7 @@ public class UserController extends ParentController {
 
         final String locale = getLocale();
 
-        User user = userService.findById(locale, id).orElseThrow(UserNotFoundException::new);
+        User user = userService.findById(id).orElseThrow(UserNotFoundException::new);
 
         editUserForm.setUsername(user.getUsername());
 
@@ -179,7 +231,7 @@ public class UserController extends ParentController {
 
         return new ModelAndView("views/user_edit")
                 .addObject("user",
-                        userService.findById(locale, id).orElseThrow(UserNotFoundException::new))
+                        userService.findById(id).orElseThrow(UserNotFoundException::new))
                 .addObject("id", id);
     }
 
@@ -196,7 +248,7 @@ public class UserController extends ParentController {
         }
         Optional<User> opUser;
         try {
-             opUser = userService.update(getLocale(), id, editUserForm.getUsername());
+             opUser = userService.updateUsername(id, editUserForm.getUsername());
         } catch (DuplicateUserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return editUserForm(editUserForm, id)
@@ -223,7 +275,7 @@ public class UserController extends ParentController {
         }
         Optional<User> opUser;
         try {
-            opUser = userService.updatePassword(getLocale(), editUserForm.getCurrentPassword(), editUserForm.getNewPassword(), id);
+            opUser = userService.updatePassword(id, editUserForm.getCurrentPassword(), editUserForm.getNewPassword());
         }
         catch(InvalidPasswordException ex) {
             return editUserForm(editUserForm, id).addObject("current_password_fail", true);
