@@ -92,11 +92,11 @@ public class RequestServiceImpl implements RequestService {
         }
 
         List<Request> requestList = user.getRequestList();
-        long pendingRequests = requestList.stream().filter(req -> !req.getStatus().equals(RequestStatus.CANCELED)).count();
-
-        if (pendingRequests > 0) {
-            LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
-            return Optional.empty();
+        for (Request req: requestList) {
+            if(req.getPetId() == pet.getId() && !req.getStatus().equals(RequestStatus.CANCELED)) {
+                LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
+                return Optional.empty();
+            }
         }
 
         Request request = requestDao.create(user, pet, RequestStatus.PENDING);

@@ -29,7 +29,7 @@ public class UserJpaDaoImpl implements UserDao {
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
-        final TypedQuery<User> query = em.createQuery("from Users where id IN :filteredIds", User.class);
+        final TypedQuery<User> query = em.createQuery("from User where id IN :filteredIds", User.class);
         query.setParameter("filteredIds", filteredIds);
         List<User> userList = query.getResultList();
         System.out.println("lenia");
@@ -71,7 +71,7 @@ public class UserJpaDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        final String qStr = "from Users as u where u.username = :username";
+        final String qStr = "from User as u where u.username = :username";
         final TypedQuery<User> query = em.createQuery(qStr, User.class);
         query.setParameter("username", username);
         User user = query.getSingleResult();
@@ -80,7 +80,7 @@ public class UserJpaDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByMail(String mail) {
-        final String qStr = "from Users as u where u.mail = :mail";
+        final String qStr = "from User as u where u.mail = :mail";
         final TypedQuery<User> query = em.createQuery(qStr, User.class);
         query.setParameter("mail", mail);
         return query.getResultList().stream().findFirst();
