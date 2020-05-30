@@ -116,7 +116,7 @@ public class LoginAndRegisterController extends ParentController {
         Optional<User> opUser = userService.requestPasswordReset(mailForm.getMail());
 
         if (!opUser.isPresent()) {
-            return requestResetPassword(mailForm).addObject("invalid_mail", true);
+            return requestResetPassword(mailForm).addObject("invalidMail", true);
         }
         return new ModelAndView("views/email_sent_for_password_reset");
     }

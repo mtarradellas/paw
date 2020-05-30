@@ -90,9 +90,9 @@ public class AdminController extends ParentController{
 
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petList.getMaxPage());
-        mav.addObject("pets_list", petList);
-        mav.addObject("species_list", petList.getSpecies());
-        mav.addObject("breeds_list", petList.getBreeds());
+        mav.addObject("petList", petList);
+        mav.addObject("speciesList", petList.getSpecies());
+        mav.addObject("breedList", petList.getBreeds());
         return mav;
     }
 
@@ -117,11 +117,11 @@ public class AdminController extends ParentController{
 
         DepartmentList departmentList = locationService.departmentList();
 
-        mav.addObject("province_list", departmentList.getProvinceList().toArray());
-        mav.addObject("department_list", departmentList.toArray());
-        mav.addObject("species_list", speciesList.toArray());
-        mav.addObject("breeds_list", breedList.toArray());
-        mav.addObject("users_list", userService.list(PAGE, PAGE_MAX).toArray());
+        mav.addObject("provinceList", departmentList.getProvinceList().toArray());
+        mav.addObject("departmentList", departmentList.toArray());
+        mav.addObject("speciesList", speciesList.toArray());
+        mav.addObject("breedList", breedList.toArray());
+        mav.addObject("userList", userService.list(PAGE, PAGE_MAX).toArray());
         return mav;
     }
 
@@ -149,7 +149,7 @@ public class AdminController extends ParentController{
             }
         } catch (ImageLoadException ex) {
             LOGGER.warn("Image bytes load from pet form failed");
-            return uploadPetForm(petForm).addObject("image_error", true);
+            return uploadPetForm(petForm).addObject("imageError", true);
         }
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
@@ -158,7 +158,7 @@ public class AdminController extends ParentController{
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
-            return uploadPetForm(petForm).addObject("pet_error", true);
+            return uploadPetForm(petForm).addObject("petError", true);
         }
 
 
@@ -215,13 +215,13 @@ public class AdminController extends ParentController{
         DepartmentList departmentList = locationService.departmentList();
 
         return new ModelAndView("admin/admin_edit_pet")
-                .addObject("species_list", speciesList.toArray())
-                .addObject("breeds_list", breedList.toArray())
+                .addObject("speciesList", speciesList.toArray())
+                .addObject("breedList", breedList.toArray())
                 .addObject("pet",
                         petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
                 .addObject("id", id)
-                .addObject("province_list", provinceList.toArray())
-                .addObject("department_list", departmentList.toArray());
+                .addObject("provinceList", provinceList.toArray())
+                .addObject("departmentList", departmentList.toArray());
     }
 
     @RequestMapping(value = "/admin/pet/{id}/edit", method = { RequestMethod.POST })
@@ -246,7 +246,7 @@ public class AdminController extends ParentController{
             }
         } catch (ImageLoadException ex) {
             LOGGER.warn("Image bytes load from pet form failed");
-            return editPetForm(editPetForm, id).addObject("image_error", true);
+            return editPetForm(editPetForm, id).addObject("imageError", true);
         }
 
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
@@ -259,7 +259,7 @@ public class AdminController extends ParentController{
         catch(InvalidImageQuantityException ex) {
             LOGGER.warn(ex.getMessage());
 
-            return editPetForm(editPetForm, id).addObject("image_quantity_error", true);
+            return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
         }
         if(!opPet.isPresent()){
             LOGGER.warn("Pet could not be updated");
@@ -460,7 +460,7 @@ public class AdminController extends ParentController{
             opUser = userService.updatePassword(id, editUserForm.getCurrentPassword(), editUserForm.getNewPassword());
         }
         catch(InvalidPasswordException ex) {
-            return editUserForm(editUserForm, id).addObject("current_password_fail", true);
+            return editUserForm(editUserForm, id).addObject("currentPasswordFail", true);
         }
         if(!opUser.isPresent()){
             return new ModelAndView("redirect:/error-views/500");
@@ -516,7 +516,7 @@ public class AdminController extends ParentController{
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", requestAmount);
-        mav.addObject("requests_list", requestList);
+        mav.addObject("requestList", requestList);
 
         return mav;
     }
@@ -525,8 +525,8 @@ public class AdminController extends ParentController{
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
         String locale = getLocale();
         return new ModelAndView("admin/admin_upload_request")
-                .addObject("pets_list", petService.listAll(locale))
-                .addObject("users_list",userService.list(PAGE, PAGE_MAX).toArray());
+                .addObject("petList", petService.listAll(locale))
+                .addObject("userList",userService.list(PAGE, PAGE_MAX).toArray());
     }
 
     @RequestMapping(value = "/admin/upload-request", method = { RequestMethod.POST })
@@ -541,7 +541,7 @@ public class AdminController extends ParentController{
         Optional<Request> optionalRequest = requestService.create(locale, requestForm.getUserId(), requestForm.getPetId());
 
         if (!optionalRequest.isPresent()) {
-            return uploadRequestForm(requestForm).addObject("request_error", true);
+            return uploadRequestForm(requestForm).addObject("requestError", true);
         }
 
         return new ModelAndView("redirect:/admin/requests");

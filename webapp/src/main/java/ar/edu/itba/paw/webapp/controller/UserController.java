@@ -278,7 +278,7 @@ public class UserController extends ParentController {
             opUser = userService.updatePassword(id, editUserForm.getCurrentPassword(), editUserForm.getNewPassword());
         }
         catch(InvalidPasswordException ex) {
-            return editUserForm(editUserForm, id).addObject("current_password_fail", true);
+            return editUserForm(editUserForm, id).addObject("currentPasswordFail", true);
         }
         if(!opUser.isPresent()){
             return new ModelAndView("redirect:/500");

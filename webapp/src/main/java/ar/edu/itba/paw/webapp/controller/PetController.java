@@ -51,7 +51,7 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "gender", required = false) String gender,
                                 @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
-                                @RequestParam(name = "find", required = false) String findValue,
+                                @RequestParam(name = "find", required = false) String find,
                                 @RequestParam(name = "page", required = false) String page,
                                 @RequestParam(name = "priceRange", required = false) String priceRange,
                                 @RequestParam(name = "province", required = false) String province,
@@ -64,14 +64,14 @@ public class PetController extends ParentController {
             page = "1";
         }
 
-        if(findValue != null && !findValue.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+        if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
             mav.addObject("wrongSearch", true);
-            findValue = "";
+            find = "";
         }else{
             mav.addObject("wrongSearch", false);
         }
 
-        String minPrice,maxPrice;
+        String minPrice, maxPrice;
 
         if(priceRange == null || priceRange.equals("-1")){
             minPrice = "-1";
@@ -109,20 +109,20 @@ public class PetController extends ParentController {
         province = province == null || province.equals("-1") ? null : province;
         department = department == null || department.equals("-1") ? null : department;
 
-        PetList petList = petService.petList(locale, findValue, species, breed, gender, searchCriteria,
+        PetList petList = petService.petList(locale, find, species, breed, gender, searchCriteria,
                 searchOrder, minPrice, maxPrice, province, department, page);
         DepartmentList departmentList = locationService.departmentList();
 
         mav.addObject("currentPage", page);
         mav.addObject("maxPage", petList.getMaxPage());
-        mav.addObject("home_pet_list", petList.toArray());
+        mav.addObject("homePetList", petList.toArray());
 
-        mav.addObject("species_list", speciesService.speciesList(locale).toArray());
-        mav.addObject("breeds_list", speciesService.breedList(locale).toArray());
+        mav.addObject("speciesList", speciesService.speciesList(locale).toArray());
+        mav.addObject("breedList", speciesService.breedList(locale).toArray());
 
-        mav.addObject("province_list", departmentList.getProvinceList().toArray());
-        mav.addObject("department_list", departmentList.toArray());
-        mav.addObject("findValue", findValue);
+        mav.addObject("provinceList", departmentList.getProvinceList().toArray());
+        mav.addObject("departmentList", departmentList.toArray());
+        mav.addObject("find", find);
         mav.addObject("totalPets", petList.getTotalPetsAmount());
         return mav;
     }
@@ -188,7 +188,7 @@ public class PetController extends ParentController {
 
         Optional<Request> opRequest =  requestService.create(locale, user.getId(), id);
         if (!opRequest.isPresent()) {
-            mav.addObject("request_error", true);
+            mav.addObject("requestError", true);
         }
 
         return new ModelAndView("redirect:/pet/" + id );
@@ -266,10 +266,10 @@ public class PetController extends ParentController {
         List<Breed> breedList = speciesService.breedList(locale);
         DepartmentList departmentList = locationService.departmentList();
 
-        mav.addObject("province_list", departmentList.getProvinceList().toArray());
-        mav.addObject("department_list", departmentList.toArray());
-        mav.addObject("species_list", speciesList.toArray());
-        mav.addObject("breeds_list", breedList.toArray());
+        mav.addObject("provinceList", departmentList.getProvinceList().toArray());
+        mav.addObject("departmentList", departmentList.toArray());
+        mav.addObject("speciesList", speciesList.toArray());
+        mav.addObject("breedList", breedList.toArray());
         return mav;
     }
 
@@ -296,7 +296,7 @@ public class PetController extends ParentController {
             }
         } catch (ImageLoadException ex) {
             LOGGER.warn("Image bytes load from pet form failed");
-            return uploadPetForm(petForm).addObject("image_error", true);
+            return uploadPetForm(petForm).addObject("imageError", true);
         }
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
@@ -305,7 +305,7 @@ public class PetController extends ParentController {
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
-            return uploadPetForm(petForm).addObject("pet_error", true);
+            return uploadPetForm(petForm).addObject("petError", true);
         }
 
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
@@ -332,8 +332,8 @@ public class PetController extends ParentController {
             petForm.setVaccinated(pet.isVaccinated());
 
             return editPetForm(petForm, id)
-                    .addObject("province_list", departmentList.getProvinceList().toArray())
-                    .addObject("department_list", departmentList.toArray());
+                    .addObject("provinceList", departmentList.getProvinceList().toArray())
+                    .addObject("departmentList", departmentList.toArray());
         }
         return new ModelAndView("redirect:/403" );
 
@@ -348,10 +348,10 @@ public class PetController extends ParentController {
         DepartmentList departmentList = locationService.departmentList();
 
         return new ModelAndView("views/pet_edit")
-                .addObject("species_list", speciesList.toArray())
-                .addObject("breeds_list", breedList.toArray())
-                .addObject("province_list", departmentList.getProvinceList().toArray())
-                .addObject("department_list", departmentList.toArray())
+                .addObject("speciesList", speciesList.toArray())
+                .addObject("breedList", breedList.toArray())
+                .addObject("provinceList", departmentList.getProvinceList().toArray())
+                .addObject("departmentList", departmentList.toArray())
                 .addObject("pet",
                         petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
                 .addObject("id", id);
@@ -379,7 +379,7 @@ public class PetController extends ParentController {
             }
         } catch (ImageLoadException ex) {
             LOGGER.warn("Image bytes load from pet form failed");
-            return editPetForm(editPetForm, id).addObject("image_error", true);
+            return editPetForm(editPetForm, id).addObject("imageError", true);
         }
 
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
@@ -391,7 +391,7 @@ public class PetController extends ParentController {
         }
         catch(InvalidImageQuantityException ex) {
             LOGGER.warn(ex.getMessage());
-            return editPetForm(editPetForm, id).addObject("image_quantity_error", true);
+            return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
         }
         if(!opPet.isPresent()){
             LOGGER.warn("Pet could not be updated");

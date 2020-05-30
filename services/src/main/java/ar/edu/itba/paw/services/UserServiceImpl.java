@@ -77,6 +77,8 @@ public class UserServiceImpl implements UserService {
         return userDao.findByToken(token);
     }
 
+
+    @Transactional
     @Override
     public Optional<User> create(String username, String password, String mail) throws DuplicateUserException {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
@@ -103,11 +105,13 @@ public class UserServiceImpl implements UserService {
         return Optional.of(user);
     }
 
+    @Transactional
     @Override
     public Optional<User> update(User user) {
         return userDao.update(user);
     }
 
+    @Transactional
     @Override
     public Optional<User> updateUsername(long id, String username) throws DuplicateUserException {
         LOGGER.debug("Attempting user {} update with username: {}", id, username);
@@ -130,6 +134,7 @@ public class UserServiceImpl implements UserService {
         return opUpdatedUser;
     }
 
+    @Transactional
     @Override
     public Optional<User> updateStatus(long id, UserStatus status) {
         LOGGER.debug("Attempting user {} update with status: {}", id, status.getValue());
@@ -152,6 +157,7 @@ public class UserServiceImpl implements UserService {
         return opUpdatedUser;
     }
 
+    @Transactional
     @Override
     public Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException {
         Optional<User> opUser = userDao.findById(id);
@@ -179,6 +185,7 @@ public class UserServiceImpl implements UserService {
         return opUpdatedUser;
     }
 
+    @Transactional
     @Override
     public Optional<User> requestPasswordReset(String mail) {
         LOGGER.debug("Requesting password reset for mail {}", mail);
@@ -206,6 +213,7 @@ public class UserServiceImpl implements UserService {
         return opUser;
     }
 
+    @Transactional
     @Override
     public Optional<User> resetPassword(UUID uuid, String password) {
         LOGGER.debug("Resetting password for token {}", uuid);
@@ -241,6 +249,7 @@ public class UserServiceImpl implements UserService {
         return updatedUser;
     }
 
+    @Transactional
     @Override
     public Optional<User> adminCreate(String username, String password, String mail) throws DuplicateUserException {
         LOGGER.debug("(Admin) Attempting user creation with username: {}, mail: {}", username, mail);
@@ -253,6 +262,7 @@ public class UserServiceImpl implements UserService {
         return userDao.isAdmin(user);
     }
 
+    @Transactional
     @Override
     public boolean recoverUser(long id) {
         Optional<User> opUser = userDao.findById(id);
@@ -261,6 +271,7 @@ public class UserServiceImpl implements UserService {
         return updateStatus(user.getId(), UserStatus.ACTIVE).isPresent();
     }
 
+    @Transactional
     @Override
     public boolean removeUser(long id) {
         Optional<User> opUser = userDao.findById(id);
@@ -277,6 +288,7 @@ public class UserServiceImpl implements UserService {
         return userDao.findToken(token);
     }
 
+    @Transactional
     @Override
     public Optional<Token> createToken(UUID token, User user) {
         Date tomorrow = new Date();
@@ -287,11 +299,13 @@ public class UserServiceImpl implements UserService {
         return userDao.createToken(token, user, tomorrow);
     }
 
+    @Transactional
     @Override
     public boolean deleteToken(UUID token) {
         return userDao.deleteToken(token);
     }
 
+    @Transactional
     @Override
     public Optional<User> activateAccountWithToken(UUID uuid) {
         LOGGER.debug("Activating account token {}", uuid);
@@ -326,6 +340,7 @@ public class UserServiceImpl implements UserService {
         return opUser;
     }
 
+    @Transactional
     @Scheduled(cron = "0 0 1 * * *")
     public void cleanOldTokens() {
         userDao.cleanOldTokens();

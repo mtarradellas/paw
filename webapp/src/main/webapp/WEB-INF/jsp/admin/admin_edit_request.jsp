@@ -22,22 +22,22 @@
                             </div>
                             <label for="status"><spring:message code="request.status"/>:</label>
                             <select name="newStatus" class="form-control" id="status">
-                                <c:if test="${request.status.id ne 1}">
+                                <c:if test="${request.status.value ne 1}">
                                     <option value="pending">
                                         <spring:message code="request.pending"/>
                                     </option>
                                 </c:if>
-                                <c:if test="${request.status.id ne 2}">
+                                <c:if test="${request.status.value ne 2}">
                                     <option value="accepted">
                                         <spring:message code="request.accepted"/>
                                     </option>
                                 </c:if>
-                                <c:if test="${request.status.id ne 3}">
+                                <c:if test="${request.status.value ne 3}">
                                     <option value="rejected">
                                         <spring:message code="request.rejected"/>
                                     </option>
                                 </c:if>
-                                <c:if test="${request.status.id ne 4}">
+                                <c:if test="${request.status.value ne 4}">
                                     <option value="canceled">
                                         <spring:message code="request.canceled"/>
                                     </option>
