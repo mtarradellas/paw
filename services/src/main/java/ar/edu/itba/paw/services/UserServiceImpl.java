@@ -41,9 +41,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> filteredList(String find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        return userDao.list(page, pageSize);
-//        if (find == null) return userDao.filteredList(status, searchCriteria, searchOrder, page, pageSize);
-//        return userDao.searchList(find, page, pageSize);
+        if (find == null) return userDao.filteredList(status, searchCriteria, searchOrder, page, pageSize);
+        return userDao.searchList(find, page, pageSize);
     }
 
     @Override

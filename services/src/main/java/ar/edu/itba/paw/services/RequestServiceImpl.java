@@ -37,9 +37,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> filteredList(User user, Pet pet, String find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        return requestDao.list(page, pageSize);
-//        if (find == null) return requestDao.filteredList(user, pet, status, searchCriteria, searchOrder, page, pageSize);
-//        return requestDao.searchList(user, pet, find, page, pageSize);
+        if (find == null) return requestDao.filteredList(user, pet, status, searchCriteria, searchOrder, page, pageSize);
+        return requestDao.searchList(user, pet, find, page, pageSize);
     }
 
     @Override
