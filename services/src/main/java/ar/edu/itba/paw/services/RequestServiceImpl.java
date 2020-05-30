@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.Context;
 import java.util.*;
@@ -18,8 +19,6 @@ import java.util.stream.Stream;
 public class RequestServiceImpl implements RequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestServiceImpl.class);
-
-    private final String DEFAULT_LOCALE = "es_AR";
 
     @Autowired
     private RequestDao requestDao;
@@ -71,6 +70,7 @@ public class RequestServiceImpl implements RequestService {
         return requestDao.findById(id);
     }
 
+    @Transactional
     @Override
     public Optional<Request> create(String locale, long userId, long petId) {
         Optional<User> opUser = userService.findById(userId);
@@ -123,11 +123,13 @@ public class RequestServiceImpl implements RequestService {
         return Optional.of(request);
     }
 
+    @Transactional
     @Override
     public Optional<Request> update(Request request) {
         return requestDao.update(request);
     }
 
+    @Transactional
     @Override
     public boolean cancel(long id, User user) {
         LOGGER.debug("User {} attempting to cancel request {}", user.getId(), id);
@@ -154,6 +156,7 @@ public class RequestServiceImpl implements RequestService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean accept(long id, User user) {
         LOGGER.debug("User {} attempting to accept request {}", user.getId(), id);
@@ -201,6 +204,7 @@ public class RequestServiceImpl implements RequestService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean reject(long id, User user) {
         LOGGER.debug("User {} attempting to reject request {}", user.getId(), id);
@@ -247,6 +251,7 @@ public class RequestServiceImpl implements RequestService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean recover(long id, User user){
         LOGGER.debug("User {} attempting to recover request {}", user.getId(), id);
@@ -282,6 +287,7 @@ public class RequestServiceImpl implements RequestService {
         return true;
     }
 
+    @Transactional
     @Override
     public void adminUpdateStatus(long id, RequestStatus status) {
         Optional<Request> opRequest = requestDao.findById(id);
@@ -294,31 +300,37 @@ public class RequestServiceImpl implements RequestService {
         requestDao.update(request);
     }
 
+    @Transactional
     @Override
     public void adminCancel(long id) {
         adminUpdateStatus(id, RequestStatus.CANCELED);
     }
 
+    @Transactional
     @Override
     public void adminAccept(long id) {
         adminUpdateStatus(id, RequestStatus.ACCEPTED);
     }
 
+    @Transactional
     @Override
     public void adminReject(long id) {
         adminUpdateStatus(id, RequestStatus.REJECTED);
     }
 
+    @Transactional
     @Override
     public void adminRecover(long id) {
         adminUpdateStatus(id, RequestStatus.PENDING);
     }
 
+    @Transactional
     @Override
     public void cancelAllByUser(User user) {
         requestDao.updateByStatusAndUser(user, RequestStatus.PENDING, RequestStatus.CANCELED);
     }
 
+    @Transactional
     @Override
     public void rejectAllByPetOwner(long petOwnerId) {
         Optional<User> opPetOwner = userService.findById(petOwnerId);
@@ -330,6 +342,7 @@ public class RequestServiceImpl implements RequestService {
         requestDao.updateByStatusAndPetOwner(petOwner, RequestStatus.PENDING, RequestStatus.REJECTED);
     }
 
+    @Transactional
     @Override
     public void rejectAllByPet(String locale, long petId) {
         Optional<Pet> opPet = petService.findById(locale, petId);
