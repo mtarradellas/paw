@@ -41,7 +41,7 @@ public class UploadPetForm {
     @Pattern(regexp="^(male)|(female)$")
     private String gender;
 
-    @Size(max = 250)
+    @Size(max = 4086)
     private String description;
 
     @NotNull

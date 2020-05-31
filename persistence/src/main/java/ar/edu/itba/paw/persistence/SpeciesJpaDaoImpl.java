@@ -4,7 +4,6 @@ import ar.edu.itba.paw.interfaces.SpeciesDao;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Species;
 import org.springframework.stereotype.Repository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;

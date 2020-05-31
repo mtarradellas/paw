@@ -1,38 +1,29 @@
 package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.*;
-
+import ar.edu.itba.paw.models.constants.PetStatus;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface PetDao {
-    Optional<Pet> findById(String language, long id);
-    Stream<Pet> list(String language, String page, int level);
-    Stream<Pet> listAll(String language);
-    Stream<Pet> find(String language, String findValue,String page, int level);
-    Stream<Pet> adminFilteredList(String language, String specie, String breed, String gender, String status,
-                                  String searchCriteria, String searchOrder, String page);
-    Stream<Pet> filteredList(String language, String specieFilter, String breedFilter, String genderFilter,
-                             String searchCriteria, String searchOrder, String minPrice, String maxPrice, String province,
-                             String department, String page);
-    Stream<Pet> getByUserId(String language, long ownerId, String page);
-    long create(String petName, Species species, Breed breed, boolean vaccinated, String gender,
-               String description, Date birthDate, Date uploadDate, int price, long ownerId, Status status, long departmentId);
-    void updateStatus(long id, long newStatus);
-    boolean isPetOwner(long petId, long userId);
-    int maxPetsAmount(int level);
-    int maxFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
-                              String maxPrice, String province, String department);
-    int maxAdminFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
-    int maxSearchPetsAmount(String language, String findValue, int level);
-    int maxUserPetsAmount(long userId);
-    Optional<Contact> getPetContact(long petId);
-    long getOwnerId(long petId);
-    Optional<Status> findStatusById(String language, long id);
-    void updateAllByOwner(long ownerId, int status);
-    void update(long id, String petName, long speciesId, long breedId, boolean vaccinated, String gender,
-                String description, Date birthDate, int price, long department);
-    Stream<String> autocompleteFind(String language, String findValue);
+
+    List<Pet> list(int page, int pageSize);
+    List<Pet> searchList(String find, int page, int pageSize);
+    List<Pet> filteredList(User user, String species, String breed, String gender, PetStatus status, String searchCriteria,
+                           String searchOrder, int minPrice, int maxPrice, String province, String department, int page, int pageSize);
+
+    int getListAmount();
+    int getSearchListAmount(String find);
+    int getFilteredListAmount(User user, String species, String breed, String gender, PetStatus status,
+                              int minPrice, int maxPrice, String province, String department);
+
+    Optional<Pet> findById(long id);
+
+    Pet create(String petName, Date birthDate, String gender, boolean vaccinated, int price, Date uploadDate,
+               String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department);
+    Optional<Pet> update(Pet pet);
+    void updateByStatusAndOwner(User user, PetStatus oldStatus, PetStatus newStatus);
+
+    List<String> autocompleteFind(String locale, String find);
 }

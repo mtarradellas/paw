@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.interfaces;
 
-import java.io.StringWriter;
 import java.util.Map;
 
 public interface MailService {

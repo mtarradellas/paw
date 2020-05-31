@@ -33,4 +33,9 @@ public class LocationJpaDaoImpl implements LocationDao {
     public Optional<Department> findDepartmentById(long id) {
         return Optional.ofNullable(em.find(Department.class, id));
     }
+
+    @Override
+    public Optional<Province> findProvinceById(long id) {
+        return Optional.ofNullable(em.find(Province.class, id));
+    }
 }

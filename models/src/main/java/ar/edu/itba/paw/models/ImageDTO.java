@@ -1,10 +1,9 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.util.Base64;
 
-@Entity(name = "Images")
-public class Image {
+@Entity(name = "ImagesDTO")
+public class ImageDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "images_id_seq")
@@ -12,19 +11,19 @@ public class Image {
     private Long id;
 
     @Column
-    private byte[] img;
-
-    @Column
     private Long petId;
 
-    public Image() {
+    public ImageDTO() {
         //Hibernate
     }
 
-    public Image(long imageId, byte[] imageData, long petId) {
+    public ImageDTO(long imageId, long petId) {
         this.id = imageId;
-        this.img = imageData;
         this.petId = petId;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getPetId() {
@@ -33,21 +32,5 @@ public class Image {
 
     public void setPetId(Long petId) {
         this.petId = petId;
-    }
-
-    public Long getImageId() {
-        return id;
-    }
-
-    public void setImageId(Long imageId) {
-        this.id = imageId;
-    }
-
-    public byte[] getImageData() {
-        return img;
-    }
-
-    public void setImageData(byte[] imageData) {
-        this.img = imageData;
     }
 }
