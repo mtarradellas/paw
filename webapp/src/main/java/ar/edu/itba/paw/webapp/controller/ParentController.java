@@ -2,10 +2,13 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,8 @@ import java.util.Locale;
 
 @Controller
 public class ParentController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParentController.class);
 
     @Autowired
     SpeciesService speciesService;
@@ -69,6 +74,62 @@ public class ParentController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
         return authentication;
+    }
+
+    public int parsePage(String page) {
+        int pageNum = 1;
+        if(page != null) {
+            try {
+                pageNum = Integer.parseInt(page);
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid page parameter");
+            }
+        }
+        return pageNum;
+    }
+
+    public <E extends Enum<E>> E parseStatus(Class<E> enumClass, String statusStr) {
+        E status = null;
+        E[] values = enumClass.getEnumConstants();
+        if(statusStr != null) {
+            try {
+                int idx = Integer.parseInt(statusStr);
+                status = values[idx];
+                if (status == null) throw new BadRequestException("Invalid status parameter");
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
+                throw new BadRequestException("Invalid status parameter");
+            }
+        }
+        return status;
+    }
+
+    public Long parseSpecies(String speciesStr) {
+        species = species == null || species.equals("any") ? null : species;
+        Long species = null;
+        if (speciesStr != null && !speciesStr.equalsIgnoreCase("any")) {
+            try {
+                species = Long.parseLong(speciesStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.war
+            }
+        }
+        return species;
+    }
+
+    public Long parseBreed(String breedStr) {
+        breed = breed == null || breed.equals("any") ? null : breed;
+    }
+
+    public Long parseProvince(String provinceStr) {
+
+    }
+
+    public Long parseDepartment(String departmentStr) {
+
+    }
+
+    public boolean parseFind(String find) {
+        return find == null || find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$");
     }
 
     @ExceptionHandler(PetNotFoundException.class)

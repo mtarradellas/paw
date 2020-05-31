@@ -9,12 +9,12 @@ import java.util.Optional;
 public interface PetService {
 
     List<Pet> list(String locale, int page, int pageSize);
-    List<Pet> filteredList(String locale, String find, User user, String species, String breed, String gender, PetStatus status, String searchCriteria,
-                           String searchOrder, int minPrice, int maxPrice, String province, String department, int page, int pageSize);
+    List<Pet> filteredList(String locale, String find, User user, Long species, Long breed, String gender, PetStatus status, String searchCriteria,
+                           String searchOrder, int minPrice, int maxPrice, Long province, Long department, int page, int pageSize);
 
     int getListAmount();
-    int getFilteredListAmount(String find, User user, String species, String breed, String gender, PetStatus status,
-                              int minPrice, int maxPrice, String province, String department);
+    int getFilteredListAmount(String find, User user, Long species, Long breed, String gender, PetStatus status,
+                              int minPrice, int maxPrice, Long province, Long department);
 
     Optional<Pet> findById(String locale, long id);
     Optional<Pet> findById(long id);

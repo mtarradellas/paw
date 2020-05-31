@@ -18,7 +18,6 @@ public class Species implements Comparable<Species>{
     private String es_ar;
 
     @OneToMany(orphanRemoval = true, mappedBy = "species", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Column
     private List<Breed> breedList;
 
     private String name;

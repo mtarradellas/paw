@@ -36,12 +36,14 @@ import java.util.stream.Collectors;
 @Controller
 public class AdminController extends ParentController{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
 
     /* TODO placeholders for max number (no pagination) */
     private static final int PAGE = 1;
     private static final int PAGE_MAX = 500;
 
+    /* Page Sizes */
+    private static final int PET_PAGE_SIZE = 25;
     private static final int USER_PAGE_SIZE = 25;
     private static final int REQ_PAGE_SIZE = 25;
 
@@ -51,7 +53,6 @@ public class AdminController extends ParentController{
     }
 
 
-
 //  ###############################################    PETS ENDPOINTS    ###############################################
     @RequestMapping(value = "/admin/pets")
     public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
@@ -59,7 +60,7 @@ public class AdminController extends ParentController{
                                      @RequestParam(name = "gender", required = false) String gender,
                                      @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                      @RequestParam(name = "searchOrder", required = false) String searchOrder,
-                                     @RequestParam(name = "find", required = false) String findValue,
+                                     @RequestParam(name = "find", required = false) String find,
                                      @RequestParam(name = "page", required = false) String page,
                                      @RequestParam(name = "minPrice", required = false) String minPrice,
                                      @RequestParam(name = "maxPrice", required = false) String maxPrice,

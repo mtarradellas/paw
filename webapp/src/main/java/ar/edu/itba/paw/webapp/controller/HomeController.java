@@ -17,6 +17,11 @@ public class HomeController extends ParentController {
                     .addObject("breedList", speciesService.breedList(locale).toArray());
     }
 
+    @RequestMapping(value = "/admin")
+    public ModelAndView getAdminHome() {
+        return new ModelAndView("admin/admin");
+    }
+
     @RequestMapping("/test")
     public ModelAndView test() {
         final String locale = getLocale();
