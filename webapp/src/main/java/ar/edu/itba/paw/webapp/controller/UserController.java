@@ -77,8 +77,23 @@ public class UserController extends ParentController {
             }
         }
 
+        /* TODO: front status as requeststatus */
+
         RequestStatus requestStatus = null;
+        status = (status == null || status.equals("any") ? null : status);
         if(status != null) {
+            if(status.equals("pending")){
+                status = "0";
+            }
+            else if(status.equals("accepted")){
+                status = "1";
+            }
+            else if(status.equals("rejected")){
+                status = "2";
+            }
+            else if(status.equals("canceled")){
+                status = "3";
+            }
             try {
                 int idx = Integer.parseInt(status);
                 requestStatus = RequestStatus.values()[idx];
@@ -98,7 +113,7 @@ public class UserController extends ParentController {
         searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
 
         /* Filtered request list */
-        if (status != null || searchCriteria != null) {
+        if (true) {
             List<Request> requestList = requestService.filteredList(user, null, find, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
             int amount = requestService.getFilteredListAmount(user, null, find, requestStatus);

@@ -5,7 +5,8 @@ import ar.edu.itba.paw.models.constants.UserStatus;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity(name = "Users")
+@Entity
+@Table(name = "Users")
 public class User {
 
     @Id

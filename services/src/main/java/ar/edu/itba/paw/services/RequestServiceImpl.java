@@ -37,6 +37,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> filteredList(User user, Pet pet, String find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        LOGGER.debug("Parameters for filteredList <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}", user, pet,status,searchCriteria,searchOrder);
         if (find == null) return requestDao.filteredList(user, pet, status, searchCriteria, searchOrder, page, pageSize);
         return requestDao.searchList(user, pet, find, page, pageSize);
     }
@@ -97,11 +98,11 @@ public class RequestServiceImpl implements RequestService {
         }
 
         List<Request> requestList = user.getRequestList();
-        long pendingRequests = requestList.stream().filter(req -> !req.getStatus().equals(RequestStatus.CANCELED)).count();
-
-        if (pendingRequests > 0) {
-            LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
-            return Optional.empty();
+        for (Request req: requestList) {
+            if(req.getPetId() == pet.getId() && !req.getStatus().equals(RequestStatus.CANCELED)) {
+                LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
+                return Optional.empty();
+            }
         }
 
         Request request = requestDao.create(user, pet, RequestStatus.PENDING);

@@ -13,10 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +46,46 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public List<Request> filteredList(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        return new ArrayList<>();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Request> cr = cb.createQuery(Request.class);
+        Root<Request> root = cr.from(Request.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        if (status != null) {
+            Expression<RequestStatus> reqStatus = root.get("status");
+            predicates.add(cb.equal(reqStatus, status.getValue()-1));
+        }
+        if(user != null) {
+            Expression<User> reqUser = root.get("user");
+            predicates.add(cb.equal(reqUser, user));
+        }
+//        if(pet != null) {
+//            Expression<Pet> reqPet = root.get("pet");
+//            predicates.add(cb.equal(reqPet, pet));
+//        }
+        if (searchCriteria != null) {
+            Order order;
+            String orderBy = "creationDate";
+            if(searchCriteria.toLowerCase().contains("date")){
+                orderBy = "creationDate";
+            }
+//            else if (searchCriteria.toLowerCase().contains("petname")) {
+//                orderBy = "creationDate";
+//            }
+            if (searchOrder.toLowerCase().contains("desc")) {
+                order = cb.desc(root.get(orderBy));
+            } else {
+                order = cb.asc(root.get(orderBy));
+            }
+
+            cr.orderBy(order);
+        }
+
+        cr.select(root).where(cb.and(predicates.toArray(new Predicate[] {})));
+        TypedQuery<Request> query = em.createQuery(cr);
+        return query.getResultList();
+
     }
 
     @Override
