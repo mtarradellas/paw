@@ -37,7 +37,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> filteredList(User user, Pet pet, String find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        LOGGER.debug("Parameters for filteredList <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}", user, pet,status,searchCriteria,searchOrder);
+        LOGGER.debug("Parameters for filteredList <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
+                user, pet, status, searchCriteria, searchOrder, page, pageSize);
         if (find == null) return requestDao.filteredList(user, pet, status, searchCriteria, searchOrder, page, pageSize);
         return requestDao.searchList(user, pet, find, page, pageSize);
     }
@@ -55,7 +56,9 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public int getFilteredListAmount(User user, Pet pet, String find, RequestStatus status) {
-        if (find == null) return requestDao.getFilteredListAmount(user, pet, status);
+        if (find == null) {
+            return requestDao.getFilteredListAmount(user, pet, status);
+        }
         return requestDao.getSearchListAmount(user, pet, find);
     }
 

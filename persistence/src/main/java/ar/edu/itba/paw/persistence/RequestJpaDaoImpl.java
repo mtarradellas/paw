@@ -31,10 +31,10 @@ public class RequestJpaDaoImpl implements RequestDao {
         nativeQuery.setMaxResults(pageSize);
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
-        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        List<Long> ids = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
-        final TypedQuery<Request> query = em.createQuery("from Request where id in :filteredIds", Request.class);
-        query.setParameter("filteredIds", filteredIds);
+        final TypedQuery<Request> query = em.createQuery("from Request where id in :ids", Request.class);
+        query.setParameter("filteredIds", ids);
         return query.getResultList();
 
     }
@@ -46,10 +46,50 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public List<Request> filteredList(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-
+       //Obtain filtered ids
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Request> cr = cb.createQuery(Request.class);
         Root<Request> root = cr.from(Request.class);
+
+        List<Predicate> predicates = predicatesForFilteredList(user, pet, status, cb, root);
+
+        cr.select(root.get("id")).where(cb.and(predicates.toArray(new Predicate[] {})));
+        Query query = em.createQuery(cr);
+        query.setFirstResult((page - 1) * pageSize);
+        query.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
+        List<? extends Number> resultList = query.getResultList();
+        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+
+        //Obtain Requests with the filtered ids and sort
+        cb = em.getCriteriaBuilder();
+        cr = cb.createQuery(Request.class);
+        root = cr.from(Request.class);
+
+        Expression<String> exp = root.get("id");
+        Predicate predicate = exp.in(filteredIds);
+
+        cr.select(root).where(predicate);
+        if (searchCriteria != null ) {
+            Order order;
+            String orderBy = "creationDate";
+            if(searchCriteria.toLowerCase().contains("date")){
+                orderBy = "creationDate";
+            }
+//            else if (searchCriteria.toLowerCase().contains("petname")) {
+//                orderBy = "creationDate";
+//            }
+            if (searchOrder.toLowerCase().contains("desc")) {
+                order = cb.desc(root.get(orderBy));
+            } else {
+                order = cb.asc(root.get(orderBy));
+            }
+            cr.orderBy(order);
+        }
+        return em.createQuery(cr).getResultList();
+    }
+
+    private List<Predicate> predicatesForFilteredList (User user, Pet pet, RequestStatus status, CriteriaBuilder cb, Root<Request> root) {
 
         List<Predicate> predicates = new ArrayList<>();
         if (status != null) {
@@ -64,28 +104,7 @@ public class RequestJpaDaoImpl implements RequestDao {
 //            Expression<Pet> reqPet = root.get("pet");
 //            predicates.add(cb.equal(reqPet, pet));
 //        }
-        if (searchCriteria != null) {
-            Order order;
-            String orderBy = "creationDate";
-            if(searchCriteria.toLowerCase().contains("date")){
-                orderBy = "creationDate";
-            }
-//            else if (searchCriteria.toLowerCase().contains("petname")) {
-//                orderBy = "creationDate";
-//            }
-            if (searchOrder.toLowerCase().contains("desc")) {
-                order = cb.desc(root.get(orderBy));
-            } else {
-                order = cb.asc(root.get(orderBy));
-            }
-
-            cr.orderBy(order);
-        }
-
-        cr.select(root).where(cb.and(predicates.toArray(new Predicate[] {})));
-        TypedQuery<Request> query = em.createQuery(cr);
-        return query.getResultList();
-
+        return predicates;
     }
 
     @Override
@@ -111,7 +130,15 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public int getFilteredListAmount(User user, Pet pet, RequestStatus status) {
-        return 0;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cr = cb.createQuery(Long.class);
+        Root<Request> root = cr.from(Request.class);
+
+        List<Predicate> predicates = predicatesForFilteredList(user, pet, status, cb, root);
+
+        cr.select(cb.count(root.get("id"))).where(cb.and(predicates.toArray(new Predicate[] {})));
+        return em.createQuery(cr).getSingleResult().intValue();
+
     }
 
     @Override
