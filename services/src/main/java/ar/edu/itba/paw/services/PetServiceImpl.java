@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -39,10 +41,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public List<Pet> list(String locale, int page, int pageSize) {
         List<Pet> petList = petDao.list(page, pageSize);
-        petList.forEach(pet -> {
-            pet.getSpecies().setName(locale);
-            pet.getBreed().setName(locale);
-        });
+        setLocale(locale, petList);
         return petList;
     }
 
@@ -56,10 +55,7 @@ public class PetServiceImpl implements PetService {
         } else {
             petList = petDao.searchList(find, minPrice, maxPrice);
         }
-        petList.forEach(pet -> {
-            pet.getSpecies().setName(locale);
-            pet.getBreed().setName(locale);
-        });
+        setLocale(locale, petList);
         return petList;
     }
 
@@ -78,13 +74,16 @@ public class PetServiceImpl implements PetService {
     @Override
     public Optional<Pet> findById(String locale, long id) {
         Optional<Pet> opPet = petDao.findById(id);
-        if (!opPet.isPresent()) return opPet;
-        Pet pet = opPet.get();
-        pet.getSpecies().setName(locale);
-        pet.getBreed().setName(locale);
+        opPet.ifPresent(pet -> setLocale(locale, pet));
         return opPet;
     }
 
+    @Override
+    public Optional<Pet> findById(long id) {
+        return petDao.findById(id);
+    }
+
+    @Transactional
     @Override
     public Optional<Pet> create(String locale, String petName, Date birthDate, String gender, boolean vaccinated, int price,
                       String description, PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos) {
@@ -159,11 +158,13 @@ public class PetServiceImpl implements PetService {
         return Optional.of(pet);
     }
 
+    @Transactional
     @Override
     public Optional<Pet> update(Pet pet) {
         return petDao.update(pet);
     }
 
+    @Transactional
     @Override
     public Optional<Pet> update(String locale, long id, long userId, String petName, Date birthDate, String gender, boolean vaccinated, int price,
                                 String description, PetStatus status, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos, List<Long> imagesToDelete) {
@@ -282,8 +283,7 @@ public class PetServiceImpl implements PetService {
         return Optional.of(pet);
     }
 
-
-
+    @Transactional
     @Override
     public boolean sellPet(long petId, User user) {
         Optional<Pet> opPet = petDao.findById(petId);
@@ -300,6 +300,7 @@ public class PetServiceImpl implements PetService {
         return false;
     }
 
+    @Transactional
     @Override
     public boolean removePet(long petId, User user) {
         Optional<Pet> opPet = petDao.findById(petId);
@@ -317,6 +318,7 @@ public class PetServiceImpl implements PetService {
         return false;
     }
 
+    @Transactional
     @Override
     public boolean recoverPet(long petId, User user) {
         Optional<Pet> opPet = petDao.findById(petId);
@@ -333,6 +335,7 @@ public class PetServiceImpl implements PetService {
         return false;
     }
 
+    @Transactional
     @Override
     public boolean adminSellPet(long petId) {
         Optional<Pet> opPet = petDao.findById(petId);
@@ -345,6 +348,7 @@ public class PetServiceImpl implements PetService {
         return petDao.update(pet).isPresent();
     }
 
+    @Transactional
     @Override
     public boolean adminRemovePet(long petId) {
         Optional<Pet> opPet = petDao.findById(petId);
@@ -358,6 +362,7 @@ public class PetServiceImpl implements PetService {
         return petDao.update(pet).isPresent();
     }
 
+    @Transactional
     @Override
     public boolean adminRecoverPet(long petId) {
         Optional<Pet> opPet = petDao.findById(petId);
@@ -370,6 +375,7 @@ public class PetServiceImpl implements PetService {
         return petDao.update(pet).isPresent();
     }
 
+    @Transactional
     @Override
     public void removeAllByUser(User user) {
         requestService.rejectAllByPetOwner(user.getId());
@@ -379,6 +385,16 @@ public class PetServiceImpl implements PetService {
     @Override
     public List<String> autocompleteFind(String locale, String find) {
         return petDao.autocompleteFind(locale, find);
+    }
+
+    @Override
+    public void setLocale(String locale, Pet pet) {
+        pet.setLocale(locale);
+    }
+
+    @Override
+    public void setLocale(String locale, List<Pet> petList) {
+        petList.forEach(pet -> pet.setLocale(locale));
     }
 
 }

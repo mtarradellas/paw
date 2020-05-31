@@ -68,7 +68,7 @@ public class Breed implements Comparable<Breed>{
         return name;
     }
 
-    public void setName(String locale) {
+    public void setLocale(String locale) {
         if (locale.equalsIgnoreCase("en_us")) {
             name = en_us;
         } else {

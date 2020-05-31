@@ -63,7 +63,7 @@ public class Species implements Comparable<Species>{
         return name;
     }
 
-    public void setName(String locale) {
+    public void setLocale(String locale) {
         if (locale.equalsIgnoreCase("en_us")) {
             name = en_us;
         } else {

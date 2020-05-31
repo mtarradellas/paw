@@ -17,6 +17,7 @@ public interface PetService {
                               int minPrice, int maxPrice, String province, String department);
 
     Optional<Pet> findById(String locale, long id);
+    Optional<Pet> findById(long id);
 
     Optional<Pet> create(String locale, String petName, Date birthDate, String gender, boolean vaccinated, int price, String description,
                         PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos);
@@ -36,5 +37,8 @@ public interface PetService {
     void removeAllByUser(User user);
 
     List<String> autocompleteFind(String locale, String find);
+
+    void setLocale(String locale, Pet pet);
+    void setLocale(String locale, List<Pet> pet);
 
 }

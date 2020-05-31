@@ -10,8 +10,16 @@ public interface SpeciesService {
     List<Breed> breedList(String locale);
     List<Species> speciesList();
     List<Breed> breedList();
+
     Optional<Species> findSpeciesByName(String locale, String name);
     Optional<Breed> findBreedByName(String locale, String name);
     Optional<Species> findSpeciesById(String locale, long id);
     Optional<Breed> findBreedById(String locale, long id);
+    Optional<Species> findSpeciesById(long id);
+    Optional<Breed> findBreedById(long id);
+
+    void setSpeciesLocale(String locale, Species species);
+    void setBreedLocale(String locale, Breed breed);
+    void setSpeciesLocale(String locale, List<Species> speciesList);
+    void setBreedLocale(String locale, List<Breed> breedList);
 }

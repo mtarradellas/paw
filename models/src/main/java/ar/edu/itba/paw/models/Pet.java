@@ -109,6 +109,11 @@ public class Pet {
                 ", owner: " + user + ", status: " + status + ", dept: " + department + ", prov: " + province + " }";
     }
 
+    public void setLocale(String locale) {
+        this.breed.setLocale(locale);
+        this.species.setLocale(locale);
+    }
+
     public Long getId() {
         return id;
     }
