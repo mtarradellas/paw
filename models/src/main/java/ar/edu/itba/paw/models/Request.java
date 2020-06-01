@@ -32,6 +32,7 @@ public class Request {
     @JoinColumn(name = "ownerid")
     private User user;
 
+    @IndexedEmbedded(depth = 1)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "petId")
     private Pet pet;

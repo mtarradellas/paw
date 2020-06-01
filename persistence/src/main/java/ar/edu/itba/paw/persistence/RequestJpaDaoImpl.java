@@ -80,9 +80,8 @@ public class RequestJpaDaoImpl implements RequestDao {
             Expression<User> reqUser = root.get("user");
             predicates.add(cb.equal(reqUser, user));
         }
-        /* TODO */
 //        if(pet != null) {
-//            Expression<Pet> reqPet = root.get("pet");
+//            Expression<Pet> reqPet = root.get("pet.);
 //            predicates.add(cb.equal(reqPet, pet));
 //        }
         return predicates;
@@ -97,10 +96,10 @@ public class RequestJpaDaoImpl implements RequestDao {
         }
 
         /* TODO */
-//        if(user != null) {
-//            Expression<User> reqUser = root.get(pet.get user;   //filtrar por el duenio
-//            predicates.add(cb.equal(reqUser, user));
-//        }
+        if(user != null) {
+            Expression<User> petOwner = root.join("pet").join("user");
+            predicates.add(cb.equal(petOwner, user));
+        }
 //        if(pet != null) {
 //            Expression<Pet> reqPet = root.get("pet");
 //            predicates.add(cb.equal(reqPet, pet));
@@ -146,18 +145,18 @@ public class RequestJpaDaoImpl implements RequestDao {
         cr.select(root).where(predicate);
         if (searchCriteria != null ) {
             Order order;
-            String orderBy = "creationDate";
+
+            Path<Object> orderBy = root.get("creationDate");
             if(searchCriteria.toLowerCase().contains("date")){
-                orderBy = "creationDate";
+                orderBy = root.get("creationDate");
             }
-            /* TODO */
-//            else if (searchCriteria.toLowerCase().contains("petname")) {
-//                orderBy = "creationDate";
-//            }
+            else if (searchCriteria.toLowerCase().contains("petname")) {
+                orderBy = root.join("pet").get("petName");
+            }
             if (searchOrder.toLowerCase().contains("desc")) {
-                order = cb.desc(root.get(orderBy));
+                order = cb.desc(orderBy);
             } else {
-                order = cb.asc(root.get(orderBy));
+                order = cb.asc(orderBy);
             }
             cr.orderBy(order);
         }
