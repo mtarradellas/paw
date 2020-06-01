@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.form.RequestMail;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
@@ -10,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -70,11 +70,11 @@ public class LoginAndRegisterController extends ParentController {
         try {
             opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail());
-        } catch (DuplicateUserException ex) {
+        } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return registerForm(userForm)
-                    .addObject("duplicatedUsername", ex.isDuplicatedUsername())
-                    .addObject("duplicatedMail", ex.isDuplicatedMail());
+                    .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"))
+                    .addObject("duplicatedMail", ex.getMessage().contains("users_mail_key"));
         }
         if (opUser == null || !opUser.isPresent()) {
             LOGGER.warn("User creation failed. User returned from creation is {}", opUser==null? "null":"empty");
@@ -88,7 +88,6 @@ public class LoginAndRegisterController extends ParentController {
     public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString, HttpServletRequest request) {
         UUID uuid = UUID.fromString(tokenString);
 
-        /* TODO create exceptions for better error handling */
         Optional<User> opUser = userService.activateAccountWithToken(uuid);
 
         if (!opUser.isPresent()) {
