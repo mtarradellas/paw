@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.validators;
 
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;

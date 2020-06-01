@@ -2,7 +2,6 @@ package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.FieldsValueMatch;
 import org.hibernate.validator.constraints.NotBlank;
-
 import javax.validation.constraints.Size;
 
 @FieldsValueMatch.List({

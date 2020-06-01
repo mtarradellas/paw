@@ -4,38 +4,40 @@ import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.UserList;
-
-import java.util.Date;
+import ar.edu.itba.paw.models.constants.UserStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public interface UserService {
-    Optional<User> findById(String language, long id);
-    Optional<User> findByUsername(String language, String username);
-    Stream<User> list(String language);
-    UserList adminUserList(String language, String findValue, String status, String searchCriteria, String searchOrder, String page);
-    UserList adminFind(String language, String find, String page);
-    UserList adminFilteredList(String language,String status,String searchCriteria,String searchOrder,String page);
-    Optional<User> create(String language, String username, String password, String mail) throws DuplicateUserException;
-    Optional<User> adminCreate(String language, String username, String password, String mail) throws DuplicateUserException;
-    Optional<User> findByMail(String language, String mail);
-    Optional<User> updatePassword(String language, String oldPassword, String newPassword, long id) throws InvalidPasswordException;
-    boolean createToken(UUID uuid, long userId);
-    Optional<Token> getToken(UUID uuid);
-    boolean deleteToken(UUID uuid);
-    Optional<User> findByToken(String language, UUID uuid);
-    String getAdminUserPages();
-    String getAdminMaxSearchPages(String language, String find);
-    String getAdminMaxFilterPages(String language,String status);
-    Optional<User> activateAccountWithToken(String language, UUID uuid);
-    Optional<User> requestPasswordReset(String locale, String mail);
-    Optional<User> resetPassword(String language, UUID uuid, String password);
-    boolean isAdmin(long userId);
-    void removeAdmin(long userId);
-    void recoverAdmin(long userId);
-    void removeUser(long userId);
-    Optional<User> update(String language, long id, String username) throws DuplicateUserException;
+
+    List<User> list(int page, int pageSize);
+    List<User> filteredList(String find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+
+    int getListAmount();
+    int getFilteredAmount(String find, UserStatus status);
+
+    Optional<User> findById(Long id);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByMail(String mail);
+    Optional<User> findByToken(UUID token);
+
+    Optional<User> create(String username, String password, String mail) throws DuplicateUserException;
+    Optional<User> update(User user);
+    Optional<User> updateUsername(long id, String username) throws DuplicateUserException;
+    Optional<User> updateStatus(long id, UserStatus status);
+    Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException;
+    Optional<User> requestPasswordReset(String mail);
+    Optional<User> resetPassword(UUID token, String password);
+
+    Optional<User> adminCreate(String username, String password, String mail) throws DuplicateUserException;
+    boolean isAdmin(User user);
+    boolean recoverUser(long id);
+    boolean removeUser(long id);
+
+    Optional<Token> getToken(UUID token);
+    Optional<Token> createToken(UUID token, User user);
+    boolean deleteToken(UUID token);
+    Optional<User> activateAccountWithToken(UUID token);
+
 }

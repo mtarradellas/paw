@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.util.Base64;
 
-@Entity(name = "Images")
+@Entity
+@Table(name = "Images")
 public class Image {
 
     @Id
@@ -17,18 +17,14 @@ public class Image {
     @Column
     private Long petId;
 
-
-    private String url;
+    public Image() {
+        //Hibernate
+    }
 
     public Image(long imageId, byte[] imageData, long petId) {
         this.id = imageId;
         this.img = imageData;
         this.petId = petId;
-        this.url = "data:image/png;base64," + Base64.getEncoder().encodeToString(imageData);
-    }
-
-    public Image() {
-        //Hibernate
     }
 
     public Long getPetId() {
@@ -39,11 +35,11 @@ public class Image {
         this.petId = petId;
     }
 
-    public Long getImageId() {
+    public Long getId() {
         return id;
     }
 
-    public void setImageId(Long imageId) {
+    public void setId(Long imageId) {
         this.id = imageId;
     }
 
@@ -53,13 +49,5 @@ public class Image {
 
     public void setImageData(byte[] imageData) {
         this.img = imageData;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 }

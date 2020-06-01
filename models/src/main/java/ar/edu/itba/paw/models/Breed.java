@@ -2,7 +2,8 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 
-@Entity(name = "Breeds")
+@Entity
+@Table(name = "Breeds")
 public class Breed implements Comparable<Breed>{
 
     @Id
@@ -10,10 +11,10 @@ public class Breed implements Comparable<Breed>{
     @SequenceGenerator(allocationSize = 1, sequenceName = "breeds_id_seq", name = "breeds_id_seq")
     private Long id;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String en_us;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String es_ar;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -68,7 +69,7 @@ public class Breed implements Comparable<Breed>{
         return name;
     }
 
-    public void setName(String locale) {
+    public void setLocale(String locale) {
         if (locale.equalsIgnoreCase("en_us")) {
             name = en_us;
         } else {

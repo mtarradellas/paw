@@ -19,13 +19,13 @@
                     <div class="shadow p-3 bg-white rounded">
                         <div class="row">
                             <h2 class="col"><spring:message code="request.title"/> <spring:message code="showingResults"
-                                                                                       arguments="${list_size}"/></h2>
+                                                                                       arguments="${amount}"/></h2>
                             <div class="col-md-1 align-self-end">
                                 <button type="button" class="btn btn-primary btn-circle float-right "
                                         data-toggle="modal" data-target="#help"><b>?</b></button>
                             </div>
                         </div>
-                        <c:if test="${empty requests_list}">
+                        <c:if test="${empty requestList}">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                 <c:choose>
                                     <c:when test="${(empty param.status || param.status eq 'any')
@@ -41,7 +41,7 @@
                                 </c:choose>
                             </div>
                         </c:if>
-                        <c:if test="${not empty requests_list}">
+                        <c:if test="${not empty requestList}">
                             <div class="row">
                                 <div class="col-lg-7">
                                     <h5 class="text-left"><b><spring:message code="request"/></b></h5>
@@ -55,12 +55,12 @@
                             </div>
                             <hr class="m-0">
                         </c:if>
-                        <c:forEach var="req" items="${requests_list}">
-                            <c:if test="${req.status.id eq 1}">
+                        <c:forEach var="req" items="${requestList}">
+                            <c:if test="${req.status.value eq 1}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.showedInterest"
-                                                        arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                                        arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
@@ -70,7 +70,7 @@
                                     <div class="col text-center">
                                         <form method="POST" class="m-0"
                                               action="<c:url value="/requests/${req.id}/cancel"/>">
-                                            <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
+                                            <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
                                                type="button" class="btn btn-secondary"><spring:message
                                                     code="visitPet"/></a>
                                             <button type="submit" name="newStatus" value="cancel"
@@ -79,45 +79,45 @@
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.id eq 2}">
+                            <c:if test="${req.status.value eq 2}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasAccepted"
-                                                        arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                                        arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <spring:message code="request.accepted"/>
                                     </div>
                                     <div class="col text-center button-container">
-                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
+                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
                                            type="button" class="btn btn-secondary"><spring:message
                                                 code="visitPet"/></a>
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.id eq 3}">
+                            <c:if test="${req.status.value eq 3}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasRejected"
-                                                        arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                                        arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <spring:message code="request.rejected"/>
                                     </div>
                                     <div class="col text-center button-container">
-                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
+                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
                                            type="button" class="btn btn-secondary"><spring:message
                                                 code="visitPet"/></a>
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.id eq 4}">
+                            <c:if test="${req.status.value eq 4}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasCanceled"
-                                                        arguments="${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                                        arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
@@ -126,7 +126,7 @@
                                     <div class="col text-center button-container">
                                         <form method="POST" class="m-0"
                                               action="<c:url value="/requests/${req.id}/recover"/>">
-                                            <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
+                                            <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
                                                type="button" class="btn btn-secondary"><spring:message
                                                     code="visitPet"/></a>
                                             <button type="submit" name="newStatus" value="recover"

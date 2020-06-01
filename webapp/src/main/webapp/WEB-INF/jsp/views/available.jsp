@@ -16,11 +16,11 @@
                     <div class="row mt-1">
             <div class="col-md-12">
                 <div class="card">
-                        <c:forEach items="${species_list}" var="species">
+                        <c:forEach items="${speciesList}" var="species">
                             <div class="card-body">
                             ${species.name}
                             <ul>
-                                <c:forEach items="${breeds_list}" var="breed" varStatus="i">
+                                <c:forEach items="${breedList}" var="breed" varStatus="i">
                                     <c:if test="${breed.species.id eq species.id}">
                                         <li>${breed.name}</li>
                                     </c:if>

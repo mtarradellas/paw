@@ -16,9 +16,9 @@
                     <div class="form-group">
                         <spring:message code="resetPassword.email" var="emailTxt"/>
                         <form:label path="mail" for="mail">${emailTxt}: </form:label>
-                        <form:input placeholder="${emailTxt}" type="text" id="mail" cssClass="form-control ${status.error || invalid_mail ? 'is-invalid' : ''}" path="mail"/>
+                        <form:input placeholder="${emailTxt}" type="text" id="mail" cssClass="form-control ${status.error || invalidMail ? 'is-invalid' : ''}" path="mail"/>
                         <form:errors path="mail" element="div" cssClass="invalid-feedback"/>
-                        <c:if test="${invalid_mail}">
+                        <c:if test="${invalidMail}">
                             <div class="invalid-feedback">
                                 <spring:message code="resetPassword.invalidEmail"/>
                             </div>

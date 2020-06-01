@@ -39,8 +39,8 @@
         <form class="form-inline pt-1 my-2 my-lg-0 ui-widget" method="GET" action="${pageContext.request.contextPath}/">
             <input id="search-value" name="find" class="form-control mr-sm-2" path="search" type="search"
                    placeholder="<spring:message code="search"/>" aria-label="Search"
-            <c:if test="${not empty findValue}">
-                value="${findValue}"
+            <c:if test="${not empty find}">
+                value="${find}"
             </c:if>
             >
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" ><spring:message code="search"/></button>

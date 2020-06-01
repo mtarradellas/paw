@@ -2,56 +2,67 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.ImageDao;
 import ar.edu.itba.paw.interfaces.ImageService;
-import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.Pet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class ImageServiceImpl implements ImageService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageServiceImpl.class);
+
     @Autowired
     private ImageDao imageDao;
     @Autowired
-    private PetDao petDao;
+    private PetService petService;
 
     @Override
-    public Stream<Image> findByPetId(long id) {
+    public List<Image> findByPetId(Long id) {
         return this.imageDao.findByPetId(id);
     }
 
     @Override
-    public Integer quantityByPetId(long id) {
+    public Integer quantityByPetId(Long id) {
         return this.imageDao.quantityByPetId(id);
     }
 
     @Override
-    public Optional<byte[]> getDataById(long id) {
+    public Optional<byte[]> getDataById(Long id) {
         return this.imageDao.getDataById(id);
     }
 
+
+    @Transactional
     @Override
-    public Optional<Image> createAdmin(long petId, byte[] bytes) {
+    public Optional<Image> create(Long petId, byte[] bytes, Long userId) {
+        Optional<Pet> opPet = petService.findById(petId);
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet {} not found, image not created", petId);
+            return Optional.empty();
+        }
+        Pet pet = opPet.get();
+        if (userId != null && pet.getUser().getId() != userId) {
+            LOGGER.warn("User {} is not pet {} owner, image not created", userId, petId);
+            return Optional.empty();
+        }
         return imageDao.create(petId, bytes);
     }
 
-    @Override
-    public Optional<Image> create(long petId, byte[] bytes, long userId) {
-        if (petDao.isPetOwner(petId, userId)) {
-            return imageDao.create(petId, bytes);
-        }
-        return Optional.empty();
-    }
-
+    @Transactional
     @Override
     public void delete(Long id) {
         this.imageDao.delete(id);
     }
 
+    @Transactional
     @Override
     public void delete(List<Long> ids) {
         for (Long id: ids) {

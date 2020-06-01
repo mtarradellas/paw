@@ -10,7 +10,7 @@
 
 <div class="card animal-list-card">
     <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link">
-        <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
+        <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0].id}"/>"
              class="card-img-top" alt="">
     </a>
 
@@ -29,7 +29,7 @@
             <div class="row">
                 <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                    class="darkblue-action ml-2"><spring:message code="petCard.goToPage"/></a>
-                <c:if test="${pet.status.id ne 1}">
+                <c:if test="${pet.status.value ne 1}">
                     <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
                 </c:if>
 
@@ -40,7 +40,7 @@
             <div class="row">
                 <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>"
                    class="darkblue-action ml-2"><spring:message code="petCard.goToPage"/></a>
-                <c:if test="${pet.status.id ne 1}">
+                <c:if test="${pet.status.value ne 1}">
                     <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
                 </c:if>
             </div>

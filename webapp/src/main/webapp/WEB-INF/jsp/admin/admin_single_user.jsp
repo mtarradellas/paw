@@ -16,9 +16,9 @@
                 <div class="p-2 bg-dark ">
                     <div class="row text-whitesmoke">
                         <h1 class="ml-4"><c:out value="${user.username}"/>
-                            (<c:out value="${user.status.name}"/>)
+                            (<c:out value="${user.status}"/>)
                         </h1>
-                        <c:if test="${(user.status.id eq 1) or (user.status.id eq 2)}">
+                        <c:if test="${(user.status.value eq 1) or (user.status.value eq 2)}">
                             <h1 class="mt-2 ml-2">
                                 <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/remove"/>">
                                     <button type="submit" class="btn btn-danger are-you-sure"><spring:message
@@ -33,7 +33,7 @@
                                 </svg>
                             </a>
                         </c:if>
-                        <c:if test="${user.status.id eq 3}">
+                        <c:if test="${user.status.value eq 3}">
                             <h1 class="mt-2 ml-2">
                                 <form method="POST" class="m-0"
                                       action="<c:url value="/admin/user/${user.id}/recover"/>">
@@ -68,10 +68,10 @@
                         <div class="card-deck row">
 
                             <c:forEach var="pet" items="${userPets}">
-                            <c:if test="${pet.status.id eq 1}">
+                            <c:if test="${pet.status.value eq 1}">
                             <div class="col-auto mb-3">
                                 </c:if>
-                                <c:if test="${pet.status.id ne 1 }">
+                                <c:if test="${pet.status.value ne 1 }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
                                     <t:animalCard pet="${pet}" level="admin"/>

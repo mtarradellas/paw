@@ -81,7 +81,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.department.province.id}">
                                             <form:select id="province" data-child="department" path="province" cssClass="selector-parent input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="province" items="${province_list}">
+                                                <c:forEach var="province" items="${provinceList}">
                                                     <form:option value="${province.id}">${province.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
@@ -104,7 +104,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.department.id}">
                                             <form:select id="department" path="department" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="department" items="${department_list}">
+                                                <c:forEach var="department" items="${departmentList}">
                                                     <form:option data-dependency="${department.province.id}" value="${department.id}">${department.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
@@ -129,7 +129,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.species.id}">
                                             <form:select id="speciesId" data-child="breedId" path="speciesId" cssClass="selector-parent input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="species" items="${species_list}">
+                                                <c:forEach var="species" items="${speciesList}">
                                                     <form:option value="${species.id}">${species.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
@@ -188,7 +188,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.breed.id}">
                                             <form:select id="breedId" path="breedId" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="breed" items="${breeds_list}">
+                                                <c:forEach var="breed" items="${breedList}">
                                                     <form:option data-dependency="${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
                                                 </c:forEach>
                                             </form:select>

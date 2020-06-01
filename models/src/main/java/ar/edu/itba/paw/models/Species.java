@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "Species")
 public class Species implements Comparable<Species>{
 
     @Id
@@ -11,14 +12,13 @@ public class Species implements Comparable<Species>{
     @SequenceGenerator(allocationSize = 1, sequenceName = "species_id_seq", name = "species_id_seq")
     private Long id;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String en_us;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String es_ar;
 
     @OneToMany(orphanRemoval = true, mappedBy = "species", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Column(insertable = true, updatable = true)
     private List<Breed> breedList;
 
     private String name;
@@ -63,7 +63,7 @@ public class Species implements Comparable<Species>{
         return name;
     }
 
-    public void setName(String locale) {
+    public void setLocale(String locale) {
         if (locale.equalsIgnoreCase("en_us")) {
             name = en_us;
         } else {
