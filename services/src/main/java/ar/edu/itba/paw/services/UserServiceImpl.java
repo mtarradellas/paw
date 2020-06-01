@@ -57,7 +57,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(long id) {
+    public Optional<User> findById(Long id) {
+        if(id == null ) return Optional.empty()
         return userDao.findById(id);
     }
 
@@ -278,7 +279,7 @@ public class UserServiceImpl implements UserService {
         User user = opUser.get();
         requestService.rejectAllByPetOwner(user.getId()); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByUser(user);
-        petService.removeAllByOwner(user.getId());
+        petService.removeAllByOwner(user);
         return updateStatus(user.getId(), UserStatus.DELETED).isPresent();
     }
 

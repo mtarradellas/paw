@@ -1,52 +1,62 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.RequestStatus;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Indexed
 @Table(name = "Requests")
 public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "requests_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "requests_id_seq", name = "requests_id_seq")
+    @DocumentId
     private Long id;
 
     @Column
     private Date creationDate;
 
+    @Field
     @Enumerated(EnumType.ORDINAL)
     private RequestStatus status;
 
+    @IndexedEmbedded(depth = 1)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ownerid")
     private User user;
 
-    @Column
-    private Long petId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "petId")
+    private Pet pet;
+
 
     protected Request() {
         // Hibernate
     }
 
-    public Request(Date creationDate, RequestStatus status, Long petId) {
+    public Request(Date creationDate, RequestStatus status, Pet pet) {
         this.creationDate = creationDate;
-        this.petId = petId;
+        this.pet = pet;
         this.status = status;
     }
 
-    public Request(Date creationDate, RequestStatus status, User user, Long petId) {
+    public Request(Date creationDate, RequestStatus status, User user, Pet pet) {
         this.creationDate = creationDate;
-        this.petId = petId;
+        this.pet = pet;
         this.status = status;
         this.user = user;
     }
 
     @Override
     public String toString() {
-        return "{ id: " + id + ", status: " + status + ", owner: " + user + ", pet: " + petId + ", creationDate: " + creationDate + " }";
+        return "{ id: " + id + ", status: " + status + ", owner: " + user + ", pet: " + pet + ", creationDate: " + creationDate + " }";
     }
 
     public User getUser() {
@@ -55,10 +65,6 @@ public class Request {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getPetName() {
-        return "misterius pet";
     }
 
     public long getId() {
@@ -73,12 +79,12 @@ public class Request {
         this.status = status;
     }
 
-    public long getPetId() {
-        return petId;
+    public Pet getPet() {
+        return pet;
     }
 
-    public void setPetId(long petId) {
-        this.petId = petId;
+    public void setPet(Pet pet) {
+        this.pet = pet;
     }
 
     public Date getCreationDate() {

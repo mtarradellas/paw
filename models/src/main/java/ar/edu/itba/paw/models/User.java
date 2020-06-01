@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.UserStatus;
+import org.hibernate.search.annotations.ContainedIn;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,9 +27,14 @@ public class User {
     @Enumerated(EnumType.ORDINAL)
     private UserStatus status;
 
+    @ContainedIn
     @OneToMany(orphanRemoval = true, mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Column
     private List<Request> requestList;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column
+    private List<Pet> petList;
 
     protected User() {
         // Hibernate
@@ -129,4 +135,11 @@ public class User {
         this.requestList = requestList;
     }
 
+    public List<Pet> getPetList() {
+        return petList;
+    }
+
+    public void setPetList(List<Pet> petList) {
+        this.petList = petList;
+    }
 }

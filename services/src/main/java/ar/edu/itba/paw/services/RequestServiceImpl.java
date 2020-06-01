@@ -90,27 +90,20 @@ public class RequestServiceImpl implements RequestService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getOwnerId() == user.getId()) {
+        if (pet.getUser().equals(user)) {
             LOGGER.warn("User {} is pet {} owner, ignoring request", userId, petId);
             return Optional.empty();
         }
 
         List<Request> requestList = user.getRequestList();
         for (Request req: requestList) {
-            if(req.getPetId() == pet.getId() && !req.getStatus().equals(RequestStatus.CANCELED)) {
+            if(req.getPet().equals(pet) && !req.getStatus().equals(RequestStatus.CANCELED)) {
                 LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
                 return Optional.empty();
             }
         }
 
         Request request = requestDao.create(user, pet, RequestStatus.PENDING);
-
-        Optional<Contact> opContact = petService.getPetContact(pet.getId());
-        if (!opContact.isPresent()) {
-            LOGGER.warn("Contact info for pet {} not found", pet.getId());
-            return Optional.of(request);
-        }
-        final Contact contact = opContact.get();
 
         Map<String, Object> arguments = new HashMap<>();
         String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
@@ -121,7 +114,7 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", url + "/user/" + user.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(contact.getEmail(), arguments, "request");
+        mailService.sendMail(user.getMail(), arguments, "request");
 
         return Optional.of(request);
     }
@@ -182,24 +175,20 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
-        if (!opContact.isPresent()) {
-            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
-            return false;
-        }
-
-        final Contact contact = opContact.get();
         final User recipient = request.getUser();
+        Pet pet = request.getPet();
+        User contact = pet.getUser();
 
         Map<String, Object> arguments = new HashMap<>();
         String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
 
+
         arguments.put("URL", url );
-        arguments.put("petURL", url + "/pet/" + request.getPetId());
+        arguments.put("petURL", url + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("contactEmail", contact.getEmail());
+        arguments.put("contactEmail", contact.getMail());
         arguments.put("ownerURL", url +  "/user/" + recipient.getId());
-        arguments.put("petName", request.getPetName());
+        arguments.put("petName", pet.getPetName());
 
         mailService.sendMail(recipient.getMail(), arguments, "request_accept");
 
@@ -230,23 +219,18 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
-        if (!opContact.isPresent()) {
-            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
-            return false;
-        }
-
-        final Contact contact = opContact.get();
         final User recipient = request.getUser();
+        Pet pet = request.getPet();
+        User contact = pet.getUser();
 
         Map<String, Object> arguments = new HashMap<>();
         String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
 
         arguments.put("URL", url );
-        arguments.put("petURL", url + "/pet/" + request.getPetId());
+        arguments.put("petURL", url + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
         arguments.put("ownerURL", url + "/user/" + + user.getId());
-        arguments.put("petName", request.getPetName());
+        arguments.put("petName", pet.getPetName());
 
         mailService.sendMail(recipient.getMail(), arguments, "request_reject");
 
@@ -277,13 +261,9 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        final Optional<Contact> opContact = petService.getPetContact(request.getPetId());
-        if (!opContact.isPresent()) {
-            LOGGER.warn("Contact information for pet {} through request {} not found", request.getPetId(), request.getId());
-            return false;
-        }
 
-        final Contact contact = opContact.get();
+
+        //final Contact contact = opContact.get();
         final User recipient = request.getUser();
 
         LOGGER.debug("Request {} recovered by user {}", request.getId(), user.getId());

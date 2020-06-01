@@ -21,7 +21,7 @@ public interface UserService {
     int getListAmount();
     int getFilteredAmount(String find, UserStatus status);
 
-    Optional<User> findById(long id);
+    Optional<User> findById(Long id);
     Optional<User> findByUsername(String username);
     Optional<User> findByMail(String mail);
     Optional<User> findByToken(UUID token);
