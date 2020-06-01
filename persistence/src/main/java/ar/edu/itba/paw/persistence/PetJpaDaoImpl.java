@@ -29,6 +29,10 @@ public class PetJpaDaoImpl implements PetDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+
+        if(filteredIds.size() == 0){
+            return new ArrayList<Pet>();
+        }
         final TypedQuery<Pet> query = em.createQuery("from Pet where id in :filteredIds", Pet.class);
         query.setParameter("filteredIds", filteredIds);
         List<Pet> petList = query.getResultList();
