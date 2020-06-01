@@ -80,12 +80,7 @@ public class RequestServiceImpl implements RequestService {
         if (!opUser.isPresent()) {
             LOGGER.warn("User {} not found", userId);
             return Optional.empty();
-     Optional<Contact> opContact = petService.getPetContact(pet.getId());
-        if (!opContact.isPresent()) {
-            LOGGER.warn("Contact info for pet {} not found", pet.getId());
-            return Optional.of(request);
         }
-        final Contact contact = opContact.get();     }
         User user = opUser.get();
 
         Optional<Pet> opPet = petService.findById(locale, petId);

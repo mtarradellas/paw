@@ -2,13 +2,10 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.RequestList;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface RequestService {
 
