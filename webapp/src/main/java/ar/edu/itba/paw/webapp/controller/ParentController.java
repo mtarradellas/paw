@@ -34,22 +34,7 @@ public class ParentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParentController.class);
 
     @Autowired
-    SpeciesService speciesService;
-    @Autowired
-    UserService userService;
-    @Autowired
-    PetService petService;
-    @Autowired
-    ImageService imageService;
-    @Autowired
-    MailService mailService;
-    @Autowired
-    RequestService requestService;
-    @Autowired
-    LocationService locationService;
-    @Autowired
-    PSUserDetailsService userDetailsService;
-
+    private UserService userService;
 
     protected String getLocale() {
         Locale locale = LocaleContextHolder.getLocale();
@@ -68,21 +53,13 @@ public class ParentController {
         return userService.findByUsername(auth.getName()).orElse(null);
     }
 
-    public Authentication authenticateUserAndSetSession(String username, HttpServletRequest request){
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-        return authentication;
-    }
-
     public int parsePage(String page) {
         int pageNum = 1;
         if(page != null) {
             try {
                 pageNum = Integer.parseInt(page);
             } catch (NumberFormatException ex) {
-                throw new BadRequestException("Invalid page parameter");
+                LOGGER.debug("Invalid page ({}) parameter", page);
             }
         }
         return pageNum;
@@ -95,41 +72,128 @@ public class ParentController {
             try {
                 int idx = Integer.parseInt(statusStr);
                 status = values[idx];
-                if (status == null) throw new BadRequestException("Invalid status parameter");
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-                throw new BadRequestException("Invalid status parameter");
+                LOGGER.debug("Invalid status ({}) parameter", statusStr);
             }
         }
         return status;
     }
 
     public Long parseSpecies(String speciesStr) {
-        species = species == null || species.equals("any") ? null : species;
         Long species = null;
         if (speciesStr != null && !speciesStr.equalsIgnoreCase("any")) {
             try {
                 species = Long.parseLong(speciesStr);
             } catch (NumberFormatException ex) {
-                LOGGER.war
+                LOGGER.debug("Invalid species ({}) parameter", speciesStr);
             }
         }
         return species;
     }
 
     public Long parseBreed(String breedStr) {
-        breed = breed == null || breed.equals("any") ? null : breed;
+        Long breed = null;
+        if (breedStr != null && !breedStr.equalsIgnoreCase("any")) {
+            try {
+                breed = Long.parseLong(breedStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.debug("Invalid breed ({}) parameter", breedStr);
+            }
+        }
+        return breed;
     }
 
     public Long parseProvince(String provinceStr) {
-
+        Long province = null;
+        if (provinceStr != null && !provinceStr.equalsIgnoreCase("any")) {
+            try {
+                province = Long.parseLong(provinceStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.debug("Invalid province ({}) parameter", provinceStr);
+            }
+        }
+        return province;
     }
 
     public Long parseDepartment(String departmentStr) {
-
+        Long department = null;
+        if (departmentStr != null && !departmentStr.equalsIgnoreCase("any")) {
+            try {
+                department = Long.parseLong(departmentStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.debug("Invalid department ({}) parameter", departmentStr);
+            }
+        }
+        return department;
     }
 
     public boolean parseFind(String find) {
         return find == null || find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$");
+    }
+
+    public String parseGender(String gender) {
+        if (gender == null) return null;
+        if (gender.equalsIgnoreCase("male")) return "male";
+        if (gender.equalsIgnoreCase("female")) return "female";
+        return null;
+    }
+
+    public String parseCriteria(String criteria) {
+        if (criteria == null || criteria.equalsIgnoreCase("any")) return null;
+        return criteria;
+    }
+
+    public String parseOrder(String order) {
+        if (order != null && order.equalsIgnoreCase("desc")) return "desc";
+        return "asc";
+    }
+
+    public int[] parseRange(String range) {
+        if (range == null) return new int[]{0, -1};
+        int[] price;
+        switch (range) {
+            case "0" : price = new int[]{0, 0}; break;
+            case "1" : price = new int[]{1, 5000}; break;
+            case "2" : price = new int[]{5000, 10000}; break;
+            case "3" : price = new int[]{10000, 15000}; break;
+            case "4" : price = new int[]{15000, 20000}; break;
+            case "5" : price = new int[]{20000, 25000}; break;
+            case "6" : price = new int[]{25000, -1}; break;
+            default: price = new int[]{0, -1}; break;
+        }
+        return price;
+    }
+
+    public int[] parsePrice(String minPrice, String maxPrice) {
+        int minPriceNum = parseMinPrice(minPrice);
+        int maxPriceNum = parseMaxPrice(maxPrice);
+
+        if (maxPriceNum != -1 && minPriceNum > maxPriceNum) return new int[]{0, -1};
+        return new int[]{minPriceNum, maxPriceNum};
+    }
+
+    public int parseMinPrice(String price) {
+        if (price == null) return 0;
+        int priceNum = 0;
+        try {
+            priceNum = Integer.parseInt(price);
+        } catch (NumberFormatException ex) {
+            LOGGER.debug("Invalid min price ({}) parameter", price);
+        }
+        if (priceNum < 0) priceNum = 0;
+        return priceNum;
+    }
+
+    public int parseMaxPrice(String price) {
+        if (price == null) return -1;
+        int priceNum = -1;
+        try {
+            priceNum = Integer.parseInt(price);
+        } catch (NumberFormatException ex) {
+            LOGGER.debug("Invalid max price ({}) parameter", price);
+        }
+        if (priceNum < -1) priceNum = -1;
+        return priceNum;
     }
 
     @ExceptionHandler(PetNotFoundException.class)

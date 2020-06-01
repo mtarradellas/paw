@@ -49,7 +49,7 @@
                     <div class="p-2">
 
                         <h2><b><spring:message code="userPets"/></b> <spring:message code="totalResults"
-                                                                                     arguments="${totalPets}"/>
+                                                                                     arguments="${amount}"/>
                         </h2>
                         <c:if test="${not empty userPets}">
                             <div class="m-2 ">
@@ -64,10 +64,10 @@
                             <c:forEach var="pet" items="${userPets}">
 
 
-                            <c:if test="${pet.status.id eq 1}">
+                            <c:if test="${pet.status.value eq 1}">
                             <div class="col-auto mb-3">
                                 </c:if>
-                                <c:if test="${pet.status.id ne 1 }">
+                                <c:if test="${pet.status.value ne 1 }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
 

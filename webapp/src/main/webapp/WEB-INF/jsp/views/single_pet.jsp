@@ -32,15 +32,15 @@
                                 <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                             </h1>
                         </c:if>
-                        <c:if test="${pet.status.id eq 3}">
+                        <c:if test="${pet.status.value eq 3}">
                             <h1 class="ml-1 "> <spring:message code="pet.status.sold"/></h1>
                         </c:if>
-                        <c:if test="${pet.status.id eq 2}">
+                        <c:if test="${pet.status.value eq 2}">
                             <h1 class="ml-1"> <spring:message code="pet.status.removed"/> </h1>
                         </c:if>
-                        <c:if test="${(pet.ownerId ne loggedUser.id)}">
+                        <c:if test="${(pet.user.id ne loggedUser.id)}">
                             <c:if test="${not requestExists}">
-                                <c:if test="${pet.status.id eq 1}">
+                                <c:if test="${pet.status.value eq 1}">
                                     <h1 class="mt-2 ml-2">
                                         <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
                                             <button type="submit" name="action" class="btn btn-success">
@@ -52,7 +52,7 @@
                                 </c:if>
                             </c:if>
                             <c:if test="${requestExists}">
-                                <c:if test="${pet.status.id eq 1}">
+                                <c:if test="${pet.status.value eq 1}">
                                     <h1 class="mt-2 ml-2">
                                         <button type="button" class="btn btn-success" disabled>
                                             <spring:message code="petCard.alreadyRequested"/>
@@ -61,8 +61,8 @@
                                 </c:if>
                             </c:if>
                         </c:if>
-                        <c:if test="${(pet.ownerId eq loggedUser.id)}">
-                            <c:if test="${pet.status.id eq 1}">
+                        <c:if test="${(pet.user.id eq loggedUser.id)}">
+                            <c:if test="${pet.status.value eq 1}">
                                 <h1 class="mt-2 ml-4">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/sell-adopt" />">
                                         <button type="submit" name="action" class="btn btn-success">
@@ -87,7 +87,7 @@
                                     </svg>
                                 </a>
                             </c:if>
-                            <c:if test="${pet.status.id ne 1}">
+                            <c:if test="${pet.status.value ne 1}">
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/recover" />">
                                         <button type="submit" name="action" class="btn btn-success">
@@ -164,7 +164,7 @@
 
                 </div>
                 <hr>
-                <c:set var="ownerId" value="${pet.ownerId}"/>
+                <c:set var="ownerId" value="${pet.user.id}"/>
                 <a href="${pageContext.request.contextPath}/user/${ownerId}"
                    class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
 

@@ -1,39 +1,55 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.RequestService;
+import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.PetList;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.RequestStatus;
-import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
 import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-
 
 @Controller
 public class UserController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PetService petService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private RequestService requestService;
+
     private static final int REQ_PAGE_SIZE = 25;
+    private static final int PET_PAGE_SIZE = 12;
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
@@ -42,18 +58,18 @@ public class UserController extends ParentController {
         final ModelAndView mav = new ModelAndView("views/single_user");
         final String locale = getLocale();
 
-        if (page == null){
-            page = "1";
-        }
-        PetList petsByUser = petService.getByUserId(locale, id, page);
+        int pageNum = parsePage(page);
 
-        mav.addObject("currentPage", page);
-        mav.addObject("maxPage", petsByUser.getMaxPage());
+        List<Pet> petList = petService.listByUser(locale, id, pageNum, PET_PAGE_SIZE);
+        int amount = petService.getListByUserAmount(id);
         Optional<User> opUser = userService.findById(id);
-        if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
-        mav.addObject("user", opUser.get());
-        mav.addObject("userPets", petsByUser);
-        mav.addObject("totalPets", petsByUser.getTotalPetsAmount());
+        User user = opUser.orElseThrow(UserNotFoundException::new);
+
+        mav.addObject("currentPage", pageNum);
+        mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
+        mav.addObject("userPets", petList);
+        mav.addObject("amount", amount);
+        mav.addObject("user", user);
         return mav;
     }
 
@@ -65,68 +81,34 @@ public class UserController extends ParentController {
                                     @RequestParam(name = "find", required = false) String find) {
 
         final ModelAndView mav = new ModelAndView("views/requests");
-        final String locale = getLocale();
         final User user = loggedUser();
 
-        int pageNum = 1;
-        if(page != null) {
-            try {
-                pageNum = Integer.parseInt(page);
-            } catch (NumberFormatException ex) {
-                throw new BadRequestException("Invalid page parameter");
-            }
-        }
+        int pageNum = parsePage(page);
+        RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
+        searchCriteria = parseCriteria(searchCriteria);
+        searchOrder = parseOrder(searchOrder);
 
-        /* TODO: front status as requeststatus */
-
-        RequestStatus requestStatus = null;
-        status = (status == null || status.equals("any") ? null : status);
-        if(status != null) {
-            if(status.equals("pending")){
-                status = "0";
-            }
-            else if(status.equals("accepted")){
-                status = "1";
-            }
-            else if(status.equals("rejected")){
-                status = "2";
-            }
-            else if(status.equals("canceled")){
-                status = "3";
-            }
-            try {
-                int idx = Integer.parseInt(status);
-                requestStatus = RequestStatus.values()[idx];
-                if (requestStatus == null) throw new BadRequestException("Invalid status parameter");
-            } catch (NumberFormatException ex) {
-                throw new BadRequestException("Invalid status parameter");
-            }
-        }
-
-        if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")) {
+        if (!parseFind(find)) {
             mav.addObject("wrongSearch", true);
-            find = "";
+            find = null;
         } else {
             mav.addObject("wrongSearch", false);
         }
 
-        searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
-
-        /* Filtered request list */
-        if (true) {
-            List<Request> requestList = requestService.filteredList(user, null, find, requestStatus,
+        List<Request> requestList = requestService.filteredList(user, null, find, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-            int amount = requestService.getFilteredListAmount(user, null, find, requestStatus);
-            mav.addObject("requestList", requestList);
-            mav.addObject("amount", amount);
-        }
+        int amount = requestService.getFilteredListAmount(user, null, find, requestStatus);
+
+        mav.addObject("currentPage", pageNum);
+        mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
+        mav.addObject("requestList", requestList);
+        mav.addObject("amount", amount);
         return mav;
     }
 
     @RequestMapping(value = "/requests/{id}/cancel", method = {RequestMethod.POST})
     public ModelAndView cancelRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
-        final String locale = getLocale();
 
         if (requestService.cancel(id, user)) {
             return new ModelAndView("redirect:/requests" );
@@ -137,7 +119,6 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView recoverRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
-        final String locale = getLocale();
 
         if (requestService.recover(id, user)) {
             return new ModelAndView("redirect:/requests" );
@@ -154,52 +135,35 @@ public class UserController extends ParentController {
 
         final ModelAndView mav = new ModelAndView("views/interests");
         final User user = loggedUser();
-        final String locale = getLocale();
 
-        int pageNum = 1;
-        if(page != null) {
-            try {
-                pageNum = Integer.parseInt(page);
-            } catch (NumberFormatException ex) {
-                throw new BadRequestException("Invalid page parameter");
-            }
-        }
+        searchCriteria = parseCriteria(searchCriteria);
+        searchOrder = parseOrder(searchOrder);
 
-        RequestStatus requestStatus = null;
-        if(status != null) {
-            try {
-                int idx = Integer.parseInt(status);
-                requestStatus = RequestStatus.values()[idx];
-                if (requestStatus == null) throw new BadRequestException("Invalid status parameter");
-            } catch (NumberFormatException ex) {
-                throw new BadRequestException("Invalid status parameter");
-            }
-        }
+        int pageNum = parsePage(page);
+        RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
 
-        if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")) {
+        if (!parseFind(find)) {
             mav.addObject("wrongSearch", true);
-            find = "";
+            find = null;
         } else {
             mav.addObject("wrongSearch", false);
         }
 
-        searchCriteria = (searchCriteria == null || searchCriteria.equals("any") ? null : searchCriteria);
+        List<Request> requestList = requestService.filteredListByPetOwner(user, null, find, requestStatus,
+                searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+        int amount = requestService.getFilteredListByPetOwnerAmount(user, null, find, requestStatus);
 
-        /* Filtered interest list */
-        if(status != null || searchCriteria != null) {
-            List<Request> requestList = requestService.filteredListByPetOwner(user, null, find, requestStatus,
-                    searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-            int amount = requestService.getFilteredListByPetOwnerAmount(user, null, find, requestStatus);
-            mav.addObject("interestList", requestList);
-            mav.addObject("amount", amount);
-        }
+        mav.addObject("currentPage", pageNum);
+        mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
+        mav.addObject("interestList", requestList);
+        mav.addObject("amount", amount);
+
         return mav;
     }
 
     @RequestMapping(value = "/interests/{id}/accept", method = {RequestMethod.POST})
     public ModelAndView acceptInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
-        final String locale = getLocale();
 
         if (requestService.accept(id, user)) {
             return new ModelAndView("redirect:/interests" );
@@ -210,7 +174,6 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/interests/{id}/reject", method = {RequestMethod.POST})
     public ModelAndView rejectInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
-        final String locale = getLocale();
 
         if (requestService.reject(id, user)) {
             return new ModelAndView("redirect:/interests" );
@@ -221,7 +184,6 @@ public class UserController extends ParentController {
 
     @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.GET })
     public ModelAndView editUserGet(@ModelAttribute("editUserForm") final EditUserForm editUserForm, @PathVariable("id") long id){
-        final String locale = getLocale();
 
         if(loggedUser().getId() != id) {
             return new ModelAndView("redirect:/403" );
@@ -232,8 +194,6 @@ public class UserController extends ParentController {
 
     private EditUserForm populateForm(EditUserForm editUserForm, long id){
 
-        final String locale = getLocale();
-
         User user = userService.findById(id).orElseThrow(UserNotFoundException::new);
 
         editUserForm.setUsername(user.getUsername());
@@ -242,7 +202,6 @@ public class UserController extends ParentController {
     }
 
     private ModelAndView editUserForm(@ModelAttribute("editUserForm") final EditUserForm editUserForm, long id) {
-        final String locale = getLocale();
 
         return new ModelAndView("views/user_edit")
                 .addObject("user",
@@ -313,5 +272,13 @@ public class UserController extends ParentController {
         }
         LOGGER.warn("User is not logged user, status not updated");
         return new ModelAndView("redirect:/403");
+    }
+
+    private Authentication authenticateUserAndSetSession(String username, HttpServletRequest request){
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+        return authentication;
     }
 }

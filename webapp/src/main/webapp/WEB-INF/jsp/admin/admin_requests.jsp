@@ -150,7 +150,7 @@
                                         <div class="row ">
                                             <div class="col-lg-5">
                                                 <spring:message code="request.isInterested"
-                                                                arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.petId},${request.petName}"/>
+                                                                arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.pet.id},${request.pet.petName}"/>
                                                 <small class="text-warning"> ${request.creationDate}</small>
                                             </div>
                                             <div class="col-lg-2">
@@ -174,7 +174,7 @@
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitUser"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.petId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/request/<c:out value="${request.id}"/>/edit"
@@ -190,7 +190,7 @@
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitUser"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.petId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/request/<c:out value="${request.id}"/>/edit"

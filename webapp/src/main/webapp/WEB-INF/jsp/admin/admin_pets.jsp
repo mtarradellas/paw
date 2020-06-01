@@ -173,10 +173,10 @@
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="pet" items="${petList}">
                                     <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
-                                    <li     <c:if test="${(pet.status.id eq 1)}">
+                                    <li     <c:if test="${(pet.status.value eq 1)}">
                                         class="list-group-item"
                                     </c:if>
-                                            <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
+                                            <c:if test="${(pet.status.value eq 2) or (pet.status.value eq 3)}">
                                                 class="list-group-item resolved"
                                             </c:if>
                                     >
@@ -194,10 +194,10 @@
                                                 </a>
                                             </div>
                                             <div class="col text-center pt-3 ml-3">
-                                                <c:if test="${pet.status.id eq 1}">
+                                                <c:if test="${pet.status.value eq 1}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/pet/${pet.id}/remove"/>">
-                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.ownerId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitOwner"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
@@ -210,10 +210,10 @@
                                                             <spring:message code="petCard.remove"/></button>
                                                     </form>
                                                 </c:if>
-                                                <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
+                                                <c:if test="${(pet.status.value eq 2) or (pet.status.value eq 3)}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/pet/${pet.id}/recover"/>">
-                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.ownerId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitOwner"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"

@@ -37,12 +37,14 @@ public class PetJpaDaoImpl implements PetDao {
 
     @Override
     public List<Pet> searchList(String find, int page, int pageSize) {
-        return new ArrayList<>();
+        return list(page, pageSize);
     }
 
     @Override
-    public List<Pet> filteredList(User user, String species, String breed, String gender, PetStatus status, String searchCriteria, String searchOrder, int minPrice, int maxPrice, String province, String department, int page, int pageSize) {
-        return new ArrayList<>();
+    public List<Pet> filteredList(User user, Species species, Breed breed, String gender, PetStatus status,
+                                  String searchCriteria, String searchOrder, int minPrice, int maxPrice, Province province,
+                                  Department department, int page, int pageSize) {
+        return list(page, pageSize);
     }
 
     @Override
@@ -53,12 +55,13 @@ public class PetJpaDaoImpl implements PetDao {
 
     @Override
     public int getSearchListAmount(String find) {
-        return 0;
+        return getListAmount();
     }
 
     @Override
-    public int getFilteredListAmount(User user, String species, String breed, String gender, PetStatus status, int minPrice, int maxPrice, String province, String department) {
-        return 0;
+    public int getFilteredListAmount(User user, Species species, Breed breed, String gender, PetStatus status,
+                                     int minPrice, int maxPrice, Province province, Department department) {
+        return getListAmount();
     }
 
     @Override

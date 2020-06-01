@@ -4,7 +4,6 @@ import ar.edu.itba.paw.interfaces.SpeciesDao;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Species;
-import jdk.nashorn.internal.objects.annotations.Optimistic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

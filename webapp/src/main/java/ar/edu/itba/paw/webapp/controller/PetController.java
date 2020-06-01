@@ -1,34 +1,31 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.InvalidImageQuantityException;
-import ar.edu.itba.paw.models.Contact;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.interfaces.SpeciesService;
-import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
+import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
 import com.google.gson.Gson;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,12 +35,30 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Controller
 public class PetController extends ParentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
+
+    @Autowired
+    private PetService petService;
+
+    @Autowired
+    private SpeciesService speciesService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private LocationService locationService;
+
+    @Autowired
+    private RequestService requestService;
+
+    private static final int PET_PAGE_SIZE = 12;
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
@@ -53,6 +68,7 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String find,
                                 @RequestParam(name = "page", required = false) String page,
+                                @RequestParam(name = "status", required = false) String status,
                                 @RequestParam(name = "priceRange", required = false) String priceRange,
                                 @RequestParam(name = "province", required = false) String province,
                                 @RequestParam(name = "department", required = false) String department) {
@@ -60,70 +76,47 @@ public class PetController extends ParentController {
         final ModelAndView mav = new ModelAndView("index");
         final String locale = getLocale();
 
-        if (page == null) {
-            page = "1";
-        }
+        int pageNum = parsePage(page);
+        PetStatus petStatus = parseStatus(PetStatus.class, status);
+        Long speciesId = parseSpecies(species);
+        Long breedId = parseSpecies(breed);
+        gender = parseGender(gender);
+        searchCriteria = parseCriteria(searchCriteria);
+        searchOrder = parseOrder(searchOrder);
+        int[] price = parseRange(priceRange);
+        int minPriceNum = price[0];
+        int maxPriceNum = price[1];
+        Long provinceId = parseProvince(province);
+        Long departmentId = parseDepartment(department);
 
-        if(find != null && !find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$")){
+        if (!parseFind(find)) {
             mav.addObject("wrongSearch", true);
-            find = "";
-        }else{
+            find = null;
+        } else {
             mav.addObject("wrongSearch", false);
         }
 
-        String minPrice, maxPrice;
+        List<Pet> petList = petService.filteredList(locale, find, null, speciesId, breedId, gender, petStatus,
+                searchCriteria, searchOrder, minPriceNum, maxPriceNum, provinceId, departmentId, pageNum, PET_PAGE_SIZE);
+        int amount = petService.getFilteredListAmount(find, null, speciesId, breedId, gender, petStatus, minPriceNum,
+                maxPriceNum, provinceId, departmentId);
 
-        if(priceRange == null || priceRange.equals("-1")){
-            minPrice = "-1";
-            maxPrice = "-1";
-        }else if (priceRange.equals("0")){
-            minPrice = "0";
-            maxPrice = "0";
-        }else if (priceRange.equals("1")){
-            minPrice = "1";
-            maxPrice = "5000";
-        }else if (priceRange.equals("2")){
-            minPrice = "5000";
-            maxPrice = "10000";
-        }else if (priceRange.equals("3")){
-            minPrice = "10000";
-            maxPrice = "15000";
-        }else if (priceRange.equals("4")){
-            minPrice = "15000";
-            maxPrice = "20000";
-        }else if (priceRange.equals("5")){
-            minPrice = "20000";
-            maxPrice = "25000";
-        }else if (priceRange.equals("6")){
-            minPrice = "25000";
-            maxPrice = "-1";
-        }else{
-            minPrice = "-1";
-            maxPrice = "-1";
-        }
+        List<Department> departments = petList.stream().map(Pet::getDepartment).distinct().sorted(Department::compareTo).collect(Collectors.toList());
+        List<Province> provinces = petList.stream().map(Pet::getProvince).distinct().sorted(Province::compareTo).collect(Collectors.toList());
+        List<Breed> breeds = petList.stream().map(Pet::getBreed).distinct().sorted(Breed::compareTo).collect(Collectors.toList());
+        List<Species> speciesL = petList.stream().map(Pet::getSpecies).distinct().sorted(Species::compareTo).collect(Collectors.toList());
 
-        species = species == null || species.equals("-1") ? null : species;
-        breed = breed == null || breed.equals("-1") ? null : breed;
-        gender = gender == null || gender.equals("-1") ? null : gender;
-        searchCriteria = searchCriteria == null || searchCriteria.equals("-1") ? null : searchCriteria;
-        province = province == null || province.equals("-1") ? null : province;
-        department = department == null || department.equals("-1") ? null : department;
+        mav.addObject("currentPage", pageNum);
+        mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
+        mav.addObject("homePetList", petList);
+        mav.addObject("amount", amount);
 
-        PetList petList = petService.petList(locale, find, species, breed, gender, searchCriteria,
-                searchOrder, minPrice, maxPrice, province, department, page);
-        DepartmentList departmentList = locationService.departmentList();
+        mav.addObject("speciesList", speciesL);
+        mav.addObject("breedList", breeds);
+        mav.addObject("provinceList", provinces);
+        mav.addObject("departmentList", departments);
 
-        mav.addObject("currentPage", page);
-        mav.addObject("maxPage", petList.getMaxPage());
-        mav.addObject("homePetList", petList.toArray());
-
-        mav.addObject("speciesList", speciesService.speciesList(locale).toArray());
-        mav.addObject("breedList", speciesService.breedList(locale).toArray());
-
-        mav.addObject("provinceList", departmentList.getProvinceList().toArray());
-        mav.addObject("departmentList", departmentList.toArray());
         mav.addObject("find", find);
-        mav.addObject("totalPets", petList.getTotalPetsAmount());
         return mav;
     }
 
@@ -151,7 +144,7 @@ public class PetController extends ParentController {
         String locale = getLocale();
         /* Check if user has already requested pet */
         if (user != null && !user.getRequestList().isEmpty()) {
-            Optional<Request> opRequest = user.getRequestList().stream().filter(request -> request.getPetId() == id).max(Comparator.comparing(Request::getCreationDate));
+            Optional<Request> opRequest = user.getRequestList().stream().filter(request -> request.getPet().getId() == id).max(Comparator.comparing(Request::getCreationDate));
             if (!opRequest.isPresent()) {
                 LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
                 mav.addObject("lastRequest", null);
@@ -197,7 +190,7 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/pet/{id}/sell-adopt", method = {RequestMethod.POST})
     public ModelAndView petUpdateSold(@PathVariable("id") long id) {
         User user = loggedUser();
-        if (user != null && petService.sellPet(id, user.getId())) {
+        if (user != null && petService.sellPet(id, user)) {
             LOGGER.debug("Pet {} updated as sold", id);
             return new ModelAndView("redirect:/");
         }
@@ -208,8 +201,7 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
         User user = loggedUser();
-        String locale = getLocale();
-        if (user != null && petService.removePet(locale, id, user.getId())) {
+        if (user != null && petService.removePet(id, user)) {
             LOGGER.debug("Pet {} updated as removed", id);
             return new ModelAndView("redirect:/");
         }
@@ -220,7 +212,7 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/pet/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
         User user = loggedUser();
-        if (user != null && petService.recoverPet(id, user.getId())) {
+        if (user != null && petService.recoverPet(id, user)) {
             LOGGER.debug("Pet {} updated as recovered", id);
             return new ModelAndView("redirect:/pet/{id}");
         }
@@ -233,7 +225,7 @@ public class PetController extends ParentController {
     byte[] getImageWithMediaType(@PathVariable("id") long id) throws IOException {
         byte[] byteImage = imageService.getDataById(id).orElse(null);
         if(byteImage == null){
-            return byteImage;
+            return null;
 
         }
 
@@ -264,12 +256,13 @@ public class PetController extends ParentController {
 
         List<Species> speciesList = speciesService.speciesList(locale);
         List<Breed> breedList = speciesService.breedList(locale);
-        DepartmentList departmentList = locationService.departmentList();
+        List<Province> provinceList = locationService.provinceList();
+        List<Department> departmentList = locationService.departmentList();
 
-        mav.addObject("provinceList", departmentList.getProvinceList().toArray());
-        mav.addObject("departmentList", departmentList.toArray());
-        mav.addObject("speciesList", speciesList.toArray());
-        mav.addObject("breedList", breedList.toArray());
+        mav.addObject("provinceList", provinceList);
+        mav.addObject("departmentList", departmentList);
+        mav.addObject("speciesList", speciesList);
+        mav.addObject("breedList", breedList);
         return mav;
     }
 
@@ -281,7 +274,9 @@ public class PetController extends ParentController {
             return uploadPetForm(petForm);
         }
 
-        Date currentDate = new java.sql.Date(System.currentTimeMillis());
+        User user = loggedUser();
+        if (user == null) throw new UserNotFoundException();
+
         Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
 
         List<byte[]> photos = new ArrayList<>();
@@ -299,9 +294,9 @@ public class PetController extends ParentController {
             return uploadPetForm(petForm).addObject("imageError", true);
         }
 
-        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getSpeciesId(), petForm.getBreedId(),
-                           petForm.getVaccinated(), petForm.getGender(), petForm.getDescription(),
-                          birthDate, currentDate, petForm.getPrice(), loggedUser().getId(), petForm.getDepartment(), photos);
+        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
+                petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), null, user.getId(),
+                petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
@@ -313,12 +308,14 @@ public class PetController extends ParentController {
 
 
     @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })
-    public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
-        Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
+    public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id) {
 
-        if(pet.getOwnerId() == loggedUser().getId()){
+        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
 
-            DepartmentList departmentList = locationService.departmentList();
+        if(pet.getUser().equals(loggedUser())) {
+
+            List<Department> departmentList = locationService.departmentList();
+            List<Province> provinceList = locationService.provinceList();
 
             petForm.setBirthDate(pet.getBirthDate());
             petForm.setBreedId(pet.getBreed().getId());
@@ -332,8 +329,8 @@ public class PetController extends ParentController {
             petForm.setVaccinated(pet.isVaccinated());
 
             return editPetForm(petForm, id)
-                    .addObject("provinceList", departmentList.getProvinceList().toArray())
-                    .addObject("departmentList", departmentList.toArray());
+                    .addObject("provinceList", provinceList)
+                    .addObject("departmentList", departmentList);
         }
         return new ModelAndView("redirect:/403" );
 
@@ -342,18 +339,18 @@ public class PetController extends ParentController {
     private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
         String locale = getLocale();
 
+        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
         List<Species> speciesList = speciesService.speciesList(locale);
         List<Breed> breedList = speciesService.breedList(locale);
-
-        DepartmentList departmentList = locationService.departmentList();
+        List<Department> departmentList = locationService.departmentList();
+        List<Province> provinceList = locationService.provinceList();
 
         return new ModelAndView("views/pet_edit")
-                .addObject("speciesList", speciesList.toArray())
-                .addObject("breedList", breedList.toArray())
-                .addObject("provinceList", departmentList.getProvinceList().toArray())
-                .addObject("departmentList", departmentList.toArray())
-                .addObject("pet",
-                        petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new))
+                .addObject("speciesList", speciesList)
+                .addObject("breedList", breedList)
+                .addObject("provinceList", provinceList)
+                .addObject("departmentList", departmentList)
+                .addObject("pet", pet)
                 .addObject("id", id);
     }
 
@@ -361,6 +358,9 @@ public class PetController extends ParentController {
     public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
                                   final BindingResult errors, HttpServletRequest request,
                                 @PathVariable("id") long id) {
+        User user = loggedUser();
+        if (user == null) throw new UserNotFoundException();
+        String locale = getLocale();
 
         if (errors.hasErrors()) {
             return editPetForm(editPetForm, id);
@@ -385,9 +385,10 @@ public class PetController extends ParentController {
         Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
         Optional<Pet> opPet;
         try {
-             opPet = petService.update(getLocale(), loggedUser().getId(), id, photos, editPetForm.getImagesIdToDelete(),
-                    editPetForm.getPetName(), editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getVaccinated(),
-                     editPetForm.getGender(), editPetForm.getDescription(), birthDate, editPetForm.getPrice(), editPetForm.getDepartment());
+             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), birthDate,
+                     editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
+                     null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
+                     editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
         }
         catch(InvalidImageQuantityException ex) {
             LOGGER.warn(ex.getMessage());

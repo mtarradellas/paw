@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.util.Base64;
 
 @Entity(name = "Images")
 public class Image {

@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -46,12 +45,22 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> filteredList(String locale, String find, User user, String species, String breed, String gender, PetStatus status, String searchCriteria,
-                           String searchOrder, int minPrice, int maxPrice, String province, String department, int page, int pageSize) {
+    public List<Pet> filteredList(String locale, String find, Long userId, Long speciesId, Long breedId, String gender,
+                                  PetStatus status, String searchCriteria, String searchOrder, int minPrice, int maxPrice,
+                                  Long provinceId, Long departmentId, int page, int pageSize) {
         List<Pet> petList;
         if (find == null) {
-            petList = petDao.filteredList(user, species, breed, gender, status, searchCriteria, searchOrder,
-                    minPrice, maxPrice, province, department, page, pageSize);
+            System.out.println("LENIA : USERSERVICE IS NULL WTF: " + (userService == null));
+            userService.findById(userId);
+            System.out.println("WAAAAAAAAAAAAAAAAAAAAATTTT");
+            Optional<User> opUser = userService.findById(userId);
+            System.out.println("LENIA : OPTIONAL USER null:" + (opUser == null));
+            System.out.println("LENIA : OPTIONAL USER present:" + (opUser.isPresent()));
+            User user = opUser.get();
+            Breed breed = validateBreed(breedId, speciesId);
+            Department department = validateDepartment(departmentId, provinceId);
+            petList = petDao.filteredList(user, breed.getSpecies(), breed, gender, status, searchCriteria, searchOrder,
+                    minPrice, maxPrice, department.getProvince(), department, page, pageSize);
         } else {
             petList = petDao.searchList(find, minPrice, maxPrice);
         }
@@ -60,15 +69,64 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    public List<Pet> listByUser(String locale, Long userId, int page, int pageSize) {
+        if (userId != null && !userService.findById(userId).isPresent()) userId = null;
+        return filteredList(locale, null, userId, null, null, null, null,
+                null, null, 0, -1, null, null, page, pageSize);
+    }
+
+    @Override
     public int getListAmount() {
         return petDao.getListAmount();
     }
 
     @Override
-    public int getFilteredListAmount(String find, User user, String species, String breed, String gender, PetStatus status,
-                                     int minPrice, int maxPrice, String province, String department) {
-        if (find == null) return petDao.getFilteredListAmount(user, species, breed, gender, status, minPrice, maxPrice, province, department);
+    public int getFilteredListAmount(String find, Long userId, Long speciesId, Long breedId, String gender, PetStatus status,
+                                     int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        if (find == null) {
+            User user = userService.findById(userId).orElse(null);
+            Breed breed = validateBreed(breedId, speciesId);
+            Department department = validateDepartment(departmentId, provinceId);
+            return petDao.getFilteredListAmount(user, breed.getSpecies(), breed, gender, status, minPrice, maxPrice,
+                    department.getProvince(), department);
+        }
         return petDao.getSearchListAmount(find);
+    }
+
+    @Override
+    public int getListByUserAmount(Long userId) {
+        return getFilteredListAmount(null, userId, null, null, null, null,
+                0, -1, null, null);
+    }
+
+    private Breed validateBreed(Long breedId, Long speciesId) {
+        if (breedId == null || speciesId == null) return null;
+
+        Optional<Breed> opBreed = speciesService.findBreedById(breedId);
+        if (!opBreed.isPresent()) return null;
+        Breed breed = opBreed.get();
+
+        Optional<Species> opSpecies = speciesService.findSpeciesById(speciesId);
+        if (!opSpecies.isPresent()) return null;
+        Species species = opSpecies.get();
+
+        if (!breed.getSpecies().equals(species)) return null;
+        return breed;
+    }
+
+    private Department validateDepartment(Long departmentId, Long provinceId) {
+        if (departmentId == null || provinceId == null) return null;
+
+        Optional<Department> opDepartment = locationService.findDepartmentById(departmentId);
+        if (!opDepartment.isPresent()) return null;
+        Department department = opDepartment.get();
+
+        Optional<Province> opProvince = locationService.findProvinceById(provinceId);
+        if (!opProvince.isPresent()) return null;
+        Province province = opProvince.get();
+
+        if (!department.getProvince().equals(province)) return null;
+        return department;
     }
 
     @Override
@@ -166,8 +224,9 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Pet> update(String locale, long id, long userId, String petName, Date birthDate, String gender, boolean vaccinated, int price,
-                                String description, PetStatus status, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos, List<Long> imagesToDelete) {
+    public Optional<Pet> update(String locale, long id, Long userId, String petName, Date birthDate, String gender,
+                                boolean vaccinated, int price, String description, PetStatus status, long speciesId,
+                                long breedId, long provinceId, long departmentId, List<byte[]> photos, List<Long> imagesToDelete) {
         LOGGER.debug("Attempting user {} update of pet {} with: petName: {}, speciesId: {}, breedId: {}, " +
                         "vaccinated: {}, gender: {}, description: {}, birthDate: {}, price: {}, department: {},",
                 userId, id, petName, speciesId, breedId, vaccinated, gender, description, birthDate, price, departmentId);
@@ -181,8 +240,8 @@ public class PetServiceImpl implements PetService {
 
         if (status == null) status = pet.getStatus();
 
-        // If userId = 0 then dont check user credentials (user is admin)
-        if (userId != 0) {
+        // If userId = null then dont check user credentials (user is admin)
+        if (userId != null) {
             Optional<User> opUser = userService.findById(userId);
             if (!opUser.isPresent()) {
                 LOGGER.warn("User {} not found, pet update failed", userId);

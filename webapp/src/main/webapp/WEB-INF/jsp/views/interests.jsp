@@ -56,7 +56,7 @@
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-5">
                                         <spring:message code="request.isInterested"
-                                                        arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                                        arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
@@ -64,7 +64,7 @@
                                     </div>
                                     <div class="col text-center ">
                                         <div class="button-container ">
-                                            <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
+                                            <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
                                                type="button" class="btn btn-secondary"><spring:message
                                                     code="visitPet"/></a>
                                             <a href="${pageContext.request.contextPath}/user/<c:out value="${req.user.id}"/>"
@@ -88,14 +88,14 @@
                                 <div class="row bg-light p-1 resolved">
                                     <div class=" col-lg-5">
                                         <spring:message code="request.wasInterested"
-                                                        arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.id},${pageContext.request.contextPath}/pet/${req.petId},${req.petName}"/>
+                                                        arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.id},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                             ${req.status}
                                     </div>
                                     <div class="col text-center">
-                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.petId}"/>"
+                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
                                            type="button" class="btn btn-secondary"><spring:message
                                                 code="visitPet"/></a>
                                         <a href="${pageContext.request.contextPath}/user/<c:out value="${req.user.id}"/>"

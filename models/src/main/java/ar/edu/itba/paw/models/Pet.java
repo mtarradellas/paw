@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.PetStatus;
-
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
 

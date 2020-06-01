@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.webapp.validators;
 
 import ar.edu.itba.paw.interfaces.LocationService;
-import ar.edu.itba.paw.interfaces.SpeciesService;
-import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Province;
 import org.springframework.beans.factory.annotation.Autowired;
 

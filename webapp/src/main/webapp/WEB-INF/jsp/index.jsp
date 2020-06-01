@@ -31,7 +31,7 @@
                                         <b><spring:message code="searchFor" arguments="${find}"/> </b>
                                     </c:if>
 
-                                    <spring:message code="totalResults" arguments="${totalPets}"/>
+                                    <spring:message code="totalResults" arguments="${amount}"/>
                                 </h2>
                             </div>
                             <div class="col-md-1 align-self-end">
@@ -87,7 +87,7 @@
                         </c:if>
                         <div class="card-deck row ml-5">
                             <c:forEach var="pet" items="${homePetList}">
-                                <c:if test="${pet.status.id eq 1}">
+                                <c:if test="${pet.status.value eq 1}">
 
                                     <div class="col-auto mb-3">
 

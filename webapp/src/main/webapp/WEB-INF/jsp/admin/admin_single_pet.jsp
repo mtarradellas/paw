@@ -29,13 +29,13 @@
                                     <spring:message code="pet.unnamed"/>
                                 </h1>
                             </c:if>
-                            <c:if test="${pet.status.id eq 3}">
+                            <c:if test="${pet.status.value eq 3}">
                                 <h1 class="ml-1 "> (<spring:message code="status.sold"/>) </h1>
                             </c:if>
-                            <c:if test="${pet.status.id eq 2}">
+                            <c:if test="${pet.status.value eq 2}">
                                 <h1 class="ml-1"> (<spring:message code="status.deleted"/>) </h1>
                             </c:if>
-                            <c:if test="${pet.status.id eq 1}">
+                            <c:if test="${pet.status.value eq 1}">
 
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0"
@@ -60,7 +60,7 @@
                                     </svg>
                                 </a>
                             </c:if>
-                            <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
+                            <c:if test="${(pet.status.value eq 2) or (pet.status.value eq 3)}">
                                 <h1 class="mt-2 ml-4">
                                     <form method="POST" class="m-0"
                                           action="<c:url value="/admin/pet/${pet.id}/recover"/>">
@@ -113,7 +113,7 @@
 
                     </div>
                     <hr>
-                    <c:set var="ownerId" value="${pet.ownerId}"/>
+                    <c:set var="ownerId" value="${pet.user.id}"/>
                     <a href="${pageContext.request.contextPath}/admin/user/${ownerId}"
                        class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
 

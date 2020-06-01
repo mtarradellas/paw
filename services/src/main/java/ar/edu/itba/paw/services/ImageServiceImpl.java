@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -38,9 +40,10 @@ public class ImageServiceImpl implements ImageService {
     }
 
 
+    @Transactional
     @Override
     public Optional<Image> create(long petId, byte[] bytes, long userId) {
-        Optional<Pet> opPet = petService.findById("LENIA", petId);
+        Optional<Pet> opPet = petService.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found, image not created", petId);
             return Optional.empty();
@@ -53,11 +56,13 @@ public class ImageServiceImpl implements ImageService {
         return imageDao.create(petId, bytes);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         this.imageDao.delete(id);
     }
 
+    @Transactional
     @Override
     public void delete(List<Long> ids) {
         for (Long id: ids) {

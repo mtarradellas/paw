@@ -68,10 +68,10 @@
                         <div class="card-deck row">
 
                             <c:forEach var="pet" items="${userPets}">
-                            <c:if test="${pet.status.id eq 1}">
+                            <c:if test="${pet.status.value eq 1}">
                             <div class="col-auto mb-3">
                                 </c:if>
-                                <c:if test="${pet.status.id ne 1 }">
+                                <c:if test="${pet.status.value ne 1 }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
                                     <t:animalCard pet="${pet}" level="admin"/>
