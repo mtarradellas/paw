@@ -88,7 +88,7 @@
                                 <div class="row bg-light p-1 resolved">
                                     <div class=" col-lg-5">
                                         <spring:message code="request.wasInterested"
-                                                        arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.id},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
+                                                        arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
