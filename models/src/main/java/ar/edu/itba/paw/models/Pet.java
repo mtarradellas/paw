@@ -2,7 +2,7 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.PetStatus;
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 @Entity

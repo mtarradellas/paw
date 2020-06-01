@@ -3,7 +3,8 @@ package ar.edu.itba.paw.models;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity(name ="Departments")
+@Entity
+@Table(name = "Departments")
 public class Department implements Comparable<Department>{
 
     @Id

@@ -2,7 +2,8 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 
-@Entity(name = "Images")
+@Entity
+@Table(name = "Images")
 public class Image {
 
     @Id
@@ -34,11 +35,11 @@ public class Image {
         this.petId = petId;
     }
 
-    public Long getImageId() {
+    public Long getId() {
         return id;
     }
 
-    public void setImageId(Long imageId) {
+    public void setId(Long imageId) {
         this.id = imageId;
     }
 

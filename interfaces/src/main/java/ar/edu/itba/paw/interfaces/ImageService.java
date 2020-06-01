@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ImageService {
-    List<Image> findByPetId(long id);
-    Integer quantityByPetId(long id);
-    Optional<byte[]> getDataById(long id);
-    Optional<Image> create(long petId, byte[] bytes, long userId);
+    List<Image> findByPetId(Long id);
+    Integer quantityByPetId(Long id);
+    Optional<byte[]> getDataById(Long id);
+    Optional<Image> create(Long petId, byte[] bytes, Long userId);
     void delete(Long id);
     void delete(List<Long> ids);
 }

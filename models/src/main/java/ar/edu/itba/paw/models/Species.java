@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "Species")
 public class Species implements Comparable<Species>{
 
     @Id

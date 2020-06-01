@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -24,18 +24,18 @@ public class PetServiceImpl implements PetService {
     private static final int MAX_IMAGES = 5;
 
     @Autowired
-    private PetDao petDao;
+    PetDao petDao;
 
     @Autowired
-    private UserService userService;
+    UserService userService;
     @Autowired
-    private SpeciesService speciesService;
+    SpeciesService speciesService;
     @Autowired
-    private ImageService imageService;
+    ImageService imageService;
     @Autowired
-    private LocationService locationService;
+    LocationService locationService;
     @Autowired
-    private RequestService requestService;
+    RequestService requestService;
 
     @Override
     public List<Pet> list(String locale, int page, int pageSize) {
@@ -50,17 +50,19 @@ public class PetServiceImpl implements PetService {
                                   Long provinceId, Long departmentId, int page, int pageSize) {
         List<Pet> petList;
         if (find == null) {
-            System.out.println("LENIA : USERSERVICE IS NULL WTF: " + (userService == null));
-            userService.findById(userId);
-            System.out.println("WAAAAAAAAAAAAAAAAAAAAATTTT");
-            Optional<User> opUser = userService.findById(userId);
-            System.out.println("LENIA : OPTIONAL USER null:" + (opUser == null));
-            System.out.println("LENIA : OPTIONAL USER present:" + (opUser.isPresent()));
-            User user = opUser.get();
-            Breed breed = validateBreed(breedId, speciesId);
-            Department department = validateDepartment(departmentId, provinceId);
-            petList = petDao.filteredList(user, breed.getSpecies(), breed, gender, status, searchCriteria, searchOrder,
-                    minPrice, maxPrice, department.getProvince(), department, page, pageSize);
+            User user = null;
+            Breed breed = null;
+            Species species = null;
+            Department department = null;
+            Province province = null;
+
+            if (userId != null) user = userService.findById(userId).orElse(null);
+            breed = validateBreed(breedId, speciesId);
+            if (breed != null) species = breed.getSpecies();
+            department = validateDepartment(departmentId, provinceId);
+            if (department != null) province = department.getProvince();
+            petList = petDao.filteredList(user, species, breed, gender, status, searchCriteria, searchOrder,
+                    minPrice, maxPrice, province, department, page, pageSize);
         } else {
             petList = petDao.searchList(find, minPrice, maxPrice);
         }
@@ -84,11 +86,20 @@ public class PetServiceImpl implements PetService {
     public int getFilteredListAmount(String find, Long userId, Long speciesId, Long breedId, String gender, PetStatus status,
                                      int minPrice, int maxPrice, Long provinceId, Long departmentId) {
         if (find == null) {
-            User user = userService.findById(userId).orElse(null);
-            Breed breed = validateBreed(breedId, speciesId);
-            Department department = validateDepartment(departmentId, provinceId);
-            return petDao.getFilteredListAmount(user, breed.getSpecies(), breed, gender, status, minPrice, maxPrice,
-                    department.getProvince(), department);
+            User user = null;
+            Breed breed = null;
+            Species species = null;
+            Department department = null;
+            Province province = null;
+
+            if (userId != null) user = userService.findById(userId).orElse(null);
+            breed = validateBreed(breedId, speciesId);
+            if (breed != null) species = breed.getSpecies();
+            department = validateDepartment(departmentId, provinceId);
+            if (department != null) province = department.getProvince();
+
+            return petDao.getFilteredListAmount(user, species, breed, gender, status, minPrice, maxPrice,
+                    province, department);
         }
         return petDao.getSearchListAmount(find);
     }
@@ -146,7 +157,7 @@ public class PetServiceImpl implements PetService {
     public Optional<Pet> create(String locale, String petName, Date birthDate, String gender, boolean vaccinated, int price,
                       String description, PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos) {
 
-        LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, province: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, price: {}, owner: {}",
+        LOGGER.debug("LENIA Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, province: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, price: {}, owner: {}",
                petName, speciesId, breedId, departmentId, provinceId, vaccinated, gender, description, birthDate, price, userId);
 
 

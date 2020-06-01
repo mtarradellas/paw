@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
+@Table(name = "Tokens")
 public class Token {
 
     @Id
@@ -19,6 +20,7 @@ public class Token {
     private Date expirationDate;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
     private User user;
 
     protected Token() {

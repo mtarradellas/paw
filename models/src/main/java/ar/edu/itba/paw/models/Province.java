@@ -5,7 +5,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-@Entity(name = "Provinces")
+@Entity
+@Table(name = "Provinces")
 public class Province implements Comparable<Province>, Serializable {
 
     @Id

@@ -19,13 +19,13 @@ public class LocationJpaDaoImpl implements LocationDao {
 
     @Override
     public List<Department> departmentList() {
-        final TypedQuery<Department> query = em.createQuery("from Departments ", Department.class);
+        final TypedQuery<Department> query = em.createQuery("from Department ", Department.class);
         return query.getResultList();
     }
 
     @Override
     public List<Province> provinceList() {
-        final TypedQuery<Province> query = em.createQuery("from Provinces ", Province.class);
+        final TypedQuery<Province> query = em.createQuery("from Province ", Province.class);
         return query.getResultList();
     }
 

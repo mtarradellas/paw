@@ -16,12 +16,16 @@ public class LocationService implements ar.edu.itba.paw.interfaces.LocationServi
 
     @Override
     public List<Province> provinceList() {
-        return locationDao.provinceList();
+        List<Province> provinceList = locationDao.provinceList();
+        provinceList.sort(Province::compareTo);
+        return provinceList;
     }
 
     @Override
     public List<Department> departmentList() {
-        return locationDao.departmentList();
+        List<Department> departmentList = locationDao.departmentList();
+        departmentList.sort(Department::compareTo);
+        return departmentList;
     }
 
     @Override

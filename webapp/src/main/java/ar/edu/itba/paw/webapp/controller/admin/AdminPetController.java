@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -147,7 +147,7 @@ public class AdminPetController extends ParentController {
             return uploadPetForm(petForm);
         }
 
-        Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
+        Date birthDate = new Date(petForm.getBirthDate().getTime());
 
         List<byte[]> photos = new ArrayList<>();
         try {
@@ -165,7 +165,7 @@ public class AdminPetController extends ParentController {
         }
 
         Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
-                petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), null, petForm.getOwner(),
+                petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, petForm.getOwner(),
                 petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
 
         if (!opPet.isPresent()) {
@@ -260,10 +260,9 @@ public class AdminPetController extends ParentController {
             return editPetForm(editPetForm, id).addObject("imageError", true);
         }
 
-        Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
         Optional<Pet> opPet;
         try {
-            opPet = petService.update(getLocale(), id, null, editPetForm.getPetName(), birthDate, editPetForm.getGender(),
+            opPet = petService.update(getLocale(), id, null, editPetForm.getPetName(), editPetForm.getBirthDate(), editPetForm.getGender(),
                     editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(), null, editPetForm.getSpeciesId(),
                     editPetForm.getBreedId(), editPetForm.getProvince(), editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
         }

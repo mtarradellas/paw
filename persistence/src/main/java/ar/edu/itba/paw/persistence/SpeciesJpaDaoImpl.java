@@ -41,7 +41,7 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
-        final TypedQuery<Breed> query = em.createQuery("from Breeds where id IN :filteredIds", Breed.class);
+        final TypedQuery<Breed> query = em.createQuery("from Breed where id IN :filteredIds", Breed.class);
         query.setParameter("filteredIds", filteredIds);
         return query.getResultList();
     }

@@ -2,7 +2,8 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 
-@Entity(name = "ImagesDTO")
+@Entity
+@Table(name = "Images")
 public class ImageDTO {
 
     @Id

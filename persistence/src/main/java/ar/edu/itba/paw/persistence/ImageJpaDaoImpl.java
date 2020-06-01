@@ -18,7 +18,7 @@ public class ImageJpaDaoImpl implements ImageDao {
 
     @Override
     public List<Image> findByPetId(Long id) {
-        final String qStr = "from Images as i where i.petId = :petId";
+        final String qStr = "from Image as i where i.petId = :petId";
         final TypedQuery<Image> query = em.createQuery(qStr, Image.class);
         query.setParameter("petId", id);
         return query.getResultList();
@@ -26,7 +26,7 @@ public class ImageJpaDaoImpl implements ImageDao {
 
     @Override
     public Integer quantityByPetId(Long id) {
-        final String qStr = "select count(*) from Images as i where i.petId = :petId";
+        final String qStr = "select count(*) from Image as i where i.petId = :petId";
         final TypedQuery<Long> query = em.createQuery(qStr, Long.class);
         query.setParameter("petId", id);
         return query.getSingleResult().intValue();
@@ -34,7 +34,7 @@ public class ImageJpaDaoImpl implements ImageDao {
 
     @Override
     public Optional<byte[]> getDataById(Long id) {
-        final String qStr = "from Images as i where i.id = :id";
+        final String qStr = "from Image as i where i.id = :id";
         final TypedQuery<Image> query = em.createQuery(qStr, Image.class);
         query.setParameter("id", id);
         return Optional.ofNullable(query.getSingleResult().getImageData());
@@ -51,7 +51,7 @@ public class ImageJpaDaoImpl implements ImageDao {
 
     @Override
     public void delete(Long id) {
-        Query query = em.createQuery("delete Images where id = :id");
+        Query query = em.createQuery("delete Image where id = :id");
         query.setParameter("id", id);
         query.executeUpdate();
     }
@@ -59,7 +59,7 @@ public class ImageJpaDaoImpl implements ImageDao {
     @Override
     public void delete(List<Long> ids) {
         for (Long id: ids ) {
-            Query query = em.createQuery("delete Images where id = :id");
+            Query query = em.createQuery("delete Image where id = :id");
             query.setParameter("id", id);
             query.executeUpdate();
         }

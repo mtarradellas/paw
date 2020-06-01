@@ -2,7 +2,8 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 
-@Entity(name = "Breeds")
+@Entity
+@Table(name = "Breeds")
 public class Breed implements Comparable<Breed>{
 
     @Id

@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,17 +22,17 @@ public class PetJpaDaoImpl implements PetDao {
 
     @Override
     public List<Pet> list(int page, int pageSize) {
-        String qStr = "SELECT id FROM pets";
+        String qStr = "SELECT id FROM pets where status = 0";
         Query nativeQuery = em.createNativeQuery(qStr);
         nativeQuery.setFirstResult((page - 1) * pageSize);
         nativeQuery.setMaxResults(pageSize);
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
-
         final TypedQuery<Pet> query = em.createQuery("from Pet where id in :filteredIds", Pet.class);
         query.setParameter("filteredIds", filteredIds);
-        return query.getResultList();
+        List<Pet> petList = query.getResultList();
+        return petList;
     }
 
     @Override
@@ -49,8 +49,9 @@ public class PetJpaDaoImpl implements PetDao {
 
     @Override
     public int getListAmount() {
-        Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM pets");
-        return nativeQuery.getFirstResult();
+        Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM pets where status = 0");
+        Number count = (Number) nativeQuery.getSingleResult();
+        return count.intValue();
     }
 
     @Override

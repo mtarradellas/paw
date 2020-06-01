@@ -4,10 +4,6 @@ import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
 import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
 import ar.edu.itba.paw.webapp.validators.FieldsValueDifferent;
 import ar.edu.itba.paw.webapp.validators.FieldsValueMatch;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 

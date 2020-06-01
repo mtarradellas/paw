@@ -25,31 +25,31 @@ public class ImageServiceImpl implements ImageService {
     private PetService petService;
 
     @Override
-    public List<Image> findByPetId(long id) {
+    public List<Image> findByPetId(Long id) {
         return this.imageDao.findByPetId(id);
     }
 
     @Override
-    public Integer quantityByPetId(long id) {
+    public Integer quantityByPetId(Long id) {
         return this.imageDao.quantityByPetId(id);
     }
 
     @Override
-    public Optional<byte[]> getDataById(long id) {
+    public Optional<byte[]> getDataById(Long id) {
         return this.imageDao.getDataById(id);
     }
 
 
     @Transactional
     @Override
-    public Optional<Image> create(long petId, byte[] bytes, long userId) {
+    public Optional<Image> create(Long petId, byte[] bytes, Long userId) {
         Optional<Pet> opPet = petService.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found, image not created", petId);
             return Optional.empty();
         }
         Pet pet = opPet.get();
-        if (userId != 0 && pet.getUser().getId() == userId) {
+        if (userId != null && pet.getUser().getId() != userId) {
             LOGGER.warn("User {} is not pet {} owner, image not created", userId, petId);
             return Optional.empty();
         }

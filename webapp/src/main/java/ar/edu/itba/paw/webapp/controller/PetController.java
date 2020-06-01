@@ -30,12 +30,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -44,7 +43,7 @@ public class PetController extends ParentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
     @Autowired
-    private PetService petService;
+    PetService petService;
 
     @Autowired
     private SpeciesService speciesService;
@@ -96,19 +95,19 @@ public class PetController extends ParentController {
             mav.addObject("wrongSearch", false);
         }
 
-        List<Pet> petList = petService.filteredList(locale, find, null, speciesId, breedId, gender, petStatus,
+        List<Pet> petList = petService.filteredList(locale, find, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
                 searchCriteria, searchOrder, minPriceNum, maxPriceNum, provinceId, departmentId, pageNum, PET_PAGE_SIZE);
-        int amount = petService.getFilteredListAmount(find, null, speciesId, breedId, gender, petStatus, minPriceNum,
+        int amount = petService.getFilteredListAmount(find, null, speciesId, breedId, gender, PetStatus.AVAILABLE, minPriceNum,
                 maxPriceNum, provinceId, departmentId);
 
-        List<Department> departments = petList.stream().map(Pet::getDepartment).distinct().sorted(Department::compareTo).collect(Collectors.toList());
-        List<Province> provinces = petList.stream().map(Pet::getProvince).distinct().sorted(Province::compareTo).collect(Collectors.toList());
-        List<Breed> breeds = petList.stream().map(Pet::getBreed).distinct().sorted(Breed::compareTo).collect(Collectors.toList());
-        List<Species> speciesL = petList.stream().map(Pet::getSpecies).distinct().sorted(Species::compareTo).collect(Collectors.toList());
+        Object[] departments = petList.stream().map(Pet::getDepartment).distinct().sorted(Department::compareTo).toArray();
+        Object[] provinces = petList.stream().map(Pet::getProvince).distinct().sorted(Province::compareTo).toArray();
+        Object[] breeds = petList.stream().map(Pet::getBreed).distinct().sorted(Breed::compareTo).toArray();
+        Object[] speciesL = petList.stream().map(Pet::getSpecies).distinct().sorted(Species::compareTo).toArray();
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
-        mav.addObject("homePetList", petList);
+        mav.addObject("homePetList", petList.toArray());
         mav.addObject("amount", amount);
 
         mav.addObject("speciesList", speciesL);
@@ -269,15 +268,12 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
     public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,
                                   final BindingResult errors, HttpServletRequest request) {
-
         if (errors.hasErrors()) {
             return uploadPetForm(petForm);
         }
 
         User user = loggedUser();
         if (user == null) throw new UserNotFoundException();
-
-        Date birthDate = new java.sql.Date(petForm.getBirthDate().getTime());
 
         List<byte[]> photos = new ArrayList<>();
         try {
@@ -294,8 +290,8 @@ public class PetController extends ParentController {
             return uploadPetForm(petForm).addObject("imageError", true);
         }
 
-        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
-                petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), null, user.getId(),
+        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getBirthDate(), petForm.getGender(),
+                petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, user.getId(),
                 petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
 
         if (!opPet.isPresent()) {
@@ -382,10 +378,9 @@ public class PetController extends ParentController {
             return editPetForm(editPetForm, id).addObject("imageError", true);
         }
 
-        Date birthDate = new java.sql.Date(editPetForm.getBirthDate().getTime());
         Optional<Pet> opPet;
         try {
-             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), birthDate,
+             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), editPetForm.getBirthDate(),
                      editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
                      null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
                      editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
