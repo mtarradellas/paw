@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.LocationService;
+import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,8 @@ public class HomeController extends ParentController {
 
     @Autowired
     private SpeciesService speciesService;
+    @Autowired
+    private RequestService requestService;
 
     @Autowired
     private LocationService locationService;
@@ -33,7 +36,7 @@ public class HomeController extends ParentController {
     public ModelAndView test() {
         final String locale = getLocale();
         return new ModelAndView("views/test")
-                .addObject("provinceList", locationService.provinceList().toArray());
+                .addObject("requests", requestService.filteredList(null,null,"nico",null,null, null, 0, 0).toArray());
 
     }
 }

@@ -1,12 +1,18 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.PetStatus;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "Pets")
+@Indexed
 public class Pet {
 
     @Id
@@ -15,6 +21,7 @@ public class Pet {
     private Long id;
 
     @Column(nullable = false)
+    @Field
     private String petName;
 
     @Column
@@ -38,8 +45,10 @@ public class Pet {
     @Enumerated(EnumType.ORDINAL)
     private PetStatus status;
 
+    @ContainedIn
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ownerId")
+    @IndexedEmbedded(depth = 2)
     private User user;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)

@@ -27,12 +27,12 @@ public class Request {
     @Enumerated(EnumType.ORDINAL)
     private RequestStatus status;
 
-    @IndexedEmbedded(depth = 1)
+    @IndexedEmbedded(depth = 3)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ownerid")
     private User user;
 
-    @IndexedEmbedded(depth = 1)
+    @IndexedEmbedded(depth = 3)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "petId")
     private Pet pet;
