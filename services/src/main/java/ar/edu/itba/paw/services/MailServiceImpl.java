@@ -51,6 +51,7 @@ public class MailServiceImpl implements MailService {
             helper.setText(text,true);
         };
 
+        /* TODO try catch for exception handling */
         mailSender.send(preparator);
     }
 

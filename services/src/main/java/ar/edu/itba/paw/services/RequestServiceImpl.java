@@ -9,11 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.naming.Context;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -164,7 +160,7 @@ public class RequestServiceImpl implements RequestService {
         }
         Request request = opRequest.get();
 
-        if (!requestDao.isRequestTarget(request, user)) {
+        if (!request.getPet().getUser().equals(user)) {
             LOGGER.warn("User {} is not Request {} target, Request not accepted", user.getId(), request.getId());
             return false;
         }
@@ -208,7 +204,7 @@ public class RequestServiceImpl implements RequestService {
         }
         Request request = opRequest.get();
 
-        if (!requestDao.isRequestTarget(request, user)) {
+        if (!request.getPet().getUser().equals(user)) {
             LOGGER.warn("User {} is not Request {} target, Request not rejected", user.getId(), request.getId());
             return false;
         }
@@ -263,8 +259,8 @@ public class RequestServiceImpl implements RequestService {
 
 
 
-        //final Contact contact = opContact.get();
-        final User recipient = request.getUser();
+//        final Contact contact = opContact.get();
+//        final User recipient = request.getUser();
 
         LOGGER.debug("Request {} recovered by user {}", request.getId(), user.getId());
         return true;
