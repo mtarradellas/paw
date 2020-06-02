@@ -59,9 +59,17 @@ public class PetServiceImpl implements PetService {
             if (userId != null) user = userService.findById(userId).orElse(null);
             breed = validateBreed(breedId, speciesId);
             if (breed != null) species = breed.getSpecies();
+            else species = validateSpecies(speciesId);
+
             department = validateDepartment(departmentId, provinceId);
             if (department != null) province = department.getProvince();
-            petList = petDao.filteredList(user, species, breed, gender, status, searchCriteria, searchOrder,
+            else province = validateProvince(provinceId);
+
+            LOGGER.debug("Parameters for filteredList <Pet>: user {}, status {}, species {}, breed {}, gender {},  " +
+                            "min price {}, max price {}, province {}, department {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}", user, status, species, breed,
+                    gender, minPrice, maxPrice, province, department, searchCriteria, searchOrder, page, pageSize);
+
+            petList = petDao.filteredList(locale, user, species, breed, gender, status, searchCriteria, searchOrder,
                     minPrice, maxPrice, province, department, page, pageSize);
         } else {
             petList = petDao.searchList(find, minPrice, maxPrice);
@@ -85,6 +93,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public int getFilteredListAmount(String find, Long userId, Long speciesId, Long breedId, String gender, PetStatus status,
                                      int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        List<Pet> petList;
         if (find == null) {
             User user = null;
             Breed breed = null;
@@ -95,8 +104,11 @@ public class PetServiceImpl implements PetService {
             if (userId != null) user = userService.findById(userId).orElse(null);
             breed = validateBreed(breedId, speciesId);
             if (breed != null) species = breed.getSpecies();
+            else species = validateSpecies(speciesId);
+
             department = validateDepartment(departmentId, provinceId);
             if (department != null) province = department.getProvince();
+            else province = validateProvince(provinceId);
 
             return petDao.getFilteredListAmount(user, species, breed, gender, status, minPrice, maxPrice,
                     province, department);
@@ -112,17 +124,20 @@ public class PetServiceImpl implements PetService {
 
     private Breed validateBreed(Long breedId, Long speciesId) {
         if (breedId == null || speciesId == null) return null;
-
         Optional<Breed> opBreed = speciesService.findBreedById(breedId);
         if (!opBreed.isPresent()) return null;
         Breed breed = opBreed.get();
-
         Optional<Species> opSpecies = speciesService.findSpeciesById(speciesId);
         if (!opSpecies.isPresent()) return null;
         Species species = opSpecies.get();
-
-        if (!breed.getSpecies().equals(species)) return null;
+        if (!breed.getSpecies().getId().equals(species.getId())) return null;
         return breed;
+    }
+
+    private Species validateSpecies(Long speciesId) {
+        if (speciesId == null) return null;
+        Optional<Species> opSpecies = speciesService.findSpeciesById(speciesId);
+        return opSpecies.orElse(null);
     }
 
     private Department validateDepartment(Long departmentId, Long provinceId) {
@@ -136,8 +151,14 @@ public class PetServiceImpl implements PetService {
         if (!opProvince.isPresent()) return null;
         Province province = opProvince.get();
 
-        if (!department.getProvince().equals(province)) return null;
+        if (!department.getProvince().getId().equals(province.getId())) return null;
         return department;
+    }
+
+    private Province validateProvince(Long provinceId) {
+        if (provinceId == null) return null;
+        Optional<Province> opProvince = locationService.findProvinceById(provinceId);
+        return opProvince.orElse(null);
     }
 
     @Override
@@ -157,7 +178,7 @@ public class PetServiceImpl implements PetService {
     public Optional<Pet> create(String locale, String petName, Date birthDate, String gender, boolean vaccinated, int price,
                       String description, PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos) {
 
-        LOGGER.debug("LENIA Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, province: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, price: {}, owner: {}",
+        LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, province: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, price: {}, owner: {}",
                petName, speciesId, breedId, departmentId, provinceId, vaccinated, gender, description, birthDate, price, userId);
 
 
@@ -304,7 +325,7 @@ public class PetServiceImpl implements PetService {
         }
         Breed breed = opBreed.get();
 
-        if (!breed.getSpecies().equals(species)) {
+        if (!breed.getSpecies().getId().equals(species.getId())) {
             LOGGER.warn("Breed {} does not belong to Species {}, pet update failed", breedId, speciesId);
             return Optional.empty();
         }
