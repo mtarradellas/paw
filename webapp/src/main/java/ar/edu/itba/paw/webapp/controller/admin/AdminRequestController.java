@@ -11,6 +11,7 @@ import ar.edu.itba.paw.webapp.form.AdminUploadRequestForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -90,7 +91,13 @@ public class AdminRequestController extends ParentController {
             return uploadRequestForm(requestForm);
         }
 
-        Optional<Request> optionalRequest = requestService.create(locale, requestForm.getUserId(), requestForm.getPetId());
+        Optional<Request> optionalRequest;
+        try {
+            optionalRequest = requestService.create(locale, requestForm.getUserId(), requestForm.getPetId());
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return uploadRequestForm(requestForm).addObject("requestError", true);
+        }
 
         if (!optionalRequest.isPresent()) {
             return uploadRequestForm(requestForm).addObject("requestError", true);
@@ -130,18 +137,16 @@ public class AdminRequestController extends ParentController {
     public ModelAndView uploadRequest(@PathVariable("id") long id,
                                       @RequestParam(name = "newStatus", required = false) String status) {
 
-        RequestStatus requestStatus = null;
-        if(status != null) {
-            try {
-                int idx = Integer.parseInt(status);
-                requestStatus = RequestStatus.values()[idx];
-                if (requestStatus == null) throw new BadRequestException("Invalid status parameter");
-            } catch (NumberFormatException ex) {
-                throw new BadRequestException("Invalid status parameter");
-            }
-        }
+        /* TODO better error handling */
+        RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
+        if (requestStatus == null) new ModelAndView("redirect:/admin/requests").addObject("invalidStatus", true);
 
-        requestService.adminUpdateStatus(id, requestStatus);
+        try {
+            requestService.adminUpdateStatus(id, requestStatus);
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return new ModelAndView("redirect:/admin/requests").addObject("updateError", true);
+        }
 
         return new ModelAndView("redirect:/admin/requests");
     }

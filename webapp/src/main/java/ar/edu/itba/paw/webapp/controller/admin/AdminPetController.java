@@ -15,6 +15,7 @@ import ar.edu.itba.paw.webapp.form.EditPetForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -164,9 +165,16 @@ public class AdminPetController extends ParentController {
             return uploadPetForm(petForm).addObject("imageError", true);
         }
 
-        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
-                petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, petForm.getOwner(),
-                petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
+        Optional<Pet> opPet;
+        try {
+            opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
+                    petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, petForm.getOwner(),
+                    petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
+
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return uploadPetForm(petForm).addObject("petError", true);
+        }
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
@@ -265,16 +273,19 @@ public class AdminPetController extends ParentController {
             opPet = petService.update(getLocale(), id, null, editPetForm.getPetName(), editPetForm.getBirthDate(), editPetForm.getGender(),
                     editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(), null, editPetForm.getSpeciesId(),
                     editPetForm.getBreedId(), editPetForm.getProvince(), editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
-        }
 
-        catch(InvalidImageQuantityException ex) {
+        } catch(InvalidImageQuantityException ex) {
             LOGGER.warn(ex.getMessage());
-
             return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
+
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return editPetForm(editPetForm, id).addObject("petError", true);
         }
+
         if(!opPet.isPresent()){
             LOGGER.warn("Pet could not be updated");
-            return new ModelAndView("redirect:/admin/pets");
+            return editPetForm(editPetForm, id).addObject("petError", true);
         }
         return new ModelAndView("redirect:/admin/pet/" + opPet.get().getId());
     }
