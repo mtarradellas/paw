@@ -29,37 +29,33 @@ public class UserJpaDaoImpl implements UserDao {
 
         final TypedQuery<User> query = em.createQuery("from User where id IN :filteredIds", User.class);
         query.setParameter("filteredIds", filteredIds);
-        List<User> userList = query.getResultList();
-        System.out.println("lenia");
-        filteredIds.forEach(System.out::println);
-        userList.forEach(System.out::println);
-        return userList;
+        return query.getResultList();
     }
 
     @Override
     public List<User> searchList(String find, int page, int pageSize) {
-        return new ArrayList<>();
+        return list(page, pageSize);
     }
 
     @Override
     public List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        return new ArrayList<>();
+        return list(page, pageSize);
     }
 
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM users");
-        return nativeQuery.getFirstResult();
+        return (int) nativeQuery.getSingleResult();
     }
 
     @Override
     public int getSearchAmount(String find) {
-        return 0;
+        return getListAmount();
     }
 
     @Override
     public int getFilteredAmount(UserStatus status) {
-        return 0;
+        return getListAmount();
     }
 
     @Override
