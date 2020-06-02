@@ -59,7 +59,7 @@ public class RequestJpaDaoImpl implements RequestDao {
 
         org.apache.lucene.search.Query query = queryBuilder
                 .keyword()
-                .onField("pet.user.username")
+                .onFields("pet.user.username","pet.petName","user.username")
                 .matching(find)
                 .createQuery();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
