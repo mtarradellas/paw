@@ -1,6 +1,5 @@
 //package ar.edu.itba.paw.persistence;
 //
-//import ar.edu.itba.paw.models.Status;
 //import ar.edu.itba.paw.models.User;
 //import ar.edu.itba.paw.models.constants.UserStatus;
 //import org.junit.Before;
@@ -13,14 +12,12 @@
 //import org.springframework.test.context.ContextConfiguration;
 //import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 //import org.springframework.test.jdbc.JdbcTestUtils;
-//
 //import javax.sql.DataSource;
 //import java.util.HashMap;
 //import java.util.List;
 //import java.util.Map;
 //import java.util.Optional;
 //import java.util.stream.Collectors;
-//import java.util.stream.Stream;
 //
 //import static org.junit.Assert.*;
 //
@@ -31,41 +28,16 @@
 //    @Autowired
 //    private DataSource dataSource;
 //
-//    private static final String USER_TABLE = "users";
-//    private static final String USER_STATUS_TABLE = "user_status";
-//
-//    private static final long ID = 1;
+//    private static final Long ID = 1L;
 //    private static final String USERNAME = "user_test_name";
 //    private static final String PASSWORD = "user_test_password";
 //    private static final String MAIL = "user_test_@mail";
 //    private static final String LOCALE = "en_US";
-//    private static final int USER_STATUS_ACTIVE = 1;
-//
-//    private static final RowMapper<User> USER_MAPPER = (rs, rowNum) -> new User(
-//            rs.getLong("id"),
-//            rs.getString("username"),
-//            rs.getString("password"),
-//            rs.getString("mail"),
-//            UserStatus.ACTIVE
-//    );
-//
-//    private UserJpaDaoImpl userDaoImpl;
-//    private JdbcTemplate jdbcTemplate;
-//    private SimpleJdbcInsert jdbcInsert;
-//    private SimpleJdbcInsert jdbcInsertUserStatus;
+//    private static final UserStatus ACTIVE = UserStatus.ACTIVE;
 //
 //    @Before
 //    public void setUp() {
 //
-//        userDaoImpl = new UserJpaDaoImpl(dataSource);
-//        jdbcTemplate = new JdbcTemplate(dataSource);
-//        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-//                .withTableName(USER_TABLE);
-//        jdbcInsertUserStatus = new SimpleJdbcInsert(jdbcTemplate)
-//                .withTableName(USER_STATUS_TABLE);
-//
-//        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
-//        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_STATUS_TABLE);
 //        final Map<String, Object> active = new HashMap<String, Object>() {{
 //            put("id", 1);
 //            put("en_US", "Active");

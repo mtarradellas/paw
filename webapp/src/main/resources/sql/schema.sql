@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS species (
-id SERIAL PRIMARY KEY,
+id BIGSERIAL PRIMARY KEY,
 es_AR VARCHAR(255),
 en_US VARCHAR(255)
 );
 CREATE TABLE IF NOT EXISTS breeds (
-id SERIAL PRIMARY KEY,
+id BIGSERIAL PRIMARY KEY,
 speciesId INTEGER REFERENCES species(id),
 es_AR VARCHAR(255),
 en_US VARCHAR(255)
 );
 CREATE TABLE IF NOT EXISTS users (
-id SERIAL PRIMARY KEY,
+id BIGSERIAL PRIMARY KEY,
 username VARCHAR(255) NOT NULL UNIQUE,
 password VARCHAR(255) NOT NULL,
 mail VARCHAR(255) NOT NULL UNIQUE,
@@ -30,11 +30,12 @@ longitude FLOAT(8),
 province VARCHAR(256) REFERENCES provinces(name)
 );
 CREATE TABLE IF NOT EXISTS pets (
-id SERIAL PRIMARY KEY,
+id BIGSERIAL PRIMARY KEY,
 petName VARCHAR(255),
 species INTEGER REFERENCES species(id),
 breed INTEGER REFERENCES breeds(id),
 department INTEGER REFERENCES departments(id),
+province INTEGER REFERENCES province(id),
 vaccinated BOOLEAN NOT NULL,
 gender VARCHAR(255) NOT NULL,
 description TEXT,
@@ -45,12 +46,12 @@ ownerId INTEGER REFERENCES users(id),
 status INTEGER
 );
 CREATE TABLE IF NOT EXISTS images (
-id SERIAL PRIMARY KEY,
+id BIGSERIAL PRIMARY KEY,
 img BYTEA,
 petId INTEGER REFERENCES pets(id)
 );
 CREATE TABLE IF NOT EXISTS requests (
-id SERIAL primary key,
+id BIGSERIAL primary key,
 ownerId INTEGER references users(id),
 petId INTEGER references pets(id),
 status INTEGER,
