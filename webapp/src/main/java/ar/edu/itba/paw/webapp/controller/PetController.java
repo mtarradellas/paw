@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -30,7 +31,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -67,7 +67,7 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String find,
                                 @RequestParam(name = "page", required = false) String page,
-                                @RequestParam(name = "status", required = false) String status,
+//                                @RequestParam(name = "status", required = false) String status,
                                 @RequestParam(name = "priceRange", required = false) String priceRange,
                                 @RequestParam(name = "province", required = false) String province,
                                 @RequestParam(name = "department", required = false) String department) {
@@ -76,7 +76,7 @@ public class PetController extends ParentController {
         final String locale = getLocale();
 
         int pageNum = parsePage(page);
-        PetStatus petStatus = parseStatus(PetStatus.class, status);
+//        PetStatus petStatus = parseStatus(PetStatus.class, status)
         Long speciesId = parseSpecies(species);
         Long breedId = parseSpecies(breed);
         gender = parseGender(gender);
@@ -176,9 +176,14 @@ public class PetController extends ParentController {
             return new ModelAndView("redirect:/403");
         }
 
-        /* TODO Generate exceptions for error handling */
+        Optional<Request> opRequest;
+        try {
+             opRequest = requestService.create(locale, user.getId(), id);
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return mav.addObject("requestError", true);
+        }
 
-        Optional<Request> opRequest =  requestService.create(locale, user.getId(), id);
         if (!opRequest.isPresent()) {
             mav.addObject("requestError", true);
         }
@@ -222,10 +227,10 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
     byte[] getImageWithMediaType(@PathVariable("id") long id) throws IOException {
+
         byte[] byteImage = imageService.getDataById(id).orElse(null);
         if(byteImage == null){
             return null;
-
         }
 
         ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
@@ -290,9 +295,15 @@ public class PetController extends ParentController {
             return uploadPetForm(petForm).addObject("imageError", true);
         }
 
-        Optional<Pet> opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getBirthDate(), petForm.getGender(),
-                petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, user.getId(),
-                petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
+        Optional<Pet> opPet;
+        try{
+            opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getBirthDate(), petForm.getGender(),
+                    petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, user.getId(),
+                    petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return uploadPetForm(petForm).addObject("petError", true);
+        }
 
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet could not be created");
@@ -384,14 +395,19 @@ public class PetController extends ParentController {
                      editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
                      null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
                      editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
-        }
-        catch(InvalidImageQuantityException ex) {
-            LOGGER.warn(ex.getMessage());
+
+        } catch (InvalidImageQuantityException ex) {
+            LOGGER.warn("{}", ex.getMessage());
             return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
+
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return editPetForm(editPetForm, id).addObject("petError", true);
         }
+
         if(!opPet.isPresent()){
             LOGGER.warn("Pet could not be updated");
-            return new ModelAndView("redirect:/");
+            return editPetForm(editPetForm, id).addObject("petError", true);
         }
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
