@@ -2,12 +2,16 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "Users")
+@Indexed
 public class User {
 
     @Id
@@ -16,6 +20,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
+    @Field
     private String username;
 
     @Column(nullable = false)
@@ -32,6 +37,7 @@ public class User {
     @Column
     private List<Request> requestList;
 
+    @IndexedEmbedded(depth = 1)
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Column
     private List<Pet> petList;
