@@ -9,6 +9,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,13 +47,24 @@ public class RequestJpaDaoImpl implements RequestDao {
     @Transactional
     public List<Request> searchList(User user, Pet pet, String find, int page, int pageSize) {
 
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         try {
-            FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
             fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {
+        } catch(InterruptedException ignored) {}
 
-        }
-        return new ArrayList<>();
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(Request.class)
+                .get();
+
+        org.apache.lucene.search.Query query = queryBuilder
+                .keyword()
+                .onFields("pet.user.username","pet.petName","user.username")
+                .matching(find)
+                .createQuery();
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
+        List<Request> results = jpaQuery.getResultList();
+        return results;
     }
 
     @Override
