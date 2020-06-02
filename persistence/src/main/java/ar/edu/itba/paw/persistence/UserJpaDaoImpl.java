@@ -45,7 +45,7 @@ public class UserJpaDaoImpl implements UserDao {
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM users");
-        return (int) nativeQuery.getSingleResult();
+        return ((Number)nativeQuery.getSingleResult()).intValue();
     }
 
     @Override

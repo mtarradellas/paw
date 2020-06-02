@@ -183,7 +183,7 @@
                                         <div class="row ">
                                             <div class="col-lg-7">
                                                 <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>">
-                                                    <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
+                                                    <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0].id}"/>"
                                                          alt="Pet image" height="70" width="70">
                                                     <c:if test="${not empty pet.petName}">
                                                         <c:out value="${pet.petName}"/>
