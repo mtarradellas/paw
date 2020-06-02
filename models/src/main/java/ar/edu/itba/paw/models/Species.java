@@ -45,7 +45,7 @@ public class Species implements Comparable<Species>{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (this.getClass() != o.getClass()) return false;
+        if (getClass() != o.getClass()) return false;
         Species species = (Species) o;
         return id.equals(species.id);
     }

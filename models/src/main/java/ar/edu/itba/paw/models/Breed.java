@@ -46,7 +46,7 @@ public class Breed implements Comparable<Breed>{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (this.getClass() != o.getClass()) return false;
+        if (getClass() != o.getClass()) return false;
         Breed breed = (Breed) o;
         return id.equals(breed.id);
     }

@@ -46,7 +46,7 @@ public class Pet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (this.getClass() != o.getClass()) return false;
+        if (getClass() != o.getClass()) return false;
         Pet pet = (Pet) o;
         return id == pet.id
                 && ownerId == pet.ownerId;
