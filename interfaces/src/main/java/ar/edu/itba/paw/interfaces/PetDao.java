@@ -14,7 +14,7 @@ public interface PetDao {
                            String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
 
     int getListAmount();
-    int getSearchListAmount(String find);
+    int getSearchListAmount(String locale, String find);
     int getFilteredListAmount(User user, Species species, Breed breed, String gender, PetStatus status,
                               int minPrice, int maxPrice, Province province, Department department);
 

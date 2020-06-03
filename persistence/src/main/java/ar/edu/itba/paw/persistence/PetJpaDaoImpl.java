@@ -182,8 +182,8 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public int getSearchListAmount(String find) {
-        return getListAmount();
+    public int getSearchListAmount(String locale, String find) {
+        return searchList(locale,find,-1,-1).size();
     }
 
     @Override

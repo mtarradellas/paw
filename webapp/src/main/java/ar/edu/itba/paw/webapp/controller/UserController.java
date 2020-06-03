@@ -61,7 +61,7 @@ public class UserController extends ParentController {
         int pageNum = parsePage(page);
 
         List<Pet> petList = petService.listByUser(locale, id, pageNum, PET_PAGE_SIZE);
-        int amount = petService.getListByUserAmount(id);
+        int amount = petService.getListByUserAmount(locale, id);
         Optional<User> opUser = userService.findById(id);
         User user = opUser.orElseThrow(UserNotFoundException::new);
 
