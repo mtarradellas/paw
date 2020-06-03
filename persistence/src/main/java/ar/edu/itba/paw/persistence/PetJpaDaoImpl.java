@@ -47,9 +47,9 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public List<Pet> searchList(String locale, String find, int page, int pageSize) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-//        try {
-//            fullTextEntityManager.createIndexer().startAndWait();
-//        } catch(InterruptedException ignored) {}
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
 
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
