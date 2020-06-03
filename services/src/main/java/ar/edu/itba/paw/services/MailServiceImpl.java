@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import java.io.StringWriter;
 import java.util.Map;
 import ar.edu.itba.paw.interfaces.MailService;
+import ar.edu.itba.paw.models.constants.MailType;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,6 @@ import org.springframework.stereotype.Service;
 public class MailServiceImpl implements MailService {
 
     @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired
     JavaMailSender mailSender;
 
     @Autowired
@@ -33,22 +31,21 @@ public class MailServiceImpl implements MailService {
     MessageSource messageSource;
 
     @Async
-    public void sendMail(String recipient, Map<String, Object> arguments, String mailType){
-        System.out.println(applicationContext.getApplicationName() + "\n\n\n\n\n\n\n");
+    public void sendMail(String recipient, Map<String, Object> arguments, MailType mailType){
         MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource);
 
         MimeMessagePreparator preparator = mimeMessage -> {
 
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
             helper.setTo(recipient);
-            helper.setSubject(messageSourceAccessor.getMessage(mailType + "Subject"));
+            helper.setSubject(messageSourceAccessor.getMessage(mailType.getType() + "Subject"));
             VelocityContext context = new VelocityContext();
             context.put("bodyMessages", messageSourceAccessor);
             for(String key : arguments.keySet()){
                 context.put(key,arguments.get(key));
             }
             StringWriter stringWriter = new StringWriter();
-            velocityEngine.mergeTemplate("templates/" + mailType + ".vm", "UTF-8", context, stringWriter);
+            velocityEngine.mergeTemplate("templates/" + mailType.getType() + ".vm", "UTF-8", context, stringWriter);
             String text = stringWriter.toString();
 
             helper.setText(text,true);

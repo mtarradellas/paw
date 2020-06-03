@@ -1,0 +1,8 @@
+<html>
+    <body>
+        <p>$bodyMessages.getMessage("request_recover.triggerUser"): <a href="${ownerURL}">${ownerUsername}</a>.</p>
+        <p>$bodyMessages.getMessage("request_recover.pet"): <a href="${petURL}">${petName}</a>.</p>
+        <p><a href="${requestURL}">$bodyMessages.getMessage("request_recover.info.site").</a></p>
+        <p>$bodyMessages.getMessage("goodbye")</p>
+    </body>
+</html>

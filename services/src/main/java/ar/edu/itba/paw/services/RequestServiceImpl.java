@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,11 +107,11 @@ public class RequestServiceImpl implements RequestService {
 
         arguments.put("requestURL", url + "/interests");
         arguments.put("petURL", url + "/pet/" + pet.getId());
-        arguments.put("ownerUsername", user.getUsername());
+        arguments.put("ownerUsername", request.getUser().getUsername());
         arguments.put("ownerURL", url + "/user/" + user.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(user.getMail(), arguments, "request");
+        mailService.sendMail(pet.getUser().getMail(), arguments, MailType.REQUEST);
 
         return Optional.of(request);
     }
@@ -143,6 +144,21 @@ public class RequestServiceImpl implements RequestService {
             LOGGER.warn("Request {} cancel by user {} failed", request.getId(), user.getId());
             return false;
         }
+
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+
+        Pet pet = request.getPet();
+        User contact = request.getUser();
+        User recipient = pet.getUser();
+
+        arguments.put("URL", url );
+        arguments.put("petURL", url + "/pet/" + pet.getId());
+        arguments.put("ownerUsername", contact.getUsername());
+        arguments.put("ownerURL", url + "/user/" + + user.getId());
+        arguments.put("petName", pet.getPetName());
+
+        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_CANCEL);
 
         LOGGER.debug("Request {} canceled by user {}", request.getId(), user.getId());
         return true;
@@ -186,7 +202,7 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", url +  "/user/" + recipient.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(recipient.getMail(), arguments, "request_accept");
+        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_ACCEPT);
 
         LOGGER.debug("Request {} accepted by user {}", request.getId(), user.getId());
         return true;
@@ -215,7 +231,7 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        final User recipient = request.getUser();
+        User recipient = request.getUser();
         Pet pet = request.getPet();
         User contact = pet.getUser();
 
@@ -228,7 +244,7 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", url + "/user/" + + user.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(recipient.getMail(), arguments, "request_reject");
+        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_REJECT);
 
         LOGGER.debug("Request {} rejected by user {}", request.getId(), user.getId());
         return true;
@@ -257,7 +273,20 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
+        Pet pet = request.getPet();
+        User contact = request.getUser();
+        User recipient = pet.getUser();
 
+        Map<String, Object> arguments = new HashMap<>();
+        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
+
+        arguments.put("requestURL", url + "/interests");
+        arguments.put("petURL", url + "/pet/" + pet.getId());
+        arguments.put("ownerUsername", contact.getUsername());
+        arguments.put("ownerURL", url + "/user/" + + user.getId());
+        arguments.put("petName", pet.getPetName());
+
+        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_RECOVER);
 
 //        final Contact contact = opContact.get();
 //        final User recipient = request.getUser();

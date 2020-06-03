@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
         arguments.put("URL", url );
         arguments.put("username",user.getUsername());
 
-        mailService.sendMail(user.getMail(), arguments, "activate_account");
+        mailService.sendMail(user.getMail(), arguments, MailType.ACTIVATE_ACCOUNT);
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}", user.getId(), user.getUsername(), user.getMail());
         return Optional.of(user);
@@ -237,7 +238,7 @@ public class UserServiceImpl implements UserService {
         arguments.put("URL", url );
         arguments.put("username",user.getUsername());
 
-        mailService.sendMail(user.getMail(), arguments, "reset_password");
+        mailService.sendMail(user.getMail(), arguments, MailType.RESET_PASSWORD);
         return opUser;
     }
 
