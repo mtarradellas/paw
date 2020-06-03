@@ -9,12 +9,12 @@ import java.util.Optional;
 public interface PetDao {
 
     List<Pet> list(int page, int pageSize);
-    List<Pet> searchList(String find, int page, int pageSize);
+    List<Pet> searchList(String locale, String find, int page, int pageSize);
     List<Pet> filteredList(String locale, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                            String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
 
     int getListAmount();
-    int getSearchListAmount(String find);
+    int getSearchListAmount(String locale, String find);
     int getFilteredListAmount(User user, Species species, Breed breed, String gender, PetStatus status,
                               int minPrice, int maxPrice, Province province, Department department);
 

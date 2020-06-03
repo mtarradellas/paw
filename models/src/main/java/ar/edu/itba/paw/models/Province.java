@@ -1,5 +1,8 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -7,6 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "Provinces")
+@Indexed
 public class Province implements Comparable<Province>, Serializable {
 
     @Id
@@ -16,6 +20,7 @@ public class Province implements Comparable<Province>, Serializable {
 
 
     @Column(length = 255, nullable = false)
+    @Field
     private String name;
 
     @Column
