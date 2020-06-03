@@ -30,6 +30,7 @@ public interface UserService {
     Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException;
     Optional<User> requestPasswordReset(String mail);
     Optional<User> resetPassword(UUID token, String password);
+    boolean addReview(User owner, long targetId, int score, String description);
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);
     boolean isAdmin(User user);

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ public interface UserDao {
 
     User create(String username, String password, String mail, UserStatus status, String locale);
     Optional<User> update(User user);
+    void addReview(User owner, User target, int score, String description, ReviewStatus status);
     boolean isAdmin(User user);
 
     List<Token> listTokens();

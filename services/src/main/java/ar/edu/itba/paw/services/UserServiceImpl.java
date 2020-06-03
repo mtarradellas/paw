@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -273,6 +274,24 @@ public class UserServiceImpl implements UserService {
         deleteToken(uuid);
 
         return updatedUser;
+    }
+
+    @Transactional
+    @Override
+    public boolean addReview(User owner, long targetId, int score, String description) {
+        Optional<User> opTarget = userDao.findById(targetId);
+        if (!opTarget.isPresent()) {
+            LOGGER.warn("Review target {} was not found", targetId);
+            return false;
+        }
+        User target = opTarget.get();
+
+        if (owner.equals(target)) {
+            LOGGER.warn("Target of review is the same as the owner, ignoring review {}", owner.getId());
+            return false;
+        }
+        userDao.addReview(owner, target, score, description, ReviewStatus.VALID);
+        return true;
     }
 
     @Transactional
