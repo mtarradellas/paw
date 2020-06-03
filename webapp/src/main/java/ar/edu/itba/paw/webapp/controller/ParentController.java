@@ -198,6 +198,18 @@ public class ParentController {
         return priceNum;
     }
 
+    public int parseReviewScore(String scoreStr) {
+        if (scoreStr == null) return -1;
+        int score = -1;
+        try {
+            score = Integer.parseInt(scoreStr);
+        } catch (NumberFormatException ex) {
+            LOGGER.debug("Invalid score ({}) parameter", scoreStr);
+        }
+        if (score < 0 || score > 5) score = -1;
+        return score;
+    }
+
     @ExceptionHandler(PetNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchPet() {
