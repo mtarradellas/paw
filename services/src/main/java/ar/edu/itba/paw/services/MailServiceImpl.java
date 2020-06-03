@@ -6,6 +6,7 @@ import ar.edu.itba.paw.interfaces.MailService;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -17,9 +18,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 @Service("mailService")
-@Configuration
-@EnableAsync
 public class MailServiceImpl implements MailService {
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     @Autowired
     JavaMailSender mailSender;
@@ -32,6 +34,7 @@ public class MailServiceImpl implements MailService {
 
     @Async
     public void sendMail(String recipient, Map<String, Object> arguments, String mailType){
+        System.out.println(applicationContext.getApplicationName() + "\n\n\n\n\n\n\n");
         MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource);
 
         MimeMessagePreparator preparator = mimeMessage -> {
