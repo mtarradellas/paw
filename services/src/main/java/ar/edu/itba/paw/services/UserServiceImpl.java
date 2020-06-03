@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.UserStatus;
@@ -80,9 +79,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> create(String username, String password, String mail) throws DuplicateUserException {
+    public Optional<User> create(String username, String password, String mail, String locale) {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
-        User user = userDao.create(username, encoder.encode(password), mail, UserStatus.INACTIVE);
+        User user = userDao.create(username, encoder.encode(password), mail, UserStatus.INACTIVE, locale);
 
         UUID uuid = UUID.randomUUID();
         if (!createToken(uuid, user).isPresent()) {
@@ -113,7 +112,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> updateUsername(long id, String username) throws DuplicateUserException {
+    public Optional<User> updateUsername(long id, String username) {
         LOGGER.debug("Attempting user {} update with username: {}", id, username);
 
         Optional<User> opUser = userDao.findById(id);
@@ -126,7 +125,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(username);
         Optional<User> opUpdatedUser = userDao.update(user);
         if (!opUpdatedUser.isPresent()) {
-            LOGGER.warn("Failed to update username {} with new name {}", user.getId(), username);
+            LOGGER.warn("Failed to update user {} with new name {}", user.getId(), username);
             return Optional.empty();
         }
         User updatedUser = opUpdatedUser.get();
@@ -149,11 +148,40 @@ public class UserServiceImpl implements UserService {
         user.setStatus(status);
         Optional<User> opUpdatedUser = userDao.update(user);
         if (!opUpdatedUser.isPresent()) {
-            LOGGER.warn("Failed to update username {} with new status {}", user.getId(), status.getValue());
+            LOGGER.warn("Failed to update user {} with new status {}", user.getId(), status.getValue());
             return Optional.empty();
         }
         User updatedUser = opUpdatedUser.get();
         LOGGER.debug("Successfully updated user; id: {} status: {}", updatedUser.getId(), updatedUser.getStatus().getValue());
+        return opUpdatedUser;
+    }
+
+    @Transactional
+    @Override
+    public Optional<User> updateLocale(long id, String locale) {
+        LOGGER.debug("Attempting userID {} update with locale: {}", id, locale);
+
+        Optional<User> opUser = userDao.findById(id);
+        if (!opUser.isPresent()) {
+            LOGGER.warn("User {} not found", id);
+            return Optional.empty();
+        }
+        return updateLocale(opUser.get(), locale);
+    }
+
+    @Transactional
+    @Override
+    public Optional<User> updateLocale(User user, String locale) {
+        LOGGER.debug("Attempting user {} update with locale: {}", user, locale);
+
+        user.setLocale(locale);
+        Optional<User> opUpdatedUser = userDao.update(user);
+        if (!opUpdatedUser.isPresent()) {
+            LOGGER.warn("Failed to update user{} with new locale {}", user.getId(), locale);
+            return Optional.empty();
+        }
+        User updatedUser = opUpdatedUser.get();
+        LOGGER.debug("Successfully updated user; id: {} locale: {}", updatedUser.getId(), updatedUser.getLocale());
         return opUpdatedUser;
     }
 
@@ -240,10 +268,8 @@ public class UserServiceImpl implements UserService {
         final User user = opUser.get();
         Optional<User> updatedUser = Optional.empty();
 
-        try {
-            updatedUser = updatePassword(user.getId(), null, password);
-        }
-        catch(InvalidPasswordException ignored){}
+        updatedUser = updatePassword(user.getId(), null, password);
+
         deleteToken(uuid);
 
         return updatedUser;
@@ -251,9 +277,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> adminCreate(String username, String password, String mail) throws DuplicateUserException {
+    public Optional<User> adminCreate(String username, String password, String mail, String locale) {
         LOGGER.debug("(Admin) Attempting user creation with username: {}, mail: {}", username, mail);
-        User user = userDao.create(username, encoder.encode(password), mail, UserStatus.ACTIVE);
+        User user = userDao.create(username, encoder.encode(password), mail, UserStatus.ACTIVE, locale);
         return Optional.of(user);
     }
 

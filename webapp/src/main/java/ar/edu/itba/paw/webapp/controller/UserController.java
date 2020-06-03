@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
@@ -16,6 +15,7 @@ import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -223,10 +223,10 @@ public class UserController extends ParentController {
         Optional<User> opUser;
         try {
              opUser = userService.updateUsername(id, editUserForm.getUsername());
-        } catch (DuplicateUserException ex) {
+        } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return editUserForm(editUserForm, id)
-                    .addObject("duplicatedUsername", ex.isDuplicatedUsername());
+                    .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"));
         }
         if(!opUser.isPresent()){
             return new ModelAndView("redirect:/500");
