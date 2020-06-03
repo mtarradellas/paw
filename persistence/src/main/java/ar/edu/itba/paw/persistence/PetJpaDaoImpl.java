@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.RequestStatus;
+import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
@@ -68,8 +69,28 @@ public class PetJpaDaoImpl implements PetDao {
                 .matching(find)
                 .createQuery();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Pet.class);
-        List<Pet> results = jpaQuery.getResultList();
-        return results;
+        jpaQuery.setProjection(ProjectionConstants.ID);
+        List<Object[]> results = jpaQuery.getResultList();
+        List<Long> filteredIds = new ArrayList<>();
+        for (Object[] id:results) {
+            System.out.println("\n\n\n\n\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+//            System.out.println(id);
+            System.out.println(id[0].getClass());
+            filteredIds.add((Long)id[0]);
+//            System.out.println(id.getClass());
+            System.out.println("\n\n\n\n\n");
+        }
+
+
+        for (Long id:filteredIds) {
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAA");
+            System.out.println(id);
+        }
+
+
+        final TypedQuery<Pet> finalQuery = em.createQuery("from Pet where id in :filteredIds", Pet.class);
+        finalQuery.setParameter("filteredIds", filteredIds);
+        return finalQuery.getResultList();
     }
 
     @Override
