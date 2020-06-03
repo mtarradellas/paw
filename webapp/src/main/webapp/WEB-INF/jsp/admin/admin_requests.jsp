@@ -1,3 +1,4 @@
+<%@ page import="ar.edu.itba.paw.models.constants.RequestStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -37,23 +38,31 @@
                                     >
                                         <spring:message code="filter.any"/>
                                     </option>
-                                    <option value="accepted"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('accepted' eq param.status)}">
+
+                                    <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+                                    <option value="${ACCEPTED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (ACCEPTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.accepted"/></option>
-                                    <option value="rejected"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('rejected' eq param.status)}">
+
+                                    <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+                                    <option value="${REJECTED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (REJECTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.rejected"/></option>
-                                    <option value="pending"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('pending' eq param.status)}">
+
+                                    <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+                                    <option value="${PENDING}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (PENDING eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.pending"/></option>
-                                    <option value="canceled"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('canceled' eq param.status)}">
+
+                                    <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+                                    <option value="${CANCELED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (CANCELED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
