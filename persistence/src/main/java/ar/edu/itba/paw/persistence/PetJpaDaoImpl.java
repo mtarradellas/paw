@@ -109,6 +109,10 @@ public class PetJpaDaoImpl implements PetDao {
         List<? extends Number> resultList = query.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
+        if (filteredIds.size() == 0){
+            return new ArrayList<>();
+        }
+
         //Obtain Requests with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Pet> cr = cb.createQuery(Pet.class);
