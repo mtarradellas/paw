@@ -5,7 +5,6 @@ import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -29,6 +28,9 @@ public class User {
     @Column(nullable = false)
     private String mail;
 
+    @Column(length = 7)
+    private String locale;
+
     @Enumerated(EnumType.ORDINAL)
     private UserStatus status;
 
@@ -46,33 +48,12 @@ public class User {
         // Hibernate
     }
 
-    public User(String username, String password, String mail, UserStatus status) {
+    public User(String username, String password, String mail, UserStatus status, String locale) {
         this.username = username;
         this.password = password;
         this.mail = mail;
         this.status = status;
-    }
-
-    @Deprecated
-    public User(String username, String mail) {
-        this.username = username;
-        this.mail = mail;
-    }
-
-    @Deprecated
-    public User(long id, String username, String mail) {
-        this.id = id;
-        this.username = username;
-        this.mail = mail;
-    }
-
-    @Deprecated
-    public User(long id, String username, String password, String mail, UserStatus status) {
-        this.id = id;
-        this.username = username;
-        this.mail = mail;
-        this.password = password;
-        this.status = status;
+        this.locale = locale;
     }
 
     @Override
@@ -147,5 +128,13 @@ public class User {
 
     public void setPetList(List<Pet> petList) {
         this.petList = petList;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }

@@ -1,9 +1,13 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "Breeds")
+@Indexed
 public class Breed implements Comparable<Breed>{
 
     @Id
@@ -12,9 +16,11 @@ public class Breed implements Comparable<Breed>{
     private Long id;
 
     @Column(nullable = false)
+    @Field
     private String en_us;
 
     @Column(nullable = false)
+    @Field
     private String es_ar;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

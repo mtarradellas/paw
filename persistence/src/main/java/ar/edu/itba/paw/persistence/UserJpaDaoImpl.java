@@ -45,8 +45,7 @@ public class UserJpaDaoImpl implements UserDao {
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM users");
-        Number count = (Number) nativeQuery.getSingleResult();
-        return count.intValue();
+        return ((Number)nativeQuery.getSingleResult()).intValue();
     }
 
     @Override
@@ -91,8 +90,8 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public User create(String username, String password, String mail, UserStatus status) {
-        final User user = new User(username, password, mail, status);
+    public User create(String username, String password, String mail, UserStatus status, String locale) {
+        final User user = new User(username, password, mail, status, locale);
         em.persist(user);
         return user;
     }

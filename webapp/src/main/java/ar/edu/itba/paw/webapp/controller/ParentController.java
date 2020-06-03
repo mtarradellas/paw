@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.Locale;
+import java.util.Optional;
 
 @Controller
 public class ParentController {
@@ -42,7 +43,16 @@ public class ParentController {
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
             return null;
         }
-        return userService.findByUsername(auth.getName()).orElse(null);
+        Optional<User> opUser = userService.findByUsername(auth.getName());
+        if (opUser.isPresent()) {
+            User user = opUser.get();
+            String locale = getLocale();
+            if (user.getLocale() == null || !user.getLocale().equalsIgnoreCase(locale)) {
+                userService.updateLocale(user, locale);
+            }
+            return opUser.get();
+        }
+        return null;
     }
 
     public int parsePage(String page) {

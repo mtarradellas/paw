@@ -66,10 +66,11 @@ public class LoginAndRegisterController extends ParentController {
             return registerForm(userForm);
         }
 
+        String locale = getLocale();
         Optional<User> opUser;
         try {
             opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
-                    userForm.getMail());
+                    userForm.getMail(), locale);
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return registerForm(userForm)
