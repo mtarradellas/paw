@@ -28,8 +28,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 
@@ -277,6 +278,25 @@ public class UserController extends ParentController {
             return new ModelAndView("redirect:/logout");
         }
         LOGGER.warn("User is not logged user, status not updated");
+        return new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/user/{id}/review", method = {RequestMethod.POST})
+    public ModelAndView uploadReview(@PathVariable("id") long id,
+                                     @RequestParam(name = "score") String scoreStr,
+                                     @RequestParam(name = "description") String description) {
+
+        User user = loggedUser();
+        if (user != null) {
+            int score = parseReviewScore(scoreStr);
+            try {
+                userService.addReview(user, id, score, description);
+            } catch (DataIntegrityViolationException ex) {
+                LOGGER.warn("{}", ex.getMessage());
+                return user(id, "1").addObject("reviewError", true);
+            }
+            return user(id, "1").addObject("reviewError", false);
+        }
         return new ModelAndView("redirect:/403");
     }
 

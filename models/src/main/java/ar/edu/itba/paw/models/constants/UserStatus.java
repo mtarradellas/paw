@@ -5,7 +5,7 @@ public enum UserStatus {
     INACTIVE(2),
     DELETED(3);
 
-    private int value;
+    final private int value;
 
     UserStatus(int value) {
         this.value = value;

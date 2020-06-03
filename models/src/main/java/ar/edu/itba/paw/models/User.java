@@ -44,6 +44,14 @@ public class User {
     @Column
     private List<Pet> petList;
 
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    @Column
+    private List<Review> ownerReviews;
+
+    @OneToMany(mappedBy = "target", fetch = FetchType.LAZY)
+    @Column
+    private List<Review> targetReviews;
+
     protected User() {
         // Hibernate
     }
@@ -54,6 +62,8 @@ public class User {
         this.mail = mail;
         this.status = status;
         this.locale = locale;
+        Object o;
+
     }
 
     @Override
@@ -136,5 +146,28 @@ public class User {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public List<Review> getOwnerReviews() {
+        return ownerReviews;
+    }
+
+    public void setOwnerReviews(List<Review> ownerReviews) {
+        this.ownerReviews = ownerReviews;
+    }
+
+    public List<Review> getTargetReviews() {
+        return targetReviews;
+    }
+
+    public void setTargetReviews(List<Review> targetReviews) {
+        this.targetReviews = targetReviews;
+    }
+
+    public double getAverageScore() {
+        int amount = targetReviews.size();
+        if (amount == 0) return -1;
+        int sum = targetReviews.stream().mapToInt(Review::getScore).sum();
+        return (double) sum / amount;
     }
 }
