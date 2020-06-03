@@ -97,7 +97,7 @@ public class PetController extends ParentController {
 
         List<Pet> petList = petService.filteredList(locale, find, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
                 searchCriteria, searchOrder, minPriceNum, maxPriceNum, provinceId, departmentId, pageNum, PET_PAGE_SIZE);
-        int amount = petService.getFilteredListAmount(find, null, speciesId, breedId, gender, PetStatus.AVAILABLE, minPriceNum,
+        int amount = petService.getFilteredListAmount(locale, find, null, speciesId, breedId, gender, PetStatus.AVAILABLE, minPriceNum,
                 maxPriceNum, provinceId, departmentId);
 
         Object[] departments = petList.stream().map(Pet::getDepartment).distinct().sorted(Department::compareTo).toArray();

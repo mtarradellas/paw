@@ -92,7 +92,7 @@ public class AdminPetController extends ParentController {
 
         List<Pet> petList = petService.filteredList(locale, find, null, speciesId, breedId, gender, petStatus, searchCriteria,
                 searchOrder, minPriceNum, maxPriceNum, provinceId, departmentId, pageNum, PET_PAGE_SIZE);
-        int amount = petService.getFilteredListAmount(find, null, speciesId, breedId, gender, petStatus, minPriceNum,
+        int amount = petService.getFilteredListAmount(locale, find, null, speciesId, breedId, gender, petStatus, minPriceNum,
                 maxPriceNum, provinceId, departmentId);
 
         List<Breed> breedL = petList.stream().map(Pet::getBreed).distinct().sorted(Breed::compareTo).collect(Collectors.toList());

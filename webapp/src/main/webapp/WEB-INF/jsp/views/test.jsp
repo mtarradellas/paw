@@ -5,12 +5,12 @@
     <title>test</title>
 </head>
 <body>
-<%--<h1><c:out value="${requests.size()}"/></h1>--%>
+<h1><c:out value="${pets.size()}"/></h1>
 
-<c:forEach items="${requests}" var="req">
+<c:forEach items="${pets}" var="pet">
 <%--&lt;%&ndash;    <h1><c:out value="${species.id}"/></h1>&ndash;%&gt;--%>
-    <h1><c:out value="${req.id}"/></h1>
-    <h1><c:out value="${req.status}"/></h1>
+    <h1><c:out value="${pet.id}"/></h1>
+    <h1><c:out value="${pet.petName}"/></h1>
 <%--    <h1><c:out value="${species.breedList.size()}"/></h1>--%>
 <%--    <c:forEach items="${species.breedList}" var="breed">--%>
 

@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.PetStatus;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,6 +15,7 @@ public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pets_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "pets_id_seq", name = "pets_id_seq")
+    @DocumentId
     private Long id;
 
     @Column(nullable = false)
@@ -28,6 +26,7 @@ public class Pet {
     private Date birthDate;
 
     @Column(length = 16, nullable = false)
+    @Field
     private String gender;
 
     @Column(nullable = false)
@@ -53,18 +52,22 @@ public class Pet {
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "species")
+    @IndexedEmbedded(depth = 1)
     private Species species;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "breed")
+    @IndexedEmbedded(depth = 1)
     private Breed breed;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "province")
+    @IndexedEmbedded(depth = 1)
     private Province province;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "department")
+    @IndexedEmbedded(depth = 1)
     private Department department;
 
     @OneToMany(orphanRemoval = true, mappedBy = "petId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

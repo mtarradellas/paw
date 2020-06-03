@@ -1,10 +1,14 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "Species")
+@Indexed
 public class Species implements Comparable<Species>{
 
     @Id
@@ -13,9 +17,11 @@ public class Species implements Comparable<Species>{
     private Long id;
 
     @Column(nullable = false)
+    @Field
     private String en_us;
 
     @Column(nullable = false)
+    @Field
     private String es_ar;
 
     @OneToMany(orphanRemoval = true, mappedBy = "species", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
