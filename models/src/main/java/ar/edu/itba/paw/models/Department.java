@@ -1,10 +1,14 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "Departments")
+@Indexed
 public class Department implements Comparable<Department>{
 
     @Id
@@ -13,6 +17,7 @@ public class Department implements Comparable<Department>{
     private Long id;
 
     @Column(length = 255, nullable = false)
+    @Field
     private String name;
 
     @Column

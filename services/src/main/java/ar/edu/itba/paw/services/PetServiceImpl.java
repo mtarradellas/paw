@@ -72,7 +72,7 @@ public class PetServiceImpl implements PetService {
             petList = petDao.filteredList(locale, user, species, breed, gender, status, searchCriteria, searchOrder,
                     minPrice, maxPrice, province, department, page, pageSize);
         } else {
-            petList = petDao.searchList(find, minPrice, maxPrice);
+            petList = petDao.searchList(locale, find, minPrice, maxPrice);
         }
         setLocale(locale, petList);
         return petList;
