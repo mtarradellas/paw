@@ -14,9 +14,9 @@ public interface PetService {
     List<Pet> listByUser(String locale, Long userId, int page, int pageSize);
 
     int getListAmount();
-    int getFilteredListAmount(String find, Long userId, Long species, Long breed, String gender, PetStatus status,
+    int getFilteredListAmount(String locale, String find, Long userId, Long species, Long breed, String gender, PetStatus status,
                               int minPrice, int maxPrice, Long province, Long department);
-    int getListByUserAmount(Long userId);
+    int getListByUserAmount(String locale, Long userId);
 
     Optional<Pet> findById(String locale, long id);
     Optional<Pet> findById(long id);

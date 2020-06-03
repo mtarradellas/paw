@@ -1,15 +1,12 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.UserStatus;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public interface UserDao {
 
@@ -26,7 +23,7 @@ public interface UserDao {
     Optional<User> findByMail(String mail);
     Optional<User> findByToken(UUID token);
 
-    User create(String username, String password, String mail, UserStatus status);
+    User create(String username, String password, String mail, UserStatus status, String locale);
     Optional<User> update(User user);
     boolean isAdmin(User user);
 
