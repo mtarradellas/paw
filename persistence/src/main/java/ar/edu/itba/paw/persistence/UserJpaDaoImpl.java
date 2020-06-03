@@ -1,8 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
@@ -45,7 +47,7 @@ public class UserJpaDaoImpl implements UserDao {
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM users");
-        return (int) nativeQuery.getSingleResult();
+        return ((Number)nativeQuery.getSingleResult()).intValue();
     }
 
     @Override
@@ -90,8 +92,8 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public User create(String username, String password, String mail, UserStatus status) {
-        final User user = new User(username, password, mail, status);
+    public User create(String username, String password, String mail, UserStatus status, String locale) {
+        final User user = new User(username, password, mail, status, locale);
         em.persist(user);
         return user;
     }
@@ -100,6 +102,18 @@ public class UserJpaDaoImpl implements UserDao {
     public Optional<User> update(User user) {
         em.persist(user);
         return Optional.of(user);
+    }
+
+    @Override
+    public void addReview(User owner, User target, int score, String description, ReviewStatus status) {
+        Date today = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(today);
+        today = cal.getTime();
+        final Review review = new Review(owner, target, score, description, status, today);
+        em.persist(review);
+        em.flush();
+        System.out.println("FLUSH");
     }
 
     @Override

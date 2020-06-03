@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.models.constants;
 
-public enum PetStatus {
-    AVAILABLE(1),
-    REMOVED(2),
-    SOLD(3),
-    UNAVAILABLE(4);
+public enum ReviewStatus {
+    VALID(1),
+    REMOVED(2);
 
     final private int value;
 
-    PetStatus(int value) {
+    ReviewStatus(int value) {
         this.value = value;
     }
 

@@ -6,7 +6,7 @@ public enum RequestStatus {
     REJECTED(3),
     CANCELED(4);
 
-    private int value;
+    final private int value;
 
     RequestStatus(int value) {
         this.value = value;
