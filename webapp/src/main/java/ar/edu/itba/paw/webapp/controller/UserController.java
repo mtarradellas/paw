@@ -27,6 +27,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
@@ -109,8 +111,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/requests/{id}/cancel", method = {RequestMethod.POST})
     public ModelAndView cancelRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.cancel(id, user)) {
+        if (requestService.cancel(id, user, baseUrl)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -119,8 +122,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView recoverRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.recover(id, user)) {
+        if (requestService.recover(id, user, baseUrl)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -164,8 +168,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/interests/{id}/accept", method = {RequestMethod.POST})
     public ModelAndView acceptInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.accept(id, user)) {
+        if (requestService.accept(id, user, baseUrl)) {
             return new ModelAndView("redirect:/interests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -174,8 +179,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/interests/{id}/reject", method = {RequestMethod.POST})
     public ModelAndView rejectInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.reject(id, user)) {
+        if (requestService.reject(id, user, baseUrl)) {
             return new ModelAndView("redirect:/interests" );
         }
         return new ModelAndView("redirect:/403" );

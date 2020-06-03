@@ -21,14 +21,14 @@ public interface UserService {
     Optional<User> findByMail(String mail);
     Optional<User> findByToken(UUID token);
 
-    Optional<User> create(String username, String password, String mail, String locale);
+    Optional<User> create(String username, String password, String mail, String locale, String contextURL);
     Optional<User> update(User user);
     Optional<User> updateUsername(long id, String username);
     Optional<User> updateStatus(long id, UserStatus status);
     Optional<User> updateLocale(long id, String locale);
     Optional<User> updateLocale(User user, String locale);
     Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException;
-    Optional<User> requestPasswordReset(String mail);
+    Optional<User> requestPasswordReset(String mail, String contextURL);
     Optional<User> resetPassword(UUID token, String password);
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);

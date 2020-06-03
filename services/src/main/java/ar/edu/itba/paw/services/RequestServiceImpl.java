@@ -72,7 +72,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public Optional<Request> create(String locale, long userId, long petId) {
+    public Optional<Request> create(String locale, long userId, long petId, String contextURL) {
         Optional<User> opUser = userService.findById(userId);
         if (!opUser.isPresent()) {
             LOGGER.warn("User {} not found", userId);
@@ -103,12 +103,11 @@ public class RequestServiceImpl implements RequestService {
         Request request = requestDao.create(user, pet, RequestStatus.PENDING);
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
 
-        arguments.put("requestURL", url + "/interests");
-        arguments.put("petURL", url + "/pet/" + pet.getId());
+        arguments.put("requestURL", contextURL + "/interests");
+        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", request.getUser().getUsername());
-        arguments.put("ownerURL", url + "/user/" + user.getId());
+        arguments.put("ownerURL", contextURL + "/user/" + user.getId());
         arguments.put("petName", pet.getPetName());
 
         mailService.sendMail(pet.getUser().getMail(), arguments, MailType.REQUEST);
@@ -124,7 +123,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean cancel(long id, User user) {
+    public boolean cancel(long id, User user, String contextURL) {
         LOGGER.debug("User {} attempting to cancel request {}", user.getId(), id);
 
         Optional<Request> opRequest = requestDao.findById(id);
@@ -146,16 +145,15 @@ public class RequestServiceImpl implements RequestService {
         }
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
 
         Pet pet = request.getPet();
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put("URL", url );
-        arguments.put("petURL", url + "/pet/" + pet.getId());
+        arguments.put("URL", contextURL );
+        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("ownerURL", url + "/user/" + + user.getId());
+        arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
         arguments.put("petName", pet.getPetName());
 
         mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_CANCEL);
@@ -166,7 +164,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean accept(long id, User user) {
+    public boolean accept(long id, User user, String contextURL) {
         LOGGER.debug("User {} attempting to accept request {}", user.getId(), id);
 
         Optional<Request> opRequest = requestDao.findById(id);
@@ -192,14 +190,12 @@ public class RequestServiceImpl implements RequestService {
         User contact = pet.getUser();
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
 
-
-        arguments.put("URL", url );
-        arguments.put("petURL", url + "/pet/" + pet.getId());
+        arguments.put("URL", contextURL );
+        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
         arguments.put("contactEmail", contact.getMail());
-        arguments.put("ownerURL", url +  "/user/" + recipient.getId());
+        arguments.put("ownerURL", contextURL +  "/user/" + recipient.getId());
         arguments.put("petName", pet.getPetName());
 
         mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_ACCEPT);
@@ -210,7 +206,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean reject(long id, User user) {
+    public boolean reject(long id, User user, String contextURL) {
         LOGGER.debug("User {} attempting to reject request {}", user.getId(), id);
 
         Optional<Request> opRequest = requestDao.findById(id);
@@ -236,12 +232,11 @@ public class RequestServiceImpl implements RequestService {
         User contact = pet.getUser();
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
 
-        arguments.put("URL", url );
-        arguments.put("petURL", url + "/pet/" + pet.getId());
+        arguments.put("URL", contextURL );
+        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("ownerURL", url + "/user/" + + user.getId());
+        arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
         arguments.put("petName", pet.getPetName());
 
         mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_REJECT);
@@ -252,7 +247,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean recover(long id, User user){
+    public boolean recover(long id, User user, String contextURL){
         LOGGER.debug("User {} attempting to recover request {}", user.getId(), id);
 
         Optional<Request> opRequest = requestDao.findById(id);
@@ -278,12 +273,11 @@ public class RequestServiceImpl implements RequestService {
         User recipient = pet.getUser();
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7";
 
-        arguments.put("requestURL", url + "/interests");
-        arguments.put("petURL", url + "/pet/" + pet.getId());
+        arguments.put("requestURL", contextURL + "/interests");
+        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("ownerURL", url + "/user/" + + user.getId());
+        arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
         arguments.put("petName", pet.getPetName());
 
         mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_RECOVER);

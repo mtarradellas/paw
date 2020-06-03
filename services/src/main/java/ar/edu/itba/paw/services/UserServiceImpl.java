@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> create(String username, String password, String mail, String locale) {
+    public Optional<User> create(String username, String password, String mail, String locale, String contextURL) {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
         User user = userDao.create(username, encoder.encode(password), mail, UserStatus.INACTIVE, locale);
 
@@ -91,12 +91,10 @@ public class UserServiceImpl implements UserService {
         }
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
-        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
+        String urlToken = contextURL + "/account-activation";
         urlToken += "?token=" + uuid;
 
         arguments.put("URLToken", urlToken );
-        arguments.put("URL", url );
         arguments.put("username",user.getUsername());
 
         mailService.sendMail(user.getMail(), arguments, MailType.ACTIVATE_ACCOUNT);
@@ -216,7 +214,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> requestPasswordReset(String mail) {
+    public Optional<User> requestPasswordReset(String mail, String contextURL) {
         LOGGER.debug("Requesting password reset for mail {}", mail);
 
         Optional<User> opUser = userDao.findByMail(mail);
@@ -230,12 +228,11 @@ public class UserServiceImpl implements UserService {
         createToken(token, user);
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
-        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
+
+        String urlToken = contextURL + "/password-reset";
         urlToken += "?token=" + token;
 
         arguments.put("URLToken", urlToken );
-        arguments.put("URL", url );
         arguments.put("username",user.getUsername());
 
         mailService.sendMail(user.getMail(), arguments, MailType.RESET_PASSWORD);
