@@ -192,6 +192,7 @@ public class PetJpaDaoImpl implements PetDao {
                     .withEditDistanceUpTo(1)
                     .withPrefixLength(0)
                     .onFields(species, breed, "gender", "petName", "province.name", "department.name")
+                    .ignoreAnalyzer()
                     .matching(value)
                     .createQuery());
         }
