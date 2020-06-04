@@ -52,7 +52,6 @@
                                 </spring:bind>
                             </div>
                             <div class="col">
-
                                 <spring:bind path="price">
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
@@ -261,6 +260,7 @@
             </div>
         </div>
     </div>
+    <script src="<c:url value="/resources/js/pet_upload.js"/>"></script>
     <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
     <script src="<c:url value="/resources/js/edit_pet_view.js"/>"></script>
     <script src="<c:url value="/resources/js/revert_change.js"/>"></script>
