@@ -3,9 +3,10 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.models.constants.RequestStatus;
+import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Repository
 public class PetJpaDaoImpl implements PetDao {
+
+    static final int LIMIT_FOR_STATUS_AVAILABLE = 1;
 
     @PersistenceContext
     private EntityManager em;
@@ -45,30 +48,26 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public List<Pet> searchList(String locale, String find, int page, int pageSize) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+    public List<Pet> searchList(String locale, List<String> find, int page, int pageSize) {
+       // FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        /*TODO descomentar esta parte para el deploy*/
 //        try {
 //            fullTextEntityManager.createIndexer().startAndWait();
 //        } catch(InterruptedException ignored) {}
 
-        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
-                .buildQueryBuilder()
-                .forEntity(Pet.class)
-                .get();
-        locale = locale.toLowerCase();
-        String species = "species." + locale;
-        String breed = "breed." + locale;
-        org.apache.lucene.search.Query query = queryBuilder
-                .keyword()
-                .fuzzy()
-                .withEditDistanceUpTo(1)
-                .withPrefixLength(0)
-                .onFields(species, breed, "gender", "petName", "province.name", "department.name")
-                .matching(find)
-                .createQuery();
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Pet.class);
-        List<Pet> results = jpaQuery.getResultList();
-        return results;
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find);
+        jpaQuery.setFirstResult((page - 1) * pageSize);
+        jpaQuery.setMaxResults(pageSize);
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        List<Long> filteredIds = new ArrayList<>();
+        for (Object[] id:results) {
+            filteredIds.add((Long)id[0]);
+        }
+
+        final TypedQuery<Pet> finalQuery = em.createQuery("from Pet where id in :filteredIds", Pet.class);
+        finalQuery.setParameter("filteredIds", filteredIds);
+        return finalQuery.getResultList();
     }
 
     @Override
@@ -133,10 +132,7 @@ public class PetJpaDaoImpl implements PetDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = query.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
-
-        if (filteredIds.size() == 0){
-            return new ArrayList<>();
-        }
+        if (filteredIds.size() == 0) return new ArrayList<>();
 
         //Obtain Requests with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -174,6 +170,38 @@ public class PetJpaDaoImpl implements PetDao {
         return em.createQuery(cr).getResultList();
     }
 
+    private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(String locale, List<String> find) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+//        try {
+//            fullTextEntityManager.createIndexer().startAndWait();
+//        } catch(InterruptedException ignored) {}
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(Pet.class)
+                .get();
+        locale = locale.toLowerCase();
+        String species = "species." + locale;
+        String breed = "breed." + locale;
+
+        BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
+        boolJunction.must(queryBuilder.range().onField("status").below(LIMIT_FOR_STATUS_AVAILABLE).excludeLimit().createQuery());
+        for (String value: find) {
+            boolJunction.must(queryBuilder
+                    .keyword()
+                    .fuzzy()
+                    .withEditDistanceUpTo(1)
+                    .withPrefixLength(0)
+                    .onFields(species, breed, "gender", "petName", "province.name", "department.name")
+                    .matching(value)
+                    .createQuery());
+        }
+        org.apache.lucene.search.Query query = boolJunction.createQuery();
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Pet.class);
+        jpaQuery.setProjection(ProjectionConstants.ID);
+        return jpaQuery;
+    }
+
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM pets where status = 0");
@@ -182,8 +210,10 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public int getSearchListAmount(String locale, String find) {
-        return searchList(locale,find,-1,-1).size();
+    public int getSearchListAmount(String locale, List<String> find) {
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find);
+        List<Object[]> results = jpaQuery.getResultList();
+        return results.size();
     }
 
     @Override

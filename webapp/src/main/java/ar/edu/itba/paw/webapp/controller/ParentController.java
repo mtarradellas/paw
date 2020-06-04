@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -129,8 +132,15 @@ public class ParentController {
         return department;
     }
 
-    public boolean parseFind(String find) {
-        return find == null || find.matches("^[a-zA-Z0-9 \u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]*$");
+    public boolean isAllowedFind(String find) {
+        return find == null || find.matches("^[a-zA-Z \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
+                                                "\u00F3\u00FA\u00F1\u00FC]*$");
+    }
+
+    public List<String> parseFind(String find) {
+        if(find == null) return null;
+        String[] splitStr = find.trim().split("\\s+");
+        return Arrays.asList(splitStr);
     }
 
     public String parseGender(String gender) {

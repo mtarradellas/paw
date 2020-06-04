@@ -37,7 +37,7 @@ public class HomeController extends ParentController {
     public ModelAndView test() {
         final String locale = getLocale();
         return new ModelAndView("views/test")
-                .addObject("pets", petService.filteredList(getLocale(),"golden",null,
+                .addObject("pets", petService.filteredList(getLocale(),null,null,
                         null, null, null, null,null,null,0,
                         0,null,null,0,0));
 

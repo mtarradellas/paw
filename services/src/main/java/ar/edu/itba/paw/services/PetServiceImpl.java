@@ -45,7 +45,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<Pet> filteredList(String locale, String find, Long userId, Long speciesId, Long breedId, String gender,
+    public List<Pet> filteredList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                   PetStatus status, String searchCriteria, String searchOrder, int minPrice, int maxPrice,
                                   Long provinceId, Long departmentId, int page, int pageSize) {
         List<Pet> petList;
@@ -72,7 +72,7 @@ public class PetServiceImpl implements PetService {
             petList = petDao.filteredList(locale, user, species, breed, gender, status, searchCriteria, searchOrder,
                     minPrice, maxPrice, province, department, page, pageSize);
         } else {
-            petList = petDao.searchList(locale, find, minPrice, maxPrice);
+            petList = petDao.searchList(locale, find, page, pageSize);
         }
         setLocale(locale, petList);
         return petList;
@@ -81,8 +81,8 @@ public class PetServiceImpl implements PetService {
     @Override
     public List<Pet> listByUser(String locale, Long userId, int page, int pageSize) {
         if (userId != null && !userService.findById(userId).isPresent()) userId = null;
-        return filteredList(locale, null, userId, null, null, null, null,
-                null, null, 0, -1, null, null, page, pageSize);
+        return filteredList(locale,null,  userId, null, null, null, null,
+                null, null,0, -1, null,null, page, pageSize);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public int getFilteredListAmount(String locale, String find, Long userId, Long speciesId, Long breedId, String gender, PetStatus status,
+    public int getFilteredListAmount(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender, PetStatus status,
                                      int minPrice, int maxPrice, Long provinceId, Long departmentId) {
         List<Pet> petList;
         if (find == null) {
@@ -118,7 +118,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public int getListByUserAmount(String locale, Long userId) {
-        return getFilteredListAmount(locale,null, userId, null, null, null, null,
+        return getFilteredListAmount(locale, null, userId, null, null, null, null,
                 0, -1, null, null);
     }
 
