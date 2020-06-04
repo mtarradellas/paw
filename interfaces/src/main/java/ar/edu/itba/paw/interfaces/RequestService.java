@@ -19,13 +19,13 @@ public interface RequestService {
 
     Optional<Request> findById(long id);
 
-    Optional<Request> create(String locale, long user, long pet);
+    Optional<Request> create(String locale, long user, long pet, String contextURL);
     Optional<Request> update(Request request);
 
-    boolean  cancel(long id, User user);
-    boolean  accept(long id, User user);
-    boolean  reject(long id, User user);
-    boolean recover(long id, User user);
+    boolean  cancel(long id, User user, String contextURL);
+    boolean  accept(long id, User user, String contextURL);
+    boolean  reject(long id, User user, String contextURL);
+    boolean recover(long id, User user, String contextURL);
 
     void adminUpdateStatus(long id, RequestStatus status);
     void  adminCancel(long id);

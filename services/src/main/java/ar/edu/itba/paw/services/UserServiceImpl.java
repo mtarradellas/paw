@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> create(String username, String password, String mail, String locale) {
+    public Optional<User> create(String username, String password, String mail, String locale, String contextURL) {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
         User user = userDao.create(username, encoder.encode(password), mail, UserStatus.INACTIVE, locale);
 
@@ -91,15 +92,15 @@ public class UserServiceImpl implements UserService {
         }
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
-        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/account-activation";
+        String urlToken = contextURL + "/account-activation";
         urlToken += "?token=" + uuid;
 
         arguments.put("URLToken", urlToken );
-        arguments.put("URL", url );
         arguments.put("username",user.getUsername());
 
-        mailService.sendMail(user.getMail(), arguments, "activate_account");
+        String userLocale = user.getLocale();
+
+        mailService.sendMail(user.getMail(), userLocale, arguments, MailType.ACTIVATE_ACCOUNT);
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}", user.getId(), user.getUsername(), user.getMail());
         return Optional.of(user);
@@ -216,7 +217,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> requestPasswordReset(String mail) {
+    public Optional<User> requestPasswordReset(String mail, String contextURL) {
         LOGGER.debug("Requesting password reset for mail {}", mail);
 
         Optional<User> opUser = userDao.findByMail(mail);
@@ -230,15 +231,16 @@ public class UserServiceImpl implements UserService {
         createToken(token, user);
 
         Map<String, Object> arguments = new HashMap<>();
-        String url = "http://pawserver.it.itba.edu.ar/paw-2020a-7/";
-        String urlToken = "http://pawserver.it.itba.edu.ar/paw-2020a-7/password-reset";
+
+        String urlToken = contextURL + "/password-reset";
         urlToken += "?token=" + token;
 
         arguments.put("URLToken", urlToken );
-        arguments.put("URL", url );
         arguments.put("username",user.getUsername());
 
-        mailService.sendMail(user.getMail(), arguments, "reset_password");
+        String userLocale = user.getLocale();
+
+        mailService.sendMail(user.getMail(), userLocale, arguments, MailType.RESET_PASSWORD);
         return opUser;
     }
 
