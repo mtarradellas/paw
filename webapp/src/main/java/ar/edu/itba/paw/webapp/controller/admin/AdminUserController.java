@@ -2,7 +2,6 @@ package ar.edu.itba.paw.webapp.controller.admin;
 
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.User;
@@ -121,10 +120,11 @@ public class AdminUserController extends ParentController {
             return uploadUserForm(userForm);
         }
 
+        String locale = getLocale();
         Optional<User> opUser;
         try {
             opUser = userService.adminCreate(userForm.getUsername(), userForm.getPassword(),
-                    userForm.getMail());
+                    userForm.getMail(), locale);
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return uploadUserForm(userForm)

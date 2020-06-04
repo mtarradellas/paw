@@ -36,6 +36,9 @@ public class RequestJpaDaoImpl implements RequestDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> ids = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        if(ids.size() == 0) {
+            return new ArrayList<>();
+        }
 
         final TypedQuery<Request> query = em.createQuery("from Request where id in :ids", Request.class);
         query.setParameter("filteredIds", ids);
@@ -48,9 +51,9 @@ public class RequestJpaDaoImpl implements RequestDao {
     public List<Request> searchList(User user, Pet pet, String find, int page, int pageSize) {
 
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        try {
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {}
+//        try {
+//            fullTextEntityManager.createIndexer().startAndWait();
+//        } catch(InterruptedException ignored) {}
 
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
@@ -146,6 +149,9 @@ public class RequestJpaDaoImpl implements RequestDao {
         List<? extends Number> resultList = query.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
+        if(filteredIds.size() == 0) {
+            return new ArrayList<>();
+        }
         //Obtain Requests with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Request> cr = cb.createQuery(Request.class);

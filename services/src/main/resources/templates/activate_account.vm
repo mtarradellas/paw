@@ -1,8 +1,9 @@
 <html>
     <body>
-        <p>$bodyMessages.getMessage("activate_account.welcome")</p>
-        <p>$bodyMessages.getMessage("activate_account.username"): ${username}.</p>
-        <p>$bodyMessages.getMessage("activate_account.link") <a href="${URLToken}"> ${URLToken}</a></p>
-        <p>$bodyMessages.getMessage("goodbye")</p>
+        <p>${welcomeMsg}</p>
+        <p>${usernameMsg}: ${username}.</p>
+        <p>${linkMsg} <a href="${URLToken}"> ${URLToken}</a></p>
+        <p>${gotoSiteMsg}</p>
+        <p>${goodbyeMsg}</p>
     </body>
 </html>

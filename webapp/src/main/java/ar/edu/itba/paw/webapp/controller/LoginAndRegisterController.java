@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,10 +69,12 @@ public class LoginAndRegisterController extends ParentController {
             return registerForm(userForm);
         }
 
+        String locale = getLocale();
         Optional<User> opUser;
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
         try {
             opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
-                    userForm.getMail());
+                    userForm.getMail(), locale, baseUrl);
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return registerForm(userForm)
@@ -85,7 +90,8 @@ public class LoginAndRegisterController extends ParentController {
     }
 
     @RequestMapping(value ="/account-activation", method = { RequestMethod.GET })
-    public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString, HttpServletRequest request) {
+    public ModelAndView requestResetPassword(@RequestParam (name = "token", required = true) String tokenString,
+                                             HttpServletRequest request) {
         UUID uuid = UUID.fromString(tokenString);
 
         Optional<User> opUser = userService.activateAccountWithToken(uuid);
@@ -106,14 +112,16 @@ public class LoginAndRegisterController extends ParentController {
     }
 
     @RequestMapping(value ="/request-password-reset", method = { RequestMethod.POST })
-    public ModelAndView requestResetPassword(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm, final BindingResult errors) {
+    public ModelAndView requestResetPassword(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm,
+                                             final BindingResult errors) {
 
         if (errors.hasErrors()) {
             errors.getAllErrors().forEach(error -> LOGGER.debug("{}", error.toString()));
             return requestResetPassword(mailForm);
         }
 
-        Optional<User> opUser = userService.requestPasswordReset(mailForm.getMail());
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        Optional<User> opUser = userService.requestPasswordReset(mailForm.getMail(), baseUrl);
 
         if (!opUser.isPresent()) {
             return requestResetPassword(mailForm).addObject("invalidMail", true);
@@ -127,7 +135,8 @@ public class LoginAndRegisterController extends ParentController {
     }
 
     @RequestMapping(value ="/password-reset", method = { RequestMethod.POST })
-    public ModelAndView resetPassword(@Valid @ModelAttribute ("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult errors) {
+    public ModelAndView resetPassword(@Valid @ModelAttribute ("resetPasswordForm")
+                                          final ResetPasswordForm resetPasswordForm, final BindingResult errors) {
         if (errors.hasErrors()) {
             return resetPassword(resetPasswordForm);
         }
@@ -148,7 +157,8 @@ public class LoginAndRegisterController extends ParentController {
     }
 
     @RequestMapping(value ="/request-link-account", method = { RequestMethod.POST })
-    public ModelAndView requestLinkAccount(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm, final BindingResult errors) {
+    public ModelAndView requestLinkAccount(@Valid @ModelAttribute ("mailForm") final RequestMail mailForm,
+                                           final BindingResult errors) {
         return requestResetPassword(mailForm, errors);
     }
 

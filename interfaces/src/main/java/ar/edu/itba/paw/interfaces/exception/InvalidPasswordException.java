@@ -2,22 +2,22 @@ package ar.edu.itba.paw.interfaces.exception;
 
 public class InvalidPasswordException extends RuntimeException {
     public InvalidPasswordException() {
+        super();
     }
 
-    public InvalidPasswordException(String s) {
-        super(s);
+    public InvalidPasswordException(String message) {
+        super(message);
     }
 
-    public InvalidPasswordException(String s, Throwable throwable) {
-        super(s, throwable);
+    public InvalidPasswordException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public InvalidPasswordException(Throwable throwable) {
-        super(throwable);
+    public InvalidPasswordException(Throwable cause) {
+        super(cause);
     }
 
-    public InvalidPasswordException(String s, Throwable throwable, boolean enableSuppression, boolean writableStackTrace) {
-        super(s, throwable, enableSuppression, writableStackTrace);
+    protected InvalidPasswordException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
-
 }

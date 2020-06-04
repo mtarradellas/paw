@@ -5,7 +5,6 @@ import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -29,6 +28,9 @@ public class User {
     @Column(nullable = false)
     private String mail;
 
+    @Column(length = 7)
+    private String locale;
+
     @Enumerated(EnumType.ORDINAL)
     private UserStatus status;
 
@@ -42,37 +44,26 @@ public class User {
     @Column
     private List<Pet> petList;
 
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    @Column
+    private List<Review> ownerReviews;
+
+    @OneToMany(mappedBy = "target", fetch = FetchType.LAZY)
+    @Column
+    private List<Review> targetReviews;
+
     protected User() {
         // Hibernate
     }
 
-    public User(String username, String password, String mail, UserStatus status) {
+    public User(String username, String password, String mail, UserStatus status, String locale) {
         this.username = username;
         this.password = password;
         this.mail = mail;
         this.status = status;
-    }
+        this.locale = locale;
+        Object o;
 
-    @Deprecated
-    public User(String username, String mail) {
-        this.username = username;
-        this.mail = mail;
-    }
-
-    @Deprecated
-    public User(long id, String username, String mail) {
-        this.id = id;
-        this.username = username;
-        this.mail = mail;
-    }
-
-    @Deprecated
-    public User(long id, String username, String password, String mail, UserStatus status) {
-        this.id = id;
-        this.username = username;
-        this.mail = mail;
-        this.password = password;
-        this.status = status;
     }
 
     @Override
@@ -147,5 +138,36 @@ public class User {
 
     public void setPetList(List<Pet> petList) {
         this.petList = petList;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
+    public List<Review> getOwnerReviews() {
+        return ownerReviews;
+    }
+
+    public void setOwnerReviews(List<Review> ownerReviews) {
+        this.ownerReviews = ownerReviews;
+    }
+
+    public List<Review> getTargetReviews() {
+        return targetReviews;
+    }
+
+    public void setTargetReviews(List<Review> targetReviews) {
+        this.targetReviews = targetReviews;
+    }
+
+    public double getAverageScore() {
+        int amount = targetReviews.size();
+        if (amount == 0) return -1;
+        int sum = targetReviews.stream().mapToInt(Review::getScore).sum();
+        return (double) sum / amount;
     }
 }

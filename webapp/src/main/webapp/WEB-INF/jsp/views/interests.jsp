@@ -19,7 +19,7 @@
                             <h2 class="col"><spring:message code="interest.title"/> <spring:message code="showingResults"
                                                                                         arguments="${amount}"/></h2>
                             <div class="col-md-1 align-self-end">
-                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                <button type="button" class="btn btn-primary btn-circle float-right mb-1"
                                         data-toggle="modal" data-target="#help"><b>?</b></button>
                             </div>
                         </div>

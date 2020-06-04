@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exception.DuplicateUserException;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
@@ -16,6 +15,7 @@ import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +27,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,8 +112,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/requests/{id}/cancel", method = {RequestMethod.POST})
     public ModelAndView cancelRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.cancel(id, user)) {
+        if (requestService.cancel(id, user, baseUrl)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -119,8 +123,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView recoverRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.recover(id, user)) {
+        if (requestService.recover(id, user, baseUrl)) {
             return new ModelAndView("redirect:/requests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -164,8 +169,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/interests/{id}/accept", method = {RequestMethod.POST})
     public ModelAndView acceptInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.accept(id, user)) {
+        if (requestService.accept(id, user, baseUrl)) {
             return new ModelAndView("redirect:/interests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -174,8 +180,9 @@ public class UserController extends ParentController {
     @RequestMapping(value = "/interests/{id}/reject", method = {RequestMethod.POST})
     public ModelAndView rejectInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (requestService.reject(id, user)) {
+        if (requestService.reject(id, user, baseUrl)) {
             return new ModelAndView("redirect:/interests" );
         }
         return new ModelAndView("redirect:/403" );
@@ -223,10 +230,10 @@ public class UserController extends ParentController {
         Optional<User> opUser;
         try {
              opUser = userService.updateUsername(id, editUserForm.getUsername());
-        } catch (DuplicateUserException ex) {
+        } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return editUserForm(editUserForm, id)
-                    .addObject("duplicatedUsername", ex.isDuplicatedUsername());
+                    .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"));
         }
         if(!opUser.isPresent()){
             return new ModelAndView("redirect:/500");
@@ -271,6 +278,25 @@ public class UserController extends ParentController {
             return new ModelAndView("redirect:/logout");
         }
         LOGGER.warn("User is not logged user, status not updated");
+        return new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/user/{id}/review", method = {RequestMethod.POST})
+    public ModelAndView uploadReview(@PathVariable("id") long id,
+                                     @RequestParam(name = "score") String scoreStr,
+                                     @RequestParam(name = "description") String description) {
+
+        User user = loggedUser();
+        if (user != null) {
+            int score = parseReviewScore(scoreStr);
+            try {
+                userService.addReview(user, id, score, description);
+            } catch (DataIntegrityViolationException ex) {
+                LOGGER.warn("{}", ex.getMessage());
+                return user(id, "1").addObject("reviewError", true);
+            }
+            return user(id, "1").addObject("reviewError", false);
+        }
         return new ModelAndView("redirect:/403");
     }
 
