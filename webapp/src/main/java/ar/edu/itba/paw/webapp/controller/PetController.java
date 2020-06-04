@@ -90,16 +90,17 @@ public class PetController extends ParentController {
         Long provinceId = parseProvince(province);
         Long departmentId = parseDepartment(department);
 
-        if (!parseFind(find)) {
+        if (!isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
             mav.addObject("wrongSearch", false);
         }
+        List<String> findList = parseFind(find);
 
-        List<Pet> petList = petService.filteredList(locale, find, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
+        List<Pet> petList = petService.filteredList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
                 searchCriteria, searchOrder, minPriceNum, maxPriceNum, provinceId, departmentId, pageNum, PET_PAGE_SIZE);
-        int amount = petService.getFilteredListAmount(locale, find, null, speciesId, breedId, gender, PetStatus.AVAILABLE, minPriceNum,
+        int amount = petService.getFilteredListAmount(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE, minPriceNum,
                 maxPriceNum, provinceId, departmentId);
 
         Object[] departments = petList.stream().map(Pet::getDepartment).distinct().sorted(Department::compareTo).toArray();
