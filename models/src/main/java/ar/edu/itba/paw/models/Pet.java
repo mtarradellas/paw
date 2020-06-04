@@ -2,6 +2,9 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.PetStatus;
 import org.hibernate.search.annotations.*;
+import org.hibernate.search.bridge.builtin.EnumBridge;
+import org.hibernate.search.bridge.builtin.IntegerBridge;
+import org.hibernate.search.bridge.builtin.StringBridge;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -32,6 +35,8 @@ public class Pet {
     @Column(nullable = false)
     private boolean vaccinated;
 
+    @Field
+    @NumericField
     @Column(nullable = false)
     private int price;
 
@@ -41,8 +46,10 @@ public class Pet {
     @Column(length = 4086)
     private String description;
 
-    @Enumerated(EnumType.ORDINAL)
-    private PetStatus status;
+
+    @Field
+    @NumericField
+    private int status;
 
     @ContainedIn
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -87,7 +94,7 @@ public class Pet {
         this.price = price;
         this.uploadDate = uploadDate;
         this.description = description;
-        this.status = status;
+        this.status = status.getValue()-1;
         this.user = user;
         this.species = species;
         this.breed = breed;
@@ -157,7 +164,7 @@ public class Pet {
     }
 
     public PetStatus getStatus() {
-        return status;
+        return PetStatus.values()[status];
     }
 
     public User getUser() {
@@ -213,7 +220,7 @@ public class Pet {
     }
 
     public void setStatus(PetStatus status) {
-        this.status = status;
+        this.status = status.getValue()-1;
     }
 
     public void setUser(User user) {

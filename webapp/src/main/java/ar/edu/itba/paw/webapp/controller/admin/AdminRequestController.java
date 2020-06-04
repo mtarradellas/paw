@@ -55,7 +55,7 @@ public class AdminRequestController extends ParentController {
         searchCriteria = parseCriteria(searchCriteria);
         searchOrder = parseOrder(searchOrder);
 
-        if (!parseFind(find)) {
+        if (!isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
