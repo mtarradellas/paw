@@ -62,7 +62,7 @@ public class MailServiceImpl implements MailService {
                     arguments.put("welcomeMsg","¡Bienvenido a nuestro sitio!");
                     arguments.put("usernameMsg","Este es su nuevo nombre de usuario");
                     arguments.put("linkMsg","<br>Por favor vaya al siguiente link para activar su cuenta:<br>");
-                    arguments.put("gotoSiteMsg","¡Ir a nuestro sitio para comenzar a mirar mascotas!");
+                    arguments.put("gotoSiteMsg","¡Vaya a nuestro sitio para comenzar a mirar mascotas!");
                     arguments.put("goodbyeMsg", "<br>Sinceramente,<br>El equipo de Pet Society.");
                     return "Por favor, active su cuenta";
                 }else if(locale.equals("en_US")){
@@ -76,12 +76,10 @@ public class MailServiceImpl implements MailService {
             case RESET_PASSWORD:
                 if(locale == null || locale.equals("es_AR")){
                     arguments.put("linkMsg", "<br>Por favor vaya al siguiente link para resetearla:<br>");
-                    arguments.put("gotoSiteMsg", "¡Ir a nuestro sitio para comenzar a mirar mascotas!");
                     arguments.put("goodbyeMsg", "<br>Sinceramente,<br>El equipo de Pet Society.");
                     return "Resetee su contraseña";
                 }else if(locale.equals("en_US")){
                     arguments.put("linkMsg", "<br>Please go to the link below to reset your password:<br>");
-                    arguments.put("gotoSiteMsg", "Go to our site to start looking for pets!");
                     arguments.put("goodbyeMsg", "<br>Sincerely,<br>Pet Society Team.");
                     return "Reset Your Password";
                 }
@@ -89,13 +87,13 @@ public class MailServiceImpl implements MailService {
                 if(locale == null || locale.equals("es_AR")){
                     arguments.put("requesterMsg", "Usuario que hizo la solicitud");
                     arguments.put("petMsg", "Mascota deseada");
-                    arguments.put("requestMsg", "¡Vaya a nuestra página para aceptar o rechazar la solicitud!");
+                    arguments.put("requestMsg", "¡Haga click aquí para ir a aceptar o rechazar la solicitud!");
                     arguments.put("goodbyeMsg", "<br>Sinceramente,<br>El equipo de Pet Society.");
                     return "¡Un usuario mostró interes en una de sus mascotas!";
                 }else if(locale.equals("en_US")){
                     arguments.put("requesterMsg", "User that made the request");
                     arguments.put("petMsg", "Target Pet");
-                    arguments.put("requestMsg", "Go to our page to accept or reject this request!");
+                    arguments.put("requestMsg", "Click here to go to accept or reject this request!");
                     arguments.put("goodbyeMsg", "<br>Sincerely,<br>Pet Society Team.");
                     return "A user showed interest in one of your pets!";
                 }
@@ -105,7 +103,7 @@ public class MailServiceImpl implements MailService {
                     arguments.put("petMsg", "Mascota deseada");
                     arguments.put("contactMsg", "Para iniciar el proceso de conseguir su mascota, contáctese con este mail");
                     arguments.put("mailMsg", "Para más información, contáctese con petsociety.contact@gmail.com");
-                    arguments.put("gotoSiteMsg", "¡Ir a nuestro sitio para mirar mas mascotas!");
+                    arguments.put("gotoSiteMsg", "¡Haga click aquí para ir a nuestro sitio!");
                     arguments.put("goodbyeMsg", "<br>Sinceramente,<br>El equipo de Pet Society.");
                     return "¡Genial! Su solicitud fue aceptada";
                 }else if(locale.equals("en_US")){
@@ -113,7 +111,7 @@ public class MailServiceImpl implements MailService {
                     arguments.put("petMsg", "Target Pet");
                     arguments.put("contactMsg", "To begin the process for getting your new pet, please contact this mail");
                     arguments.put("mailMsg", "For more information, contact us at petsociety.contact@gmail.com");
-                    arguments.put("gotoSiteMsg", "Go to our site to look for more pets!");
+                    arguments.put("gotoSiteMsg", "Click here to go to our site!");
                     arguments.put("goodbyeMsg", "<br>Sincerely,<br>Pet Society Team.");
                     return "Hooray! Your request was accepted";
                 }
@@ -122,14 +120,14 @@ public class MailServiceImpl implements MailService {
                     arguments.put("actionMsg", "Su solicitud fue rechazada por");
                     arguments.put("petMsg", "Mascota deseada");
                     arguments.put("mailMsg", "Para más información, contáctese con petsociety.contact@gmail.com");
-                    arguments.put("gotoSiteMsg", "¡Ir a nuestro sitio para mirar otras mascotas!");
+                    arguments.put("gotoSiteMsg", "¡Haga click aquí para ir a nuestro sitio!");
                     arguments.put("goodbyeMsg", "<br>Sinceramente,<br>El equipo de Pet Society.");
                     return "Lo sentimos, su solicitud fue rechazada";
                 }else if(locale.equals("en_US")){
                     arguments.put("actionMsg", "Your request was rejected by");
                     arguments.put("petMsg", "Target Pet");
                     arguments.put("mailMsg", "For more information, contact us at petsociety.contact@gmail.com");
-                    arguments.put("gotoSiteMsg", "Go to our site to look for other pets!");
+                    arguments.put("gotoSiteMsg", "Click here to go to our site!");
                     arguments.put("goodbyeMsg", "<br>Sincerely,<br>Pet Society Team.");
                     return "We're sorry, your request was rejected";
                 }
@@ -137,13 +135,13 @@ public class MailServiceImpl implements MailService {
                 if(locale == null || locale.equals("es_AR")){
                     arguments.put("actionMsg", "La solicitud fue renovada por");
                     arguments.put("petMsg", "Mascota solicitada");
-                    arguments.put("requestMsg", "¡Ir a nuestro sitio para aceptar o rechazar su solicitud!");
+                    arguments.put("requestMsg", "¡Haga click aquí para ir a aceptar o rechazar la solicitud!");
                     arguments.put("goodbyeMsg", "<br>Sinceramente,<br>El equipo de Pet Society.");
                     return "Un usuario ha renovado una solicitud de una mascota";
                 }else if(locale.equals("en_US")){
                     arguments.put("actionMsg", "The request was recovered by");
                     arguments.put("petMsg", "Requested pet");
-                    arguments.put("requestMsg", "Go to our page to accept or reject this request!");
+                    arguments.put("requestMsg", "¡Haga click aquí para ir a aceptar o rechazar la solicitud!");
                     arguments.put("goodbyeMsg", "<br>Sincerely,<br>Pet Society Team.");
                     return "A user has recovered a request for a pet";
                 }
