@@ -98,7 +98,9 @@ public class UserServiceImpl implements UserService {
         arguments.put("URLToken", urlToken );
         arguments.put("username",user.getUsername());
 
-        mailService.sendMail(user.getMail(), arguments, MailType.ACTIVATE_ACCOUNT);
+        String userLocale = user.getLocale();
+
+        mailService.sendMail(user.getMail(), userLocale, arguments, MailType.ACTIVATE_ACCOUNT);
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}", user.getId(), user.getUsername(), user.getMail());
         return Optional.of(user);
@@ -236,7 +238,9 @@ public class UserServiceImpl implements UserService {
         arguments.put("URLToken", urlToken );
         arguments.put("username",user.getUsername());
 
-        mailService.sendMail(user.getMail(), arguments, MailType.RESET_PASSWORD);
+        String userLocale = user.getLocale();
+
+        mailService.sendMail(user.getMail(), userLocale, arguments, MailType.RESET_PASSWORD);
         return opUser;
     }
 

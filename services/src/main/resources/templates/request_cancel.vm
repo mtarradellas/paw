@@ -1,7 +1,7 @@
 <html>
     <body>
-        <p>$bodyMessages.getMessage("request_cancel.triggerUser"): <a href="${ownerURL}">${ownerUsername}</a>.</p>
-        <p>$bodyMessages.getMessage("request_cancel.pet"): <a href="${petURL}">${petName}</a>.</p>
-        <p>$bodyMessages.getMessage("goodbye")</p>
+        <p>${actionMsg}: <a href="${ownerURL}">${ownerUsername}</a>.</p>
+        <p>${petMsg}: <a href="${petURL}">${petName}</a>.</p>
+        <p>${goodbyeMsg}</p>
     </body>
 </html>

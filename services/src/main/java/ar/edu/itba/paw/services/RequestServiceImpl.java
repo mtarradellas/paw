@@ -110,7 +110,9 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", contextURL + "/user/" + user.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(pet.getUser().getMail(), arguments, MailType.REQUEST);
+        String userLocale = pet.getUser().getLocale();
+
+        mailService.sendMail(pet.getUser().getMail(), userLocale, arguments, MailType.REQUEST);
 
         return Optional.of(request);
     }
@@ -156,7 +158,9 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_CANCEL);
+        String userLocale = recipient.getLocale();
+
+        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_CANCEL);
 
         LOGGER.debug("Request {} canceled by user {}", request.getId(), user.getId());
         return true;
@@ -198,7 +202,9 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", contextURL +  "/user/" + recipient.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_ACCEPT);
+        String userLocale = recipient.getLocale();
+
+        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_ACCEPT);
 
         LOGGER.debug("Request {} accepted by user {}", request.getId(), user.getId());
         return true;
@@ -239,7 +245,9 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_REJECT);
+        String userLocale = recipient.getLocale();
+
+        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_REJECT);
 
         LOGGER.debug("Request {} rejected by user {}", request.getId(), user.getId());
         return true;
@@ -280,7 +288,9 @@ public class RequestServiceImpl implements RequestService {
         arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
         arguments.put("petName", pet.getPetName());
 
-        mailService.sendMail(recipient.getMail(), arguments, MailType.REQUEST_RECOVER);
+        String userLocale = recipient.getLocale();
+
+        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_RECOVER);
 
 //        final Contact contact = opContact.get();
 //        final User recipient = request.getUser();
