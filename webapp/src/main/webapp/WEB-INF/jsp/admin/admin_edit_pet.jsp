@@ -56,16 +56,15 @@
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
                                         <form:label path="price" for="price">${priceTxt}: </form:label>
-                                        <div class="input-modifiable-div" data-current="${pet.price}">
-                                            <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
-                                            <a class="revert-input-anchor">
-                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
-                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                        <form:errors path="price" element="div" cssClass="text-error"/>
+                                        <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                        <form:errors path="price" element="div" cssClass="invalid-feedback"/>
+                                    </div>
+                                </spring:bind>
+                                <spring:bind path="price">
+                                    <div class="form-group">
+                                        <spring:message code="uploadPetForm.forAdoption" var="adoptTxt"/>
+                                        <form:checkbox path="price" value="0" id="adopt" />
+                                        <form:label path="price" for="price">${adoptTxt}</form:label>
                                     </div>
                                 </spring:bind>
                             </div>
