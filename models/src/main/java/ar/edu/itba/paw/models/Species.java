@@ -39,14 +39,6 @@ public class Species implements Comparable<Species>{
         this.name = es_ar;
     }
 
-    @Deprecated
-    public Species(Long id, String name) {
-        this.id = id;
-        this.en_us = name;
-        this.es_ar = name;
-        this.name = name;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,12 +57,40 @@ public class Species implements Comparable<Species>{
         return id;
     }
 
-    public String getName() {
-        return name;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEn_us() {
         return en_us;
+    }
+
+    public void setEn_us(String en_us) {
+        this.en_us = en_us;
+    }
+
+    public String getEs_ar() {
+        return es_ar;
+    }
+
+    public void setEs_ar(String es_ar) {
+        this.es_ar = es_ar;
+    }
+
+    public List<Breed> getBreedList() {
+        return breedList;
+    }
+
+    public void setBreedList(List<Breed> breedList) {
+        this.breedList = breedList;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setLocale(String locale) {
@@ -79,10 +99,6 @@ public class Species implements Comparable<Species>{
         } else {
             name = es_ar;
         }
-    }
-
-    public List<Breed> getBreedList() {
-        return breedList;
     }
 
     @Override
