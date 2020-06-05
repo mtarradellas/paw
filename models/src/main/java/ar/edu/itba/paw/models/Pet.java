@@ -184,6 +184,10 @@ public class Pet {
         return images;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void setPetName(String petName) {
         this.petName = petName;
     }
