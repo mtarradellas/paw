@@ -16,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
@@ -55,7 +57,7 @@ public class AdminRequestController extends ParentController {
         searchCriteria = parseCriteria(searchCriteria);
         searchOrder = parseOrder(searchOrder);
 
-        if (!parseFind(find)) {
+        if (!isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
@@ -92,8 +94,9 @@ public class AdminRequestController extends ParentController {
         }
 
         Optional<Request> optionalRequest;
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
         try {
-            optionalRequest = requestService.create(locale, requestForm.getUserId(), requestForm.getPetId());
+            optionalRequest = requestService.create(locale, requestForm.getUserId(), requestForm.getPetId(), baseUrl);
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return uploadRequestForm(requestForm).addObject("requestError", true);

@@ -19,12 +19,10 @@
             <c:if test="${not empty param.gender}">
                 <c:param name="gender" value="${param.gender}"/>
             </c:if>
-            <c:if test="${not empty param.minPrice}">
-                <c:param name="minPrice" value="${param.minPrice}"/>
+            <c:if test="${not empty param.priceRange}">
+                <c:param name="priceRange" value="${param.priceRange}"/>
             </c:if>
-            <c:if test="${not empty param.maxPrice}">
-                <c:param name="maxPrice" value="${param.maxPrice}"/>
-            </c:if>
+
             <c:if test="${not empty param.searchCriteria}">
                 <c:param name="searchCriteria" value="${param.searchCriteria}"/>
             </c:if>
@@ -59,11 +57,8 @@
                         <c:if test="${not empty param.gender}">
                             <c:param name="gender" value="${param.gender}"/>
                         </c:if>
-                        <c:if test="${not empty param.minPrice}">
-                            <c:param name="minPrice" value="${param.minPrice}"/>
-                        </c:if>
-                        <c:if test="${not empty param.maxPrice}">
-                            <c:param name="maxPrice" value="${param.maxPrice}"/>
+                        <c:if test="${not empty param.priceRange}">
+                            <c:param name="priceRange" value="${param.priceRange}"/>
                         </c:if>
                         <c:if test="${not empty param.searchCriteria}">
                             <c:param name="searchCriteria" value="${param.searchCriteria}"/>
@@ -97,11 +92,8 @@
             <c:if test="${not empty param.gender}">
                 <c:param name="gender" value="${param.gender}"/>
             </c:if>
-            <c:if test="${not empty param.minPrice}">
-                <c:param name="minPrice" value="${param.minPrice}"/>
-            </c:if>
-            <c:if test="${not empty param.maxPrice}">
-                <c:param name="maxPrice" value="${param.maxPrice}"/>
+            <c:if test="${not empty param.priceRange}">
+                <c:param name="priceRange" value="${param.priceRange}"/>
             </c:if>
             <c:if test="${not empty param.searchCriteria}">
                 <c:param name="searchCriteria" value="${param.searchCriteria}"/>
