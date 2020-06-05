@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Repository
 public class PetJpaDaoImpl implements PetDao {
 
-    static final int LIMIT_FOR_STATUS_AVAILABLE = 1;
+    static final int AVAILABLE = 0;
 
     @PersistenceContext
     private EntityManager em;
@@ -50,91 +50,31 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public List<Pet> searchList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                                 String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize) {
-       // FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        /*TODO descomentar esta parte para el deploy*/
-//        try {
-//            fullTextEntityManager.createIndexer().startAndWait();
-//        } catch(InterruptedException ignored) {}
 
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find, user, species, breed, gender, status, searchCriteria,
-                 searchOrder, minPrice,  maxPrice, province,  department);
-        return filteredPagination(locale, jpaQuery,searchCriteria,searchOrder,page,pageSize);
-//        jpaQuery.setFirstResult((page - 1) * pageSize);
-//        jpaQuery.setMaxResults(pageSize);
-//        List<Object[]> results = jpaQuery.getResultList();
-//        if (results.size() == 0) return new ArrayList<>();
-//        List<Long> filteredIds = new ArrayList<>();
-//        for (Object[] id:results) {
-//            filteredIds.add((Long)id[0]);
-//        }
-//
-//        final TypedQuery<Pet> finalQuery = em.createQuery("from Pet where id in :filteredIds", Pet.class);
-//        finalQuery.setParameter("filteredIds", filteredIds);
-//        return finalQuery.getResultList();
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find, user, species, breed, gender, status,
+                minPrice,  maxPrice, province,  department);
+        return paginationAndOrder(locale, jpaQuery,searchCriteria,searchOrder,page,pageSize);
     }
 
     @Override
+    @Deprecated
     public List<Pet> filteredList(String locale, User user, Species species, Breed breed, String gender, PetStatus status,
                                   String searchCriteria, String searchOrder, int minPrice, int maxPrice, Province province,
                                   Department department, int page, int pageSize) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Pet> cr = cb.createQuery(Pet.class);
-        Root<Pet> root = cr.from(Pet.class);
 
-        List<Predicate> predicates = predicatesForFilteredList(user, status, species, breed, gender, minPrice,
-                                                                maxPrice, province, department, cb, root);
-
-        cr.select(root.get("id")).where(cb.and(predicates.toArray(new Predicate[] {})));
-        Query query = em.createQuery(cr);
-        return filteredPagination(locale, query, searchCriteria, searchOrder, page, pageSize);
+        return searchList(locale, null, user, species, breed, gender, status, searchCriteria, searchOrder,
+                minPrice, maxPrice, province, department, page, pageSize);
     }
 
-    private List<Predicate> predicatesForFilteredList (User user, PetStatus status, Species species, Breed breed,
-                                                       String gender, int minPrice, int maxPrice,
-                                                       Province province, Department department, CriteriaBuilder cb,
-                                                       Root<Pet> root) {
-        List<Predicate> predicates = new ArrayList<>();
-        if (status != null) {
-            Expression<PetStatus> petStatus = root.get("status");
-            predicates.add(cb.equal(petStatus, status.getValue()-1));
-        }
-        if(user != null) {
-            Expression<User> petUser = root.get("user");
-            predicates.add(cb.equal(petUser, user));
-        }
-        if(species != null) {
-            Expression<Species> petSpecies = root.get("species");
-            predicates.add(cb.equal(petSpecies, species));
-        }
-        if(breed != null) {
-            Expression<Breed> petBreed = root.get("breed");
-            predicates.add(cb.equal(petBreed, breed));
-        }
-        if(gender != null) {
-            Expression<String> petGender = root.get("gender");
-            predicates.add(cb.equal(petGender, gender));
-        }
-        predicates.add(cb.ge(root.get("price"), minPrice));
-        if(maxPrice != -1) {
-            predicates.add(cb.le(root.get("price"), maxPrice));
-        }
-        if(province != null) {
-            Expression<Province> petProvince = root.get("province");
-            predicates.add(cb.equal(petProvince, province));
-        }
-        if(department != null) {
-            Expression<Department> petDepartment = root.get("department");
-            predicates.add(cb.equal(petDepartment, department));
-        }
-        return predicates;
-    }
-
-    private List<Pet> filteredPagination(String locale, Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
+    private List<Pet> paginationAndOrder(String locale, Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
         query.setFirstResult((page - 1) * pageSize);
         query.setMaxResults(pageSize);
-        @SuppressWarnings("unchecked")
-        List<? extends Number> resultList = query.getResultList();
-        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        List<Object[]> results = query.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        List<Long> filteredIds = new ArrayList<>();
+        for (Object[] id:results) {
+            filteredIds.add((Long)id[0]);
+        }
         if (filteredIds.size() == 0) return new ArrayList<>();
 
         //Obtain Requests with the filtered ids and sort
@@ -174,10 +114,11 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(String locale, List<String> find, User user, Species species,
-                                                                  Breed breed, String gender, PetStatus status, String searchCriteria,
-                                                                  String searchOrder, int minPrice, int maxPrice, Province province,
+                                                                  Breed breed, String gender, PetStatus status, int minPrice,
+                                                                  int maxPrice, Province province,
                                                                   Department department) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        /* TODO descomentar para deployar*/
 //        try {
 //            fullTextEntityManager.createIndexer().startAndWait();
 //        } catch(InterruptedException ignored) {}
@@ -190,7 +131,8 @@ public class PetJpaDaoImpl implements PetDao {
         String breedField = "breed." + locale;
 
         BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
-        boolJunction.must(queryBuilder.range().onField("status").below(LIMIT_FOR_STATUS_AVAILABLE).excludeLimit().createQuery());
+        if(status != null)boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()-1).createQuery());
+        else boolJunction.must(queryBuilder.range().onField("status").below(AVAILABLE).createQuery());
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder
@@ -204,6 +146,7 @@ public class PetJpaDaoImpl implements PetDao {
                         .createQuery());
             }
         }
+        if(user != null)  boolJunction.must(queryBuilder.phrase().onField("user.username").sentence(user.getUsername()).createQuery());
         if(species != null) boolJunction.must(queryBuilder.phrase().onField("species.en_us").sentence(species.getEn_us()).createQuery());
         if(breed != null) boolJunction.must(queryBuilder.phrase().onField("breed.en_us").sentence(breed.getEn_us()).createQuery());
         if(gender != null)boolJunction.must(queryBuilder.keyword().onField("gender").matching(gender).createQuery());
@@ -227,25 +170,20 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public int getSearchListAmount(String locale, List<String> find) {
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find,null, null,null,null,null, null,
-                null,0,-1,null,null);
-        List<Object[]> results = jpaQuery.getResultList();
+    public int getSearchListAmount(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status,
+                                   int minPrice, int maxPrice, Province province, Department department) {
+        org.hibernate.search.jpa.FullTextQuery query = searchIdsQuery(locale, find, user, species, breed, gender, status,
+                minPrice,  maxPrice, province,  department);
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
         return results.size();
     }
 
     @Override
-    public int getFilteredListAmount(User user, Species species, Breed breed, String gender, PetStatus status,
+    @Deprecated
+    public int getFilteredListAmount(String locale, User user, Species species, Breed breed, String gender, PetStatus status,
                                      int minPrice, int maxPrice, Province province, Department department) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cr = cb.createQuery(Long.class);
-        Root<Pet> root = cr.from(Pet.class);
-
-        List<Predicate> predicates = predicatesForFilteredList(user, status, species, breed, gender, minPrice,
-                                                                maxPrice, province, department, cb, root);
-
-        cr.select(cb.count(root.get("id"))).where(cb.and(predicates.toArray(new Predicate[] {})));
-        return em.createQuery(cr).getSingleResult().intValue();
+        return getSearchListAmount(locale, null, user, species, breed, gender, status, minPrice,  maxPrice, province, department);
     }
 
     @Override
