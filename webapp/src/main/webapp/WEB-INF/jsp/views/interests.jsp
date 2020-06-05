@@ -1,3 +1,4 @@
+<%@ page import="ar.edu.itba.paw.models.constants.RequestStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -52,7 +53,8 @@
 
                         </c:if>
                         <c:forEach var="req" items="${interestList}">
-                            <c:if test="${req.status.value eq 1}">
+                            <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+                            <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-5">
                                         <spring:message code="request.isInterested"
@@ -84,7 +86,7 @@
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.value ne 1}">
+                            <c:if test="${req.status.value ne PENDING}">
                                 <div class="row bg-light p-1 resolved">
                                     <div class=" col-lg-5">
                                         <spring:message code="request.wasInterested"
@@ -92,7 +94,22 @@
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
-                                            ${req.status}
+                                        <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+                                        <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+                                        <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+                                        <c:choose>
+                                            <c:when test="${req.status.value eq ACCEPTED}">
+                                                <spring:message code="request.accepted"/>
+                                            </c:when>
+
+                                            <c:when test="${req.status.value eq CANCELED}">
+                                                <spring:message code="request.canceled"/>
+                                            </c:when>
+
+                                            <c:when test="${req.status.value eq REJECTED}">
+                                                <spring:message code="request.rejected"/>
+                                            </c:when>
+                                        </c:choose>
                                     </div>
                                     <div class="col text-center">
                                         <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
