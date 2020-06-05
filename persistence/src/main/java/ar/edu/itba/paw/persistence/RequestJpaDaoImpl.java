@@ -89,7 +89,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         List<Predicate> predicates = new ArrayList<>();
         if (status != null) {
             Expression<RequestStatus> reqStatus = root.get("status");
-            predicates.add(cb.equal(reqStatus, status.getValue()-1));
+            predicates.add(cb.equal(reqStatus, status.getValue()));
         }
         if(user != null) {
             Expression<User> reqUser = root.get("user");
@@ -107,7 +107,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         List<Predicate> predicates = new ArrayList<>();
         if (status != null) {
             Expression<RequestStatus> reqStatus = root.get("status");
-            predicates.add(cb.equal(reqStatus, status.getValue()-1));
+            predicates.add(cb.equal(reqStatus, status.getValue()));
         }
 
         /* TODO */
