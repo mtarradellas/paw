@@ -150,8 +150,8 @@ public class PetJpaDaoImpl implements PetDao {
         if(species != null) boolJunction.must(queryBuilder.phrase().onField("species.en_us").sentence(species.getEn_us()).createQuery());
         if(breed != null) boolJunction.must(queryBuilder.phrase().onField("breed.en_us").sentence(breed.getEn_us()).createQuery());
         if(gender != null)boolJunction.must(queryBuilder.keyword().onField("gender").matching(gender).createQuery());
-        if(province != null)boolJunction.must(queryBuilder.keyword().onField("province.name").matching(province.getName()).createQuery());
-        if(department != null)boolJunction.must(queryBuilder.keyword().onField("department.name").matching(department.getName()).createQuery());
+        if(province != null)boolJunction.must(queryBuilder.phrase().onField("province.name").sentence(province.getName()).createQuery());
+        if(department != null)boolJunction.must(queryBuilder.phrase().onField("department.name").sentence(department.getName()).createQuery());
         if(maxPrice != -1)boolJunction.must(queryBuilder.range().onField("price").below(maxPrice).createQuery());
         boolJunction.must(queryBuilder.range().onField("price").above(minPrice).createQuery());
 
