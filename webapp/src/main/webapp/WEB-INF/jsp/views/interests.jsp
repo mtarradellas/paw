@@ -94,7 +94,22 @@
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
-                                            ${req.status}
+                                        <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+                                        <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+                                        <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+                                        <c:choose>
+                                            <c:when test="${req.status.value eq ACCEPTED}">
+                                                <spring:message code="request.accepted"/>
+                                            </c:when>
+
+                                            <c:when test="${req.status.value eq CANCELED}">
+                                                <spring:message code="request.canceled"/>
+                                            </c:when>
+
+                                            <c:when test="${req.status.value eq REJECTED}">
+                                                <spring:message code="request.rejected"/>
+                                            </c:when>
+                                        </c:choose>
                                     </div>
                                     <div class="col text-center">
                                         <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
