@@ -6,6 +6,7 @@ import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -68,11 +69,28 @@ public class UserController extends ParentController {
         Optional<User> opUser = userService.findById(id);
         User user = opUser.orElseThrow(UserNotFoundException::new);
 
+        boolean canRate = false;
+
+        if(loggedUser() != null && !(user.getId() == loggedUser().getId())){
+            for(Request request : loggedUser().getRequestList()){
+                if((request.getPet().getUser().getId() == user.getId()) && (request.getStatus().getValue() ==
+                        RequestStatus.ACCEPTED.getValue())){
+                    canRate = true;
+                }
+            }
+            for(Review review : user.getTargetReviews()){
+                if(review.getOwner().getId() == loggedUser().getId()){
+                    canRate = false;
+                }
+            }
+        }
+
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("userPets", petList);
         mav.addObject("amount", amount);
         mav.addObject("user", user);
+        mav.addObject("canRate", canRate);
         return mav;
     }
 

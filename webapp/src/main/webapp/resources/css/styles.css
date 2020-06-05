@@ -408,3 +408,13 @@ html,body {
         margin: auto 15px;
     }
 }
+
+.star-rating{
+    color: darkorange;
+}
+
+.black-half{
+    transform: scaleX(-1);
+    position: relative;
+    right: 40px;
+}
