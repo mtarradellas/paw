@@ -9,7 +9,8 @@ import java.util.Optional;
 public interface PetDao {
 
     List<Pet> list(int page, int pageSize);
-    List<Pet> searchList(String locale, List<String> find, int page, int pageSize);
+    List<Pet> searchList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
+                         String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
     List<Pet> filteredList(String locale, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                            String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
 

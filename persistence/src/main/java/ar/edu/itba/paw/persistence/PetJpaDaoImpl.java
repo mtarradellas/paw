@@ -48,26 +48,29 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public List<Pet> searchList(String locale, List<String> find, int page, int pageSize) {
+    public List<Pet> searchList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
+                                String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize) {
        // FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         /*TODO descomentar esta parte para el deploy*/
 //        try {
 //            fullTextEntityManager.createIndexer().startAndWait();
 //        } catch(InterruptedException ignored) {}
 
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find);
-        jpaQuery.setFirstResult((page - 1) * pageSize);
-        jpaQuery.setMaxResults(pageSize);
-        List<Object[]> results = jpaQuery.getResultList();
-        if (results.size() == 0) return new ArrayList<>();
-        List<Long> filteredIds = new ArrayList<>();
-        for (Object[] id:results) {
-            filteredIds.add((Long)id[0]);
-        }
-
-        final TypedQuery<Pet> finalQuery = em.createQuery("from Pet where id in :filteredIds", Pet.class);
-        finalQuery.setParameter("filteredIds", filteredIds);
-        return finalQuery.getResultList();
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find, user, species, breed, gender, status, searchCriteria,
+                 searchOrder, minPrice,  maxPrice, province,  department);
+        return filteredPagination(locale, jpaQuery,searchCriteria,searchOrder,page,pageSize);
+//        jpaQuery.setFirstResult((page - 1) * pageSize);
+//        jpaQuery.setMaxResults(pageSize);
+//        List<Object[]> results = jpaQuery.getResultList();
+//        if (results.size() == 0) return new ArrayList<>();
+//        List<Long> filteredIds = new ArrayList<>();
+//        for (Object[] id:results) {
+//            filteredIds.add((Long)id[0]);
+//        }
+//
+//        final TypedQuery<Pet> finalQuery = em.createQuery("from Pet where id in :filteredIds", Pet.class);
+//        finalQuery.setParameter("filteredIds", filteredIds);
+//        return finalQuery.getResultList();
     }
 
     @Override
@@ -170,7 +173,10 @@ public class PetJpaDaoImpl implements PetDao {
         return em.createQuery(cr).getResultList();
     }
 
-    private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(String locale, List<String> find) {
+    private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(String locale, List<String> find, User user, Species species,
+                                                                  Breed breed, String gender, PetStatus status, String searchCriteria,
+                                                                  String searchOrder, int minPrice, int maxPrice, Province province,
+                                                                  Department department) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
 //        try {
 //            fullTextEntityManager.createIndexer().startAndWait();
@@ -180,22 +186,32 @@ public class PetJpaDaoImpl implements PetDao {
                 .forEntity(Pet.class)
                 .get();
         locale = locale.toLowerCase();
-        String species = "species." + locale;
-        String breed = "breed." + locale;
+        String speciesField = "species." + locale;
+        String breedField = "breed." + locale;
 
         BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
         boolJunction.must(queryBuilder.range().onField("status").below(LIMIT_FOR_STATUS_AVAILABLE).excludeLimit().createQuery());
-        for (String value: find) {
-            boolJunction.must(queryBuilder
-                    .keyword()
-                    .fuzzy()
-                    .withEditDistanceUpTo(1)
-                    .withPrefixLength(0)
-                    .onFields(species, breed, "gender", "petName", "province.name", "department.name")
-                    .ignoreAnalyzer()
-                    .matching(value)
-                    .createQuery());
+        if(find != null) {
+            for (String value : find) {
+                boolJunction.must(queryBuilder
+                        .keyword()
+                        .fuzzy()
+                        .withEditDistanceUpTo(1)
+                        .withPrefixLength(0)
+                        .onFields(speciesField, breedField, "gender", "petName", "province.name", "department.name")
+                        .ignoreAnalyzer()
+                        .matching(value)
+                        .createQuery());
+            }
         }
+        if(species != null) boolJunction.must(queryBuilder.phrase().onField("species.en_us").sentence(species.getEn_us()).createQuery());
+        if(breed != null) boolJunction.must(queryBuilder.phrase().onField("breed.en_us").sentence(breed.getEn_us()).createQuery());
+        if(gender != null)boolJunction.must(queryBuilder.keyword().onField("gender").matching(gender).createQuery());
+        if(province != null)boolJunction.must(queryBuilder.keyword().onField("province.name").matching(province.getName()).createQuery());
+        if(department != null)boolJunction.must(queryBuilder.keyword().onField("department.name").matching(department.getName()).createQuery());
+        if(maxPrice != -1)boolJunction.must(queryBuilder.range().onField("price").below(maxPrice).createQuery());
+        boolJunction.must(queryBuilder.range().onField("price").above(minPrice).createQuery());
+
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Pet.class);
@@ -212,7 +228,8 @@ public class PetJpaDaoImpl implements PetDao {
 
     @Override
     public int getSearchListAmount(String locale, List<String> find) {
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find);
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find,null, null,null,null,null, null,
+                null,0,-1,null,null);
         List<Object[]> results = jpaQuery.getResultList();
         return results.size();
     }

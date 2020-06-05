@@ -49,7 +49,6 @@ public class PetServiceImpl implements PetService {
                                   PetStatus status, String searchCriteria, String searchOrder, int minPrice, int maxPrice,
                                   Long provinceId, Long departmentId, int page, int pageSize) {
         List<Pet> petList;
-        if (find == null) {
             User user = null;
             Breed breed = null;
             Species species = null;
@@ -69,11 +68,12 @@ public class PetServiceImpl implements PetService {
                             "min price {}, max price {}, province {}, department {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}", user, status, species, breed,
                     gender, minPrice, maxPrice, province, department, searchCriteria, searchOrder, page, pageSize);
 
-            petList = petDao.filteredList(locale, user, species, breed, gender, status, searchCriteria, searchOrder,
+//            petList = petDao.filteredList(locale, user, species, breed, gender, status, searchCriteria, searchOrder,
+//                    minPrice, maxPrice, province, department, page, pageSize);
+
+            petList = petDao.searchList(locale, find, user, species, breed, gender, status, searchCriteria, searchOrder,
                     minPrice, maxPrice, province, department, page, pageSize);
-        } else {
-            petList = petDao.searchList(locale, find, page, pageSize);
-        }
+
         setLocale(locale, petList);
         return petList;
     }
