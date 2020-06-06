@@ -5,7 +5,7 @@ function displayModalOfImage(link){
 
     const modal = $('#image-modal');
 
-    modal.find('img').attr('src', $(link).find('.pet-photo').attr('src'));
+    modal.find('img').attr('src', $(link).find('.img-thumbnail').attr('src'));
 
     modal.modal('show');
 
