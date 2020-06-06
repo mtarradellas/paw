@@ -195,9 +195,16 @@ public class AdminPetController extends ParentController {
     }
 
     @RequestMapping(value = "/admin/pet/{id}/sell-adopt", method = {RequestMethod.POST})
-    public ModelAndView petUpdateSold(@PathVariable("id") long id) {
-        petService.adminSellPet(id);
-        LOGGER.debug("Pet {} updated as sold", id);
+    public ModelAndView petUpdateSold(@PathVariable("id") long id,
+                                      @RequestParam(name = "newowner", required = false) String newOwner) {
+
+        Long newOwnerId = parseUser(newOwner);
+        if (newOwnerId != null) {
+            petService.adminSellPet(id, newOwnerId);
+            LOGGER.debug("Pet {} updated as sold", id);
+        } else {
+            LOGGER.warn("Invalid target user, pet {} was not sold", id);
+        }
         return new ModelAndView("redirect:/admin/pets");
     }
 

@@ -57,6 +57,10 @@ public class Pet {
     @IndexedEmbedded(depth = 2)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "soldto")
+    private User newOwner;
+
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "species")
     @IndexedEmbedded(depth = 1)
@@ -171,6 +175,10 @@ public class Pet {
         return user;
     }
 
+    public User getNewOwner() {
+        return newOwner;
+    }
+
     public Species getSpecies() {
         return species;
     }
@@ -229,6 +237,10 @@ public class Pet {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setNewOwner(User newOwner) {
+        this.newOwner = newOwner;
     }
 
     public void setSpecies(Species species) {
