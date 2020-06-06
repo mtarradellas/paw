@@ -96,6 +96,9 @@ public class PetController extends ParentController {
         } else {
             mav.addObject("wrongSearch", false);
         }
+        if(find != null && (find.equals("") || find.trim().length() == 0)){
+            find = null;
+        }
         List<String> findList = parseFind(find);
 
         List<Pet> petList = petService.filteredList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
