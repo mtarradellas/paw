@@ -368,7 +368,7 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public boolean sellPet(long petId, User user) {
+    public boolean sellPet(long petId, User owner, long newOwnerId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
@@ -376,7 +376,13 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(user)) {
+        if (pet.getUser().equals(owner)) {
+            Optional<User> opUser = userService.findById(newOwnerId);
+            if (!opUser.isPresent()) {
+                LOGGER.warn("Target new owner {} was not found", newOwnerId);
+                return false;
+            }
+            pet.setNewOwner(opUser.get());
             pet.setStatus(PetStatus.SOLD);
             return petDao.update(pet).isPresent();
         }
@@ -420,13 +426,19 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public boolean adminSellPet(long petId) {
+    public boolean adminSellPet(long petId, long newOwnerId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
             return false;
         }
         Pet pet = opPet.get();
+        Optional<User> opNewOwner = userService.findById(newOwnerId);
+        if (!opNewOwner.isPresent()) {
+            LOGGER.warn("New owner {} not found", newOwnerId);
+            return false;
+        }
+        pet.setNewOwner(opNewOwner.get());
         pet.setStatus(PetStatus.SOLD);
         return petDao.update(pet).isPresent();
     }
