@@ -158,7 +158,8 @@
             </select>
         </div>
         <div class="card-footer" id="search-tools-submit">
-            <button type="submit" class="blue-button"><spring:message code="filter"/></button>
+            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/"><spring:message code="filter.clear"/></a>
         </div>
     </form>
 </div>
