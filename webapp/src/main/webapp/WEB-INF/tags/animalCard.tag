@@ -3,8 +3,11 @@
 <%@tag description="Animal card" pageEncoding="UTF-8" %>
 <%@attribute name="pet" required="true" type="ar.edu.itba.paw.models.Pet" %>
 <%@attribute name="level" required="true" type="java.lang.String" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <c:set var="cprice" scope="application" value="${pet.price}"/>
+<fmt:formatDate value="${pet.uploadDate}" var="date" type="date" pattern="dd-MM-yyyy"/>
 
 <spring:message code="argPrice" arguments="${cprice}" var="price"/>
 
@@ -47,6 +50,6 @@
         </c:if>
     </div>
     <div class="card-footer">
-        <h6><spring:message code="petCard.uploadDate"/> <c:out value="${pet.uploadDate}"/></h6>
+        <h6><spring:message code="petCard.uploadDate"/> <c:out value="${date}"/></h6>
     </div>
 </div>

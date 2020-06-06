@@ -36,18 +36,18 @@
                                     >
                                         <spring:message code="filter.any"/>
                                     </option>
-                                    <option value="active"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('active' eq param.status)}">
+                                    <option value="0"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('0' eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="status.active"/></option>
-                                    <option value="inactive"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('inactive' eq param.status)}">
+                                    <option value="1"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('1' eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="status.inactive"/></option>
-                                    <option value="deleted"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('deleted' eq param.status)}">
+                                    <option value="2"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('2' eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="status.deleted"/></option>
@@ -80,6 +80,9 @@
                         </div>
                         <div class="card-footer" id="search-tools-submit">
                             <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+                            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/users">
+                                <spring:message code="filter.clear"/>
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -95,7 +98,7 @@
                                 </c:if>
                                 <c:if test="${not empty userList}">
                                     <div>
-                                        <h2><spring:message code="admin.usersListing" />
+                                        <h2><spring:message code="admin.usersListing" /> <spring:message code="totalResults" arguments="${amount}"/>
                                             <a type="button" class="btn btn-success"
                                                href="${pageContext.request.contextPath}/admin/upload-user">
                                                 <i class="fas fa-plus mr-2"></i><spring:message code="addUser"/></a>

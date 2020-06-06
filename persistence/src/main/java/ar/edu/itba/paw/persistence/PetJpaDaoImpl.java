@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Repository
 public class PetJpaDaoImpl implements PetDao {
 
-    static final int AVAILABLE = 0;
+    private static final int MAX_STATUS = 4;
 
     @PersistenceContext
     private EntityManager em;
@@ -69,6 +69,7 @@ public class PetJpaDaoImpl implements PetDao {
     private List<Pet> paginationAndOrder(String locale, Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
         query.setFirstResult((page - 1) * pageSize);
         query.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
         if (results.size() == 0) return new ArrayList<>();
         List<Long> filteredIds = new ArrayList<>();
@@ -77,7 +78,7 @@ public class PetJpaDaoImpl implements PetDao {
         }
         if (filteredIds.size() == 0) return new ArrayList<>();
 
-        //Obtain Requests with the filtered ids and sort
+        //Obtain pets with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Pet> cr = cb.createQuery(Pet.class);
         Root<Pet> root= cr.from(Pet.class);
@@ -131,8 +132,11 @@ public class PetJpaDaoImpl implements PetDao {
         String breedField = "breed." + locale;
 
         BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
-        if(status != null)boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()-1).createQuery());
-        else boolJunction.must(queryBuilder.range().onField("status").below(AVAILABLE).createQuery());
+        if(status != null) {
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
+        }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder

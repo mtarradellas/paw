@@ -1,10 +1,8 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.UserStatus;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.*;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -26,13 +24,15 @@ public class User {
     private String password;
 
     @Column(nullable = false)
+    @Field
     private String mail;
 
     @Column(length = 7)
     private String locale;
 
-    @Enumerated(EnumType.ORDINAL)
-    private UserStatus status;
+    @Field
+    @NumericField
+    private int status;
 
     @ContainedIn
     @OneToMany(orphanRemoval = true, mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -60,7 +60,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.mail = mail;
-        this.status = status;
+        this.status = status.getValue()-1;
         this.locale = locale;
         Object o;
 
@@ -89,11 +89,11 @@ public class User {
     }
 
     public UserStatus getStatus() {
-        return status;
+        return UserStatus.values()[status];
     }
 
     public void setStatus(UserStatus status) {
-        this.status = status;
+        this.status = status.getValue()-1;
     }
 
     public long getId() {

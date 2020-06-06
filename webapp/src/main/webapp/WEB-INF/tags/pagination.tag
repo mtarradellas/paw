@@ -35,6 +35,15 @@
             <c:if test="${not empty param.status}">
                 <c:param name="status" value="${param.status}"/>
             </c:if>
+            <c:if test="${not empty param.province}">
+                <c:param name="province" value="${param.province}"/>
+            </c:if>
+            <c:if test="${not empty param.department}">
+                <c:param name="department" value="${param.department}"/>
+            </c:if>
+            <c:if test="${not empty param.showAllReviews}">
+                <c:param name="showAllReviews" value="${param.showAllReviews}"/>
+            </c:if>
         </c:url>
         <c:if test="${currentPage > 1}">
             <li class="page-item"><a class="page-link" href="<c:out value="${prev}" />" ><spring:message code="prev"/> </a></li>
@@ -75,6 +84,15 @@
                         <c:if test="${not empty param.reqstatus}">
                             <c:param name="reqstatus" value="${param.reqstatus}"/>
                         </c:if>
+                        <c:if test="${not empty param.province}">
+                            <c:param name="province" value="${param.province}"/>
+                        </c:if>
+                        <c:if test="${not empty param.department}">
+                            <c:param name="department" value="${param.department}"/>
+                        </c:if>
+                        <c:if test="${not empty param.showAllReviews}">
+                            <c:param name="showAllReviews" value="${param.showAllReviews}"/>
+                        </c:if>
                     </c:url>
                     <li class="page-item"><a class="page-link" href='<c:out value="${url}" />'>${i.index}</a></li>
                 </c:otherwise>
@@ -109,6 +127,15 @@
             </c:if>
             <c:if test="${not empty param.reqstatus}">
                 <c:param name="reqstatus" value="${param.reqstatus}"/>
+            </c:if>
+            <c:if test="${not empty param.province}">
+                <c:param name="province" value="${param.province}"/>
+            </c:if>
+            <c:if test="${not empty param.department}">
+                <c:param name="department" value="${param.department}"/>
+            </c:if>
+            <c:if test="${not empty param.showAllReviews}">
+                <c:param name="showAllReviews" value="${param.showAllReviews}"/>
             </c:if>
         </c:url>
         <c:if test="${currentPage + 1 <= maxPage}">

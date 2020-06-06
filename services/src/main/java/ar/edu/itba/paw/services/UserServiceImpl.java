@@ -41,9 +41,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> filteredList(String find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        if (find == null) return userDao.filteredList(status, searchCriteria, searchOrder, page, pageSize);
-        return userDao.searchList(find, page, pageSize);
+    public List<User> filteredList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        return userDao.searchList(find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
@@ -52,9 +51,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int getFilteredAmount(String find, UserStatus status) {
-        if (find == null) return userDao.getFilteredAmount(status);
-        return userDao.getSearchAmount(find);
+    public int getFilteredAmount(List<String> find, UserStatus status) {
+        return userDao.getSearchAmount(find, status);
     }
 
     @Override
@@ -278,6 +276,22 @@ public class UserServiceImpl implements UserService {
         return updatedUser;
     }
 
+    @Override
+    public List<Review> reviewList(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status,
+                                   String criteria, String order, int page, int pageSize) {
+        return userDao.reviewList(ownerId, targetId, minScore, maxScore, status,  criteria, order, page, pageSize);
+    }
+
+    @Override
+    public int getReviewListAmount(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
+        return userDao.getReviewListAmount(ownerId, targetId, minScore, maxScore, status);
+    }
+
+    @Override
+    public Optional<Review> findReviewById(long id) {
+        return userDao.findReviewById(id);
+    }
+
     @Transactional
     @Override
     public boolean addReview(User owner, long targetId, int score, String description) {
@@ -294,6 +308,50 @@ public class UserServiceImpl implements UserService {
         }
         userDao.addReview(owner, target, score, description, ReviewStatus.VALID);
         return true;
+    }
+
+    @Override
+    public Optional<Review> updateReview(Review review) {
+        return userDao.updateReview(review);
+    }
+
+    @Override
+    public Optional<Review> updateReview(long id, long ownerId, long targetId, int score, String description) {
+        Optional<User> owner = userDao.findById(ownerId);
+        if (!owner.isPresent()) {
+            LOGGER.warn("Owner {} of review not found", ownerId);
+            return Optional.empty();
+        }
+        return updateReview(id, owner.get(), targetId, score, description);
+    }
+
+    @Override
+    public Optional<Review> updateReview(long id, User owner, long targetId, int score, String description) {
+        Optional<Review> opReview = userDao.findReviewById(id);
+        if (!opReview.isPresent()) {
+            LOGGER.warn("Review {} not found", id);
+            return Optional.empty();
+        }
+        Review review = opReview.get();
+
+        Optional<User> opTarget = userDao.findById(targetId);
+        if (!opTarget.isPresent()) {
+            LOGGER.warn("Target {} of review not found", targetId);
+            return Optional.empty();
+        }
+        User target = opTarget.get();
+
+        if (owner.equals(target)) {
+            LOGGER.warn("User {} cannot review itself!", targetId);
+            return Optional.empty();
+        }
+
+        review.setOwner(owner);
+        review.setTarget(target);
+        review.setScore(score);
+        review.setDescription(description);
+
+        return userDao.updateReview(review);
     }
 
     @Transactional

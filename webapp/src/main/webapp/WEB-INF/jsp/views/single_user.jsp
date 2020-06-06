@@ -11,6 +11,13 @@
 
 <fmt:formatNumber type="number" maxFractionDigits="2" var="score" value="${user.averageScore}"/>
 
+<c:if test="${showAllReviews eq 'true'}">
+    <c:set var="limit" value="${user.targetReviews.size()}"/>
+</c:if>
+<c:if test="${showAllReviews eq 'false'}">
+    <c:set var="limit" value="5"/>
+</c:if>
+
 <t:basicLayout title="${title}">
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
     <div class="container-fluid ">
@@ -156,27 +163,98 @@
                         <c:if test="${user.averageScore != -1}">
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
+                                    <spring:message code="showingOutOf" arguments="${limit}, ${user.targetReviews.size()}"/>
                                     <c:if test="${canRate}">
                                         <button type="button" class="btn btn-link"
                                                 data-toggle="modal" data-target="#add-review"><spring:message
                                                 code="user.review"/></button>
                                     </c:if>
                                 </h2>
-                                    <div class="row">
+
+                                <div class="row">
+                                    <div class="col-lg-2 ml-2">
+                                        <h5 class="text-left"><b><spring:message code="user"/></b></h5>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <h5 class="text-left"><b><spring:message code="user.score"/></b></h5>
+                                    </div>
+                                    <div class="col">
+                                        <h5 class="text-left mr-4"><b><spring:message
+                                                code="uploadPetForm.description"/></b></h5>
+                                    </div>
+                                </div>
+                                <hr class="m-0">
+                                <c:forEach var="review" items="${user.targetReviews}" begin="0" end="${limit-1}">
+                                    <div class="row ml-0 mr-0 bg-white">
                                         <div class="col-lg-2">
-                                            <h5 class="text-left"><b><spring:message code="user"/></b></h5>
+                                            <a href="${pageContext.request.contextPath}/user/${review.owner.id}">
+                                                ${review.owner.username}
+                                            </a>
                                         </div>
                                         <div class="col-lg-2">
-                                            <h5 class="text-left"><b><spring:message code="user.score"/></b></h5>
+                                            <c:if test="${review.score == 1}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 2}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 3}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 4}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 5}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                            </c:if>
                                         </div>
                                         <div class="col">
-                                            <h5 class="text-center mr-4"><b><spring:message code="uploadPetForm.description"/></b></h5>
+                                            ${review.description}
                                         </div>
                                     </div>
-                                    <hr class="m-0">
-
+                                </c:forEach>
+                                <c:if test="${user.targetReviews.size() > 5 and showAllReviews eq 'false'}">
+                                    <form method="get" class="text-center"
+                                          action="${pageContext.request.contextPath}/user/${user.id}#ratings">
+                                            <input type="hidden" name="showAllReviews" value="true">
+                                        <c:if test="${not empty param.page}">
+                                            <input type="hidden" name="page" value="${param.page}">
+                                        </c:if>
+                                        <button class="btn btn-primary btn-lg mt-2" type="submit" ><spring:message code="showAll"/></button>
+                                    </form>
+                                </c:if>
+                                <c:if test="${showAllReviews eq 'true'}">
+                                    <form method="get" class="text-center"
+                                          action="${pageContext.request.contextPath}/user/${user.id}#ratings">
+                                        <input type="hidden" name="showAllReviews" value="false">
+                                        <c:if test="${not empty param.page}">
+                                            <input type="hidden" name="page" value="${param.page}">
+                                        </c:if>
+                                        <button class="btn btn-primary btn-lg mt-2" type="submit" ><spring:message code="showLess"/></button>
+                                    </form>
+                                </c:if>
+                                <hr class="m-0">
                             </div>
-                            <hr>
                         </c:if>
 
 
