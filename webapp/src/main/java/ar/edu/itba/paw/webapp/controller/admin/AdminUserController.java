@@ -69,9 +69,10 @@ public class AdminUserController extends ParentController {
         } else {
             mav.addObject("wrongSearch", false);
         }
+        List<String> findList = parseFind(find);
 
-        List<User> userList = userService.filteredList(find, userStatus, searchCriteria, searchOrder, pageNum, USER_PAGE_SIZE);
-        int amount = userService.getFilteredAmount(find, userStatus);
+        List<User> userList = userService.filteredList(findList, userStatus, searchCriteria, searchOrder, pageNum, USER_PAGE_SIZE);
+        int amount = userService.getFilteredAmount(findList, userStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / USER_PAGE_SIZE));

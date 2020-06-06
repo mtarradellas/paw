@@ -1,3 +1,4 @@
+<%@ page import="ar.edu.itba.paw.models.constants.RequestStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -56,7 +57,8 @@
                             <hr class="m-0">
                         </c:if>
                         <c:forEach var="req" items="${requestList}">
-                            <c:if test="${req.status.value eq 1}">
+                            <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+                            <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.showedInterest"
@@ -79,7 +81,9 @@
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.value eq 2}">
+
+                            <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+                            <c:if test="${req.status.value eq ACCEPTED}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasAccepted"
@@ -96,7 +100,9 @@
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.value eq 3}">
+
+                            <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+                            <c:if test="${req.status.value eq REJECTED}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasRejected"
@@ -113,7 +119,9 @@
                                     </div>
                                 </div>
                             </c:if>
-                            <c:if test="${req.status.value eq 4}">
+
+                            <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+                            <c:if test="${req.status.value eq CANCELED}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasCanceled"

@@ -36,17 +36,10 @@ public class Province implements Comparable<Province>, Serializable {
         //Hibernate
     }
 
-
-    public Province(long id, String name, double latitude, double longitude) {
-        this.id = id;
+    public Province(String name, double latitude, double longitude) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-    }
-
-    public Province(long id, String name, String es_ar) {
-        this.id = id;
-        this.name = name;
     }
 
     @Override

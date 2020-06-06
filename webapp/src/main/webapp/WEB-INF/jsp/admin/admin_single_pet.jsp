@@ -107,7 +107,7 @@
                             <li class="list-group-item"><spring:message code="petCard.uploadDate"/> <c:out
                                     value="${pet.uploadDate}"/></li>
                             <li class="list-group-item"><spring:message code="admin.petCard.status"/> <c:out
-                                    value="${pet.status.name}"/></li>
+                                    value="${pet.status}"/></li>
                         </ul>
 
 

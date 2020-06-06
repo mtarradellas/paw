@@ -41,9 +41,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> filteredList(String find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        if (find == null) return userDao.filteredList(status, searchCriteria, searchOrder, page, pageSize);
-        return userDao.searchList(find, page, pageSize);
+    public List<User> filteredList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        return userDao.searchList(find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
@@ -52,9 +51,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int getFilteredAmount(String find, UserStatus status) {
-        if (find == null) return userDao.getFilteredAmount(status);
-        return userDao.getSearchAmount(find);
+    public int getFilteredAmount(List<String> find, UserStatus status) {
+        return userDao.getSearchAmount(find, status);
     }
 
     @Override
