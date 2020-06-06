@@ -50,7 +50,7 @@
                         <c:if test="${canRate}">
                             <button type="button" class="btn btn-link"
                                     data-toggle="modal" data-target="#add-review"><spring:message
-                                    code="user.rate"/></button>
+                                    code="user.review"/></button>
                         </c:if>
                         <c:if test="${canRate eq false}">
                             <small class="p-2">
@@ -71,7 +71,7 @@
                             <c:if test="${canRate}">
                                 <button type="button" class="btn btn-link"
                                         data-toggle="modal" data-target="#add-review"><spring:message
-                                        code="user.rate"/></button>
+                                        code="user.review"/></button>
                             </c:if>
                             <c:if test="${canRate eq false}">
                                 <small class="p-2">
@@ -153,17 +153,31 @@
 
                         </div>
                         <hr>
-                        <div id="ratings" class="p-2">
-                            <h2><b><spring:message code="user.reviews"/></b>
-                                <c:if test="${canRate}">
-                                    <button type="button" class="btn btn-link"
-                                            data-toggle="modal" data-target="#add-review"><spring:message
-                                            code="user.rate"/></button>
-                                </c:if>
-                            </h2>
+                        <c:if test="${user.averageScore != -1}">
+                            <div id="ratings" class="p-2">
+                                <h2><b><spring:message code="user.reviews"/></b>
+                                    <c:if test="${canRate}">
+                                        <button type="button" class="btn btn-link"
+                                                data-toggle="modal" data-target="#add-review"><spring:message
+                                                code="user.review"/></button>
+                                    </c:if>
+                                </h2>
+                                    <div class="row">
+                                        <div class="col-lg-2">
+                                            <h5 class="text-left"><b><spring:message code="user"/></b></h5>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <h5 class="text-left"><b><spring:message code="user.score"/></b></h5>
+                                        </div>
+                                        <div class="col">
+                                            <h5 class="text-center mr-4"><b><spring:message code="uploadPetForm.description"/></b></h5>
+                                        </div>
+                                    </div>
+                                    <hr class="m-0">
 
-                        </div>
-                        <hr>
+                            </div>
+                            <hr>
+                        </c:if>
 
 
                         <div class="p-4">
