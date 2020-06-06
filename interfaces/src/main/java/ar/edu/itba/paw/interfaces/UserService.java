@@ -11,10 +11,10 @@ import java.util.UUID;
 public interface UserService {
 
     List<User> list(int page, int pageSize);
-    List<User> filteredList(String find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+    List<User> filteredList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
     int getListAmount();
-    int getFilteredAmount(String find, UserStatus status);
+    int getFilteredAmount(List<String> find, UserStatus status);
 
     Optional<User> findById(Long id);
     Optional<User> findByUsername(String username);

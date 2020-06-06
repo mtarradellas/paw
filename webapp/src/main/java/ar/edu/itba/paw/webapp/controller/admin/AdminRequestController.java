@@ -63,10 +63,11 @@ public class AdminRequestController extends ParentController {
         } else {
             mav.addObject("wrongSearch", false);
         }
+        List<String> findList = parseFind(find);
 
-        List<Request> requestList = requestService.filteredList(null, null, find, requestStatus,
+        List<Request> requestList = requestService.filteredList(null, null, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-        int amount = requestService.getFilteredListAmount(null, null, find, requestStatus);
+        int amount = requestService.getFilteredListAmount(null, null, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));

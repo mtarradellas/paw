@@ -12,17 +12,17 @@ import java.util.stream.Stream;
 public interface RequestDao {
 
     List<Request> list(int page, int pageSize);
-    List<Request> searchList(User user, Pet pet, String find, int page, int pageSize);
+    List<Request> searchList(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
     List<Request> filteredList(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
-    List<Request> searchListByPetOwner(User user, Pet pet, String find, int page, int pageSize);
+    List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder,  int page, int pageSize);
     List<Request> filteredListByPetOwner(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
     int getListAmount();
-    int getSearchListAmount(User user, Pet pet, String find);
+    int getSearchListAmount(User user, Pet pet, List<String> find, RequestStatus status);
     int getFilteredListAmount(User user, Pet pet, RequestStatus status);
 
-    int getSearchListByPetOwnerAmount(User user, Pet pet, String find);
+    int getSearchListByPetOwnerAmount(User user, Pet pet, List<String> find, RequestStatus status);
     int getFilteredListByPetOwnerAmount(User user, Pet pet, RequestStatus status);
 
     Optional<Request> findById(long id);

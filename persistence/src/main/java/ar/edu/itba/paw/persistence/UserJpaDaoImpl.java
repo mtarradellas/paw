@@ -1,21 +1,28 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.Token;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
+
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
+import org.hibernate.search.engine.ProjectionConstants;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.BooleanJunction;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 public class UserJpaDaoImpl implements UserDao {
+
+    private static final int MAX_STATUS = 3;
 
     @PersistenceContext
     private EntityManager em;
@@ -35,13 +42,91 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> searchList(String find, int page, int pageSize) {
-        return list(page, pageSize);
+    public List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
+        return paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+    }
+
+    private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, UserStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        /* TODO descomentar para deployar*/
+//        try {
+//            fullTextEntityManager.createIndexer().startAndWait();
+//        } catch(InterruptedException ignored) {}
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(User.class)
+                .get();
+
+        BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
+        if(status != null) {
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
+        }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
+        if(find != null) {
+            for (String value : find) {
+                boolJunction.must(queryBuilder
+                        .keyword()
+                        .fuzzy()
+                        .withEditDistanceUpTo(1)
+                        .withPrefixLength(0)
+                        .onFields("username", "mail")
+                        .ignoreAnalyzer()
+                        .matching(value)
+                        .createQuery());
+            }
+        }
+
+        org.apache.lucene.search.Query query = boolJunction.createQuery();
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, User.class);
+        jpaQuery.setProjection(ProjectionConstants.ID);
+        return jpaQuery;
+    }
+
+    private List<User> paginationAndOrder(Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
+        query.setFirstResult((page - 1) * pageSize);
+        query.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        List<Long> filteredIds = new ArrayList<>();
+        for (Object[] id:results) {
+            filteredIds.add((Long)id[0]);
+        }
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
+        //Obtain users with the filtered ids and sort
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> cr = cb.createQuery(User.class);
+        Root<User> root= cr.from(User.class);
+
+        Expression<String> exp = root.get("id");
+        Predicate predicate = exp.in(filteredIds);
+
+        cr.select(root).where(predicate);
+        if (searchCriteria != null ) {
+            Order order;
+            Path<Object> orderBy = root.get("username");
+            if (searchCriteria.toLowerCase().contains("mail")) {
+                orderBy = root.get("mail");
+            }
+
+            if (searchOrder.toLowerCase().contains("desc")) {
+                order = cb.desc(orderBy);
+            } else {
+                order = cb.asc(orderBy);
+            }
+            cr.orderBy(order);
+        }
+        return em.createQuery(cr).getResultList();
     }
 
     @Override
+    @Deprecated
     public List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        return list(page, pageSize);
+        return searchList(null, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
@@ -51,13 +136,20 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public int getSearchAmount(String find) {
-        return getListAmount();
+    public int getSearchAmount(List<String> find, UserStatus status) {
+        org.hibernate.search.jpa.FullTextQuery query = searchIdsQuery(find, status);
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+        for (Object[] id:results) {
+            System.out.println("\n\n\nWWWWWSSSSSSSSSSSSS"+ id[0]);
+        }
+        return results.size();
     }
 
     @Override
+    @Deprecated
     public int getFilteredAmount(UserStatus status) {
-        return getListAmount();
+        return getSearchAmount(null, status);
     }
 
     @Override

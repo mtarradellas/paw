@@ -5,24 +5,27 @@ import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 @Repository
 public class RequestJpaDaoImpl implements RequestDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestJpaDaoImpl.class);
+    private static final int MAX_STATUS = 3;
 
     @PersistenceContext
     private EntityManager em;
@@ -47,111 +50,70 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    @Transactional
-    public List<Request> searchList(User user, Pet pet, String find, int page, int pageSize) {
+    public List<Request> searchList(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria,
+                                    String searchOrder, int page, int pageSize) {
 
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
+       List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+        reqs.forEach(i-> System.out.println("\n\n\nREQQQQQ  "+ i));
+        return reqs;
+    }
+
+    private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        /* TODO descomentar para deployar*/
 //        try {
 //            fullTextEntityManager.createIndexer().startAndWait();
 //        } catch(InterruptedException ignored) {}
-
+        LOGGER.debug("Preparing Lucene Query (Requests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Request.class)
                 .get();
 
-        org.apache.lucene.search.Query query = queryBuilder
-                .keyword()
-                .onFields("pet.user.username","pet.petName","user.username")
-                .matching(find)
-                .createQuery();
+        BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
+        if(status != null) {
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
+        }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
+        if(find != null) {
+            for (String value : find) {
+                boolJunction.must(queryBuilder
+                        .keyword()
+                        .fuzzy()
+                        .withEditDistanceUpTo(1)
+                        .withPrefixLength(0)
+                        .onFields("pet.user.username","pet.petName","user.username")
+                        .ignoreAnalyzer()
+                        .matching(value)
+                        .createQuery());
+            }
+        }
+        if(user != null)  boolJunction.must(queryBuilder.phrase().onField("user.username").sentence(user.getUsername()).createQuery());
+        //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.username").sentence(user.getUsername()).createQuery());
+
+        org.apache.lucene.search.Query query = boolJunction.createQuery();
+
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
-        List<Request> results = jpaQuery.getResultList();
-        return results;
+        jpaQuery.setProjection(ProjectionConstants.ID);
+        return jpaQuery;
     }
 
-    @Override
-    public List<Request> filteredList(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-       //Obtain filtered ids
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Request> cr = cb.createQuery(Request.class);
-        Root<Request> root = cr.from(Request.class);
-
-        List<Predicate> predicates = predicatesForFilteredList(user, pet, status, cb, root);
-
-        cr.select(root.get("id")).where(cb.and(predicates.toArray(new Predicate[] {})));
-        Query query = em.createQuery(cr);
-        return filteredPagination(query, searchCriteria, searchOrder, page, pageSize);
-    }
-
-    private List<Predicate> predicatesForFilteredList (User user, Pet pet, RequestStatus status, CriteriaBuilder cb, Root<Request> root) {
-
-        List<Predicate> predicates = new ArrayList<>();
-        if (status != null) {
-            Expression<RequestStatus> reqStatus = root.get("status");
-            predicates.add(cb.equal(reqStatus, status.getValue()));
-        }
-        if(user != null) {
-            Expression<User> reqUser = root.get("user");
-            predicates.add(cb.equal(reqUser, user));
-        }
-//        if(pet != null) {
-//            Expression<Pet> reqPet = root.get("pet.);
-//            predicates.add(cb.equal(reqPet, pet));
-//        }
-        return predicates;
-    }
-
-    private List<Predicate> predicatesForFilteredListByPetOwner (User user, Pet pet, RequestStatus status, CriteriaBuilder cb, Root<Request> root) {
-
-        List<Predicate> predicates = new ArrayList<>();
-        if (status != null) {
-            Expression<RequestStatus> reqStatus = root.get("status");
-            predicates.add(cb.equal(reqStatus, status.getValue()));
-        }
-
-        /* TODO */
-        if(user != null) {
-            Expression<User> petOwner = root.join("pet").join("user");
-            predicates.add(cb.equal(petOwner, user));
-        }
-//        if(pet != null) {
-//            Expression<Pet> reqPet = root.get("pet");
-//            predicates.add(cb.equal(reqPet, pet));
-//        }
-        return predicates;
-    }
-
-    @Override
-    public List<Request> searchListByPetOwner(User user, Pet pet, String find, int page, int pageSize) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<Request> filteredListByPetOwner(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Request> cr = cb.createQuery(Request.class);
-        Root<Request> root = cr.from(Request.class);
-
-        List<Predicate> predicates = predicatesForFilteredListByPetOwner(user, pet, status, cb, root);
-
-        cr.select(root.get("id")).where(cb.and(predicates.toArray(new Predicate[] {})));
-        Query query = em.createQuery(cr);
-
-        return filteredPagination(query, searchCriteria, searchOrder, page, pageSize);
-
-    }
-
-    private List<Request> filteredPagination(Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
+    private List<Request> paginationAndOrder(Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
         query.setFirstResult((page - 1) * pageSize);
         query.setMaxResults(pageSize);
         @SuppressWarnings("unchecked")
-        List<? extends Number> resultList = query.getResultList();
-        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
-
-        if(filteredIds.size() == 0) {
-            return new ArrayList<>();
+        List<Object[]> results = query.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        List<Long> filteredIds = new ArrayList<>();
+        for (Object[] id:results) {
+            filteredIds.add((Long)id[0]);
         }
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
+        filteredIds.forEach(i-> System.out.println("\n\n\nWAWA  "+ i));
+
         //Obtain Requests with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Request> cr = cb.createQuery(Request.class);
@@ -163,14 +125,11 @@ public class RequestJpaDaoImpl implements RequestDao {
         cr.select(root).where(predicate);
         if (searchCriteria != null ) {
             Order order;
-
-            Path<Object> orderBy = root.get("creationDate");
-            if(searchCriteria.toLowerCase().contains("date")){
+            Path<Object> orderBy =root.join("pet").get("petName");
+            if (searchCriteria.toLowerCase().contains("date")) {
                 orderBy = root.get("creationDate");
             }
-            else if (searchCriteria.toLowerCase().contains("petname")) {
-                orderBy = root.join("pet").get("petName");
-            }
+
             if (searchOrder.toLowerCase().contains("desc")) {
                 order = cb.desc(orderBy);
             } else {
@@ -179,7 +138,67 @@ public class RequestJpaDaoImpl implements RequestDao {
             cr.orderBy(order);
         }
         return em.createQuery(cr).getResultList();
+    }
 
+    @Override
+    @Deprecated
+    public List<Request> filteredList(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        return searchList(user, pet,null, status, searchCriteria, searchOrder,page, pageSize);
+    }
+
+    @Override
+    public List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
+        List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+        reqs.forEach(i-> System.out.println("\n\n\nINTEEEE  "+ i));
+        return reqs;
+    }
+
+    private org.hibernate.search.jpa.FullTextQuery searchIdsByPetOwnerQuery(List<String> find, RequestStatus status, User user, Pet pet) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        /* TODO descomentar para deployar*/
+//        try {
+//            fullTextEntityManager.createIndexer().startAndWait();
+//        } catch(InterruptedException ignored) {}
+        LOGGER.debug("Preparing Lucene Query (Interests): user {}, pet {}, status {}", user, pet, status);
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(Request.class)
+                .get();
+
+        BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
+        if(status != null) {
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
+        }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
+        if(find != null) {
+            for (String value : find) {
+                boolJunction.must(queryBuilder
+                        .keyword()
+                        .fuzzy()
+                        .withEditDistanceUpTo(1)
+                        .withPrefixLength(0)
+                        .onFields("pet.user.username","pet.petName","user.username")
+                        .ignoreAnalyzer()
+                        .matching(value)
+                        .createQuery());
+            }
+        }
+        if(user != null)  boolJunction.must(queryBuilder.phrase().onField("pet.user.username").sentence(user.getUsername()).createQuery());
+        //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.username").sentence(user.getUsername()).createQuery());
+
+        org.apache.lucene.search.Query query = boolJunction.createQuery();
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
+        jpaQuery.setProjection(ProjectionConstants.ID);
+        return jpaQuery;
+    }
+
+    @Override
+    @Deprecated
+    public List<Request> filteredListByPetOwner(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        return searchListByPetOwner(user, pet, null, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
@@ -189,38 +208,32 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    public int getSearchListAmount(User user, Pet pet, String find) {
-        return 0;
+    public int getSearchListAmount(User user, Pet pet, List<String> find, RequestStatus status) {
+        org.hibernate.search.jpa.FullTextQuery query = searchIdsQuery(find, status, user, pet);
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+        return results.size();
     }
 
     @Override
+    @Deprecated
     public int getFilteredListAmount(User user, Pet pet, RequestStatus status) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cr = cb.createQuery(Long.class);
-        Root<Request> root = cr.from(Request.class);
-
-        List<Predicate> predicates = predicatesForFilteredList(user, pet, status, cb, root);
-
-        cr.select(cb.count(root.get("id"))).where(cb.and(predicates.toArray(new Predicate[] {})));
-        return em.createQuery(cr).getSingleResult().intValue();
+        return getSearchListAmount(user, pet, null, status);
 
     }
 
     @Override
-    public int getSearchListByPetOwnerAmount(User user, Pet pet, String find) {
-        return 0;
+    public int getSearchListByPetOwnerAmount(User user, Pet pet, List<String> find, RequestStatus status) {
+        org.hibernate.search.jpa.FullTextQuery query = searchIdsByPetOwnerQuery(find, status, user, pet);
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+        return results.size();
     }
 
     @Override
+    @Deprecated
     public int getFilteredListByPetOwnerAmount(User user, Pet pet, RequestStatus status) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cr = cb.createQuery(Long.class);
-        Root<Request> root = cr.from(Request.class);
-
-        List<Predicate> predicates = predicatesForFilteredListByPetOwner(user, pet, status, cb, root);
-
-        cr.select(cb.count(root.get("id"))).where(cb.and(predicates.toArray(new Predicate[] {})));
-        return em.createQuery(cr).getSingleResult().intValue();
+        return getSearchListByPetOwnerAmount(user, pet,null, status);
     }
 
     @Override
