@@ -330,15 +330,12 @@ public class UserController extends ParentController {
                     true);
 
         }
-        System.out.println("ENTRE\n\n\n\n\n");
         User user = loggedUser();
         if (user != null) {
             int score = parseReviewScore(scoreStr);
             try {
-                System.out.println("\n\n\n\n\n\nRIGBY" + user + " " + id + " "+ score + " " + description);
                 userService.addReview(user, id, score, description);
             } catch (DataIntegrityViolationException ex) {
-                System.out.println("\n\n\n\n\n\n\n\nMENEM ");
                 LOGGER.warn("{}", ex.getMessage());
                 return new ModelAndView("redirect:/user/" + id);
             }
