@@ -409,6 +409,10 @@ html,body {
     }
 }
 
+.star-rating{
+    color: darkorange;
+}
+
 .pet-image-preview-section {
     grid-gap: 5px;
     margin: auto;
@@ -464,3 +468,4 @@ html,body {
 .pet-image-preview:nth-of-type(5) {
     grid-area: small4;
 }
+>>>>>>> e86ce3bd8a09149952bcb8cb54e37c2ff949bc42

@@ -220,6 +220,7 @@ public class UserJpaDaoImpl implements UserDao {
         today = cal.getTime();
         final Review review = new Review(owner, target, score, description, status, today);
         em.persist(review);
+
     }
 
     @Override
