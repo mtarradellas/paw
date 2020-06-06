@@ -220,6 +220,30 @@ public class ParentController {
         return score;
     }
 
+    public Long parseUser(String userStr) {
+        Long userId = null;
+        if (userStr != null && !userStr.equalsIgnoreCase("any")) {
+            try {
+                userId = Long.parseLong(userStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.debug("Invalid user id ({}) parameter", userStr);
+            }
+        }
+        return userId;
+    }
+
+    public int parseScore(String scoreStr, int defaultScore) {
+        if (scoreStr == null) return defaultScore;
+        int score = defaultScore;
+        try {
+            score = Integer.parseInt(scoreStr);
+        } catch (NumberFormatException ex) {
+            LOGGER.debug("Invalid score ({}) parameter", scoreStr);
+        }
+        if (score < 1 || score > 5) score = defaultScore;
+        return score;
+    }
+
     @ExceptionHandler(PetNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ModelAndView noSuchPet() {
