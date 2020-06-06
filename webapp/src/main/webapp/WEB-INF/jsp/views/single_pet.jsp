@@ -1,6 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:formatDate value="${pet.uploadDate}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
+<fmt:formatDate value="${pet.birthDate}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
+
 
 <c:set var="petName" value="${pet.petName}"/>
 <c:set var="cprice" value="${pet.price}"/>
@@ -114,7 +119,7 @@
                         <li class="list-group-item"><b><spring:message code="petCard.name"/></b> <c:out
                                 value="${pet.petName}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.dob"/></b> <c:out
-                                value="${pet.birthDate}"/></li>
+                                value="${birthDate}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.species"/></b> <c:out
                                 value="${pet.species.name}"/></
                         >
@@ -127,7 +132,7 @@
                         <li class="list-group-item"><b><spring:message code="petCard.department"/></b> <c:out
                                 value="${pet.department.name}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.uploadDate"/></b> <c:out
-                                value="${pet.uploadDate}"/></li>
+                                value="${uploadDate}"/></li>
                     </ul>
                     <hr>
                     <h2><spring:message code="status"/></h2>
