@@ -2,6 +2,8 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 
 <spring:message code="userTitle" var="title"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
@@ -10,7 +12,6 @@
 <fmt:formatNumber type="number" maxFractionDigits="2" var="score" value="${user.averageScore}"/>
 
 <t:basicLayout title="${title}">
-
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
     <div class="container-fluid ">
         <div class=" col-md-10 offset-md-1">
@@ -32,6 +33,14 @@
                     </div>
                 </div>
                 <hr>
+                <c:if test="${descriptionTooLong}">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <spring:message code="user.review.description.toolong"/>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </c:if>
                 <c:choose>
                     <c:when test="${user.averageScore == -1}">
                         <h3 class="p-2">
@@ -39,9 +48,9 @@
                             <spring:message code="user.noReviews"/>
                         </h3>
                         <c:if test="${canRate}">
-                            <p class="p-2">
-                                <a href="#ratings"><spring:message code="user.rate"/></a>
-                            </p>
+                            <button type="button" class="btn btn-link"
+                                    data-toggle="modal" data-target="#add-review"><spring:message
+                                    code="user.rate"/></button>
                         </c:if>
                         <c:if test="${canRate eq false}">
                             <small class="p-2">
@@ -59,25 +68,26 @@
                         </h3>
                         <p class="p-2">(<spring:message code="user.average"
                                                         arguments="${score},${user.targetReviews.size()}"/>)
-                        <c:if test="${canRate}">
-                            <a href="#ratings"><spring:message code="user.rate"/></a>
-                        </c:if>
-                        <c:if test="${canRate eq false}">
-                            <small class="p-2">
-                                <spring:message code="user.cantRate"/>
-                            </small>
-                        </c:if>
+                            <c:if test="${canRate}">
+                                <button type="button" class="btn btn-link"
+                                        data-toggle="modal" data-target="#add-review"><spring:message
+                                        code="user.rate"/></button>
+                            </c:if>
+                            <c:if test="${canRate eq false}">
+                                <small class="p-2">
+                                    <spring:message code="user.cantRate"/>
+                                </small>
+                            </c:if>
 
                         </p>
                     </c:otherwise>
                 </c:choose>
-
                 <hr>
                 <div class="p-2">
 
                     <c:if test="${loggedUser.id eq user.id}">
                         <ul class="list-group">
-                            <li class="list-group-item"><b><spring:message code="user.email"/></b> <c:out
+                            <li class="list-group-item"><b><spring:message code="user.email"/>:</b> <c:out
                                     value="${user.mail}"/></li>
                         </ul>
                         <a class="edit-anchor" href="<c:url value="/edit-user/${loggedUser.id}"/>">
@@ -145,9 +155,15 @@
                         <hr>
                         <div id="ratings" class="p-2">
                             <h2><b><spring:message code="user.reviews"/></b>
+                                <c:if test="${canRate}">
+                                    <button type="button" class="btn btn-link"
+                                            data-toggle="modal" data-target="#add-review"><spring:message
+                                            code="user.rate"/></button>
+                                </c:if>
                             </h2>
-                            <hr>
+
                         </div>
+                        <hr>
 
 
                         <div class="p-4">
@@ -156,6 +172,51 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade" id="add-review" tabindex="-1" role="dialog" aria-labelledby="add-reviewTitle"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="helpTitle"><spring:message code="user.review.title"/></h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="${pageContext.request.contextPath}/user/${user.id}/review"
+                                  method="post" enctype="multipart/form-data">
+
+                                <div class="form-group input-group">
+                                    <spring:message code="uploadPetForm.description" var="descriptionTxt"/>
+                                    <label class="mt-2" for="description">${descriptionTxt}: </label>
+                                    <input placeholder="${descriptionTxt}" class="form-control" type="text"
+                                           name="description" id="description"/>
+                                </div>
+                                <div class="form-group">
+                                    <spring:message code="user.score" var="scoreTxt"/>
+                                    <label for="score">${scoreTxt}: </label>
+                                    <select id="score" name="score">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                    </button>
+                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <script>let userScore =<c:out value="${user.averageScore}"/></script>
             <script src="<c:url value="/resources/js/user_rating.js"/>"></script>
             <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
