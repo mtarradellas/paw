@@ -17,10 +17,15 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 @Repository
 public class RequestJpaDaoImpl implements RequestDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestJpaDaoImpl.class);
+    private static final int MAX_STATUS = 3;
 
     @PersistenceContext
     private EntityManager em;
@@ -49,7 +54,9 @@ public class RequestJpaDaoImpl implements RequestDao {
                                     String searchOrder, int page, int pageSize) {
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
-        return paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+       List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+        reqs.forEach(i-> System.out.println("\n\n\nREQQQQQ  "+ i));
+        return reqs;
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {
@@ -58,6 +65,7 @@ public class RequestJpaDaoImpl implements RequestDao {
 //        try {
 //            fullTextEntityManager.createIndexer().startAndWait();
 //        } catch(InterruptedException ignored) {}
+        LOGGER.debug("Preparing Lucene Query (Requests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Request.class)
@@ -68,6 +76,7 @@ public class RequestJpaDaoImpl implements RequestDao {
             boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
             boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
         }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder
@@ -102,6 +111,8 @@ public class RequestJpaDaoImpl implements RequestDao {
             filteredIds.add((Long)id[0]);
         }
         if (filteredIds.size() == 0) return new ArrayList<>();
+
+        filteredIds.forEach(i-> System.out.println("\n\n\nWAWA  "+ i));
 
         //Obtain Requests with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -138,7 +149,9 @@ public class RequestJpaDaoImpl implements RequestDao {
     @Override
     public List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
-        return paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+        List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+        reqs.forEach(i-> System.out.println("\n\n\nINTEEEE  "+ i));
+        return reqs;
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsByPetOwnerQuery(List<String> find, RequestStatus status, User user, Pet pet) {
@@ -147,6 +160,7 @@ public class RequestJpaDaoImpl implements RequestDao {
 //        try {
 //            fullTextEntityManager.createIndexer().startAndWait();
 //        } catch(InterruptedException ignored) {}
+        LOGGER.debug("Preparing Lucene Query (Interests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Request.class)
@@ -157,6 +171,7 @@ public class RequestJpaDaoImpl implements RequestDao {
             boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
             boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
         }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder
@@ -170,7 +185,7 @@ public class RequestJpaDaoImpl implements RequestDao {
                         .createQuery());
             }
         }
-        if(user != null)  boolJunction.must(queryBuilder.phrase().onField("user.pet.user.username").sentence(user.getUsername()).createQuery());
+        if(user != null)  boolJunction.must(queryBuilder.phrase().onField("pet.user.username").sentence(user.getUsername()).createQuery());
         //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.username").sentence(user.getUsername()).createQuery());
 
         org.apache.lucene.search.Query query = boolJunction.createQuery();

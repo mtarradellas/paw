@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @Repository
 public class UserJpaDaoImpl implements UserDao {
 
+    private static final int MAX_STATUS = 3;
+
     @PersistenceContext
     private EntityManager em;
 
@@ -61,6 +63,7 @@ public class UserJpaDaoImpl implements UserDao {
             boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
             boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
         }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Repository
 public class PetJpaDaoImpl implements PetDao {
 
-    static final int MA = 0;
+    private static final int MAX_STATUS = 4;
 
     @PersistenceContext
     private EntityManager em;
@@ -136,6 +136,7 @@ public class PetJpaDaoImpl implements PetDao {
             boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
             boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
         }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder

@@ -19,7 +19,6 @@ public class RequestServiceImpl implements RequestService {
 
     @Autowired
     private RequestDao requestDao;
-
     @Autowired
     private PetService petService;
     @Autowired
@@ -41,6 +40,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> filteredListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+        LOGGER.debug("Parameters for filteredListByPetOwner <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
+                user, pet, status, searchCriteria, searchOrder, page, pageSize);
         return requestDao.searchListByPetOwner(user, pet, find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
@@ -51,15 +52,11 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public int getFilteredListAmount(User user, Pet pet, List<String> find, RequestStatus status) {
-        if (find == null) {
-            return requestDao.getFilteredListAmount(user, pet, status);
-        }
         return requestDao.getSearchListAmount(user, pet, find, status);
     }
 
     @Override
     public int getFilteredListByPetOwnerAmount(User user, Pet pet, List<String> find, RequestStatus status) {
-        if (find == null) return requestDao.getFilteredListByPetOwnerAmount(user, pet, status);
         return requestDao.getSearchListByPetOwnerAmount(user, pet, find, status);
     }
 
