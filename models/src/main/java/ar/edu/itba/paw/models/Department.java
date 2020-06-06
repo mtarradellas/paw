@@ -34,15 +34,7 @@ public class Department implements Comparable<Department>{
         //Hibernate
     }
 
-    public Department(long id, String name, double latitude, double longitude) {
-        this.id = id;
-        this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    public Department(long id, String name, double latitude, double longitude, Province province) {
-        this.id = id;
+    public Department(String name, double latitude, double longitude, Province province) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
