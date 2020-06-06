@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.RequestStatus;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -24,8 +21,8 @@ public class Request {
     private Date creationDate;
 
     @Field
-    @Enumerated(EnumType.ORDINAL)
-    private RequestStatus status;
+    @NumericField
+    private int status;
 
     @IndexedEmbedded(depth = 3)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -45,13 +42,13 @@ public class Request {
     public Request(Date creationDate, RequestStatus status, Pet pet) {
         this.creationDate = creationDate;
         this.pet = pet;
-        this.status = status;
+        this.status = status.getValue();
     }
 
     public Request(Date creationDate, RequestStatus status, User user, Pet pet) {
         this.creationDate = creationDate;
         this.pet = pet;
-        this.status = status;
+        this.status = status.getValue();
         this.user = user;
     }
 
@@ -73,11 +70,11 @@ public class Request {
     }
 
     public RequestStatus getStatus() {
-        return status;
+        return RequestStatus.values()[status];
     }
 
     public void setStatus(RequestStatus status) {
-        this.status = status;
+        this.status = status.getValue();
     }
 
     public Pet getPet() {

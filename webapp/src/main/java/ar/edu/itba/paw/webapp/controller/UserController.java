@@ -97,10 +97,11 @@ public class UserController extends ParentController {
         } else {
             mav.addObject("wrongSearch", false);
         }
+        List<String> findList = parseFind(find);
 
-        List<Request> requestList = requestService.filteredList(user, null, find, requestStatus,
+        List<Request> requestList = requestService.filteredList(user, null, findList, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-        int amount = requestService.getFilteredListAmount(user, null, find, requestStatus);
+        int amount = requestService.getFilteredListAmount(user, null, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
@@ -153,10 +154,11 @@ public class UserController extends ParentController {
         } else {
             mav.addObject("wrongSearch", false);
         }
+        List<String> findList = parseFind(find);
 
-        List<Request> requestList = requestService.filteredListByPetOwner(user, null, find, requestStatus,
+        List<Request> requestList = requestService.filteredListByPetOwner(user, null, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-        int amount = requestService.getFilteredListByPetOwnerAmount(user, null, find, requestStatus);
+        int amount = requestService.getFilteredListByPetOwnerAmount(user, null, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));

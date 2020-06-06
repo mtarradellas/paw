@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 @Repository
 public class UserJpaDaoImpl implements UserDao {
 
-    static final int MAX_STAUS = 4;
-
     @PersistenceContext
     private EntityManager em;
 
@@ -63,7 +61,6 @@ public class UserJpaDaoImpl implements UserDao {
             boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
             boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
         }
-        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STAUS).createQuery());
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder
@@ -88,6 +85,7 @@ public class UserJpaDaoImpl implements UserDao {
     private List<User> paginationAndOrder(Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
         query.setFirstResult((page - 1) * pageSize);
         query.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
         if (results.size() == 0) return new ArrayList<>();
         List<Long> filteredIds = new ArrayList<>();
@@ -96,7 +94,7 @@ public class UserJpaDaoImpl implements UserDao {
         }
         if (filteredIds.size() == 0) return new ArrayList<>();
 
-        //Obtain Requests with the filtered ids and sort
+        //Obtain users with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<User> cr = cb.createQuery(User.class);
         Root<User> root= cr.from(User.class);
