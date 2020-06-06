@@ -80,6 +80,9 @@
                         </div>
                         <div class="card-footer" id="search-tools-submit">
                             <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+                            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/users">
+                                <spring:message code="filter.clear"/>
+                            </a>
                         </div>
                     </form>
                 </div>
