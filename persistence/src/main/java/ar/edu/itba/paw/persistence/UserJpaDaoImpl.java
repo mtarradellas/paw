@@ -105,6 +105,22 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
+    public List<Review> reviewList(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status, String criteria,
+                                   String order, int page, int pageSize) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public int getReviewListAmount(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
+        return 0;
+    }
+
+    @Override
+    public Optional<Review> findReviewById(long id) {
+        return Optional.ofNullable(em.find(Review.class, id));
+    }
+
+    @Override
     public void addReview(User owner, User target, int score, String description, ReviewStatus status) {
         Date today = new Date();
         Calendar cal = Calendar.getInstance();
@@ -112,8 +128,12 @@ public class UserJpaDaoImpl implements UserDao {
         today = cal.getTime();
         final Review review = new Review(owner, target, score, description, status, today);
         em.persist(review);
-        em.flush();
-        System.out.println("FLUSH");
+    }
+
+    @Override
+    public Optional<Review> updateReview(Review review) {
+        em.persist(review);
+        return Optional.of(review);
     }
 
     @Override
