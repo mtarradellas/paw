@@ -12,11 +12,11 @@ import java.util.UUID;
 public interface UserDao {
 
     List<User> list(int page, int pageSize);
-    List<User> searchList(String find, int page, int pageSize);
+    List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
     List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
     int getListAmount();
-    int getSearchAmount(String find);
+    int getSearchAmount(List<String> find, UserStatus status);
     int getFilteredAmount(UserStatus status);
 
     Optional<User> findById(long id);

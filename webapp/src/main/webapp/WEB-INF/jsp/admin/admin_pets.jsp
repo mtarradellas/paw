@@ -77,12 +77,18 @@
                                 <label for="filter-status"><spring:message code="status"/></label>
                                 <select name="status" class="form-control" id="filter-status">
                                     <option value="any"><spring:message code="filter.any"/></option>
-                                    <option value="deleted"
-                                            <c:if test="${(not empty param.status) && (param.status eq 'deleted')}">selected</c:if>
-                                    ><spring:message code="status.deleted"/></option>
-                                    <option value="exists"
-                                            <c:if test="${(not empty param.status) && (param.status eq 'exists')}">selected</c:if>
-                                    ><spring:message code="status.exists"/></option>
+                                    <option value="0"
+                                            <c:if test="${(not empty param.status) && (param.status eq '0')}">selected</c:if>
+                                    ><spring:message code="status.available"/></option>
+                                    <option value="1"
+                                            <c:if test="${(not empty param.status) && (param.status eq '1')}">selected</c:if>
+                                    ><spring:message code="status.removed"/></option>
+                                    <option value="2"
+                                            <c:if test="${(not empty param.status) && (param.status eq '2')}">selected</c:if>
+                                    ><spring:message code="status.sold"/></option>
+                                    <option value="3"
+                                            <c:if test="${(not empty param.status) && (param.status eq '3')}">selected</c:if>
+                                    ><spring:message code="status.unavailable"/></option>
                                 </select>
                             </div>
                             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
@@ -137,7 +143,7 @@
 
                                 <c:if test="${not empty petList}">
                                     <div>
-                                        <h2><spring:message code="admin.petsListing"/>
+                                        <h2><spring:message code="admin.petsListing"/> <spring:message code="totalResults" arguments="${amount}"/>
                                             <a type="button" class="btn btn-success"
                                                href="${pageContext.request.contextPath}/admin/upload-pet"
                                             ><i class="fas fa-plus mr-2"></i><spring:message code="addPet"/></a>

@@ -110,7 +110,7 @@
                                 </c:if>
                                 <c:if test="${not empty requestList}">
                                     <div>
-                                        <h2><spring:message code="admin.requestsListing"/>
+                                        <h2><spring:message code="admin.requestsListing"/> <spring:message code="totalResults" arguments="${amount}"/>
                                             <a type="button" class="btn btn-success"
                                                href="${pageContext.request.contextPath}/admin/upload-request">
                                                 <i class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></a>

@@ -131,8 +131,10 @@ public class PetJpaDaoImpl implements PetDao {
         String breedField = "breed." + locale;
 
         BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
-        if(status != null)boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()-1).createQuery());
-        else boolJunction.must(queryBuilder.range().onField("status").below(AVAILABLE).createQuery());
+        if(status != null) {
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
+        }
         if(find != null) {
             for (String value : find) {
                 boolJunction.must(queryBuilder
