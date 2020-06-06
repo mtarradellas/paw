@@ -6,8 +6,10 @@ import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
+import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
@@ -53,6 +55,10 @@ public class UserController extends ParentController {
 
     private static final int REQ_PAGE_SIZE = 25;
     private static final int PET_PAGE_SIZE = 12;
+    private static final int REV_PAGE_SIZE = 20;
+
+    private static final int MIN_SCORE = 1;
+    private static final int MAX_SCORE = 5;
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
@@ -300,6 +306,40 @@ public class UserController extends ParentController {
             return user(id, "1").addObject("reviewError", false);
         }
         return new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/user/{id}/reviews")
+    public ModelAndView reviewList(@PathVariable("id") long id,
+                                   @RequestParam(name = "owner", required = false) String owner,
+                                   @RequestParam(name = "minscore", required = false) String minscore,
+                                   @RequestParam(name = "maxscore", required = false) String maxscore,
+                                   @RequestParam(name = "status", required = false) String status,
+                                   @RequestParam(name = "criteria", required = false) String criteria,
+                                   @RequestParam(name = "order", required = false) String order,
+                                   @RequestParam(name = "page", required = false) String page) {
+
+        Long ownerId = parseUser(owner);
+        int min = parseScore(minscore, MIN_SCORE);
+        int max = parseScore(maxscore, MAX_SCORE);
+        ReviewStatus reviewStatus = parseStatus(ReviewStatus.class, status);
+        criteria = parseCriteria(criteria);
+        order = parseOrder(order);
+        int pageNum = parsePage(page);
+
+        List<Review> reviewList = userService.reviewList(ownerId, id, min, max, reviewStatus, criteria, order,
+                pageNum, REV_PAGE_SIZE);
+        int amount = userService.getReviewListAmount(ownerId, id, min, max, reviewStatus);
+
+        Optional<User> opUser = userService.findById(id);
+        User user = opUser.orElseThrow(UserNotFoundException::new);
+
+        ModelAndView mav = new ModelAndView("views/reviews");
+        mav.addObject("currentPage", pageNum);
+        mav.addObject("maxPage", (int) Math.ceil((double) amount / REV_PAGE_SIZE));
+        mav.addObject("reviewList", reviewList);
+        mav.addObject("amount", amount);
+        mav.addObject("user", user);
+        return mav;
     }
 
     private Authentication authenticateUserAndSetSession(String username, HttpServletRequest request){
