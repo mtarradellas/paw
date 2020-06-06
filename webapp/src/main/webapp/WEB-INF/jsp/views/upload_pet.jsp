@@ -43,7 +43,8 @@
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
                                         <form:label path="price" for="price">${priceTxt}: </form:label>
-                                        <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                        <form:input placeholder="${priceTxt}" type="number" id="price" path="price"
+                                                    cssClass="input-max-value form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="price" element="div" cssClass="invalid-feedback"/>
                                     </div>
                                 </spring:bind>
@@ -177,6 +178,7 @@
             </div>
         </div>
     </div>
+    <script src="<c:url value="/resources/js/max_value_input.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_upload.js"/>"></script>
     <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
 </t:basicLayout>
