@@ -1,6 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:formatDate value="${pet.uploadDate}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
+<fmt:formatDate value="${pet.birthDate}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
 
 <c:if test="${pet.gender eq 'male'}"><spring:message var="pronoun" code="pet.him"/> </c:if>
 <c:if test="${pet.gender eq 'female' }"><spring:message var="pronoun" code="pet.her"/> </c:if>
@@ -89,7 +93,7 @@
                             <li class="list-group-item"><spring:message code="petCard.name"/> <c:out
                                     value="${pet.petName}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.dob"/> <c:out
-                                    value="${pet.birthDate}"/></li>
+                                    value="${birthDate}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.species"/> <c:out
                                     value="${pet.species.name}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.breed"/> <c:out
@@ -105,7 +109,7 @@
                             <li class="list-group-item"><spring:message code="petCard.department"/> <c:out
                                     value="${pet.department.name}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.uploadDate"/> <c:out
-                                    value="${pet.uploadDate}"/></li>
+                                    value="${uploadDate}"/></li>
                             <li class="list-group-item"><spring:message code="admin.petCard.status"/> <c:out
                                     value="${pet.status}"/></li>
                         </ul>

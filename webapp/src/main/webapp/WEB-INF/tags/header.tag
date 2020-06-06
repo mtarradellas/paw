@@ -39,10 +39,38 @@
         <form class="form-inline pt-1 my-2 my-lg-0 ui-widget" method="GET" action="${pageContext.request.contextPath}/">
             <input id="search-value" name="find" class="form-control mr-sm-2" path="search" type="search"
                    placeholder="<spring:message code="search"/>" aria-label="Search"
-            <c:if test="${not empty find}">
-                value="${find}"
+            <c:if test="${not empty param.find}">
+                value="${param.find}"
             </c:if>
             >
+            <c:if test="${param.status ne null}">
+                <input type="hidden" name="status" value="${param.status}">
+            </c:if>
+            <c:if test="${param.searchOrder ne null}">
+                <input type="hidden" name="searchOrder" value="${param.searchOrder}">
+            </c:if>
+            <c:if test="${param.searchCriteria ne null}">
+                <input type="hidden" name="searchCriteria" value="${param.searchCriteria}">
+            </c:if>
+            <c:if test="${param.priceRange ne null}">
+                <input type="hidden" name="priceRange" value="${param.priceRange}">
+            </c:if>
+            <c:if test="${param.gender ne null}">
+                <input type="hidden" name="gender" value="${param.gender}">
+            </c:if>
+            <c:if test="${param.breed ne null}">
+                <input type="hidden" name="breed" value="${param.breed}">
+            </c:if>
+            <c:if test="${param.species ne null}">
+                <input type="hidden" name="species" value="${param.species}">
+            </c:if>
+            <c:if test="${param.province ne null}">
+                <input type="hidden" name="province" value="${param.province}">
+            </c:if>
+            <c:if test="${param.department ne null}">
+                <input type="hidden" name="department" value="${param.department}">
+            </c:if>
+
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" ><spring:message code="search"/></button>
         </form>
 
