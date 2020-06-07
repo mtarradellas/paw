@@ -14,8 +14,11 @@
 <c:if test="${showAllReviews eq 'true'}">
     <c:set var="limit" value="${user.targetReviews.size()}"/>
 </c:if>
-<c:if test="${showAllReviews eq 'false'}">
+<c:if test="${showAllReviews eq 'false' and user.targetReviews.size() > 5}">
     <c:set var="limit" value="5"/>
+</c:if>
+<c:if test="${showAllReviews eq 'false' and user.targetReviews.size() <= 5}">
+    <c:set var="limit" value="${user.targetReviews.size()}"/>
 </c:if>
 
 <t:basicLayout title="${title}">
@@ -136,9 +139,7 @@
                                 <c:if test="${pet.status.value ne 1 }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
-
                                     <t:animalCard pet="${pet}" level="user"/>
-
                                 </div>
                                 </c:forEach>
 
@@ -163,6 +164,7 @@
                         <c:if test="${user.averageScore != -1}">
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
+
                                     <spring:message code="showingOutOf" arguments="${limit}, ${user.targetReviews.size()}"/>
                                     <c:if test="${canRate}">
                                         <button type="button" class="btn btn-link"
@@ -188,7 +190,8 @@
                                     <div class="row ml-0 mr-0 bg-white">
                                         <div class="col-lg-2">
                                             <a href="${pageContext.request.contextPath}/user/${review.owner.id}">
-                                                ${review.owner.username}
+                                                    ${review.owner.username}
+
                                             </a>
                                         </div>
                                         <div class="col-lg-2">
@@ -229,18 +232,20 @@
                                             </c:if>
                                         </div>
                                         <div class="col">
-                                            ${review.description}
+                                          ${review.description}
                                         </div>
                                     </div>
                                 </c:forEach>
                                 <c:if test="${user.targetReviews.size() > 5 and showAllReviews eq 'false'}">
                                     <form method="get" class="text-center"
                                           action="${pageContext.request.contextPath}/user/${user.id}#ratings">
-                                            <input type="hidden" name="showAllReviews" value="true">
+                                        <input type="hidden" name="showAllReviews" value="true">
                                         <c:if test="${not empty param.page}">
                                             <input type="hidden" name="page" value="${param.page}">
                                         </c:if>
-                                        <button class="btn btn-primary btn-lg mt-2" type="submit" ><spring:message code="showAll"/></button>
+                                        <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                                code="showAll"/></button>
+
                                     </form>
                                 </c:if>
                                 <c:if test="${showAllReviews eq 'true'}">
@@ -250,7 +255,8 @@
                                         <c:if test="${not empty param.page}">
                                             <input type="hidden" name="page" value="${param.page}">
                                         </c:if>
-                                        <button class="btn btn-primary btn-lg mt-2" type="submit" ><spring:message code="showLess"/></button>
+                                        <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                                code="showLess"/></button>
                                     </form>
                                 </c:if>
                                 <hr class="m-0">

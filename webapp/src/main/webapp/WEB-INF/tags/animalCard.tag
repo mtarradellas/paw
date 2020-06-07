@@ -32,8 +32,14 @@
             <div class="row">
                 <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
                    class="darkblue-action ml-2"><spring:message code="petCard.goToPage"/></a>
-                <c:if test="${pet.status.value ne 1}">
-                    <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
+                <c:if test="${pet.status.value eq 2}">
+                    <h5 class="mt-2 ml-1">(<spring:message code="status.removed"/>)</h5>
+                </c:if>
+                <c:if test="${pet.status.value eq 3}">
+                    <h5 class="mt-2 ml-1">(<spring:message code="status.sold"/>)</h5>
+                </c:if>
+                <c:if test="${pet.status.value eq 4}">
+                    <h5 class="mt-2 ml-1">(<spring:message code="status.unavailable"/>)</h5>
                 </c:if>
 
 
@@ -43,8 +49,14 @@
             <div class="row">
                 <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>"
                    class="darkblue-action ml-2"><spring:message code="petCard.goToPage"/></a>
-                <c:if test="${pet.status.value ne 1}">
-                    <h5 class="mt-2 ml-1">(${pet.status.name})</h5>
+                <c:if test="${pet.status.value eq 2}">
+                    <h5 class="mt-2 ml-1">(<spring:message code="status.removed"/>)</h5>
+                </c:if>
+                <c:if test="${pet.status.value eq 3}">
+                    <h5 class="mt-2 ml-1">(<spring:message code="status.sold"/>)</h5>
+                </c:if>
+                <c:if test="${pet.status.value eq 4}">
+                    <h5 class="mt-2 ml-1">(<spring:message code="status.unavailable"/>)</h5>
                 </c:if>
             </div>
         </c:if>

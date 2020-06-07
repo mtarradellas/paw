@@ -69,11 +69,9 @@
                         <c:if test="${(pet.user.id eq loggedUser.id)}">
                             <c:if test="${pet.status.value eq 1}">
                                 <h1 class="mt-2 ml-4">
-                                    <form method="POST" class="m-0" action="<c:url value="/pet/${id}/sell-adopt" />">
-                                        <button type="submit" name="action" class="btn btn-success">
-                                            <spring:message code="petCard.reserve"/>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-success"
+                                            data-toggle="modal" data-target="#sell-adopt">
+                                        <spring:message code="petCard.reserve"/></button>
                                 </h1>
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/remove" />">
@@ -203,6 +201,44 @@
                                 </a>
                             </div>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="sell-adopt" tabindex="-1" role="dialog" aria-labelledby="sell-adoptTitle"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="sell-adoptTitle"><spring:message code="sellAdopt.title"/></h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="${pageContext.request.contextPath}/pet/${pet.id}/sell-adopt"
+                                  method="post" enctype="multipart/form-data">
+
+                                <div class="form-group">
+                                    <spring:message code="user" var="userTxt"/>
+                                    <label for="user">${userTxt}: </label>
+                                    <select id="user" class="form-control" name="newowner">
+                                        <c:forEach var="user" items="${availableUsers}">
+                                            <option value="${user.id}">${user.username}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+
+                                <small><spring:message code="sellAdopt.disclaimer"/></small>
+
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                    </button>
+                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

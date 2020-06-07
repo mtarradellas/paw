@@ -92,11 +92,7 @@ public class UserController extends ParentController {
             }
         }
 
-        if(toolong != null && toolong.equals("true")){
-            mav.addObject("descriptionTooLong", true);
-        }else{
-            mav.addObject("descriptionTooLong", false);
-        }
+        mav.addObject("descriptionTooLong", toolong != null && toolong.equals("true"));
 
         if(showAllReviews == null || (!showAllReviews.equals("true") && !showAllReviews.equals("false"))){
             showAllReviews = "false";
