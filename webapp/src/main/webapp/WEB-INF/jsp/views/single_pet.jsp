@@ -224,9 +224,9 @@
                                     <spring:message code="user" var="userTxt"/>
                                     <label for="user">${userTxt}: </label>
                                     <select id="user" class="form-control" name="newowner">
-<%--                                        <c:forEach var="user" items="availableUsers">--%>
-<%--                                            <option value="${user.id}">${user.username}</option>--%>
-<%--                                        </c:forEach>--%>
+                                        <c:forEach var="user" items="${availableUsers}">
+                                            <option value="${user.id}">${user.username}</option>
+                                        </c:forEach>
                                     </select>
                                 </div>
 

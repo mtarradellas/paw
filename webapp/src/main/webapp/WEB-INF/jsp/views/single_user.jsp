@@ -139,9 +139,7 @@
                                 <c:if test="${pet.status.value ne 1 }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
-
                                     <t:animalCard pet="${pet}" level="user"/>
-
                                 </div>
                                 </c:forEach>
 

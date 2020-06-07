@@ -173,6 +173,7 @@ public class PetController extends ParentController {
                     .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().equals(pet))
                     .map(Request::getUser).collect(Collectors.toList());
             mav.addObject("availableUsers", acceptedUsers);
+
         }
         mav.addObject("pet", pet);
 
