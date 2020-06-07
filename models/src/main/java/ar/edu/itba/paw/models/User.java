@@ -39,6 +39,10 @@ public class User {
     @Column
     private List<Request> requestList;
 
+    @OneToMany(orphanRemoval = true, mappedBy = "target", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column
+    private List<Request> interestList;
+
     @IndexedEmbedded(depth = 1)
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Column
@@ -134,6 +138,14 @@ public class User {
 
     public void setRequestList(List<Request> requestList) {
         this.requestList = requestList;
+    }
+
+    public List<Request> getInterestList() {
+        return interestList;
+    }
+
+    public void setInterestList(List<Request> interestList) {
+        this.interestList = interestList;
     }
 
     public List<Pet> getPetList() {

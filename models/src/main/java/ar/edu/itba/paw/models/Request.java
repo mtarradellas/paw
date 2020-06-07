@@ -29,6 +29,10 @@ public class Request {
     @JoinColumn(name = "ownerid")
     private User user;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "targetid")
+    private User target;
+
     @IndexedEmbedded(depth = 3)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "petId")
@@ -63,6 +67,14 @@ public class Request {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public User getTarget() {
+        return target;
+    }
+
+    public void setTarget(User target) {
+        this.target = target;
     }
 
     public long getId() {

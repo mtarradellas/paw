@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -166,6 +168,12 @@ public class PetController extends ParentController {
             mav.addObject("requestExists", false);
         }
         Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
+        if (pet.getUser().equals(user)) {
+            List<User> acceptedUsers = user.getInterestList().stream()
+                    .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().equals(pet))
+                    .map(Request::getUser).collect(Collectors.toList());
+            mav.addObject("availableUsers", acceptedUsers);
+        }
         mav.addObject("pet", pet);
 
         return mav;

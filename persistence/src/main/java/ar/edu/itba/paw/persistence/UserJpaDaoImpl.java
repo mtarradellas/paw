@@ -140,9 +140,6 @@ public class UserJpaDaoImpl implements UserDao {
         org.hibernate.search.jpa.FullTextQuery query = searchIdsQuery(find, status);
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
-        for (Object[] id:results) {
-            System.out.println("\n\n\nWWWWWSSSSSSSSSSSSS"+ id[0]);
-        }
         return results.size();
     }
 
