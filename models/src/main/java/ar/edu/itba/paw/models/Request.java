@@ -49,11 +49,12 @@ public class Request {
         this.status = status.getValue();
     }
 
-    public Request(Date creationDate, RequestStatus status, User user, Pet pet) {
+    public Request(Date creationDate, RequestStatus status, User user, User target, Pet pet) {
         this.creationDate = creationDate;
         this.pet = pet;
         this.status = status.getValue();
         this.user = user;
+        this.target = target;
     }
 
     @Override

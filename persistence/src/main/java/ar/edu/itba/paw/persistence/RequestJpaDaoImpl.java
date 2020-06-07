@@ -243,7 +243,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         Calendar cal = Calendar.getInstance();
         cal.setTime(today);
         today = cal.getTime();
-        Request request = new Request(today, status, user, pet);
+        Request request = new Request(today, status, user, pet.getUser(), pet);
         em.persist(request);
         return request;
     }
@@ -266,12 +266,12 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public void updateByStatusAndPetOwner(User petOwner, RequestStatus oldStatus, RequestStatus newStatus) {
-//        String qStr = "update Request set status = :new where pet.owner.id = :owner and status = :old";
-//        Query query = em.createQuery(qStr);
-//        query.setParameter("old", oldStatus);
-//        query.setParameter("new", newStatus);
-//        query.setParameter("owner", owner.id);
-//        query.executeUpdate();
+        String qStr = "update Request set status = :new where target.id = :target and status = :old";
+        Query query = em.createQuery(qStr);
+        query.setParameter("old", oldStatus);
+        query.setParameter("new", newStatus);
+        query.setParameter("target", petOwner.getId());
+        query.executeUpdate();
     }
 
     @Override
