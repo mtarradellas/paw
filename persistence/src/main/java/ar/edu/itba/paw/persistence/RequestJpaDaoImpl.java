@@ -55,7 +55,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
        List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
-        reqs.forEach(i-> System.out.println("\n\n\nREQQQQQ  "+ i));
         return reqs;
     }
 
@@ -112,8 +111,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         }
         if (filteredIds.size() == 0) return new ArrayList<>();
 
-        filteredIds.forEach(i-> System.out.println("\n\n\nWAWA  "+ i));
-
         //Obtain Requests with the filtered ids and sort
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Request> cr = cb.createQuery(Request.class);
@@ -150,7 +147,6 @@ public class RequestJpaDaoImpl implements RequestDao {
     public List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
         List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
-        reqs.forEach(i-> System.out.println("\n\n\nINTEEEE  "+ i));
         return reqs;
     }
 

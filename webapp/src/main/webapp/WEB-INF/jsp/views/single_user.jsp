@@ -1,6 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 
 <spring:message code="userTitle" var="title"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
@@ -18,14 +21,13 @@
     <c:set var="limit" value="${user.targetReviews.size()}"/>
 </c:if>
 
-
 <t:basicLayout title="${title}">
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
-        <div class="container-fluid ">
-            <div class=" col-md-10 offset-md-1">
-                <div class="bg-light shadow ">
-                    <div class="p-2 bg-dark">
-                        <div class="row text-whitesmoke">
+    <div class="container-fluid ">
+        <div class=" col-md-10 offset-md-1">
+            <div class="bg-light shadow ">
+                <div class="p-2 bg-dark">
+                    <div class="row text-whitesmoke">
                         <h1 class="ml-4"><c:out value="${user.username}"/></h1>
                         <c:if test="${(user.id eq loggedUser.id)}">
                             <h1 class="mt-2 ml-4">
@@ -41,17 +43,71 @@
                     </div>
                 </div>
                 <hr>
+                <c:if test="${descriptionTooLong}">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <spring:message code="user.review.description.toolong"/>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </c:if>
+                <c:choose>
+                    <c:when test="${user.averageScore == -1}">
+                        <h3 class="p-2">
+                            <b><spring:message code="user.rating"/>:</b>
+                            <spring:message code="user.noReviews"/>
+                        </h3>
+                        <c:if test="${canRate}">
+                            <button type="button" class="btn btn-link"
+                                    data-toggle="modal" data-target="#add-review"><spring:message
+                                    code="user.review"/></button>
+                        </c:if>
+                        <c:if test="${canRate eq false}">
+                            <small class="p-2">
+                                <spring:message code="user.cantRate"/>
+                            </small>
+                        </c:if>
+                    </c:when>
+                    <c:otherwise>
+                        <h3 class="p-2"><b><spring:message code="user.rating"/>:</b>
+                            <i id="star1" class="star-rating"></i>
+                            <i id="star2" class="star-rating"></i>
+                            <i id="star3" class="star-rating"></i>
+                            <i id="star4" class="star-rating"></i>
+                            <i id="star5" class="star-rating"></i>
+                        </h3>
+                        <p class="p-2">(<spring:message code="user.average"
+                                                        arguments="${score},${user.targetReviews.size()}"/>)
+                            <c:if test="${canRate}">
+                                <button type="button" class="btn btn-link"
+                                        data-toggle="modal" data-target="#add-review"><spring:message
+                                        code="user.review"/></button>
+                            </c:if>
+                            <c:if test="${canRate eq false}">
+                                <small class="p-2">
+                                    <spring:message code="user.cantRate"/>
+                                </small>
+                            </c:if>
+
+                        </p>
+                    </c:otherwise>
+                </c:choose>
+                <hr>
                 <div class="p-2">
+
                     <c:if test="${loggedUser.id eq user.id}">
                         <ul class="list-group">
-                            <li class="list-group-item"><b><spring:message code="user.email"/></b> <c:out
+                            <li class="list-group-item"><b><spring:message code="user.email"/>:</b> <c:out
                                     value="${user.mail}"/></li>
                         </ul>
                         <a class="edit-anchor" href="<c:url value="/edit-user/${loggedUser.id}"/>">
                             <spring:message code="editUserForm.edit"/>
-                            <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16"
+                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M15.502 1.94a.5.5 0 010 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 01.707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 00-.121.196l-.805 2.414a.25.25 0 00.316.316l2.414-.805a.5.5 0 00.196-.12l6.813-6.814z"></path>
-                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 002.5 15h11a1.5 1.5 0 001.5-1.5v-6a.5.5 0 00-1 0v6a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5H9a.5.5 0 000-1H2.5A1.5 1.5 0 001 2.5v11z" clip-rule="evenodd"></path>
+                                <path fill-rule="evenodd"
+                                      d="M1 13.5A1.5 1.5 0 002.5 15h11a1.5 1.5 0 001.5-1.5v-6a.5.5 0 00-1 0v6a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5H9a.5.5 0 000-1H2.5A1.5 1.5 0 001 2.5v11z"
+                                      clip-rule="evenodd"></path>
                             </svg>
                         </a>
                     </c:if>
@@ -110,8 +166,8 @@
                         <c:if test="${user.averageScore != -1}">
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
-                                    <spring:message code="showingOutOf"
-                                                    arguments="${limit}, ${user.targetReviews.size()}"/>
+
+                                    <spring:message code="showingOutOf" arguments="${limit}, ${user.targetReviews.size()}"/>
                                     <c:if test="${canRate}">
                                         <button type="button" class="btn btn-link"
                                                 data-toggle="modal" data-target="#add-review"><spring:message
@@ -120,7 +176,7 @@
                                 </h2>
 
                                 <div class="row">
-                                    <div class="col-lg-2 ml-2 ">
+                                    <div class="col-lg-2 ml-2">
                                         <h5 class="text-left"><b><spring:message code="user"/></b></h5>
                                     </div>
                                     <div class="col-lg-2">
@@ -137,6 +193,7 @@
                                         <div class="col-lg-2">
                                             <a href="${pageContext.request.contextPath}/user/${review.owner.id}">
                                                     ${review.owner.username}
+
                                             </a>
                                         </div>
                                         <div class="col-lg-2">
@@ -177,7 +234,7 @@
                                             </c:if>
                                         </div>
                                         <div class="col">
-                                                ${review.description}
+                                          ${review.description}
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -190,6 +247,7 @@
                                         </c:if>
                                         <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
                                                 code="showAll"/></button>
+
                                     </form>
                                 </c:if>
                                 <c:if test="${showAllReviews eq 'true'}">
@@ -220,7 +278,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title" id="add-reviewTitle"><spring:message code="user.review.title"/></h3>
+                            <h3 class="modal-title" id="helpTitle"><spring:message code="user.review.title"/></h3>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -258,8 +316,9 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
-        <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
+            <script>let userScore =<c:out value="${user.averageScore}"/></script>
+            <script src="<c:url value="/resources/js/user_rating.js"/>"></script>
+            <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
+            <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
 </t:basicLayout>

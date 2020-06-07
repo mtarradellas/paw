@@ -54,7 +54,7 @@ public class UserController extends ParentController {
     private RequestService requestService;
 
     private static final int REQ_PAGE_SIZE = 25;
-    private static final int PET_PAGE_SIZE = 12;
+    private static final int PET_PAGE_SIZE = 4;
     private static final int REV_PAGE_SIZE = 20;
 
     private static final int MIN_SCORE = 1;
@@ -62,7 +62,9 @@ public class UserController extends ParentController {
 
     @RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
-                             @RequestParam(name = "page", required = false) String page) {
+                             @RequestParam(name = "page", required = false) String page,
+                             @RequestParam(name = "descriptionTooLong", required = false) String toolong,
+                             @RequestParam(name = "showAllReviews", required = false) String showAllReviews) {
 
         final ModelAndView mav = new ModelAndView("views/single_user");
         final String locale = getLocale();
@@ -90,19 +92,22 @@ public class UserController extends ParentController {
             }
         }
 
-//        mav.addObject("descriptionTooLong", toolong != null && toolong.equals("true"));
-//
-//        if(showAllReviews == null || (!showAllReviews.equals("true") && !showAllReviews.equals("false"))){
-//            showAllReviews = "false";
-//        }
+        mav.addObject("descriptionTooLong", toolong != null && toolong.equals("true"));
+
+        if(showAllReviews == null || (!showAllReviews.equals("true") && !showAllReviews.equals("false"))){
+            showAllReviews = "false";
+        }
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("userPets", petList);
         mav.addObject("amount", amount);
         mav.addObject("user", user);
+        mav.addObject("canRate", canRate);
+        mav.addObject("showAllReviews", showAllReviews);
         return mav;
     }
+
 
     @RequestMapping(value = "/requests")
     public ModelAndView getRequests(@RequestParam(name = "status", required = false) String status,
@@ -316,6 +321,11 @@ public class UserController extends ParentController {
                                      @RequestParam(name = "score") String scoreStr,
                                      @RequestParam(name = "description") String description) {
 
+        if(description.length() > 200){
+            return new ModelAndView("redirect:/user/" + id).addObject("descriptionTooLong",
+                    true);
+
+        }
         User user = loggedUser();
         if (user != null) {
             int score = parseReviewScore(scoreStr);
@@ -323,9 +333,9 @@ public class UserController extends ParentController {
                 userService.addReview(user, id, score, description);
             } catch (DataIntegrityViolationException ex) {
                 LOGGER.warn("{}", ex.getMessage());
-                return user(id, "1").addObject("reviewError", true);
+                return new ModelAndView("redirect:/user/" + id);
             }
-            return user(id, "1").addObject("reviewError", false);
+            return new ModelAndView("redirect:/user/" + id);
         }
         return new ModelAndView("redirect:/403");
     }

@@ -59,7 +59,8 @@
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
                                         <form:label path="price" for="price">${priceTxt}: </form:label>
                                         <div class="input-modifiable-div" data-current="${pet.price}">
-                                            <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
+                                            <form:input placeholder="${priceTxt}" type="number" id="price" path="price"
+                                                        cssClass="input-max-value input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
                                             <a class="revert-input-anchor">
                                                 <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                     <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
@@ -265,6 +266,7 @@
         </div>
     </div>
 
+    <script src="<c:url value="/resources/js/max_value_input.js"/>"></script>
     <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
     <script src="<c:url value="/resources/js/revert_change.js"/>"></script>
     <script src="<c:url value="/resources/js/edit_pet_view.js"/>"></script>
