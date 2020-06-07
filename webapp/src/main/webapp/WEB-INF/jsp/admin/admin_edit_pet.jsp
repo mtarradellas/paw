@@ -52,21 +52,19 @@
                                 </spring:bind>
                             </div>
                             <div class="col">
-
                                 <spring:bind path="price">
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.price" var="priceTxt"/>
                                         <form:label path="price" for="price">${priceTxt}: </form:label>
-                                        <div class="input-modifiable-div" data-current="${pet.price}">
-                                            <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
-                                            <a class="revert-input-anchor">
-                                                <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 00-7.103-3.16.5.5 0 11-.454-.892A6 6 0 112.545 5.5a.5.5 0 11.91.417 5 5 0 109.375.789z" clip-rule="evenodd"/>
-                                                    <path fill-rule="evenodd" d="M7.854.146a.5.5 0 00-.708 0l-2.5 2.5a.5.5 0 000 .708l2.5 2.5a.5.5 0 10.708-.708L5.707 3 7.854.854a.5.5 0 000-.708z" clip-rule="evenodd"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                        <form:errors path="price" element="div" cssClass="text-error"/>
+                                        <form:input placeholder="${priceTxt}" type="number" id="price" path="price" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
+                                        <form:errors path="price" element="div" cssClass="invalid-feedback"/>
+                                    </div>
+                                </spring:bind>
+                                <spring:bind path="price">
+                                    <div class="form-group">
+                                        <spring:message code="uploadPetForm.forAdoption" var="adoptTxt"/>
+                                        <form:checkbox path="price" value="0" id="adopt" />
+                                        <form:label path="price" for="price">${adoptTxt}</form:label>
                                     </div>
                                 </spring:bind>
                             </div>
@@ -81,7 +79,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.department.province.id}">
                                             <form:select id="province" data-child="department" path="province" cssClass="selector-parent input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="province" items="${province_list}">
+                                                <c:forEach var="province" items="${provinceList}">
                                                     <form:option value="${province.id}">${province.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
@@ -104,7 +102,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.department.id}">
                                             <form:select id="department" path="department" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="department" items="${department_list}">
+                                                <c:forEach var="department" items="${departmentList}">
                                                     <form:option data-dependency="${department.province.id}" value="${department.id}">${department.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
@@ -129,7 +127,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.species.id}">
                                             <form:select id="speciesId" data-child="breedId" path="speciesId" cssClass="selector-parent input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="species" items="${species_list}">
+                                                <c:forEach var="species" items="${speciesList}">
                                                     <form:option value="${species.id}">${species.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
@@ -188,7 +186,7 @@
                                         <div class="input-modifiable-div" data-current="${pet.breed.id}">
                                             <form:select id="breedId" path="breedId" cssClass="input-modifiable custom-select ${status.error ? 'is-invalid' : ''}">
                                                 <form:option value="-1"><spring:message code="uploadPetForm.emptySelect"/></form:option>
-                                                <c:forEach var="breed" items="${breeds_list}">
+                                                <c:forEach var="breed" items="${breedList}">
                                                     <form:option data-dependency="${breed.species.id}" value="${breed.id}">${breed.name}</form:option>
                                                 </c:forEach>
                                             </form:select>
@@ -261,6 +259,7 @@
             </div>
         </div>
     </div>
+    <script src="<c:url value="/resources/js/pet_upload.js"/>"></script>
     <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
     <script src="<c:url value="/resources/js/edit_pet_view.js"/>"></script>
     <script src="<c:url value="/resources/js/revert_change.js"/>"></script>

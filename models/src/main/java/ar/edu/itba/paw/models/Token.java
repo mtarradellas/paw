@@ -1,27 +1,45 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
+@Entity
+@Table(name = "Tokens")
 public class Token {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tokens_id_seq")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "tokens_id_seq", name = "tokens_id_seq")
+    private Long id;
+
+    @Column
     private UUID token;
-    private long userId;
+
+    @Column
     private Date expirationDate;
 
-    public Token(long id, UUID token, long userId, Date expirationDate) {
-        this.id = id;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
+
+    protected Token() {
+        // Hibernate
+    }
+
+    public Token(UUID token, Date expirationDate) {
         this.token = token;
-        this.userId = userId;
+        this.expirationDate = expirationDate;
+    }
+
+    public Token(UUID token, Date expirationDate, User user) {
+        this.token = token;
+        this.user = user;
         this.expirationDate = expirationDate;
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public UUID getToken() {
@@ -32,12 +50,12 @@ public class Token {
         this.token = token;
     }
 
-    public long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Date getExpirationDate() {

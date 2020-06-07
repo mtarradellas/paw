@@ -31,7 +31,7 @@
                                 <label for="filter-species"><spring:message code="pet.species"/></label>
                                 <select name="species" class="form-control" id="filter-species">
                                     <option value="any"><spring:message code="filter.any"/></option>
-                                    <c:forEach items="${species_list}" var="speciesValue">
+                                    <c:forEach items="${speciesList}" var="speciesValue">
                                         <c:set var="speciesId">${speciesValue.id}</c:set>
                                         <option value="${speciesValue.id}"
                                                 <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesId eq param.species)}">
@@ -51,7 +51,7 @@
                                 >
                                     <option class="species-any" value="any"><spring:message code="filter.any"/></option>
 
-                                    <c:forEach items="${breeds_list}" var="breed">
+                                    <c:forEach items="${breedList}" var="breed">
                                         <c:set var="breedId">${breed.id}</c:set>
                                         <c:set var="speciesId">${breed.species.id}</c:set>
                                         <option class="species-${breed.species.id}" value="${breed.id}"
@@ -77,12 +77,18 @@
                                 <label for="filter-status"><spring:message code="status"/></label>
                                 <select name="status" class="form-control" id="filter-status">
                                     <option value="any"><spring:message code="filter.any"/></option>
-                                    <option value="deleted"
-                                            <c:if test="${(not empty param.status) && (param.status eq 'deleted')}">selected</c:if>
-                                    ><spring:message code="status.deleted"/></option>
-                                    <option value="exists"
-                                            <c:if test="${(not empty param.status) && (param.status eq 'exists')}">selected</c:if>
-                                    ><spring:message code="status.exists"/></option>
+                                    <option value="0"
+                                            <c:if test="${(not empty param.status) && (param.status eq '0')}">selected</c:if>
+                                    ><spring:message code="status.available"/></option>
+                                    <option value="1"
+                                            <c:if test="${(not empty param.status) && (param.status eq '1')}">selected</c:if>
+                                    ><spring:message code="status.removed"/></option>
+                                    <option value="2"
+                                            <c:if test="${(not empty param.status) && (param.status eq '2')}">selected</c:if>
+                                    ><spring:message code="status.sold"/></option>
+                                    <option value="3"
+                                            <c:if test="${(not empty param.status) && (param.status eq '3')}">selected</c:if>
+                                    ><spring:message code="status.unavailable"/></option>
                                 </select>
                             </div>
                             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
@@ -120,6 +126,9 @@
                         </div>
                         <div class="card-footer" id="search-tools-submit">
                             <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+                            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/pets">
+                                <spring:message code="filter.clear"/>
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -128,16 +137,16 @@
                     <div class="shadow p-3 bg-white rounded">
                         <div class="row">
                             <div class="col">
-                                <c:if test="${empty pets_list }">
+                                <c:if test="${empty petList }">
                                     <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                         <a href="${pageContext.request.contextPath}/admin/pets"><spring:message
                                                 code="showFirst"/></a>
                                     </div>
                                 </c:if>
 
-                                <c:if test="${not empty pets_list}">
+                                <c:if test="${not empty petList}">
                                     <div>
-                                        <h2><spring:message code="admin.petsListing"/>
+                                        <h2><spring:message code="admin.petsListing"/> <spring:message code="totalResults" arguments="${amount}"/>
                                             <a type="button" class="btn btn-success"
                                                href="${pageContext.request.contextPath}/admin/upload-pet"
                                             ><i class="fas fa-plus mr-2"></i><spring:message code="addPet"/></a>
@@ -146,7 +155,7 @@
                                 </c:if>
                             </div>
                             <div class="col-md-1 align-self-end">
-                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                <button type="button" class="btn btn-primary btn-circle float-right mb-1"
                                         data-toggle="modal" data-target="#help"><b>?</b></button>
                             </div>
 
@@ -160,7 +169,7 @@
                             </c:if>
                         </div>
                         <div>
-                            <c:if test="${not empty pets_list}">
+                            <c:if test="${not empty petList}">
                                 <div class="row">
                                     <div class="col-lg-7">
                                         <h5 class="text-left ml-4"><b><spring:message code="pet"/></b></h5>
@@ -171,19 +180,19 @@
                                 </div>
                             </c:if>
                             <ul class="list-group list-group-flush ">
-                                <c:forEach var="pet" items="${pets_list}">
+                                <c:forEach var="pet" items="${petList}">
                                     <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
-                                    <li     <c:if test="${(pet.status.id eq 1)}">
+                                    <li     <c:if test="${(pet.status.value eq 1)}">
                                         class="list-group-item"
                                     </c:if>
-                                            <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
+                                            <c:if test="${(pet.status.value eq 2) or (pet.status.value eq 3)}">
                                                 class="list-group-item resolved"
                                             </c:if>
                                     >
                                         <div class="row ">
                                             <div class="col-lg-7">
                                                 <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>">
-                                                    <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0]}"/>"
+                                                    <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0].id}"/>"
                                                          alt="Pet image" height="70" width="70">
                                                     <c:if test="${not empty pet.petName}">
                                                         <c:out value="${pet.petName}"/>
@@ -194,10 +203,10 @@
                                                 </a>
                                             </div>
                                             <div class="col text-center pt-3 ml-3">
-                                                <c:if test="${pet.status.id eq 1}">
+                                                <c:if test="${pet.status.value eq 1}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/pet/${pet.id}/remove"/>">
-                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.ownerId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitOwner"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"
@@ -210,10 +219,10 @@
                                                             <spring:message code="petCard.remove"/></button>
                                                     </form>
                                                 </c:if>
-                                                <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
+                                                <c:if test="${(pet.status.value eq 2) or (pet.status.value eq 3)}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/pet/${pet.id}/recover"/>">
-                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.ownerId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitOwner"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${pet.id}"/>"

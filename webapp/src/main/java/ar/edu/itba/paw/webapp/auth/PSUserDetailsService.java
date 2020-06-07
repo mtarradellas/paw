@@ -23,11 +23,11 @@ public class PSUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        final User user = userService.findByUsername(getLocale(), username)
+        final User user = userService.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username + " not found"));
-        int statusId = user.getStatus().getId();
-        if(statusId != UserStatus.ACTIVE.getValue()){
-            if(statusId == UserStatus.INACTIVE.getValue()) {
+        UserStatus status = user.getStatus();
+        if(status != UserStatus.ACTIVE){
+            if(status == UserStatus.INACTIVE) {
                 throw new UsernameNotFoundException(username + " has not been activated");
             }
             else {
@@ -37,7 +37,7 @@ public class PSUserDetailsService implements UserDetailsService {
 
         final Collection<GrantedAuthority> authorities = new HashSet<>();
 
-        if(userService.isAdmin(user.getId())) {
+        if(userService.isAdmin(user)) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));

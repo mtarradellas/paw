@@ -3,15 +3,13 @@ package ar.edu.itba.paw.webapp.form;
 import ar.edu.itba.paw.webapp.validators.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.constraints.*;
-
 import java.util.Date;
 import java.util.List;
 
 public class EditPetForm {
 
-    private List<Integer> imagesIdToDelete;
+    private List<Long> imagesIdToDelete;
 
     @NotNull
     @FileSize
@@ -40,7 +38,7 @@ public class EditPetForm {
     @Pattern(regexp="^(male)|(female)$")
     private String gender;
 
-    @Size(max = 250)
+    @Size(max = 512)
     private String description;
 
     @NotNull
@@ -68,11 +66,11 @@ public class EditPetForm {
         this.department = department;
     }
 
-    public List<Integer> getImagesIdToDelete() {
+    public List<Long> getImagesIdToDelete() {
         return imagesIdToDelete;
     }
 
-    public void setImagesIdToDelete(List<Integer> imagesIdToDelete) {
+    public void setImagesIdToDelete(List<Long> imagesIdToDelete) {
         this.imagesIdToDelete = imagesIdToDelete;
     }
 

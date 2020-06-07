@@ -6,7 +6,7 @@ public enum PetStatus {
     SOLD(3),
     UNAVAILABLE(4);
 
-    private int value;
+    final private int value;
 
     PetStatus(int value) {
         this.value = value;

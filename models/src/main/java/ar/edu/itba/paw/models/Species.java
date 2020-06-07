@@ -1,37 +1,88 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "Species")
+@Indexed
 public class Species implements Comparable<Species>{
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "species_id_seq")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "species_id_seq", name = "species_id_seq")
+    private Long id;
+
+    @Column(nullable = false)
+    @Field
+    private String en_us;
+
+    @Column(nullable = false)
+    @Field
+    private String es_ar;
+
+    @OneToMany(orphanRemoval = true, mappedBy = "species", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Breed> breedList;
+
     private String name;
 
-    public Species(long id, String name) {
-        this.id = id;
-        this.name = name;
+    protected Species() {
+        // Hibernate
     }
 
-    public Species() {}
+    public Species(String en_us, String es_ar) {
+        this.en_us = en_us;
+        this.es_ar = es_ar;
+        this.name = es_ar;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (this.getClass() != o.getClass()) return false;
+        if (getClass() != o.getClass()) return false;
         Species species = (Species) o;
-        return id == species.id;
+        return id.equals(species.id);
     }
 
     @Override
     public String toString() {
-        return "{ id: " + id + ", name: " + name + " }";
+        return "{ id: " + id + ", en_us: " + en_us + " }";
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEn_us() {
+        return en_us;
+    }
+
+    public void setEn_us(String en_us) {
+        this.en_us = en_us;
+    }
+
+    public String getEs_ar() {
+        return es_ar;
+    }
+
+    public void setEs_ar(String es_ar) {
+        this.es_ar = es_ar;
+    }
+
+    public List<Breed> getBreedList() {
+        return breedList;
+    }
+
+    public void setBreedList(List<Breed> breedList) {
+        this.breedList = breedList;
     }
 
     public String getName() {
@@ -42,8 +93,16 @@ public class Species implements Comparable<Species>{
         this.name = name;
     }
 
+    public void setLocale(String locale) {
+        if (locale.equalsIgnoreCase("en_us")) {
+            name = en_us;
+        } else {
+            name = es_ar;
+        }
+    }
+
     @Override
     public int compareTo(Species o) {
-        return name.compareTo(o.name);
+        return getName().compareTo(o.getName());
     }
 }

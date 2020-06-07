@@ -1,46 +1,53 @@
 package ar.edu.itba.paw.models;
 
-import java.util.Base64;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "Images")
 public class Image {
 
-    private long imageId;
-    private byte[] imageData;
-    private long petId;
-    private String url;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "images_id_seq")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "images_id_seq", name = "images_id_seq")
+    private Long id;
+
+    @Column
+    private byte[] img;
+
+    @Column
+    private Long petId;
+
+    public Image() {
+        //Hibernate
+    }
 
     public Image(long imageId, byte[] imageData, long petId) {
-        this.imageId = imageId;
-        this.imageData = imageData;
+        this.id = imageId;
+        this.img = imageData;
         this.petId = petId;
-        this.url = "data:image/png;base64," + Base64.getEncoder().encodeToString(imageData);
     }
 
-    public Image(long image_id) {
-
+    public Long getPetId() {
+        return petId;
     }
 
-    public long getImageId() {
-        return imageId;
+    public void setPetId(Long petId) {
+        this.petId = petId;
     }
 
-    public void setImageId(long imageId) {
-        this.imageId = imageId;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long imageId) {
+        this.id = imageId;
     }
 
     public byte[] getImageData() {
-        return imageData;
+        return img;
     }
 
     public void setImageData(byte[] imageData) {
-        this.imageData = imageData;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+        this.img = imageData;
     }
 }

@@ -5,9 +5,7 @@
 <spring:message code="indexTitle" var="titleVar"/>
 <t:basicLayout title="${titleVar}">
     <jsp:body>
-<<<<<<< HEAD
         <h1><a href="${pageContext.request.contextPath}/maps">MAAAAAPS</a></h1>
-=======
         <c:if test="${wrongSearch}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <spring:message code="wrongSearch"/>
@@ -16,30 +14,29 @@
                 </button>
             </div>
         </c:if>
->>>>>>> 116b22f7b9d1c01d34182bd1b4746af8dd010517
         <div class="container-fluid">
             <div class="row">
 
-                <t:search-tools-pet breeds_list="${breeds_list}" species_list="${species_list}"
-                                    province_list="${province_list}" department_list="${department_list}"/>
+                <t:search-tools-pet breedList="${breedList}" speciesList="${speciesList}"
+                                    provinceList="${provinceList}" departmentList="${departmentList}"/>
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
                         <div class="row">
                             <div class="col">
                                 <h2>
-                                    <c:if test="${empty findValue}">
+                                    <c:if test="${empty find}">
                                         <b><spring:message code="indexMessage"/></b>
                                     </c:if>
-                                    <c:if test="${not empty findValue}">
-                                        <b><spring:message code="searchFor" arguments="${findValue}"/> </b>
+                                    <c:if test="${not empty find}">
+                                        <b><spring:message code="searchFor" arguments="${find}"/> </b>
                                     </c:if>
 
-                                    <spring:message code="totalResults" arguments="${totalPets}"/>
+                                    <spring:message code="totalResults" arguments="${amount}"/>
                                 </h2>
                             </div>
                             <div class="col-md-1 align-self-end">
-                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                <button type="button" class="btn btn-primary btn-circle float-right mb-1"
                                         data-toggle="modal" data-target="#help"><b>?</b></button>
                             </div>
                         </div>
@@ -83,15 +80,15 @@
                         </div>
                         <hr>
 
-                        <c:if test="${empty home_pet_list }">
+                        <c:if test="${empty homePetList }">
                             <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                 <a href="${pageContext.request.contextPath}/"><spring:message code="showFirst"/></a>
                             </div>
 
                         </c:if>
                         <div class="card-deck row ml-5">
-                            <c:forEach var="pet" items="${home_pet_list}">
-                                <c:if test="${pet.status.id eq 1}">
+                            <c:forEach var="pet" items="${homePetList}">
+                                <c:if test="${pet.status.value eq 1}">
 
                                     <div class="col-auto mb-3">
 

@@ -1,59 +1,105 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Breeds")
+@Indexed
 public class Breed implements Comparable<Breed>{
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "breeds_id_seq")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "breeds_id_seq", name = "breeds_id_seq")
+    private Long id;
+
+    @Column(nullable = false)
+    @Field
+    private String en_us;
+
+    @Column(nullable = false)
+    @Field
+    private String es_ar;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "speciesId")
     private Species species;
+
     private String name;
 
-
-    public Breed(long id, String name, Species species) {
-        this.id = id;
-        this.name = name;
-        this.species = species;
+    protected Breed() {
+        // Hibernate
     }
 
-    public Breed() {}
+    public Breed(Species species, String en_us, String es_ar) {
+        this.species = species;
+        this.en_us = en_us;
+        this.es_ar = es_ar;
+        this.name = es_ar;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (this.getClass() != o.getClass()) return false;
+        if (getClass() != o.getClass()) return false;
         Breed breed = (Breed) o;
-        return id == breed.id;
+        return id.equals(breed.id);
     }
 
     @Override
     public String toString() {
-        return "{ id: " + id + ", name: " + name + ", species: " + species + " }";
+        return "{ id: " + id + ", name: " + en_us + ", species: " + species + " }";
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getEn_us() {
+        return en_us;
+    }
+
+    public String getEs_ar() {
+        return es_ar;
     }
 
     public Species getSpecies() {
         return species;
     }
 
-    public void setSpecies(Species species) {
-        this.species = species;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEn_us(String en_us) {
+        this.en_us = en_us;
+    }
+
+    public void setEs_ar(String es_ar) {
+        this.es_ar = es_ar;
+    }
+
+    public void setSpecies(Species species) {
+        this.species = species;
+    }
+
+    public void setLocale(String locale) {
+        if (locale.equalsIgnoreCase("en_us")) {
+            name = en_us;
+        } else {
+            name = es_ar;
+        }
     }
 
     @Override
     public int compareTo(Breed o) {
-        return name.compareTo(o.name);
+        return getName().compareTo(o.getName());
     }
 }

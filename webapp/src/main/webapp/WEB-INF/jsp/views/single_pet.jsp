@@ -1,6 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:formatDate value="${pet.uploadDate}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
+<fmt:formatDate value="${pet.birthDate}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
+
 
 <c:set var="petName" value="${pet.petName}"/>
 <c:set var="cprice" value="${pet.price}"/>
@@ -32,15 +37,15 @@
                                 <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                             </h1>
                         </c:if>
-                        <c:if test="${pet.status.id eq 3}">
+                        <c:if test="${pet.status.value eq 3}">
                             <h1 class="ml-1 "> <spring:message code="pet.status.sold"/></h1>
                         </c:if>
-                        <c:if test="${pet.status.id eq 2}">
+                        <c:if test="${pet.status.value eq 2}">
                             <h1 class="ml-1"> <spring:message code="pet.status.removed"/> </h1>
                         </c:if>
-                        <c:if test="${(pet.ownerId ne loggedUser.id)}">
+                        <c:if test="${(pet.user.id ne loggedUser.id)}">
                             <c:if test="${not requestExists}">
-                                <c:if test="${pet.status.id eq 1}">
+                                <c:if test="${pet.status.value eq 1}">
                                     <h1 class="mt-2 ml-2">
                                         <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
                                             <button type="submit" name="action" class="btn btn-success">
@@ -52,7 +57,7 @@
                                 </c:if>
                             </c:if>
                             <c:if test="${requestExists}">
-                                <c:if test="${pet.status.id eq 1}">
+                                <c:if test="${pet.status.value eq 1}">
                                     <h1 class="mt-2 ml-2">
                                         <button type="button" class="btn btn-success" disabled>
                                             <spring:message code="petCard.alreadyRequested"/>
@@ -61,8 +66,8 @@
                                 </c:if>
                             </c:if>
                         </c:if>
-                        <c:if test="${(pet.ownerId eq loggedUser.id)}">
-                            <c:if test="${pet.status.id eq 1}">
+                        <c:if test="${(pet.user.id eq loggedUser.id)}">
+                            <c:if test="${pet.status.value eq 1}">
                                 <h1 class="mt-2 ml-4">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/sell-adopt" />">
                                         <button type="submit" name="action" class="btn btn-success">
@@ -87,7 +92,7 @@
                                     </svg>
                                 </a>
                             </c:if>
-                            <c:if test="${pet.status.id ne 1}">
+                            <c:if test="${pet.status.value ne 1}">
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/recover" />">
                                         <button type="submit" name="action" class="btn btn-success">
@@ -114,7 +119,7 @@
                         <li class="list-group-item"><b><spring:message code="petCard.name"/></b> <c:out
                                 value="${pet.petName}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.dob"/></b> <c:out
-                                value="${pet.birthDate}"/></li>
+                                value="${birthDate}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.species"/></b> <c:out
                                 value="${pet.species.name}"/></
                         >
@@ -127,7 +132,7 @@
                         <li class="list-group-item"><b><spring:message code="petCard.department"/></b> <c:out
                                 value="${pet.department.name}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.uploadDate"/></b> <c:out
-                                value="${pet.uploadDate}"/></li>
+                                value="${uploadDate}"/></li>
                     </ul>
                     <hr>
                     <h2><spring:message code="status"/></h2>
@@ -164,7 +169,7 @@
 
                 </div>
                 <hr>
-                <c:set var="ownerId" value="${pet.ownerId}"/>
+                <c:set var="ownerId" value="${pet.user.id}"/>
                 <a href="${pageContext.request.contextPath}/user/${ownerId}"
                    class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
 
@@ -184,7 +189,20 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <img src="" alt="Full sized image"/>
+                            <img id="img-preview" src="" alt="Full sized image"/>
+                            <div id="arrows-wrapper-img">
+                                <a class="prev-img">
+                                    <svg class="bi bi-arrow-left-circle-fill" width="3rem" height="3rem" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.646 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L6.207 7.5H11a.5.5 0 0 1 0 1H6.207l2.147 2.146z"/>
+                                    </svg>
+                                </a>
+                                <a class="next-img">
+                                    <svg class="bi bi-arrow-right-circle-fill" width="3rem" height="3rem" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-8.354 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L9.793 7.5H5a.5.5 0 0 0 0 1h4.793l-2.147 2.146z"/>
+                                    </svg>
+                                </a>
+                            </div>
+
                         </div>
                     </div>
                 </div>

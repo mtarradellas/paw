@@ -1,77 +1,88 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.models.constants.RequestStatus;
+import org.hibernate.search.annotations.*;
+
+import javax.persistence.*;
 import java.util.Date;
 
+@Entity
+@Indexed
+@Table(name = "Requests")
 public class Request {
-    private long id;
-    private long ownerId;
-    private String ownerUsername;
-    private Status status;
-    private long petId;
-    private String petName;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "requests_id_seq")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "requests_id_seq", name = "requests_id_seq")
+    @DocumentId
+    private Long id;
+
+    @Column
     private Date creationDate;
 
-    public Request(long id,long ownerId, String ownerUsername, Status status, long petId, String petName, Date creationDate) {
-        this.id = id;
-        this.ownerId = ownerId;
-        this.ownerUsername = ownerUsername;
-        this.status = status;
-        this.petId = petId;
-        this.petName = petName;
+    @Field
+    @NumericField
+    private int status;
+
+    @IndexedEmbedded(depth = 3)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ownerid")
+    private User user;
+
+    @IndexedEmbedded(depth = 3)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "petId")
+    private Pet pet;
+
+
+    protected Request() {
+        // Hibernate
+    }
+
+    public Request(Date creationDate, RequestStatus status, Pet pet) {
         this.creationDate = creationDate;
+        this.pet = pet;
+        this.status = status.getValue();
+    }
+
+    public Request(Date creationDate, RequestStatus status, User user, Pet pet) {
+        this.creationDate = creationDate;
+        this.pet = pet;
+        this.status = status.getValue();
+        this.user = user;
     }
 
     @Override
     public String toString() {
-        return "{ id: " + id + ", status: " + status + ", owner: " + ownerId + ", pet: " + petId + ", creationDate: " + creationDate + " }";
+        return "{ id: " + id + ", status: " + status + ", owner: " + user + ", pet: " + pet + ", creationDate: " + creationDate + " }";
     }
 
-    public long getOwnerId() {
-        return ownerId;
+    public User getUser() {
+        return user;
     }
 
-    public void setOwnerId(long ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public String getPetName() {
-        return petName;
-    }
-
-    public void setPetName(String petName) {
-        this.petName = petName;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public RequestStatus getStatus() {
+        return RequestStatus.values()[status];
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public void setStatus(RequestStatus status) {
+        this.status = status.getValue();
     }
 
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public Pet getPet() {
+        return pet;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public long getPetId() {
-        return petId;
-    }
-
-    public void setPetId(long petId) {
-        this.petId = petId;
+    public void setPet(Pet pet) {
+        this.pet = pet;
     }
 
     public Date getCreationDate() {

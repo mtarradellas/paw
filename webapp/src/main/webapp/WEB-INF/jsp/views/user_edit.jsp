@@ -62,7 +62,7 @@
                                         <form:label path="currentPassword" for="currentPassword">${passwordTxt}: </form:label>
                                         <form:input type="password" placeholder="${passwordTxt}" id="currentPassword" path="currentPassword" cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                         <form:errors path="currentPassword" element="div" cssClass="invalid-feedback"/>
-                                        <c:if test="${not empty current_password_fail}">
+                                        <c:if test="${not empty currentPasswordFail}">
                                             <p class="text-error"><spring:message code="editUserForm.passwordIsIncorrect"/></p>
                                         </c:if>
                                     </div>

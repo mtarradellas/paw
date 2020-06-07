@@ -2,9 +2,7 @@ package ar.edu.itba.paw.webapp.validators;
 
 import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.models.Department;
-import ar.edu.itba.paw.models.Province;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.stream.Stream;
@@ -28,6 +26,8 @@ public class DepartmentIdMatchValidator implements ConstraintValidator<Departmen
 
         Stream<Department> departmentStream = locationService.departmentList().stream();
 
-        return departmentStream.anyMatch(p->val == p.getId());
+        boolean b = departmentStream.anyMatch(p-> val.equals(p.getId()));
+
+        return b;
     }
 }
