@@ -6,6 +6,19 @@
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
 
+<fmt:formatNumber type="number" maxFractionDigits="2" var="score" value="${user.averageScore}"/>
+
+<c:if test="${showAllReviews eq 'true'}">
+    <c:set var="limit" value="${user.targetReviews.size()}"/>
+</c:if>
+<c:if test="${showAllReviews eq 'false' and user.targetReviews.size() > 5}">
+    <c:set var="limit" value="5"/>
+</c:if>
+<c:if test="${showAllReviews eq 'false' and user.targetReviews.size() <= 5}">
+    <c:set var="limit" value="${user.targetReviews.size()}"/>
+</c:if>
+
+
 <t:basicLayout title="${title}">
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
         <div class="container-fluid ">
@@ -94,9 +107,154 @@
 
                         </div>
                         <hr>
+                        <c:if test="${user.averageScore != -1}">
+                            <div id="ratings" class="p-2">
+                                <h2><b><spring:message code="user.reviews"/></b>
+                                    <spring:message code="showingOutOf"
+                                                    arguments="${limit}, ${user.targetReviews.size()}"/>
+                                    <c:if test="${canRate}">
+                                        <button type="button" class="btn btn-link"
+                                                data-toggle="modal" data-target="#add-review"><spring:message
+                                                code="user.review"/></button>
+                                    </c:if>
+                                </h2>
+
+                                <div class="row">
+                                    <div class="col-lg-2 ml-2 ">
+                                        <h5 class="text-left"><b><spring:message code="user"/></b></h5>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <h5 class="text-left"><b><spring:message code="user.score"/></b></h5>
+                                    </div>
+                                    <div class="col">
+                                        <h5 class="text-left mr-4"><b><spring:message
+                                                code="uploadPetForm.description"/></b></h5>
+                                    </div>
+                                </div>
+                                <hr class="m-0">
+                                <c:forEach var="review" items="${user.targetReviews}" begin="0" end="${limit-1}">
+                                    <div class="row ml-0 mr-0 bg-white">
+                                        <div class="col-lg-2">
+                                            <a href="${pageContext.request.contextPath}/user/${review.owner.id}">
+                                                    ${review.owner.username}
+                                            </a>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <c:if test="${review.score == 1}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 2}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 3}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 4}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="far fa-star star-rating"></i>
+                                            </c:if>
+                                            <c:if test="${review.score == 5}">
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                                <i class="fas fa-star star-rating"></i>
+                                            </c:if>
+                                        </div>
+                                        <div class="col">
+                                                ${review.description}
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                                <c:if test="${user.targetReviews.size() > 5 and showAllReviews eq 'false'}">
+                                    <form method="get" class="text-center"
+                                          action="${pageContext.request.contextPath}/user/${user.id}#ratings">
+                                        <input type="hidden" name="showAllReviews" value="true">
+                                        <c:if test="${not empty param.page}">
+                                            <input type="hidden" name="page" value="${param.page}">
+                                        </c:if>
+                                        <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                                code="showAll"/></button>
+                                    </form>
+                                </c:if>
+                                <c:if test="${showAllReviews eq 'true'}">
+                                    <form method="get" class="text-center"
+                                          action="${pageContext.request.contextPath}/user/${user.id}#ratings">
+                                        <input type="hidden" name="showAllReviews" value="false">
+                                        <c:if test="${not empty param.page}">
+                                            <input type="hidden" name="page" value="${param.page}">
+                                        </c:if>
+                                        <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                                code="showLess"/></button>
+                                    </form>
+                                </c:if>
+                                <hr class="m-0">
+                            </div>
+                        </c:if>
+
+
+                        <div class="p-4">
+                            <b><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></b>
+                        </div>
                     </div>
-                    <div class="p-4">
-                        <b><a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a></b>
+                </div>
+            </div>
+
+            <div class="modal fade" id="add-review" tabindex="-1" role="dialog" aria-labelledby="add-reviewTitle"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="add-reviewTitle"><spring:message code="user.review.title"/></h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="${pageContext.request.contextPath}/user/${user.id}/review"
+                                  method="post" enctype="multipart/form-data">
+
+                                <div class="form-group input-group">
+                                    <spring:message code="uploadPetForm.description" var="descriptionTxt"/>
+                                    <label class="mt-2" for="description">${descriptionTxt}: </label>
+                                    <input placeholder="${descriptionTxt}" class="form-control" type="text"
+                                           name="description" id="description"/>
+                                </div>
+                                <div class="form-group">
+                                    <spring:message code="user.score" var="scoreTxt"/>
+                                    <label for="score">${scoreTxt}: </label>
+                                    <select id="score" name="score">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                    </button>
+                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <input type="submit" class="btn btn-primary" value="${submitText}"/>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

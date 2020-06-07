@@ -74,6 +74,28 @@ public class UserController extends ParentController {
         Optional<User> opUser = userService.findById(id);
         User user = opUser.orElseThrow(UserNotFoundException::new);
 
+        boolean canRate = false;
+
+        if(loggedUser() != null && !(user.getId() == loggedUser().getId())){
+            for(Request request : loggedUser().getRequestList()){
+                if((request.getPet().getUser().getId() == user.getId()) && (request.getStatus().getValue() ==
+                        RequestStatus.ACCEPTED.getValue())){
+                    canRate = true;
+                }
+            }
+            for(Review review : user.getTargetReviews()){
+                if(review.getOwner().getId() == loggedUser().getId()){
+                    canRate = false;
+                }
+            }
+        }
+
+//        mav.addObject("descriptionTooLong", toolong != null && toolong.equals("true"));
+//
+//        if(showAllReviews == null || (!showAllReviews.equals("true") && !showAllReviews.equals("false"))){
+//            showAllReviews = "false";
+//        }
+
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("userPets", petList);

@@ -84,10 +84,15 @@ public class AdminUserController extends ParentController {
 
     @RequestMapping(value = "/admin/user/{id}")
     public ModelAndView getSingleUser(@PathVariable("id") long id,
-                                      @RequestParam(name = "page", required = false) String page){
+                                      @RequestParam(name = "page", required = false) String page,
+                                      @RequestParam(name = "showAllReviews", required = false) String showAllReviews){
 
         final ModelAndView mav = new ModelAndView("/admin/admin_single_user");
         String locale = getLocale();
+
+        if(showAllReviews == null || (!showAllReviews.equals("true") && !showAllReviews.equals("false"))){
+            showAllReviews = "false";
+        }
 
         int pageNum = parsePage(page);
 
@@ -98,6 +103,7 @@ public class AdminUserController extends ParentController {
         if (!opUser.isPresent()) throw new UserNotFoundException("User " + id + " not found");
         User user = opUser.get();
 
+        mav.addObject("showAllReviews", showAllReviews);
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("userPets", petList);
