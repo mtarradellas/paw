@@ -122,7 +122,7 @@
 //    private static final Date O_BIRTH_DATE = null;
 //    private Date O_UPLOAD_DATE;
 //    private static final int O_PRICE = 100;
-//    private static final PetStatus O_STATUS = PetStatus.AVAILABLE;
+//    private static final PetStatus O_STATUS = PetStatus.UNAVAILABLE;
 //
 //    private static final int PAGE = 1;
 //    private static final int PAGE_SIZE = 50;
@@ -431,7 +431,7 @@
 //                USER, O_SPECIES, O_BREED, PROVINCE, DEPARTMENT);
 //
 //
-//        List<Pet> petList = petDaoImpl.filteredList(LOCALE, null, SPECIES, BREED, null,
+//        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, SPECIES, BREED, null,
 //                null, null, null, 0, -1, null, null,
 //                PAGE, PAGE_SIZE);
 //
@@ -449,8 +449,98 @@
 //                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
 //
 //
-//        List<Pet> petList = petDaoImpl.filteredList(LOCALE, null, null, null, GENDER,
+//        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, GENDER,
 //                null, null, null, 0, -1, null, null,
+//                PAGE, PAGE_SIZE);
+//
+//        assertEquals(1, petList.size());
+//        Pet petL = petList.get(0);
+//        assertPet(petL, pet.getId(), PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//    }
+//
+//    @Test
+//    public void testFilteredListStatus() {
+//        Pet pet = insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//        insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, O_STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//
+//
+//        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+//                STATUS, null, null, 0, -1, null, null,
+//                PAGE, PAGE_SIZE);
+//
+//        assertEquals(1, petList.size());
+//        Pet petL = petList.get(0);
+//        assertPet(petL, pet.getId(), PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//    }
+//
+//    @Test
+//    public void testFilteredListMinPrice() {
+//        Pet pet = insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, O_PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//        insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//
+//
+//        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+//                null, null, null, O_PRICE, -1, null, null,
+//                PAGE, PAGE_SIZE);
+//
+//        assertEquals(1, petList.size());
+//        Pet petL = petList.get(0);
+//        assertPet(petL, pet.getId(), PET_NAME, BIRTH_DATE, GENDER, VACCINATED, O_PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//    }
+//
+//    @Test
+//    public void testFilteredListMaxPrice() {
+//        Pet pet = insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//        insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, O_PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//
+//
+//        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+//                null, null, null, 0, PRICE, null, null,
+//                PAGE, PAGE_SIZE);
+//
+//        assertEquals(1, petList.size());
+//        Pet petL = petList.get(0);
+//        assertPet(petL, pet.getId(), PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//    }
+//
+//    @Test
+//    public void testFilteredListProvince() {
+//        Pet pet = insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//        insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, O_PROVINCE, O_DEPARTMENT);
+//
+//
+//        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+//                null, null, null, 0, -1, PROVINCE, null,
+//                PAGE, PAGE_SIZE);
+//
+//        assertEquals(1, petList.size());
+//        Pet petL = petList.get(0);
+//        assertPet(petL, pet.getId(), PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//    }
+//
+//    @Test
+//    public void testFilteredListDepartment() {
+//        Pet pet = insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
+//        insertPet(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+//                USER, SPECIES, BREED, O_PROVINCE, O_DEPARTMENT);
+//
+//
+//        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+//                null, null, null, 0, -1, PROVINCE, DEPARTMENT,
 //                PAGE, PAGE_SIZE);
 //
 //        assertEquals(1, petList.size());
