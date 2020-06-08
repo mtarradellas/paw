@@ -1,9 +1,11 @@
+<%@ page import="ar.edu.itba.paw.models.constants.PetStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
 
 <spring:message code="userTitle" var="title"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
@@ -133,10 +135,10 @@
                             <c:forEach var="pet" items="${userPets}">
 
 
-                            <c:if test="${pet.status.value eq 1}">
+                            <c:if test="${pet.status.value eq AVAILABLE}">
                             <div class="col-auto mb-3">
                                 </c:if>
-                                <c:if test="${pet.status.value ne 1 }">
+                                <c:if test="${pet.status.value ne AVAILABLE }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
                                     <t:animalCard pet="${pet}" level="user"/>

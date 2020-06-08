@@ -1,8 +1,14 @@
+<%@ page import="ar.edu.itba.paw.models.constants.RequestStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+<c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+<c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+<c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
 
 
 <spring:message code="request.edit" var="editRequestTitle"/>
@@ -22,22 +28,22 @@
                             </div>
                             <label for="status"><spring:message code="request.status"/>:</label>
                             <select name="newStatus" class="form-control" id="status">
-                                <c:if test="${request.status.value ne 1}">
+                                <c:if test="${request.status.value ne PENDING}">
                                     <option value="pending">
                                         <spring:message code="request.pending"/>
                                     </option>
                                 </c:if>
-                                <c:if test="${request.status.value ne 2}">
+                                <c:if test="${request.status.value ne ACCEPTED}">
                                     <option value="accepted">
                                         <spring:message code="request.accepted"/>
                                     </option>
                                 </c:if>
-                                <c:if test="${request.status.value ne 3}">
+                                <c:if test="${request.status.value ne REJECTED}">
                                     <option value="rejected">
                                         <spring:message code="request.rejected"/>
                                     </option>
                                 </c:if>
-                                <c:if test="${request.status.value ne 4}">
+                                <c:if test="${request.status.value ne CANCELED}">
                                     <option value="canceled">
                                         <spring:message code="request.canceled"/>
                                     </option>
