@@ -17,7 +17,7 @@ public class EditPetForm {
     private List<MultipartFile> photos;
 
     @Size(min = 2, max = 50)
-    @Pattern(regexp = "^[a-zA-Z]+$")
+    @Pattern(regexp = "^[a-zA-Zñ]+$")
     private String petName;
 
     @SpeciesIdMatch
