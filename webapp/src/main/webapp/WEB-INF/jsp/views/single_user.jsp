@@ -160,6 +160,18 @@
                             </c:if>
 
                         </div>
+                        <c:if test="${user.newPets.size() > 0}">
+                            <hr>
+                            <div class="p-2">
+                                <h2><b><spring:message code="userPets.adopted"/></b>
+<%--                                    <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>--%>
+                                </h2>
+                                <c:forEach var="pet" items="${user.newPets}">
+                                    <t:animalCard pet="${pet}" level="user"/>
+                                </c:forEach>
+                            </div>
+                        </c:if>
+
                         <hr>
                         <c:if test="${user.averageScore != -1}">
                             <div id="ratings" class="p-2">
