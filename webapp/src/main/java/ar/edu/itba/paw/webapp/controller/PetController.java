@@ -149,34 +149,45 @@ public class PetController extends ParentController {
         final ModelAndView mav = new ModelAndView("views/single_pet");
         User user = loggedUser();
         String locale = getLocale();
-        /* Check if user has already requested pet */
-        if (user != null && !user.getRequestList().isEmpty()) {
-            Optional<Request> opRequest = user.getRequestList().stream().filter(request -> request.getPet().getId() == id).max(Comparator.comparing(Request::getCreationDate));
-            if (!opRequest.isPresent()) {
-                LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
-                mav.addObject("lastRequest", null);
-                mav.addObject("requestExists", false);
-            }
-            else {
-                LOGGER.debug("User {} last request status for pet {} is {}", user.getId(), id, opRequest.get().getId());
-                mav.addObject("lastRequest", opRequest.get().getStatus());
-                mav.addObject("requestExists", true);
-            }
-        } else {
-            LOGGER.debug("User is not authenticated or has no requests");
-            mav.addObject("lastRequest", null);
-            mav.addObject("requestExists", false);
-        }
+
+        RequestStatus lastRequest = null;
+        boolean requestExists = false;
+        List<User> availableUsers = null;
+        boolean acquired = false;
+
         Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
-        if (pet.getUser().equals(user)) {
-            List<User> acceptedUsers = user.getInterestList().stream()
-                    .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().equals(pet))
-                    .map(Request::getUser).collect(Collectors.toList());
-            mav.addObject("availableUsers", acceptedUsers);
 
+        if (user != null) {
+            /* Check if user has already requested pet */
+            if (!user.getRequestList().isEmpty()) {
+                Optional<Request> opRequest = user.getRequestList().stream()
+                        .filter(request -> request.getPet().getId() == id)
+                        .max(Comparator.comparing(Request::getCreationDate));
+                if (opRequest.isPresent()) {
+                    LOGGER.debug("User {} last request status for pet {} is {}", user.getId(), id, opRequest.get().getId());
+                    lastRequest = opRequest.get().getStatus();
+                    requestExists = true;
+                } else {
+                    LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
+                }
+            } else {
+                LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
+            }
+
+            if (pet.getUser().equals(user)) {
+                availableUsers = user.getInterestList().stream()
+                        .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().equals(pet))
+                        .map(Request::getUser).collect(Collectors.toList());
+            }
+
+            if (user.getNewPets().contains(pet)) acquired = true;
         }
-        mav.addObject("pet", pet);
 
+        mav.addObject("pet", pet);
+        mav.addObject("lastRequest", lastRequest);
+        mav.addObject("requestExists", requestExists);
+        mav.addObject("availableUsers", availableUsers);
+        mav.addObject("acquired", acquired);
         return mav;
     }
 

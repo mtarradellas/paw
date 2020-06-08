@@ -56,6 +56,10 @@ public class User {
     @Column
     private List<Review> targetReviews;
 
+    @OneToMany(mappedBy = "newOwner", fetch = FetchType.LAZY)
+    @Column
+    private List<Pet> newPets;
+
     protected User() {
         // Hibernate
     }
@@ -185,5 +189,13 @@ public class User {
         if (amount == 0) return -1;
         int sum = targetReviews.stream().mapToInt(Review::getScore).sum();
         return (double) sum / amount;
+    }
+
+    public List<Pet> getNewPets() {
+        return newPets;
+    }
+
+    public void setNewPets(List<Pet> newPets) {
+        this.newPets = newPets;
     }
 }
