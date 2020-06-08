@@ -223,8 +223,9 @@ public class PetController extends ParentController {
                                       @RequestParam(name = "newowner", required = false) String newOwner) {
         User user = loggedUser();
         Long newOwnerId = parseUser(newOwner);
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
-        if (user != null && newOwner != null && petService.sellPet(id, user, newOwnerId)) {
+        if (user != null && newOwner != null && petService.sellPet(id, user, newOwnerId, baseUrl)) {
             LOGGER.debug("Pet {} updated as sold", id);
             return new ModelAndView("redirect:/");
         }
