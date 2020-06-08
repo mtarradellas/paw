@@ -11,7 +11,7 @@ public class FileSizeValidator implements ConstraintValidator<FileSize, List<Mul
     private int MAX_SIZE;
 
     public void initialize(FileSize constraintAnnotation) {
-        this.MAX_SIZE = constraintAnnotation.max();
+        this.MAX_SIZE = constraintAnnotation.max()*1024*1024;
     }
 
     public boolean isValid(List<MultipartFile> list,
