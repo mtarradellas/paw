@@ -9,6 +9,7 @@
 
 <c:set var="petName" value="${pet.petName}"/>
 <c:set var="cprice" value="${pet.price}"/>
+<c:set var="owner" value="${pet.user.username}"/>
 <c:if test="${pet.gender eq 'male'}"><spring:message var="pronoun" code="pet.him"/> </c:if>
 <c:if test="${pet.gender eq 'female' }"><spring:message var="pronoun" code="pet.her"/> </c:if>
 
@@ -131,6 +132,10 @@
                                 value="${pet.department.name}"/></li>
                         <li class="list-group-item"><b><spring:message code="petCard.uploadDate"/></b> <c:out
                                 value="${uploadDate}"/></li>
+                        <li class="list-group-item"><b><spring:message code="petCard.owner"/></b>
+                            <a href="${pageContext.request.contextPath}/user/${pet.user.id}"> <c:out value="${owner}"/>
+                            </a>
+                        </li>
                     </ul>
                     <hr>
                     <h2><spring:message code="status"/></h2>
@@ -148,13 +153,16 @@
                             </li>
                         </c:if>
 
-                        <c:if test="${pet.price eq 0}">
+                        <c:if test="${pet.price eq 0 and pet.status.value eq 1}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
                                     class="fas fa-check ml-2 "></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
                                     class="fas fa-times ml-2"></i></li>
+                            <li class="list-group-item"><b>
+                                <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
+                            </li>
                         </c:if>
-                        <c:if test="${pet.price gt 0}">
+                        <c:if test="${pet.price gt 0 and pet.status.value eq 1}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
                                     class="fas fa-times ml-2"></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
@@ -162,6 +170,24 @@
                                 (<spring:message code="petCard.price"/> <spring:message code="argPrice"
                                                                                         arguments="${pet.price}"/>)
                             </li>
+                            <li class="list-group-item"><b>
+                                <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
+                            </li>
+                        </c:if>
+                        <c:if test="${pet.status.value eq 3}">
+                            <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
+                                    class="fas fa-times ml-2"></i></li>
+                            <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
+                                    class="fas fa-times ml-2 "></i>
+                            </li>
+                            <li class="list-group-item"><b>
+                                <spring:message code="status.sold"/>:</b><i class="fas fa-check ml-2 "></i>
+                                (<spring:message code="pet.status.currentlySold"
+                                    arguments="${pageContext.request.contextPath}/user/${pet.newOwner.id},${pet.newOwner.username}"/>)
+                            </li>
+                        </c:if>
+                        <c:if test="${pet.status.value eq 2 or pet.status.value eq 4}">
+                            <li class="list-group-item"><b><spring:message code="pet.status.notAvailable"/></b></li>
                         </c:if>
                     </ul>
 
