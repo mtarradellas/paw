@@ -278,8 +278,8 @@ public class RequestJpaDaoImpl implements RequestDao {
     public void updateByStatusAndPet(Pet pet, RequestStatus oldStatus, RequestStatus newStatus) {
         String qStr = "update Request set status = :new where pet.id = :pet and status = :old";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus);
-        query.setParameter("new", newStatus);
+        query.setParameter("old", oldStatus.getValue());
+        query.setParameter("new", newStatus.getValue());
         query.setParameter("pet", pet.getId());
         query.executeUpdate();
     }

@@ -237,7 +237,7 @@ public class PetController extends ParentController {
         User user = loggedUser();
         if (user != null && petService.removePet(id, user)) {
             LOGGER.debug("Pet {} updated as removed", id);
-            return new ModelAndView("redirect:/");
+            return new ModelAndView("redirect:/user/" + user.getId());
         }
         LOGGER.warn("User is not pet owner, pet status not updated");
         return new ModelAndView("redirect:/403");
