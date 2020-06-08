@@ -25,7 +25,9 @@
             <spring:message code="petCard.species"/> <c:out value="${pet.species.name}"/><br>
             <spring:message code="petCard.breed"/> <c:out value="${pet.breed.name}"/><br>
             <spring:message code="petCard.price"/> <spring:message code="argPrice" arguments="${pet.price}"/><br>
-            <spring:message code="petCard.sex"/> <spring:message code="pet.${pet.gender}"/>
+            <spring:message code="petCard.sex"/> <spring:message code="pet.${pet.gender}"/><br>
+            <spring:message code="petCard.owner"/> <a href="${pageContext.request.contextPath}/user/${pet.user.id}">
+            <c:out value="${pet.user.username}"/></a>
         </p>
 
         <c:if test="${level eq 'admin'}">

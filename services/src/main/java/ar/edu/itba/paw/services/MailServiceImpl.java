@@ -157,6 +157,18 @@ public class MailServiceImpl implements MailService {
                     arguments.put("goodbyeMsg", "<br>Sincerely,<br>Pet Society Team.");
                     return "A user has canceled a request for a pet";
                 }
+            case PET_SOLD:
+                if(locale == null || locale.equals("es_AR")){
+                    arguments.put("actionMsg", "Dueño original");
+                    arguments.put("petMsg", "Mascota adoptada");
+                    arguments.put("goodbyeMsg", "<br>Sinceramente,<br>El equipo de Pet Society.");
+                    return "¡Felicitaciones! Se ha finalizado el trámite de adopción de una mascota";
+                }else if(locale.equals("en_US")){
+                    arguments.put("actionMsg", "Original owner");
+                    arguments.put("petMsg", "Target Pet");
+                    arguments.put("goodbyeMsg", "<br>Sincerely,<br>Pet Society Team.");
+                    return "Hooray! The adoption process has been completed";
+                }
         }
         return null;
     }

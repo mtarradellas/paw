@@ -28,7 +28,7 @@ public interface PetService {
                          String description, PetStatus status, long speciesId, long breedId, long provinceId, long department, List<byte[]> photos, List<Long> imagesToDelete);
 
 
-    boolean    sellPet(long petId, User owner, long newOwnerId);
+    boolean    sellPet(long petId, User owner, long newOwnerId, String contextURL);
     boolean  removePet(long petId, User user);
     boolean recoverPet(long petId, User user);
 
