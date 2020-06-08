@@ -21,6 +21,16 @@
     <c:set var="limit" value="${user.targetReviews.size()}"/>
 </c:if>
 
+<c:if test="${showAllAdopted eq 'true'}">
+    <c:set var="adoptedLimit" value="${user.newPets.size()}"/>
+</c:if>
+<c:if test="${showAllAdopted eq 'false' and user.newPets.size() > 4}">
+    <c:set var="adoptedLimit" value="4"/>
+</c:if>
+<c:if test="${showAllAdopted eq 'false' and user.newPets.size() <= 4}">
+    <c:set var="adoptedLimit" value="${user.newPets.size()}"/>
+</c:if>
+
 <t:basicLayout title="${title}">
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
     <div class="container-fluid ">
@@ -162,18 +172,47 @@
                         </div>
                         <c:if test="${user.newPets.size() > 0}">
                             <hr>
-                            <div class="p-2">
+                            <div class="p-2" id="adopted">
                                 <h2><b><spring:message code="userPets.adopted"/></b>
-                                        <%--                                    <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>--%>
+                                    <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>
                                 </h2>
                                 <div class="card-deck row">
-                                    <c:forEach var="pet" items="${user.newPets}">
+                                    <c:forEach var="pet" items="${user.newPets}" end="${adoptedLimit-1}">
                                         <div class="col-auto mb-3">
                                             <t:animalCard pet="${pet}" level="user"/>
                                         </div>
                                     </c:forEach>
                                 </div>
                             </div>
+                            <c:if test="${user.newPets.size() > 4 and showAllAdopted eq 'false'}">
+                                <form method="get" class="text-center"
+                                      action="${pageContext.request.contextPath}/user/${user.id}#adopted">
+                                    <input type="hidden" name="showAllAdopted" value="true">
+                                    <c:if test="${not empty param.page}">
+                                        <input type="hidden" name="page" value="${param.page}">
+                                    </c:if>
+                                    <c:if test="${not empty param.showAllReviews}">
+                                        <input type="hidden" name="showAllReviews" value="${param.showAllReviews}">
+                                    </c:if>
+                                    <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                            code="showAll"/></button>
+
+                                </form>
+                            </c:if>
+                            <c:if test="${showAllAdopted eq 'true'}">
+                                <form method="get" class="text-center"
+                                      action="${pageContext.request.contextPath}/user/${user.id}#adopted">
+                                    <input type="hidden" name="showAllAdopted" value="false">
+                                    <c:if test="${not empty param.page}">
+                                        <input type="hidden" name="page" value="${param.page}">
+                                    </c:if>
+                                    <c:if test="${not empty param.showAllReviews}">
+                                        <input type="hidden" name="showAllReviews" value="${param.showAllReviews}">
+                                    </c:if>
+                                    <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                            code="showLess"/></button>
+                                </form>
+                            </c:if>
                         </c:if>
 
                         <hr>
@@ -260,6 +299,9 @@
                                         <c:if test="${not empty param.page}">
                                             <input type="hidden" name="page" value="${param.page}">
                                         </c:if>
+                                        <c:if test="${not empty param.showAllAdopted}">
+                                            <input type="hidden" name="showAllAdopted" value="${param.showAllAdopted}">
+                                        </c:if>
                                         <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
                                                 code="showAll"/></button>
 
@@ -271,6 +313,9 @@
                                         <input type="hidden" name="showAllReviews" value="false">
                                         <c:if test="${not empty param.page}">
                                             <input type="hidden" name="page" value="${param.page}">
+                                        </c:if>
+                                        <c:if test="${not empty param.showAllAdopted}">
+                                            <input type="hidden" name="showAllAdopted" value="${param.showAllAdopted}">
                                         </c:if>
                                         <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
                                                 code="showLess"/></button>
