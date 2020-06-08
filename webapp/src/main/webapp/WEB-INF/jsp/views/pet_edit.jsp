@@ -250,6 +250,15 @@
                         <div class="form-row p-1">
                             <div class="col">
                                 <t:imageUpload/>
+
+                                <c:if test="${imageQuantityError}">
+                                    <p class="text-error"><spring:message code="editPetForm.photosMaxAndMinError"
+                                                                          arguments="1;5" argumentSeparator=";"/></p>
+                                </c:if>
+
+                                <c:if test="${imageError || petError}">
+                                    <p class="text-error"><spring:message code="editPetForm.couldNotUpdate"/></p>
+                                </c:if>
                             </div>
                         </div>
 
