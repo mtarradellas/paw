@@ -68,7 +68,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.mail = mail;
-        this.status = status.getValue()-1;
+        this.status = status.getValue();
         this.locale = locale;
         Object o;
 
@@ -101,7 +101,7 @@ public class User {
     }
 
     public void setStatus(UserStatus status) {
-        this.status = status.getValue()-1;
+        this.status = status.getValue();
     }
 
     public long getId() {

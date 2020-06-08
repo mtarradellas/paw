@@ -60,8 +60,8 @@ public class UserJpaDaoImpl implements UserDao {
 
         BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
         if(status != null) {
-            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
-            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
         }
         else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
