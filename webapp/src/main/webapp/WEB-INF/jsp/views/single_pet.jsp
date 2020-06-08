@@ -91,7 +91,7 @@
                                     </svg>
                                 </a>
                             </c:if>
-                            <c:if test="${pet.status.value ne 1}">
+                            <c:if test="${pet.status.value ne 1 and pet.status.value ne 3}">
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/recover" />">
                                         <button type="submit" name="action" class="btn btn-success">

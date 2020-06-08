@@ -164,11 +164,15 @@
                             <hr>
                             <div class="p-2">
                                 <h2><b><spring:message code="userPets.adopted"/></b>
-<%--                                    <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>--%>
+                                        <%--                                    <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>--%>
                                 </h2>
-                                <c:forEach var="pet" items="${user.newPets}">
-                                    <t:animalCard pet="${pet}" level="user"/>
-                                </c:forEach>
+                                <div class="card-deck row">
+                                    <c:forEach var="pet" items="${user.newPets}">
+                                        <div class="col-auto mb-3">
+                                            <t:animalCard pet="${pet}" level="user"/>
+                                        </div>
+                                    </c:forEach>
+                                </div>
                             </div>
                         </c:if>
 
@@ -177,7 +181,8 @@
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
 
-                                    <spring:message code="showingOutOf" arguments="${limit}, ${user.targetReviews.size()}"/>
+                                    <spring:message code="showingOutOf"
+                                                    arguments="${limit}, ${user.targetReviews.size()}"/>
                                     <c:if test="${canRate}">
                                         <button type="button" class="btn btn-link"
                                                 data-toggle="modal" data-target="#add-review"><spring:message
@@ -244,7 +249,7 @@
                                             </c:if>
                                         </div>
                                         <div class="col">
-                                          ${review.description}
+                                                ${review.description}
                                         </div>
                                     </div>
                                 </c:forEach>
