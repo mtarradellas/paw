@@ -1,9 +1,15 @@
+<%@ page import="ar.edu.itba.paw.models.constants.PetStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
+
+<c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
+<c:set var="REMOVED" value="<%=PetStatus.REMOVED.getValue()%>"/>
+<c:set var="SOLD" value="<%=PetStatus.SOLD.getValue()%>"/>
+<c:set var="UNAVAILABLE" value="<%=PetStatus.UNAVAILABLE.getValue()%>"/>
 
 <spring:message code="adminTitle.pet" var="petTitle"/>
 <t:adminLayout title="${petTitle}" item="pets">
@@ -77,17 +83,17 @@
                                 <label for="filter-status"><spring:message code="status"/></label>
                                 <select name="status" class="form-control" id="filter-status">
                                     <option value="any"><spring:message code="filter.any"/></option>
-                                    <option value="0"
-                                            <c:if test="${(not empty param.status) && (param.status eq '0')}">selected</c:if>
+                                    <option value="${AVAILABLE}"
+                                            <c:if test="${(not empty param.status) && (param.status eq AVAILABLE)}">selected</c:if>
                                     ><spring:message code="status.available"/></option>
-                                    <option value="1"
-                                            <c:if test="${(not empty param.status) && (param.status eq '1')}">selected</c:if>
+                                    <option value="${REMOVED}"
+                                            <c:if test="${(not empty param.status) && (param.status eq REMOVED)}">selected</c:if>
                                     ><spring:message code="status.removed"/></option>
-                                    <option value="2"
-                                            <c:if test="${(not empty param.status) && (param.status eq '2')}">selected</c:if>
+                                    <option value="${SOLD}"
+                                            <c:if test="${(not empty param.status) && (param.status eq SOLD)}">selected</c:if>
                                     ><spring:message code="status.sold"/></option>
-                                    <option value="3"
-                                            <c:if test="${(not empty param.status) && (param.status eq '3')}">selected</c:if>
+                                    <option value="${UNAVAILABLE}"
+                                            <c:if test="${(not empty param.status) && (param.status eq UNAVAILABLE)}">selected</c:if>
                                     ><spring:message code="status.unavailable"/></option>
                                 </select>
                             </div>
@@ -181,11 +187,11 @@
                             </c:if>
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="pet" items="${petList}">
-                                    <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
-                                    <li     <c:if test="${(pet.status.value eq 1)}">
+                                    <%-- Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
+                                    <li     <c:if test="${(pet.status.value eq AVAILABLE)}">
                                         class="list-group-item"
                                     </c:if>
-                                            <c:if test="${(pet.status.value eq 2) or (pet.status.value eq 3)}">
+                                            <c:if test="${(pet.status.value eq REMOVED) or (pet.status.value eq SOLD)}">
                                                 class="list-group-item resolved"
                                             </c:if>
                                     >
@@ -203,7 +209,7 @@
                                                 </a>
                                             </div>
                                             <div class="col text-center pt-3 ml-3">
-                                                <c:if test="${pet.status.value eq 1}">
+                                                <c:if test="${pet.status.value eq AVAILABLE}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/pet/${pet.id}/remove"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.user.id}"/>"
@@ -219,7 +225,7 @@
                                                             <spring:message code="petCard.remove"/></button>
                                                     </form>
                                                 </c:if>
-                                                <c:if test="${(pet.status.value eq 2) or (pet.status.value eq 3)}">
+                                                <c:if test="${(pet.status.value eq REMOVED) or (pet.status.value eq SOLD)}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/pet/${pet.id}/recover"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${pet.user.id}"/>"

@@ -1,3 +1,4 @@
+<%@ page import="ar.edu.itba.paw.models.constants.UserStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -5,6 +6,10 @@
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
 <spring:message code="adminTitle.user" var="userTitle"/>
+
+<c:set var="ACTIVE" value="<%=UserStatus.ACTIVE.getValue()%>"/>
+<c:set var="INACTIVE" value="<%=UserStatus.INACTIVE.getValue()%>"/>
+<c:set var="DELETED" value="<%=UserStatus.DELETED.getValue()%>"/>
 
 <t:adminLayout title="${userTitle}" item="users">
     <jsp:body>
@@ -36,18 +41,18 @@
                                     >
                                         <spring:message code="filter.any"/>
                                     </option>
-                                    <option value="0"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('0' eq param.status)}">
+                                    <option value="${ACTIVE}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (ACTIVE eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="status.active"/></option>
-                                    <option value="1"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('1' eq param.status)}">
+                                    <option value="${INACTIVE}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (INACTIVE eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="status.inactive"/></option>
-                                    <option value="2"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('2' eq param.status)}">
+                                    <option value="${DELETED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (DELETED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="status.deleted"/></option>
@@ -132,10 +137,10 @@
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="user" items="${userList}">
                                     <%--                  :)                  Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
-                                    <li     <c:if test="${(user.status.value eq 1) or (user.status.value eq 2)}">
+                                    <li     <c:if test="${(user.status.value eq ACTIVE) or (user.status.value eq INACTIVE)}">
                                                 class="list-group-item"
                                             </c:if>
-                                            <c:if test="${ (user.status.value eq 3)}">
+                                            <c:if test="${ (user.status.value eq DELETED)}">
                                                 class="list-group-item resolved"
                                             </c:if>
                                     >
@@ -146,14 +151,14 @@
                                                 </a>
                                             </div>
                                             <div class="col text-center ml-3">
-                                                <c:if test="${(user.status.value eq 1) or (user.status.value eq 2)}">
+                                                <c:if test="${(user.status.value eq ACTIVE) or (user.status.value eq INACTIVE)}">
                                                     <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/remove"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
                                                         <button type="submit" class="btn btn-danger are-you-sure"><spring:message code="petCard.remove"/></button>
                                                     </form>
                                                 </c:if>
-                                                <c:if test="${ (user.status.value eq 3)}">
+                                                <c:if test="${ (user.status.value eq DELETED)}">
                                                     <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/recover"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>" type="button" class="btn btn-secondary"><spring:message code="visitUser"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>/edit" type="button" class="btn btn-secondary"><spring:message code="edit"/></a>
