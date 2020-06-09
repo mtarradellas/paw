@@ -98,7 +98,7 @@ public class Pet {
         this.price = price;
         this.uploadDate = uploadDate;
         this.description = description;
-        this.status = status.getValue()-1;
+        this.status = status.getValue();
         this.user = user;
         this.species = species;
         this.breed = breed;
@@ -232,7 +232,7 @@ public class Pet {
     }
 
     public void setStatus(PetStatus status) {
-        this.status = status.getValue()-1;
+        this.status = status.getValue();
     }
 
     public void setUser(User user) {

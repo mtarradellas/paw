@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.models.constants;
 
 public enum ReviewStatus {
-    VALID(1),
-    REMOVED(2);
+    VALID(0),
+    REMOVED(1);
 
     final private int value;
 

@@ -137,8 +137,8 @@ public class PetJpaDaoImpl implements PetDao {
 
         BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
         if(status != null) {
-            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
-            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
         }
         else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
@@ -214,13 +214,13 @@ public class PetJpaDaoImpl implements PetDao {
         indexPets();
         return Optional.of(pet);
     }
-
+;
     @Override
     public void updateByStatusAndOwner(User user, PetStatus oldStatus, PetStatus newStatus) {
         String qStr = "update Pet set status = :new where user.id = :user and status = :old";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus);
-        query.setParameter("new", newStatus);
+        query.setParameter("old", oldStatus.getValue());
+        query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
         query.executeUpdate();
         indexPets();
