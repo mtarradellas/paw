@@ -104,7 +104,7 @@ public class User {
         this.status = status.getValue()-1;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
