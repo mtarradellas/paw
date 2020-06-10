@@ -13,6 +13,7 @@
 <spring:message code="petTitle" var="petTitle"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
+<c:set var="owner" value="${pet.user.username}"/>
 
 <t:adminLayout title="${petTitle}" item="pets">
     <jsp:body>
@@ -112,6 +113,18 @@
                                     value="${uploadDate}"/></li>
                             <li class="list-group-item"><spring:message code="admin.petCard.status"/> <c:out
                                     value="${pet.status}"/></li>
+                            <li class="list-group-item"><spring:message code="petCard.owner"/>
+                                <a href="${pageContext.request.contextPath}/user/${pet.user.id}"> <c:out value="${owner}"/>
+                                </a>
+                            </li>
+                            <c:if test="${pet.newOwner.username ne null}">
+                                <li class="list-group-item">
+                                    <spring:message code="pet.status.currentlySold"
+                                                    arguments="${pageContext.request.contextPath}/user/${pet.newOwner.id},
+                                                 ${pet.newOwner.username}"/>
+                                </li>
+                            </c:if>
+
                         </ul>
 
 

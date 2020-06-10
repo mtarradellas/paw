@@ -170,6 +170,7 @@
                             </c:if>
 
                         </div>
+                        <hr>
                         <c:if test="${user.newPets.size() > 0}">
                             <hr>
                             <div class="p-2" id="adopted">
