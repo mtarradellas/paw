@@ -174,7 +174,6 @@
                         </div>
                         <hr>
                         <c:if test="${user.newPets.size() > 0}">
-                            <hr>
                             <div class="p-2" id="adopted">
                                 <h2><b><spring:message code="userPets.adopted"/></b>
                                     <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>
