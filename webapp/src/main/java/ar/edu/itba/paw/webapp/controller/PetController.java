@@ -174,9 +174,9 @@ public class PetController extends ParentController {
                 LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
             }
 
-            if (pet.getUser().equals(user)) {
+            if (pet.getUser().getId().equals(user.getId())) {
                 availableUsers = user.getInterestList().stream()
-                        .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().equals(pet))
+                        .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().getId().equals(pet.getId()))
                         .map(Request::getUser).collect(Collectors.toList());
             }
 
@@ -307,7 +307,6 @@ public class PetController extends ParentController {
         if (errors.hasErrors()) {
             return uploadPetForm(petForm);
         }
-
         User user = loggedUser();
         if (user == null) throw new UserNotFoundException();
 
@@ -350,7 +349,7 @@ public class PetController extends ParentController {
 
         Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
 
-        if(pet.getUser().equals(loggedUser())) {
+        if(pet.getUser().getId().equals(loggedUser().getId())) {
 
             List<Department> departmentList = locationService.departmentList();
             List<Province> provinceList = locationService.provinceList();

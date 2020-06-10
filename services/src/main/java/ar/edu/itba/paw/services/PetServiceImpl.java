@@ -189,7 +189,7 @@ public class PetServiceImpl implements PetService {
         }
         Province province = opProvince.get();
 
-        if (!department.getProvince().equals(province)) {
+        if (!department.getProvince().getId().equals(province.getId())) {
             LOGGER.warn("Department {} does not belong to province {}, pet creation failed", departmentId, provinceId);
             return Optional.empty();
         }
@@ -208,7 +208,7 @@ public class PetServiceImpl implements PetService {
         }
         Breed breed = opBreed.get();
 
-        if (!breed.getSpecies().equals(species)) {
+        if (!breed.getSpecies().getId().equals(species.getId())) {
             LOGGER.warn("Breed {} does not belong to Species {}, pet creation failed", breedId, speciesId);
             return Optional.empty();
         }
@@ -278,7 +278,7 @@ public class PetServiceImpl implements PetService {
                 LOGGER.warn("User {} is not active, pet update failed", userId);
             }
 
-            if(!pet.getUser().equals(user)) {
+            if(!pet.getUser().getId().equals(user.getId())) {
                 LOGGER.warn("Logged user is not the owner of pet {}, update aborted", id);
                 return Optional.empty();
             }
@@ -299,7 +299,7 @@ public class PetServiceImpl implements PetService {
         }
         Province province = opProvince.get();
 
-        if (!department.getProvince().equals(province)) {
+        if (!department.getProvince().getId().equals(province.getId())) {
             LOGGER.warn("Department {} does not belong to province {}, pet update failed", departmentId, provinceId);
             return Optional.empty();
         }
@@ -377,7 +377,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(owner)) {
+        if (pet.getUser().getId().equals(owner.getId())) {
             Optional<User> opUser = userService.findById(newOwnerId);
             if (!opUser.isPresent()) {
                 LOGGER.warn("Target new owner {} was not found", newOwnerId);
@@ -413,7 +413,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(user)) {
+        if (pet.getUser().getId().equals(user.getId())) {
             requestService.rejectAllByPet("LENIA", petId);
             pet.setStatus(PetStatus.REMOVED);
             return petDao.update(pet).isPresent();
@@ -431,7 +431,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(user)) {
+        if (pet.getUser().getId().equals(user.getId())) {
             pet.setStatus(PetStatus.AVAILABLE);
             return petDao.update(pet).isPresent();
         }

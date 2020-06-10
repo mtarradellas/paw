@@ -1,3 +1,4 @@
+<%@ page import="ar.edu.itba.paw.models.constants.PetStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -20,6 +21,11 @@
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
 
+<c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
+<c:set var="REMOVED" value="<%=PetStatus.REMOVED.getValue()%>"/>
+<c:set var="SOLD" value="<%=PetStatus.SOLD.getValue()%>"/>
+<c:set var="UNAVAILABLE" value="<%=PetStatus.UNAVAILABLE.getValue()%>"/>
+
 <t:basicLayout title="${titleVar}">
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
 
@@ -30,23 +36,23 @@
                     <div class="row text-whitesmoke">
                         <c:if test="${not empty pet.petName}">
                             <h1 class="ml-4 ">
-                                <c:out value="${meet}"/>
+                                <div class="pet-name pet-name-title"><c:out value="${meet}"/></div>
                             </h1>
                         </c:if>
                         <c:if test="${empty pet.petName}">
-                            <h1 class="ml-4 ">
+                            <h1 class="ml-4">
                                 <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                             </h1>
                         </c:if>
-                        <c:if test="${pet.status.value eq 3}">
+                        <c:if test="${pet.status.value eq SOLD}">
                             <h1 class="ml-1 "> <spring:message code="pet.status.sold"/></h1>
                         </c:if>
-                        <c:if test="${pet.status.value eq 2}">
+                        <c:if test="${pet.status.value eq REMOVED}">
                             <h1 class="ml-1"> <spring:message code="pet.status.removed"/> </h1>
                         </c:if>
                         <c:if test="${(pet.user.id ne loggedUser.id)}">
                             <c:if test="${not requestExists}">
-                                <c:if test="${pet.status.value eq 1}">
+                                <c:if test="${pet.status.value eq AVAILABLE}">
                                     <h1 class="mt-2 ml-2">
                                         <form method="POST" class="m-0" action="<c:url value="/pet/${id}/request" />">
                                             <button type="submit" name="action" class="btn btn-success">
@@ -58,7 +64,7 @@
                                 </c:if>
                             </c:if>
                             <c:if test="${requestExists}">
-                                <c:if test="${pet.status.value eq 1}">
+                                <c:if test="${pet.status.value eq AVAILABLE}">
                                     <h1 class="mt-2 ml-2">
                                         <button type="button" class="btn btn-success" disabled>
                                             <spring:message code="petCard.alreadyRequested"/>
@@ -68,7 +74,7 @@
                             </c:if>
                         </c:if>
                         <c:if test="${(pet.user.id eq loggedUser.id)}">
-                            <c:if test="${pet.status.value eq 1}">
+                            <c:if test="${pet.status.value eq AVAILABLE}">
                                 <h1 class="mt-2 ml-4">
                                     <button type="button" class="btn btn-success"
                                             data-toggle="modal" data-target="#sell-adopt">
@@ -91,7 +97,8 @@
                                     </svg>
                                 </a>
                             </c:if>
-                            <c:if test="${pet.status.value ne 1 and pet.status.value ne 3}">
+
+                            <c:if test="${pet.status.value ne AVAILABLE}">
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0" action="<c:url value="/pet/${id}/recover" />">
                                         <button type="submit" name="action" class="btn btn-success">
@@ -108,7 +115,9 @@
                     <t:photosList images="${pet.images}"/>
                 </div>
                 <div class="p-3">
-                    <c:out value="${pet.description}"/>
+                    <p class="break-text">
+                        <c:out value="${pet.description}"/>
+                    </p>
                 </div>
                 <hr>
                 <div class="p-3">
