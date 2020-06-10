@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
 <spring:message code="interestsTitle" var="titleVar"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
@@ -57,9 +58,11 @@
                             <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-5">
+                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
                                         <spring:message code="request.isInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${req.creationDate}</small>
+                                        <small class="text-warning"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <spring:message code="request.pending"/>
@@ -89,9 +92,12 @@
                             <c:if test="${req.status.value ne PENDING}">
                                 <div class="row bg-light p-1 resolved">
                                     <div class=" col-lg-5">
+
+                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
                                         <spring:message code="request.wasInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${req.creationDate}</small>
+                                        <small class="text-warning"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
