@@ -108,7 +108,7 @@
                     <t:photosList images="${pet.images}"/>
                 </div>
                 <div class="p-3">
-                    <p>
+                    <p class="break-text">
                         <c:out value="${pet.description}"/>
                     </p>
                 </div>

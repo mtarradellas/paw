@@ -478,3 +478,7 @@ html,body {
 .pet-name.pet-name-title {
     width: 30rem;
 }
+
+.break-text {
+    word-break: break-all;
+}
