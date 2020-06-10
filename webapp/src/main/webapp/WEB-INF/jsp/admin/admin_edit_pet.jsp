@@ -228,10 +228,10 @@
                                 <spring:message code="editPetForm.deletePhotos"/>
                                 <div>
 
-                                    <c:forEach items="${pet.images}" var="imageId">
-                                        <form:checkbox path="imagesIdToDelete" cssClass="image-checkbox" value="${imageId}" id="delete-image-checkbox-${imageId}"/>
-                                        <div class="delete-image-select" id="${imageId}">
-                                            <img src="<c:url value="/img/${imageId}"/>" alt="" class="pet-photo"/>
+                                    <c:forEach items="${pet.images}" var="image">
+                                        <form:checkbox path="imagesIdToDelete" cssClass="image-checkbox" value="${image.id}" id="delete-image-checkbox-${image.id}"/>
+                                        <div class="delete-image-select" id="${image.id}">
+                                            <img src="<c:url value="/img/${image.id}"/>" alt="" class="pet-photo"/>
                                         </div>
                                     </c:forEach>
 

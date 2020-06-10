@@ -265,8 +265,8 @@ public class RequestJpaDaoImpl implements RequestDao {
     public void updateByStatusAndUser(User user, RequestStatus oldStatus, RequestStatus newStatus) {
         String qStr = "update Request set status = :new where user.id = :user and status = :old";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus);
-        query.setParameter("new", newStatus);
+        query.setParameter("old", oldStatus.getValue());
+        query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
         query.executeUpdate();
         indexRequests();
@@ -276,8 +276,8 @@ public class RequestJpaDaoImpl implements RequestDao {
     public void updateByStatusAndPetOwner(User petOwner, RequestStatus oldStatus, RequestStatus newStatus) {
         String qStr = "update Request set status = :new where target.id = :target and status = :old";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus);
-        query.setParameter("new", newStatus);
+        query.setParameter("old", oldStatus.getValue());
+        query.setParameter("new", newStatus.getValue());
         query.setParameter("target", petOwner.getId());
         query.executeUpdate();
         indexRequests();
