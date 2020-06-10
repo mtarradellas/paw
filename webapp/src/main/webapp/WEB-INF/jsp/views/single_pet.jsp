@@ -162,7 +162,7 @@
                             </li>
                         </c:if>
 
-                        <c:if test="${pet.price eq 0 and pet.status.value eq 1}">
+                        <c:if test="${pet.price eq 0 and pet.status.value eq AVAILABLE}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
                                     class="fas fa-check ml-2 "></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
@@ -171,7 +171,7 @@
                                 <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
                             </li>
                         </c:if>
-                        <c:if test="${pet.price gt 0 and pet.status.value eq 1}">
+                        <c:if test="${pet.price gt 0 and pet.status.value eq AVAILABLE}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
                                     class="fas fa-times ml-2"></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
@@ -183,7 +183,7 @@
                                 <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
                             </li>
                         </c:if>
-                        <c:if test="${pet.status.value eq 3}">
+                        <c:if test="${pet.status.value eq SOLD}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
                                     class="fas fa-times ml-2"></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
@@ -195,7 +195,7 @@
                                     arguments="${pageContext.request.contextPath}/user/${pet.newOwner.id},${pet.newOwner.username}"/>)
                             </li>
                         </c:if>
-                        <c:if test="${pet.status.value eq 2 or pet.status.value eq 4}">
+                        <c:if test="${pet.status.value eq UNAVAILABLE or pet.status.value eq REMOVED}">
                             <li class="list-group-item"><b><spring:message code="pet.status.notAvailable"/></b></li>
                         </c:if>
                     </ul>
