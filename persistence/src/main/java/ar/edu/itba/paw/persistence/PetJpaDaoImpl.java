@@ -126,7 +126,7 @@ public class PetJpaDaoImpl implements PetDao {
                                                                   Department department) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         /* TODO descomentar para deployar*/
-        indexPets();
+//        indexPets();
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Pet.class)
@@ -214,7 +214,7 @@ public class PetJpaDaoImpl implements PetDao {
         indexPets();
         return Optional.of(pet);
     }
-;
+
     @Override
     public void updateByStatusAndOwner(User user, PetStatus oldStatus, PetStatus newStatus) {
         String qStr = "update Pet set status = :new where user.id = :user and status = :old";
