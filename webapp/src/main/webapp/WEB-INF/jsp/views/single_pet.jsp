@@ -30,11 +30,11 @@
                     <div class="row text-whitesmoke">
                         <c:if test="${not empty pet.petName}">
                             <h1 class="ml-4 ">
-                                <c:out value="${meet}"/>
+                                <div class="pet-name pet-name-title"><c:out value="${meet}"/></div>
                             </h1>
                         </c:if>
                         <c:if test="${empty pet.petName}">
-                            <h1 class="ml-4 ">
+                            <h1 class="ml-4">
                                 <spring:message code="petCard.giveName" arguments="${pronoun}"/>
                             </h1>
                         </c:if>
@@ -108,7 +108,9 @@
                     <t:photosList images="${pet.images}"/>
                 </div>
                 <div class="p-3">
-                    <c:out value="${pet.description}"/>
+                    <p>
+                        <c:out value="${pet.description}"/>
+                    </p>
                 </div>
                 <hr>
                 <div class="p-3">

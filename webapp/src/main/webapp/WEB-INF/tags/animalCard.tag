@@ -18,17 +18,16 @@
     </a>
 
     <div class="card-body">
-        <p class="card-text">
-            <c:if test="${not empty pet.petName}">
-                <spring:message code="petCard.name"/> <c:out value="${pet.petName}"/><br>
-            </c:if>
-            <spring:message code="petCard.species"/> <c:out value="${pet.species.name}"/><br>
-            <spring:message code="petCard.breed"/> <c:out value="${pet.breed.name}"/><br>
-            <spring:message code="petCard.price"/> <spring:message code="argPrice" arguments="${pet.price}"/><br>
-            <spring:message code="petCard.sex"/> <spring:message code="pet.${pet.gender}"/><br>
-            <spring:message code="petCard.owner"/> <a href="${pageContext.request.contextPath}/user/${pet.user.id}">
-            <c:out value="${pet.user.username}"/></a>
-        </p>
+
+        <c:if test="${not empty pet.petName}">
+           <div class="pet-name"><spring:message code="petCard.name"/> <c:out value="${pet.petName}"/></div>
+        </c:if>
+        <span><spring:message code="petCard.species"/> <c:out value="${pet.species.name}"/></span><br>
+        <span><spring:message code="petCard.breed"/> <c:out value="${pet.breed.name}"/></span><br>
+        <span><spring:message code="petCard.price"/> <spring:message code="argPrice" arguments="${pet.price}"/></span><br>
+        <span><spring:message code="petCard.sex"/> <spring:message code="pet.${pet.gender}"/></span><br>
+        <span><spring:message code="petCard.owner"/></span> <a href="${pageContext.request.contextPath}/user/${pet.user.id}">
+        <c:out value="${pet.user.username}"/></a>
 
         <c:if test="${level eq 'admin'}">
             <div class="row">
@@ -43,7 +42,6 @@
                 <c:if test="${pet.status.value eq 4}">
                     <h5 class="mt-2 ml-1">(<spring:message code="status.unavailable"/>)</h5>
                 </c:if>
-
 
             </div>
         </c:if>
