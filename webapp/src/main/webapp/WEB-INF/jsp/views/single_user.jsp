@@ -40,17 +40,25 @@
             <div class="bg-light shadow ">
                 <div class="p-2 bg-dark">
                     <div class="row text-whitesmoke">
-                        <h1 class="ml-4"><c:out value="${user.username}"/></h1>
+                        <h1 class="ml-4 col"><c:out value="${user.username}"/></h1>
                         <c:if test="${(user.id eq loggedUser.id)}">
-                            <h1 class="mt-2 ml-4">
-                                <form method="POST" class="m-0" action="<c:url value="/user/${id}/remove" />">
-                                    <button type="submit" name="action"
-                                            class="btn btn-danger are-you-sure">
-                                        <i class="fas fa-times mr-2"></i>
-                                        <spring:message code="petCard.remove"/>
-                                    </button>
-                                </form>
-                            </h1>
+                            <div class="col p-2">
+                                <div class="row float-right mr-4">
+                                    <form method="POST" class="m-0" action="<c:url value="/user/${id}/remove" />">
+                                        <button type="submit" name="action"
+                                                class="btn btn-danger are-you-sure">
+                                            <i class="fas fa-times mr-2"></i>
+                                            <spring:message code="petCard.remove"/>
+                                        </button>
+                                    </form>
+                                    <a class="btn btn-link bg-light ml-2" href="<c:url value="/edit-user/${loggedUser.id}"/>">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                        <spring:message code="editUserForm.edit"/>
+
+                                    </a>
+                                </div>
+
+                            </div>
                         </c:if>
                     </div>
                 </div>
@@ -73,6 +81,7 @@
                             <button type="button" class="btn btn-link"
                                     data-toggle="modal" data-target="#add-review"><spring:message
                                     code="user.review"/></button>
+
                         </c:if>
                         <c:if test="${canRate eq false}">
                             <small class="p-2">
@@ -112,16 +121,7 @@
                             <li class="list-group-item"><b><spring:message code="user.email"/>:</b> <c:out
                                     value="${user.mail}"/></li>
                         </ul>
-                        <a class="edit-anchor" href="<c:url value="/edit-user/${loggedUser.id}"/>">
-                            <spring:message code="editUserForm.edit"/>
-                            <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15.502 1.94a.5.5 0 010 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 01.707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 00-.121.196l-.805 2.414a.25.25 0 00.316.316l2.414-.805a.5.5 0 00.196-.12l6.813-6.814z"></path>
-                                <path fill-rule="evenodd"
-                                      d="M1 13.5A1.5 1.5 0 002.5 15h11a1.5 1.5 0 001.5-1.5v-6a.5.5 0 00-1 0v6a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5H9a.5.5 0 000-1H2.5A1.5 1.5 0 001 2.5v11z"
-                                      clip-rule="evenodd"></path>
-                            </svg>
-                        </a>
+
                     </c:if>
                     <c:if test="${loggedUser.id ne user.id}">
                         <h5 class="text-center"><b><spring:message code="otherUserProfile"/></b></h5>
@@ -174,7 +174,6 @@
                         </div>
                         <hr>
                         <c:if test="${user.newPets.size() > 0}">
-                            <hr>
                             <div class="p-2" id="adopted">
                                 <h2><b><spring:message code="userPets.adopted"/></b>
                                     <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>
