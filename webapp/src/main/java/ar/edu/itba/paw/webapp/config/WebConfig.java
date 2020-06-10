@@ -2,37 +2,39 @@ package ar.edu.itba.paw.webapp.config;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-
 import javax.persistence.EntityManagerFactory;
+import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -41,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 @EnableWebMvc
 @EnableTransactionManagement
 @EnableScheduling
+@EnableAsync
 @ComponentScan({ "ar.edu.itba.paw.webapp.controller", "ar.edu.itba.paw.services", "ar.edu.itba.paw.persistence"})
 @Configuration
 public class WebConfig {
@@ -62,9 +65,9 @@ public class WebConfig {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.postgresql.Driver.class);
-        ds.setUrl("jdbc:postgresql://localhost/paw-2020a-7");
-        ds.setUsername("paw-2020a-7");
-        ds.setPassword("VsuS2lm7c");
+        ds.setUrl("jdbc:postgresql://localhost/paw");
+        ds.setUsername("root");
+        ds.setPassword("root");
 
         return ds;
     }
@@ -122,6 +125,7 @@ public class WebConfig {
         multipartResolver.setMaxUploadSize(-1);
         return multipartResolver;
     }
+    
 
     @Bean
     public VelocityEngine velocityEngine() throws Exception {
@@ -158,8 +162,8 @@ public class WebConfig {
         jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
 
         // TODO remove for production
-//        jpaProperties.setProperty("hibernate.show_sql", "true");
-//        jpaProperties.setProperty("format_sql", "true");
+        jpaProperties.setProperty("hibernate.show_sql", "true");
+        jpaProperties.setProperty("format_sql", "true");
 
         entityFactory.setJpaProperties(jpaProperties);
 

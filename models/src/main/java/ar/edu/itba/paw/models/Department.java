@@ -1,25 +1,43 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "Departments")
+@Indexed
 public class Department implements Comparable<Department>{
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departments_id_seq")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "departments_id_seq", name = "departments_id_seq")
+    private Long id;
+
+    @Column(length = 255, nullable = false)
+    @Field
     private String name;
-    private double latitude;
-    private double longitude;
+
+    @Column
+    private Double latitude;
+
+    @Column
+    private Double longitude;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "province", referencedColumnName="name")
     private Province province;
 
-    public Department(long id, String name, double latitude, double longitude, Province province) {
-        this.id = id;
+    protected Department() {
+        //Hibernate
+    }
+
+    public Department(String name, double latitude, double longitude, Province province) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.province = province;
-    }
-
-    public Department(long id, String name, Province province) {
-        this.id = id;
-        this.name = name;
         this.province = province;
     }
 
@@ -28,7 +46,7 @@ public class Department implements Comparable<Department>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Department that = (Department) o;
-        return id == that.id;
+        return id.equals(that.id);
     }
 
     @Override
@@ -43,10 +61,10 @@ public class Department implements Comparable<Department>{
 
     @Override
     public int compareTo(Department o) {
-        return name.compareTo(o.name);
+        return getName().compareTo(o.getName());
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -62,19 +80,19 @@ public class Department implements Comparable<Department>{
         this.name = name;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 

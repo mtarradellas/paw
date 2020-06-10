@@ -3,10 +3,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@tag description="Animal card" pageEncoding="UTF-8" %>
 
-<%@attribute name="breeds_list" required="true" type="ar.edu.itba.paw.models.Breed[]" %>
-<%@attribute name="species_list" required="true" type="ar.edu.itba.paw.models.Species[]" %>
-<%@attribute name="department_list" required="true" type="ar.edu.itba.paw.models.Department[]" %>
-<%@attribute name="province_list" required="true" type="ar.edu.itba.paw.models.Province[]" %>
+<%@attribute name="breedList" required="true" type="ar.edu.itba.paw.models.Breed[]" %>
+<%@attribute name="speciesList" required="true" type="ar.edu.itba.paw.models.Species[]" %>
+<%@attribute name="departmentList" required="true" type="ar.edu.itba.paw.models.Department[]" %>
+<%@attribute name="provinceList" required="true" type="ar.edu.itba.paw.models.Province[]" %>
 
 
 <div class="col-md-2 search-tools">
@@ -17,7 +17,7 @@
                 <label for="filter-species"><spring:message code="pet.species"/></label>
                 <select data-child="filter-breed" name="species" class="selector-parent form-control" id="filter-species">
                         <option value="-1"><spring:message code="filter.any"/></option>
-                        <c:forEach items="${species_list}" var="speciesValue">
+                        <c:forEach items="${speciesList}" var="speciesValue">
                             <c:set var="speciesId">${speciesValue.id}</c:set>
                             <option value="${speciesValue.id}"
                                     <c:if test="${(not empty param.species)  && (speciesId eq param.species)}">
@@ -37,7 +37,7 @@
                 >
                     <option class="species-any" value="-1"><spring:message code="filter.any"/></option>
 
-                    <c:forEach items="${breeds_list}" var="breed">
+                    <c:forEach items="${breedList}" var="breed">
                         <c:set var="breedId">${breed.id}</c:set>
                         <c:set var="speciesId">${breed.species.id}</c:set>
                         <option data-dependency="${breed.species.id}" value="${breed.id}"
@@ -96,7 +96,7 @@
                 <label for="filter-province"><spring:message code="searchTool.province"/></label>
                 <select data-child="filter-department" name="province" class="selector-parent form-control" id="filter-province">
                     <option value="-1"><spring:message code="filter.any"/></option>
-                    <c:forEach items="${province_list}" var="province">
+                    <c:forEach items="${provinceList}" var="province">
                         <c:set var="speciesId">${province.id}</c:set>
                         <option value="${province.id}"
                                 <c:if test="${(not empty param.province)  && (speciesId eq param.province)}">
@@ -112,7 +112,7 @@
                 <select name="department" class="form-control" id="filter-department">
                     <option value="-1"><spring:message code="filter.any"/></option>
 
-                    <c:forEach items="${department_list}" var="department">
+                    <c:forEach items="${departmentList}" var="department">
                         <c:set var="departmentId">${department.id}</c:set>
                         <option data-dependency="${department.province.id}" value="${department.id}"
                                 <c:if test="${(not empty param.department) && (departmentId eq param.department)}">selected</c:if>
@@ -157,8 +157,12 @@
                 ><spring:message code="filter.descending"/></option>
             </select>
         </div>
+        <c:if test="${param.find ne null}">
+            <input type="hidden" name="find" value="${param.find}">
+        </c:if>
         <div class="card-footer" id="search-tools-submit">
-            <button type="submit" class="blue-button"><spring:message code="filter"/></button>
+            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/"><spring:message code="filter.clear"/></a>
         </div>
     </form>
 </div>

@@ -1,3 +1,4 @@
+<%@ page import="ar.edu.itba.paw.models.constants.RequestStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -5,6 +6,12 @@
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
 <spring:message code="adminTitle.request" var="requestTitle"/>
+
+<c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+<c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+<c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+<c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+
 
 <t:adminLayout title="${requestTitle}" item="requests">
     <jsp:body>
@@ -37,23 +44,27 @@
                                     >
                                         <spring:message code="filter.any"/>
                                     </option>
-                                    <option value="accepted"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('accepted' eq param.status)}">
+
+                                    <option value="${ACCEPTED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (ACCEPTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.accepted"/></option>
-                                    <option value="rejected"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('rejected' eq param.status)}">
+
+                                    <option value="${REJECTED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (REJECTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.rejected"/></option>
-                                    <option value="pending"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('pending' eq param.status)}">
+
+                                    <option value="${PENDING}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (PENDING eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.pending"/></option>
-                                    <option value="canceled"
-                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && ('canceled' eq param.status)}">
+
+                                    <option value="${CANCELED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (CANCELED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
@@ -85,6 +96,9 @@
                         </div>
                         <div class="card-footer" id="search-tools-submit">
                             <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+                            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/requests">
+                                <spring:message code="filter.clear"/>
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -93,15 +107,15 @@
                     <div class="shadow p-3 bg-white rounded">
                         <div class="row">
                             <div class="col">
-                                <c:if test="${empty requests_list }">
+                                <c:if test="${empty requestList }">
                                     <div class="p-3 card-color title-style"><spring:message code="noItemsFound"/>
                                         <a href="${pageContext.request.contextPath}/admin/requests"><spring:message
                                                 code="showFirst"/></a>
                                     </div>
                                 </c:if>
-                                <c:if test="${not empty requests_list}">
+                                <c:if test="${not empty requestList}">
                                     <div>
-                                        <h2><spring:message code="admin.requestsListing"/>
+                                        <h2><spring:message code="admin.requestsListing"/> <spring:message code="totalResults" arguments="${amount}"/>
                                             <a type="button" class="btn btn-success"
                                                href="${pageContext.request.contextPath}/admin/upload-request">
                                                 <i class="fas fa-plus mr-2"></i><spring:message code="addRequest"/></a>
@@ -110,7 +124,7 @@
                                 </c:if>
                             </div>
                             <div class="col-md-1 align-self-end">
-                                <button type="button" class="btn btn-primary btn-circle float-right "
+                                <button type="button" class="btn btn-primary btn-circle float-right mb-1"
                                         data-toggle="modal" data-target="#help"><b>?</b></button>
                             </div>
                         </div>
@@ -123,7 +137,7 @@
                             </c:if>
                         </div>
                         <div>
-                            <c:if test="${not empty requests_list}">
+                            <c:if test="${not empty requestList}">
                                 <div class="row">
                                     <div class="col-lg-5">
                                         <h5 class="text-left ml-4"><b><spring:message code="request"/></b></h5>
@@ -137,44 +151,48 @@
                                 </div>
                             </c:if>
                             <ul class="list-group list-group-flush ">
-                                <c:forEach var="request" items="${requests_list}">
-                                    <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
+                                <c:forEach var="request" items="${requestList}">
+                                    <%-- Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
                                     <li     <c:if
-                                            test="${(request.status.id eq 1) or (request.status.id eq 2) or (request.status.id eq 3)}">
+                                            test="${(request.status.value eq PENDING)
+                                            or (request.status.value eq ACCEPTED)
+                                            or (request.status.value eq REJECTED)}">
                                         class="list-group-item"
                                     </c:if>
-                                            <c:if test="${(request.status.id eq 4)}">
+                                            <c:if test="${(request.status.value eq CANCELED)}">
                                                 class="list-group-item resolved"
                                             </c:if>
                                     >
                                         <div class="row ">
                                             <div class="col-lg-5">
                                                 <spring:message code="request.isInterested"
-                                                                arguments="${pageContext.request.contextPath}/admin/user/${request.ownerId}, ${request.ownerUsername}, ${pageContext.request.contextPath}/admin/pet/${request.petId},${request.petName}"/>
+                                                                arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.pet.id},${request.pet.petName}"/>
                                                 <small class="text-warning"> ${request.creationDate}</small>
                                             </div>
                                             <div class="col-lg-2">
-                                                <c:if test="${request.status.id eq 1}">
+                                                <c:if test="${request.status.value eq PENDING}">
                                                     <spring:message code="request.pending"/>
                                                 </c:if>
-                                                <c:if test="${request.status.id eq 2}">
+                                                <c:if test="${request.status.value eq ACCEPTED}">
                                                     <spring:message code="request.accepted"/>
                                                 </c:if>
-                                                <c:if test="${request.status.id eq 3}">
+                                                <c:if test="${request.status.value eq REJECTED}">
                                                     <spring:message code="request.rejected"/>
                                                 </c:if>
-                                                <c:if test="${request.status.id eq 4}">
+                                                <c:if test="${request.status.value eq CANCELED}">
                                                     <spring:message code="request.canceled"/>
                                                 </c:if>
                                             </div>
                                             <div class="col text-center ml-3 ">
-                                                <c:if test="${request.status.id eq 1 or request.status.id eq 2 or request.status.id eq 3}">
+                                                <c:if test="${request.status.value eq PENDING
+                                                    or request.status.value eq ACCEPTED
+                                                    or request.status.value eq REJECTED}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/request/${request.id}/cancel"/>">
-                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.ownerId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitUser"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.petId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/request/<c:out value="${request.id}"/>/edit"
@@ -184,13 +202,13 @@
                                                             <spring:message code="cancel"/></button>
                                                     </form>
                                                 </c:if>
-                                                <c:if test="${request.status.id eq 4}">
+                                                <c:if test="${request.status.value eq CANCELED}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/request/${request.id}/recover"/>">
-                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.ownerId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.user.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitUser"/></a>
-                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.petId}"/>"
+                                                        <a href="${pageContext.request.contextPath}/admin/pet/<c:out value="${request.pet.id}"/>"
                                                            type="button" class="btn btn-secondary"><spring:message
                                                                 code="visitPet"/></a>
                                                         <a href="${pageContext.request.contextPath}/admin/request/<c:out value="${request.id}"/>/edit"

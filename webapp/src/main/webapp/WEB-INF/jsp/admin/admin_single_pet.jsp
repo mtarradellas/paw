@@ -1,6 +1,11 @@
+<%@ page import="ar.edu.itba.paw.models.constants.PetStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:formatDate value="${pet.uploadDate}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
+<fmt:formatDate value="${pet.birthDate}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
 
 <c:if test="${pet.gender eq 'male'}"><spring:message var="pronoun" code="pet.him"/> </c:if>
 <c:if test="${pet.gender eq 'female' }"><spring:message var="pronoun" code="pet.her"/> </c:if>
@@ -9,6 +14,12 @@
 <spring:message code="petTitle" var="petTitle"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
+<c:set var="owner" value="${pet.user.username}"/>
+
+<c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
+<c:set var="REMOVED" value="<%=PetStatus.REMOVED.getValue()%>"/>
+<c:set var="SOLD" value="<%=PetStatus.SOLD.getValue()%>"/>
+<c:set var="UNAVAILABLE" value="<%=PetStatus.UNAVAILABLE.getValue()%>"/>
 
 <t:adminLayout title="${petTitle}" item="pets">
     <jsp:body>
@@ -29,13 +40,13 @@
                                     <spring:message code="pet.unnamed"/>
                                 </h1>
                             </c:if>
-                            <c:if test="${pet.status.id eq 3}">
+                            <c:if test="${pet.status.value eq SOLD}">
                                 <h1 class="ml-1 "> (<spring:message code="status.sold"/>) </h1>
                             </c:if>
-                            <c:if test="${pet.status.id eq 2}">
+                            <c:if test="${pet.status.value eq REMOVED}">
                                 <h1 class="ml-1"> (<spring:message code="status.deleted"/>) </h1>
                             </c:if>
-                            <c:if test="${pet.status.id eq 1}">
+                            <c:if test="${pet.status.value eq AVAILABLE}">
 
                                 <h1 class="mt-2 ml-2">
                                     <form method="POST" class="m-0"
@@ -60,7 +71,7 @@
                                     </svg>
                                 </a>
                             </c:if>
-                            <c:if test="${(pet.status.id eq 2) or (pet.status.id eq 3)}">
+                            <c:if test="${(pet.status.value eq REMOVED) or (pet.status.value eq SOLD)}">
                                 <h1 class="mt-2 ml-4">
                                     <form method="POST" class="m-0"
                                           action="<c:url value="/admin/pet/${pet.id}/recover"/>">
@@ -89,7 +100,7 @@
                             <li class="list-group-item"><spring:message code="petCard.name"/> <c:out
                                     value="${pet.petName}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.dob"/> <c:out
-                                    value="${pet.birthDate}"/></li>
+                                    value="${birthDate}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.species"/> <c:out
                                     value="${pet.species.name}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.breed"/> <c:out
@@ -105,15 +116,27 @@
                             <li class="list-group-item"><spring:message code="petCard.department"/> <c:out
                                     value="${pet.department.name}"/></li>
                             <li class="list-group-item"><spring:message code="petCard.uploadDate"/> <c:out
-                                    value="${pet.uploadDate}"/></li>
+                                    value="${uploadDate}"/></li>
                             <li class="list-group-item"><spring:message code="admin.petCard.status"/> <c:out
-                                    value="${pet.status.name}"/></li>
+                                    value="${pet.status}"/></li>
+                            <li class="list-group-item"><spring:message code="petCard.owner"/>
+                                <a href="${pageContext.request.contextPath}/user/${pet.user.id}"> <c:out value="${owner}"/>
+                                </a>
+                            </li>
+                            <c:if test="${pet.newOwner.username ne null}">
+                                <li class="list-group-item">
+                                    <spring:message code="pet.status.currentlySold"
+                                                    arguments="${pageContext.request.contextPath}/user/${pet.newOwner.id},
+                                                 ${pet.newOwner.username}"/>
+                                </li>
+                            </c:if>
+
                         </ul>
 
 
                     </div>
                     <hr>
-                    <c:set var="ownerId" value="${pet.ownerId}"/>
+                    <c:set var="ownerId" value="${pet.user.id}"/>
                     <a href="${pageContext.request.contextPath}/admin/user/${ownerId}"
                        class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
 

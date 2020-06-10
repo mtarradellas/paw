@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.form;
 import ar.edu.itba.paw.webapp.validators.FieldsValueMatch;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

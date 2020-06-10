@@ -1,9 +1,14 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "Species")
+@Indexed
 public class Species implements Comparable<Species>{
 
     @Id
@@ -11,14 +16,15 @@ public class Species implements Comparable<Species>{
     @SequenceGenerator(allocationSize = 1, sequenceName = "species_id_seq", name = "species_id_seq")
     private Long id;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
+    @Field
     private String en_us;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
+    @Field
     private String es_ar;
 
     @OneToMany(orphanRemoval = true, mappedBy = "species", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Column(insertable = true, updatable = true)
     private List<Breed> breedList;
 
     private String name;
@@ -31,14 +37,6 @@ public class Species implements Comparable<Species>{
         this.en_us = en_us;
         this.es_ar = es_ar;
         this.name = es_ar;
-    }
-
-    @Deprecated
-    public Species(Long id, String name) {
-        this.id = id;
-        this.en_us = name;
-        this.es_ar = name;
-        this.name = name;
     }
 
     @Override
@@ -59,20 +57,48 @@ public class Species implements Comparable<Species>{
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEn_us() {
+        return en_us;
+    }
+
+    public void setEn_us(String en_us) {
+        this.en_us = en_us;
+    }
+
+    public String getEs_ar() {
+        return es_ar;
+    }
+
+    public void setEs_ar(String es_ar) {
+        this.es_ar = es_ar;
+    }
+
+    public List<Breed> getBreedList() {
+        return breedList;
+    }
+
+    public void setBreedList(List<Breed> breedList) {
+        this.breedList = breedList;
+    }
+
     public String getName() {
         return name;
     }
 
-    public void setName(String locale) {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLocale(String locale) {
         if (locale.equalsIgnoreCase("en_us")) {
             name = en_us;
         } else {
             name = es_ar;
         }
-    }
-
-    public List<Breed> getBreedList() {
-        return breedList;
     }
 
     @Override

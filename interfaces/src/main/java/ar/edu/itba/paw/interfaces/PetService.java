@@ -1,70 +1,46 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.models.Contact;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.PetList;
-import ar.edu.itba.paw.models.Request;
-
-import java.sql.Date;
+import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.PetStatus;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface PetService {
 
-    PetList petList(String language, String findValue, String species, String  breed, String gender, String searchCriteria,
-                    String searchOrder, String minPrice, String maxPrice, String province, String department, String page);
-    PetList filteredList(String language, String species, String  breed, String gender, String searchCriteria, String searchOrder,
-                         String minPrice, String maxPrice, String province, String department, String page);
-    PetList find(String language, String findValue, String page);
+    List<Pet> list(String locale, int page, int pageSize);
+    List<Pet> filteredList(String locale, List<String> find, Long userId, Long species, Long breed, String gender, PetStatus status, String searchCriteria,
+                           String searchOrder, int minPrice, int maxPrice, Long province, Long department, int page, int pageSize);
+    List<Pet> listByUser(String locale, Long userId, int page, int pageSize);
 
-    PetList adminPetList(String language, String findValue, String species, String breed, String gender, String status,
-                         String searchCriteria, String searchOrder, String minPrice, String maxPrice, String page);
-    PetList adminFilteredList(String language, String species, String breed, String gender, String status, String searchCriteria,
-                              String searchOrder, String minPrice, String maxPrice, String page);
-    PetList adminFind(String language, String findValue, String status, String page);
+    int getListAmount();
+    int getFilteredListAmount(String locale, List<String> find, Long userId, Long species, Long breed, String gender, PetStatus status,
+                              int minPrice, int maxPrice, Long province, Long department);
+    int getListByUserAmount(String locale, Long userId);
 
-    List<Pet> list(String language, String page);
-    List<Pet> adminList(String language, String page);
-    List<Pet> listAll(String language);
+    Optional<Pet> findById(String locale, long id);
+    Optional<Pet> findById(long id);
 
-    Optional<Pet> create(String language, String petName, long speciesId, long breedId, boolean vaccinated, String gender,
-                         String description, Date birthDate, Date uploadDate, int price, long ownerId, long department, List<byte[]> photos);
+    Optional<Pet> create(String locale, String petName, Date birthDate, String gender, boolean vaccinated, int price, String description,
+                        PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos);
+    Optional<Pet> update(Pet pet);
+    Optional<Pet> update(String locale, long id, Long userId, String petName, Date birthDate, String gender, boolean vaccinated, int price,
+                         String description, PetStatus status, long speciesId, long breedId, long provinceId, long department, List<byte[]> photos, List<Long> imagesToDelete);
 
-    Optional<Pet> findById(String language, long id);
-    Optional<Pet> adminFindById(String language, long id);
-    PetList getByUserId(String language, long userId, String page);
-    boolean sellPet(long petId, long userId);
-    void sellPetAdmin(long petId);
-    boolean removePet(long petId, long userId);
-    boolean recoverPet(long petId, long userId);
-    void removePetAdmin(long petId);
-    void recoverPetAdmin(long petId);
-    int getPetsAmount();
-    int getAdminPetsAmount();
-    int getSearchPetsAmount(String language, String findValue);
-    int getAdminSearchPetsAmount(String language, String findValue);
-    int getFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String minPrice,
-                              String maxPrice, String province, String department);
-    int getAdminFilteredPetsAmount(String language, String specieFilter, String breedFilter, String genderFilter, String statusFilter);
-    int userPetsAmount(long userId);
-    String getMaxPages();
-    String getMaxSearchPages(int pets);
-    String getMaxAdminFilterPages(int pets);
-    String getMaxFilterPages(int pets);
-    String getMaxUserPetsPages(int pets);
-    String getAdminMaxPages();
-    String getAdminMaxSearchPages(int pets);
-    Optional<Contact> getPetContact(long petId);
-    long getOwnerId(long petId);
-    void removeAllByOwner(long ownerId);
 
-    boolean isPetOwner(long petId, long userId);
-    Optional<Pet> update(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
-                         long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
+    boolean    sellPet(long petId, User owner, long newOwnerId, String contextURL);
+    boolean  removePet(long petId, User user);
+    boolean recoverPet(long petId, User user);
 
-    Optional<Pet> adminUpdate(String language, long userId, long id, List<byte[]> photos, List<Integer> imagesToDelete, String petName,
-                              long speciesId, long breedId, boolean vaccinated, String gender, String description, Date birthDate, int price, long department);
+    boolean    adminSellPet(long petId,  long newOwnerId);
+    boolean  adminRemovePet(long petId);
+    boolean adminRecoverPet(long petId);
 
-    List<String> autocompleteFind(String language, String findValue);
+    void removeAllByUser(User user);
+
+    List<String> autocompleteFind(String locale, String find);
+
+    void setLocale(String locale, Pet pet);
+    void setLocale(String locale, List<Pet> pet);
+
 }

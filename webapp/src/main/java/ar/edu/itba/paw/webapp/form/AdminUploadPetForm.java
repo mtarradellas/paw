@@ -1,12 +1,9 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.*;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.constraints.*;
-
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +12,7 @@ public class AdminUploadPetForm {
 
     @Size(min=1, max=5)
     @NotNull
-    @FileSize
+    @FileSize(max=10)
     @NotEmptyMultipart
     private List<MultipartFile> photos;
 
@@ -41,7 +38,7 @@ public class AdminUploadPetForm {
     @Pattern(regexp="^(male)|(female)$")
     private String gender;
 
-    @Size(max = 250)
+    @Size(max = 512)
     private String description;
 
     @NotNull

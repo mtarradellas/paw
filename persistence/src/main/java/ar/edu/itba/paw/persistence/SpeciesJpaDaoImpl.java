@@ -4,7 +4,6 @@ import ar.edu.itba.paw.interfaces.SpeciesDao;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Species;
 import org.springframework.stereotype.Repository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -42,7 +41,7 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
-        final TypedQuery<Breed> query = em.createQuery("from Breeds where id IN :filteredIds", Breed.class);
+        final TypedQuery<Breed> query = em.createQuery("from Breed where id IN :filteredIds", Breed.class);
         query.setParameter("filteredIds", filteredIds);
         return query.getResultList();
     }
@@ -60,7 +59,7 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
     public Optional<Breed> findBreedByName(String locale, String breed) {
         final String vLocale = validateLocale(locale);
         final String qStr = "from Breed as b where b." + vLocale + " = :breed";
-        final TypedQuery<Breed> query = em.createQuery(qStr, Breed.class);
+        final TypedQuery<Breed> query = em.createQuery(qStr,Breed.class);
         query.setParameter("breed", breed);
         return query.getResultList().stream().findFirst();
     }

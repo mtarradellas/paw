@@ -3,15 +3,11 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.SpeciesDao;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.BreedList;
 import ar.edu.itba.paw.models.Species;
-import ar.edu.itba.paw.models.SpeciesList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class SpeciesServiceImpl implements SpeciesService {
@@ -24,64 +20,90 @@ public class SpeciesServiceImpl implements SpeciesService {
 
 
     @Override
-    public SpeciesList speciesList(String locale) {
+    public List<Species> speciesList(String locale) {
         List<Species> speciesList = speciesDao.speciesList(PAGE, PAGE_SIZE);
-        speciesList.forEach(s -> {
-            s.setName(locale);
-            s.getBreedList().forEach(b -> {
-                b.setName(locale);
-                b.getSpecies().setName(locale);
-            });
-        });
-        speciesList.sort(Species::compareTo);
-        return new SpeciesList(speciesList);
+        setSpeciesLocale(locale, speciesList);
+        return speciesList;
     }
 
     @Override
-    public SpeciesList speciesList() {
-        return new SpeciesList(speciesList("en_us"));
+    public List<Species> speciesList() {
+        return speciesDao.speciesList(PAGE, PAGE_SIZE);
     }
 
     @Override
-    public BreedList breedList(String locale) {
+    public List<Breed> breedList(String locale) {
         List<Breed> breedList = speciesDao.breedList(PAGE, PAGE_SIZE);
-        breedList.forEach(b -> {
-           b.setName(locale);
-           b.getSpecies().setName(locale);
-        });
-        return new BreedList(breedList);
+        setBreedLocale(locale, breedList);
+        return breedList;
     }
 
     @Override
-    public BreedList breedList() {
-        return new BreedList(breedList("en_us"));
+    public List<Breed> breedList() {
+        return speciesDao.breedList(PAGE, PAGE_SIZE);
     }
 
     @Override
     public Optional<Species> findSpeciesByName(String locale, String name) {
         Optional<Species> opSpecies = speciesDao.findSpeciesByName(locale, name);
-        opSpecies.ifPresent(species -> species.setName(locale));
+        opSpecies.ifPresent(s -> setSpeciesLocale(locale, s));
         return opSpecies;
     }
 
     @Override
     public Optional<Breed> findBreedByName(String locale, String name) {
         Optional<Breed> opBreed = speciesDao.findBreedByName(locale, name);
-        opBreed.ifPresent(breed -> breed.setName(locale));
+        opBreed.ifPresent(b -> setBreedLocale(locale, b));
         return opBreed;
     }
 
     @Override
     public Optional<Species> findSpeciesById(String locale, long id) {
         Optional<Species> opSpecies = speciesDao.findSpeciesById(id);
-        opSpecies.ifPresent(species -> species.setName(locale));
+        opSpecies.ifPresent(s -> setSpeciesLocale(locale, s));
         return opSpecies;
     }
 
     @Override
     public Optional<Breed> findBreedById(String locale, long id) {
         Optional<Breed> opBreed = speciesDao.findBreedById(id);
-        opBreed.ifPresent(b -> b.setName(locale));
+        opBreed.ifPresent(b -> setBreedLocale(locale, b));
         return opBreed;
+    }
+
+    @Override
+    public Optional<Species> findSpeciesById(long id) {
+        return speciesDao.findSpeciesById(id);
+    }
+
+    @Override
+    public Optional<Breed> findBreedById(long id) {
+        return speciesDao.findBreedById(id);
+    }
+
+    @Override
+    public void setSpeciesLocale(String locale, Species species) {
+        species.setLocale(locale);
+    }
+
+    @Override
+    public void setBreedLocale(String locale, Breed breed) {
+        breed.setLocale(locale);
+    }
+
+    @Override
+    public void setSpeciesLocale(String locale, List<Species> speciesList) {
+        speciesList.forEach(s -> {
+                    s.setLocale(locale);
+                    setBreedLocale(locale, s.getBreedList());
+                }
+        );
+        speciesList.sort(Species::compareTo);
+    }
+
+    @Override
+    public void setBreedLocale(String locale, List<Breed> breedList) {
+        breedList.forEach(b -> b.setLocale(locale));
+        breedList.sort(Breed::compareTo);
     }
 }

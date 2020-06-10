@@ -27,7 +27,7 @@
                                             <form:label path="userId" for="userId">${userText}: </form:label>
                                             <form:select id="userId" path="userId"
                                                          cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                                <form:options items="${users_list}" itemValue="id"
+                                                <form:options items="${userList}" itemValue="id"
                                                               itemLabel="username"/>
                                             </form:select>
                                             <form:errors path="userId" element="div" cssClass="invalid-feedback"/>
@@ -42,7 +42,7 @@
                                             <form:label path="petId" for="petId">${petText}: </form:label>
                                             <form:select id="petId" path="petId"
                                                          cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                                <form:options items="${pets_list}" itemValue="id"
+                                                <form:options items="${petList}" itemValue="id"
                                                               itemLabel="petName"/>
                                             </form:select>
                                             <form:errors path="petId" element="div" cssClass="invalid-feedback"/>
@@ -51,7 +51,7 @@
 
                                 </div>
                             </div>
-                            <c:if test="${request_error eq true}">
+                            <c:if test="${requestError eq true}">
                                 <p class="error"><spring:message code="Request.wrongRequest"/></p>
                             </c:if>
 
