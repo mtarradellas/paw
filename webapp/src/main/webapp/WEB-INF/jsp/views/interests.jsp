@@ -62,7 +62,7 @@
                                         <small class="text-warning"> ${req.creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
-                                            ${req.status}
+                                        <spring:message code="request.pending"/>
                                     </div>
                                     <div class="col text-center ">
                                         <div class="button-container ">
