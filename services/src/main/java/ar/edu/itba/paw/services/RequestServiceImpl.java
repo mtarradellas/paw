@@ -82,14 +82,14 @@ public class RequestServiceImpl implements RequestService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(user)) {
+        if (pet.getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is pet {} owner, ignoring request", userId, petId);
             return Optional.empty();
         }
 
         List<Request> requestList = user.getRequestList();
         for (Request req: requestList) {
-            if(req.getPet().equals(pet) && !req.getStatus().equals(RequestStatus.CANCELED)) {
+            if(req.getPet().getId().equals(pet.getId()) && !req.getStatus().equals(RequestStatus.CANCELED)) {
                 LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
                 return Optional.empty();
             }
@@ -130,7 +130,7 @@ public class RequestServiceImpl implements RequestService {
         }
         Request request = opRequest.get();
 
-        if (!request.getUser().equals(user)) {
+        if (!request.getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not Request {} owner, Request not canceled", user.getId(), request.getId());
             return false;
         }
@@ -173,7 +173,7 @@ public class RequestServiceImpl implements RequestService {
         }
         Request request = opRequest.get();
 
-        if (!request.getPet().getUser().equals(user)) {
+        if (!request.getPet().getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not Request {} target, Request not accepted", user.getId(), request.getId());
             return false;
         }
@@ -217,7 +217,7 @@ public class RequestServiceImpl implements RequestService {
         }
         Request request = opRequest.get();
 
-        if (!request.getPet().getUser().equals(user)) {
+        if (!request.getPet().getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not Request {} target, Request not rejected", user.getId(), request.getId());
             return false;
         }
@@ -260,7 +260,7 @@ public class RequestServiceImpl implements RequestService {
         }
         Request request = opRequest.get();
 
-        if (!request.getUser().equals(user)) {
+        if (!request.getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not Request {} target, Request not recovered", user.getId(), request.getId());
             return false;
         }

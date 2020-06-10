@@ -302,7 +302,7 @@ public class UserServiceImpl implements UserService {
         }
         User target = opTarget.get();
 
-        if (owner.equals(target)) {
+        if (owner.getId().equals(target.getId())) {
             LOGGER.warn("Target of review is the same as the owner, ignoring review {}", owner.getId());
             return false;
         }
@@ -341,7 +341,7 @@ public class UserServiceImpl implements UserService {
         }
         User target = opTarget.get();
 
-        if (owner.equals(target)) {
+        if (owner.getId().equals(target.getId())) {
             LOGGER.warn("User {} cannot review itself!", targetId);
             return Optional.empty();
         }

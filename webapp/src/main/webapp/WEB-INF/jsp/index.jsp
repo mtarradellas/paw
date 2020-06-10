@@ -1,6 +1,12 @@
+<%@ page import="ar.edu.itba.paw.models.constants.PetStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
+<c:set var="REMOVED" value="<%=PetStatus.REMOVED.getValue()%>"/>
+<c:set var="SOLD" value="<%=PetStatus.SOLD.getValue()%>"/>
+<c:set var="UNAVAILABLE" value="<%=PetStatus.UNAVAILABLE.getValue()%>"/>
 
 <spring:message code="indexTitle" var="titleVar"/>
 <t:basicLayout title="${titleVar}">
@@ -87,7 +93,7 @@
                         </c:if>
                         <div class="card-deck row ml-5">
                             <c:forEach var="pet" items="${homePetList}">
-                                <c:if test="${pet.status.value eq 1}">
+                                <c:if test="${pet.status.value eq AVAILABLE}">
 
                                     <div class="col-auto mb-3">
 

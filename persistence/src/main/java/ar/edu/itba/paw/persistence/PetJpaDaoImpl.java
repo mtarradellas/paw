@@ -43,8 +43,7 @@ public class PetJpaDaoImpl implements PetDao {
         }
         final TypedQuery<Pet> query = em.createQuery("from Pet where id in :filteredIds", Pet.class);
         query.setParameter("filteredIds", filteredIds);
-        List<Pet> petList = query.getResultList();
-        return petList;
+        return query.getResultList();
     }
 
     @Override
@@ -64,6 +63,13 @@ public class PetJpaDaoImpl implements PetDao {
 
         return searchList(locale, null, user, species, breed, gender, status, searchCriteria, searchOrder,
                 minPrice, maxPrice, province, department, page, pageSize);
+    }
+
+    private void indexPets() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
     }
 
     private List<Pet> paginationAndOrder(String locale, Query query, String searchCriteria, String searchOrder, int page, int pageSize) {
@@ -120,9 +126,7 @@ public class PetJpaDaoImpl implements PetDao {
                                                                   Department department) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         /* TODO descomentar para deployar*/
-//        try {
-//            fullTextEntityManager.createIndexer().startAndWait();
-//        } catch(InterruptedException ignored) {}
+        indexPets();
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Pet.class)
@@ -133,8 +137,8 @@ public class PetJpaDaoImpl implements PetDao {
 
         BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
         if(status != null) {
-            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue() - 1).createQuery());
-            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue() - 1).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
         }
         else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
         if(find != null) {
@@ -150,7 +154,7 @@ public class PetJpaDaoImpl implements PetDao {
                         .createQuery());
             }
         }
-        if(user != null)  boolJunction.must(queryBuilder.phrase().onField("user.username").sentence(user.getUsername()).createQuery());
+        if(user != null)  boolJunction.must(queryBuilder.keyword().onField("user.username").matching(user.getUsername()).createQuery());
         if(species != null) boolJunction.must(queryBuilder.phrase().onField("species.en_us").sentence(species.getEn_us()).createQuery());
         if(breed != null) boolJunction.must(queryBuilder.phrase().onField("breed.en_us").sentence(breed.getEn_us()).createQuery());
         if(gender != null)boolJunction.must(queryBuilder.keyword().onField("gender").matching(gender).createQuery());
@@ -200,23 +204,26 @@ public class PetJpaDaoImpl implements PetDao {
         Pet pet = new Pet(petName, birthDate, gender, vaccinated, price, uploadDate, description, status, user, species, breed,
                 province, department);
         em.persist(pet);
+        indexPets();
         return pet;
     }
 
     @Override
     public Optional<Pet> update(Pet pet) {
         em.persist(pet);
+        indexPets();
         return Optional.of(pet);
     }
-
+;
     @Override
     public void updateByStatusAndOwner(User user, PetStatus oldStatus, PetStatus newStatus) {
         String qStr = "update Pet set status = :new where user.id = :user and status = :old";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus);
-        query.setParameter("new", newStatus);
+        query.setParameter("old", oldStatus.getValue());
+        query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
         query.executeUpdate();
+        indexPets();
     }
 
     @Override

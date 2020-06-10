@@ -468,3 +468,17 @@ html,body {
 .pet-image-preview:nth-of-type(5) {
     grid-area: small4;
 }
+
+.pet-name{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pet-name.pet-name-title {
+    width: 30rem;
+}
+
+.break-text {
+    word-break: break-all;
+}
