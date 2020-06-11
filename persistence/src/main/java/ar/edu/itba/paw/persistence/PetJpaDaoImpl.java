@@ -8,6 +8,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -50,6 +51,9 @@ public class PetJpaDaoImpl implements PetDao {
     public List<Pet> searchList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                                 String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize) {
 
+        /* TODO descomentar para deployar*/
+//        indexPets();
+
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
         return paginationAndOrder(locale, jpaQuery,searchCriteria,searchOrder,page,pageSize);
@@ -65,7 +69,27 @@ public class PetJpaDaoImpl implements PetDao {
                 minPrice, maxPrice, province, department, page, pageSize);
     }
 
-    private void indexPets() {
+    @Override
+    public List<Pet> listByUser(long userId, int page, int pageSize) {
+        String qStr = "SELECT id FROM pets where ownerId = :owner";
+        Query nativeQuery = em.createNativeQuery(qStr);
+        nativeQuery.setParameter("owner", userId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
+        List<? extends Number> resultList = nativeQuery.getResultList();
+        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+
+        if(filteredIds.size() == 0){
+            return new ArrayList<Pet>();
+        }
+        final TypedQuery<Pet> query = em.createQuery("from Pet where id in :filteredIds", Pet.class);
+        query.setParameter("filteredIds", filteredIds);
+        return query.getResultList();
+    }
+
+    @Async
+    public void indexPets() {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         try {
             fullTextEntityManager.createIndexer().startAndWait();
@@ -125,8 +149,6 @@ public class PetJpaDaoImpl implements PetDao {
                                                                   int maxPrice, Province province,
                                                                   Department department) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        /* TODO descomentar para deployar*/
-//        indexPets();
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Pet.class)
@@ -195,6 +217,14 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
+    public int getListByUserAmount(long userId) {
+        Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM pets where ownerId = :owner");
+        nativeQuery.setParameter("owner", userId);
+        Number count = (Number) nativeQuery.getSingleResult();
+        return count.intValue();
+    }
+
+    @Override
     public Optional<Pet> findById(long id) {
         return Optional.ofNullable(em.find(Pet.class, id));
     }
@@ -204,14 +234,12 @@ public class PetJpaDaoImpl implements PetDao {
         Pet pet = new Pet(petName, birthDate, gender, vaccinated, price, uploadDate, description, status, user, species, breed,
                 province, department);
         em.persist(pet);
-        indexPets();
         return pet;
     }
 
     @Override
     public Optional<Pet> update(Pet pet) {
         em.persist(pet);
-        indexPets();
         return Optional.of(pet);
     }
 
@@ -223,7 +251,6 @@ public class PetJpaDaoImpl implements PetDao {
         query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
         query.executeUpdate();
-        indexPets();
     }
 
     @Override

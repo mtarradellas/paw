@@ -30,9 +30,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,6 +67,7 @@ public class UserController extends ParentController {
 
         final ModelAndView mav = new ModelAndView("views/single_user");
         final String locale = getLocale();
+        final User loggedUser = loggedUser();
 
         int pageNum = parsePage(page);
 
@@ -79,23 +78,10 @@ public class UserController extends ParentController {
 
         boolean canRate = false;
 
-        if(loggedUser() != null && !(user.getId().equals(loggedUser().getId()))){
-//            for(Request request : loggedUser().getRequestList()){
-//                if((request.getPet().getUser().getId().equals(user.getId())) && (request.getStatus().getValue() ==
-//                        RequestStatus.ACCEPTED.getValue())){
-//                    canRate = true;
-//                }
-//            }
-            for(Pet pet : user.getPetList()){
-                if(pet.getNewOwner() != null && pet.getNewOwner().getId().equals( loggedUser().getId())){
-                    canRate = true;
-                }
-            }
-
-            for(Review review : user.getTargetReviews()){
-                if(review.getOwner().getId().equals(loggedUser().getId())){
-                    canRate = false;
-                }
+        if (loggedUser != null && !user.getId().equals(loggedUser.getId())) {
+            boolean acquiredPet = loggedUser.getNewPets().stream().anyMatch(p -> p.getUser().getId().equals(user.getId()));
+            if (acquiredPet) {
+                canRate = loggedUser.getOwnerReviews().stream().noneMatch(r -> r.getTarget().getId().equals(user.getId()));
             }
         }
 
