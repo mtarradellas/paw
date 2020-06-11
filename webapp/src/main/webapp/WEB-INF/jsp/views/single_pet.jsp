@@ -35,7 +35,7 @@
                 <div class="p-2 bg-dark">
                     <div class="row text-whitesmoke">
                         <c:if test="${not empty pet.petName}">
-                            <h1 class="ml-4 ">
+                            <h1 class="ml-4">
                                 <div class="pet-name pet-name-title"><c:out value="${meet}"/></div>
                             </h1>
                         </c:if>
@@ -210,6 +210,15 @@
                 <div class="p-4">
                     <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
                 </div>
+
+                <div class="p-3">
+                    <h2>Preguntas</h2>
+                    <ul class="questions">
+
+                    </ul>
+                    <button type="button" class="btn btn-outline-secondary btn-sm load-more">Cargar mas</button>
+                </div>
+
             </div>
 
             <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image"
@@ -281,6 +290,7 @@
         </div>
     </div>
 
+    <script src="<c:url value="/resources/js/load_more_questions.js"/>"></script>
     <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
 </t:basicLayout>
