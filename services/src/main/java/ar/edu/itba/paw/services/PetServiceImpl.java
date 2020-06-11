@@ -68,7 +68,7 @@ public class PetServiceImpl implements PetService {
                     "min price {}, max price {}, province {}, department {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
                     user, status, species, breed, gender, minPrice, maxPrice, province, department, searchCriteria, searchOrder, page, pageSize);
 
-        System.out.println("LENIA SEARCHING PETLIST OF: " + user);
+
         petList = petDao.searchList(locale, find, user, species, breed, gender, status, searchCriteria, searchOrder,
                     minPrice, maxPrice, province, department, page, pageSize);
 
