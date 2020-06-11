@@ -23,10 +23,7 @@
 //import javax.persistence.EntityManager;
 //import javax.persistence.PersistenceContext;
 //import javax.sql.DataSource;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.Optional;
+//import java.util.*;
 //import java.util.stream.Collectors;
 //
 //import static org.junit.Assert.*;
@@ -96,7 +93,7 @@
 //        return user;
 //    }
 //
-//    private void assertUser(User user, long id, String username, String password, String mail, UserStatus status, String locale) {
+//    private void assertUser(User user, Long id, String username, String password, String mail, UserStatus status, String locale) {
 //        assertEquals(id, user.getId());
 //        assertEquals(username, user.getUsername());
 //        assertEquals(password, user.getPassword());
@@ -113,6 +110,7 @@
 //        assertEquals(review.getStatus(), status);
 //    }
 //
+//    @Transactional
 //    @Test
 //    public void testFindByIdNotExist() {
 //        Optional<User> opUser = userDaoImpl.findById(100);
@@ -130,7 +128,7 @@
 //        assertTrue(opUser.isPresent());
 //        assertUser(opUser.get(), user.getId(), USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
 //    }
-//
+///*
 //    @Test
 //    public void testFindByUsernameNotExist() {
 //        Optional<User> opUser = userDaoImpl.findByUsername(USERNAME);
@@ -169,8 +167,10 @@
 //    public void testSearchList() {
 //        User user = insertUser(USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
 //        insertUser(O_USERNAME, O_PASSWORD, O_MAIL, O_USER_STATUS, O_LOCALE);
+//        List<String> find = new ArrayList<>();
+//        find.add(USERNAME);
 //
-//        List<User> userList = userDaoImpl.searchList(USERNAME, PAGE, PAGE_SIZE);
+//        List<User> userList = userDaoImpl.searchList(find, USER_STATUS, null, null, PAGE, PAGE_SIZE);
 //
 //        assertEquals(1, userList.size());
 //        assertUser(userList.get(0), user.getId(), USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
@@ -209,7 +209,7 @@
 //        assertEquals(0, target.getOwnerReviews().size());
 //        assertReview(owner.getOwnerReviews().get(0), owner.getId(), target.getId(), SCORE, DESC, REVIEW_STATUS);
 //    }
-//
+//*/
 ////    /* TODO Test tokens */
 ////    public void testFindByTokenNotExists() {
 ////
