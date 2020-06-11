@@ -1,15 +1,5 @@
 CREATE TABLE IF NOT EXISTS species (
 id BIGSERIAL PRIMARY KEY,
-<<<<<<< HEAD
-es_AR VARCHAR(255) NOT NULL,
-en_US VARCHAR(255) NOT NULL
-);
-CREATE TABLE IF NOT EXISTS breeds (
-id BIGSERIAL PRIMARY KEY,
-speciesId BIGINT NOT NULL REFERENCES species(id),
-es_AR VARCHAR(255) NOT NULL,
-en_US VARCHAR(255) NOT NULL
-=======
 es_AR VARCHAR(255),
 en_US VARCHAR(255)
 );
@@ -18,14 +8,12 @@ id BIGSERIAL PRIMARY KEY,
 speciesId INTEGER REFERENCES species(id),
 es_AR VARCHAR(255),
 en_US VARCHAR(255)
->>>>>>> b088751c686572e6d6b98fa79a07e0e3e3b6a6a5
 );
 CREATE TABLE IF NOT EXISTS users (
 id BIGSERIAL PRIMARY KEY,
 username VARCHAR(255) NOT NULL UNIQUE,
 password VARCHAR(255) NOT NULL,
 mail VARCHAR(255) NOT NULL UNIQUE,
-<<<<<<< HEAD
 status INTEGER NOT NULL,
 locale CHAR(7)
 );
@@ -42,9 +30,6 @@ creationDate DATE DEFAULT CURRENT_DATE,
 status INTEGER NOT NULL,
 CONSTRAINT owner_target_diff CHECK (ownerId <> targetId),
 CONSTRAINT owner_target_unique UNIQUE (ownerId, targetId)
-=======
-status INTEGER
->>>>>>> b088751c686572e6d6b98fa79a07e0e3e3b6a6a5
 );
 CREATE TABLE IF NOT EXISTS provinces(
 id BIGSERIAL PRIMARY KEY,
@@ -61,46 +46,23 @@ province VARCHAR(256) REFERENCES provinces(name)
 );
 CREATE TABLE IF NOT EXISTS pets (
 id BIGSERIAL PRIMARY KEY,
-<<<<<<< HEAD
-petName VARCHAR(255) NOT NULL,
-species BIGINT REFERENCES species(id),
-breed BIGINT REFERENCES breeds(id),
-department BIGINT REFERENCES departments(id),
-province BIGINT REFERENCES provinces(id),
-=======
 petName VARCHAR(255),
 species INTEGER REFERENCES species(id),
 breed INTEGER REFERENCES breeds(id),
 department INTEGER REFERENCES departments(id),
-province INTEGER REFERENCES province(id),
->>>>>>> b088751c686572e6d6b98fa79a07e0e3e3b6a6a5
+province INTEGER REFERENCES provinces(id),
 vaccinated BOOLEAN NOT NULL,
 gender VARCHAR(255) NOT NULL,
 description TEXT,
 birthDate DATE,
 uploadDate DATE DEFAULT CURRENT_DATE,
 price INTEGER,
-<<<<<<< HEAD
 ownerId BIGINT NOT NULL REFERENCES users(id),
 status INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS images (
 id BIGSERIAL PRIMARY KEY,
-img VARBINARY(1000000) NOT NULL,
-petId BIGINT NOT NULL REFERENCES pets(id)
-);
-CREATE TABLE IF NOT EXISTS requests (
-id BIGSERIAL PRIMARY KEY,
-ownerId BIGINT NOT NULL REFERENCES users(id),
-petId BIGINT NOT NULL REFERENCES pets(id),
-status INTEGER NOT NULL,
-=======
-ownerId INTEGER REFERENCES users(id),
-status INTEGER
-);
-CREATE TABLE IF NOT EXISTS images (
-id BIGSERIAL PRIMARY KEY,
-img BYTEA,
+img BINARY,
 petId INTEGER REFERENCES pets(id)
 );
 CREATE TABLE IF NOT EXISTS requests (
@@ -108,7 +70,6 @@ id BIGSERIAL primary key,
 ownerId INTEGER references users(id),
 petId INTEGER references pets(id),
 status INTEGER,
->>>>>>> b088751c686572e6d6b98fa79a07e0e3e3b6a6a5
 creationDate DATE DEFAULT CURRENT_DATE,
 CONSTRAINT norepeats UNIQUE(ownerId, petId)
 );
