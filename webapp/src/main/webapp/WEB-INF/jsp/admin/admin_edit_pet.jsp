@@ -146,7 +146,8 @@
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.birthDate" var="birthDateTxt"/>
                                         <form:label path="birthDate" for="birthDate">${birthDateTxt}: </form:label>
-                                        <div class="input-modifiable-div" data-current="${pet.birthDate}">
+                                        <fmt:formatDate var="birthDate" value="${pet.birthDate}" pattern="yyyy-MM-dd"/>
+                                        <div class="input-modifiable-div" data-current="${birthDate}">
                                             <form:input type="date" id="birthDate" path="birthDate" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
                                             <a class="revert-input-anchor">
                                                 <svg class="bi bi-arrow-counterclockwise" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -228,10 +229,10 @@
                                 <spring:message code="editPetForm.deletePhotos"/>
                                 <div>
 
-                                    <c:forEach items="${pet.images}" var="imageId">
-                                        <form:checkbox path="imagesIdToDelete" cssClass="image-checkbox" value="${imageId}" id="delete-image-checkbox-${imageId}"/>
-                                        <div class="delete-image-select" id="${imageId}">
-                                            <img src="<c:url value="/img/${imageId}"/>" alt="" class="pet-photo"/>
+                                    <c:forEach items="${pet.images}" var="image">
+                                        <form:checkbox path="imagesIdToDelete" cssClass="image-checkbox" value="${image.id}" id="delete-image-checkbox-${image.id}"/>
+                                        <div class="delete-image-select" id="${image.id}">
+                                            <img src="<c:url value="/img/${image.id}"/>" alt="" class="pet-photo"/>
                                         </div>
                                     </c:forEach>
 

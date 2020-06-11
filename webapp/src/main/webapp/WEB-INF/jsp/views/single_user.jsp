@@ -1,9 +1,11 @@
+<%@ page import="ar.edu.itba.paw.models.constants.PetStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
 
 <spring:message code="userTitle" var="title"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
@@ -21,6 +23,16 @@
     <c:set var="limit" value="${user.targetReviews.size()}"/>
 </c:if>
 
+<c:if test="${showAllAdopted eq 'true'}">
+    <c:set var="adoptedLimit" value="${user.newPets.size()}"/>
+</c:if>
+<c:if test="${showAllAdopted eq 'false' and user.newPets.size() > 4}">
+    <c:set var="adoptedLimit" value="4"/>
+</c:if>
+<c:if test="${showAllAdopted eq 'false' and user.newPets.size() <= 4}">
+    <c:set var="adoptedLimit" value="${user.newPets.size()}"/>
+</c:if>
+
 <t:basicLayout title="${title}">
     <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
     <div class="container-fluid ">
@@ -28,17 +40,25 @@
             <div class="bg-light shadow ">
                 <div class="p-2 bg-dark">
                     <div class="row text-whitesmoke">
-                        <h1 class="ml-4"><c:out value="${user.username}"/></h1>
+                        <h1 class="ml-4 col"><c:out value="${user.username}"/></h1>
                         <c:if test="${(user.id eq loggedUser.id)}">
-                            <h1 class="mt-2 ml-4">
-                                <form method="POST" class="m-0" action="<c:url value="/user/${id}/remove" />">
-                                    <button type="submit" name="action"
-                                            class="btn btn-danger are-you-sure">
-                                        <i class="fas fa-times mr-2"></i>
-                                        <spring:message code="petCard.remove"/>
-                                    </button>
-                                </form>
-                            </h1>
+                            <div class="col p-2">
+                                <div class="row float-right mr-4">
+                                    <form method="POST" class="m-0" action="<c:url value="/user/${id}/remove" />">
+                                        <button type="submit" name="action"
+                                                class="btn btn-danger are-you-sure">
+                                            <i class="fas fa-times mr-2"></i>
+                                            <spring:message code="petCard.remove"/>
+                                        </button>
+                                    </form>
+                                    <a class="btn btn-link bg-light ml-2" href="<c:url value="/edit-user/${loggedUser.id}"/>">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                        <spring:message code="editUserForm.edit"/>
+
+                                    </a>
+                                </div>
+
+                            </div>
                         </c:if>
                     </div>
                 </div>
@@ -61,6 +81,7 @@
                             <button type="button" class="btn btn-link"
                                     data-toggle="modal" data-target="#add-review"><spring:message
                                     code="user.review"/></button>
+
                         </c:if>
                         <c:if test="${canRate eq false}">
                             <small class="p-2">
@@ -100,16 +121,7 @@
                             <li class="list-group-item"><b><spring:message code="user.email"/>:</b> <c:out
                                     value="${user.mail}"/></li>
                         </ul>
-                        <a class="edit-anchor" href="<c:url value="/edit-user/${loggedUser.id}"/>">
-                            <spring:message code="editUserForm.edit"/>
-                            <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15.502 1.94a.5.5 0 010 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 01.707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 00-.121.196l-.805 2.414a.25.25 0 00.316.316l2.414-.805a.5.5 0 00.196-.12l6.813-6.814z"></path>
-                                <path fill-rule="evenodd"
-                                      d="M1 13.5A1.5 1.5 0 002.5 15h11a1.5 1.5 0 001.5-1.5v-6a.5.5 0 00-1 0v6a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5H9a.5.5 0 000-1H2.5A1.5 1.5 0 001 2.5v11z"
-                                      clip-rule="evenodd"></path>
-                            </svg>
-                        </a>
+
                     </c:if>
                     <c:if test="${loggedUser.id ne user.id}">
                         <h5 class="text-center"><b><spring:message code="otherUserProfile"/></b></h5>
@@ -133,10 +145,10 @@
                             <c:forEach var="pet" items="${userPets}">
 
 
-                            <c:if test="${pet.status.value eq 1}">
+                            <c:if test="${pet.status.value eq AVAILABLE}">
                             <div class="col-auto mb-3">
                                 </c:if>
-                                <c:if test="${pet.status.value ne 1 }">
+                                <c:if test="${pet.status.value ne AVAILABLE }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
                                     <t:animalCard pet="${pet}" level="user"/>
@@ -161,11 +173,57 @@
 
                         </div>
                         <hr>
+                        <c:if test="${user.newPets.size() > 0}">
+                            <div class="p-2" id="adopted">
+                                <h2><b><spring:message code="userPets.adopted"/></b>
+                                    <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>
+                                </h2>
+                                <div class="card-deck row">
+                                    <c:forEach var="pet" items="${user.newPets}" end="${adoptedLimit-1}">
+                                        <div class="col-auto mb-3">
+                                            <t:animalCard pet="${pet}" level="user"/>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <c:if test="${user.newPets.size() > 4 and showAllAdopted eq 'false'}">
+                                <form method="get" class="text-center"
+                                      action="${pageContext.request.contextPath}/user/${user.id}#adopted">
+                                    <input type="hidden" name="showAllAdopted" value="true">
+                                    <c:if test="${not empty param.page}">
+                                        <input type="hidden" name="page" value="${param.page}">
+                                    </c:if>
+                                    <c:if test="${not empty param.showAllReviews}">
+                                        <input type="hidden" name="showAllReviews" value="${param.showAllReviews}">
+                                    </c:if>
+                                    <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                            code="showAll"/></button>
+
+                                </form>
+                            </c:if>
+                            <c:if test="${showAllAdopted eq 'true'}">
+                                <form method="get" class="text-center"
+                                      action="${pageContext.request.contextPath}/user/${user.id}#adopted">
+                                    <input type="hidden" name="showAllAdopted" value="false">
+                                    <c:if test="${not empty param.page}">
+                                        <input type="hidden" name="page" value="${param.page}">
+                                    </c:if>
+                                    <c:if test="${not empty param.showAllReviews}">
+                                        <input type="hidden" name="showAllReviews" value="${param.showAllReviews}">
+                                    </c:if>
+                                    <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                            code="showLess"/></button>
+                                </form>
+                            </c:if>
+                        </c:if>
+
+                        <hr>
                         <c:if test="${user.averageScore != -1}">
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
 
-                                    <spring:message code="showingOutOf" arguments="${limit}, ${user.targetReviews.size()}"/>
+                                    <spring:message code="showingOutOf"
+                                                    arguments="${limit}, ${user.targetReviews.size()}"/>
                                     <c:if test="${canRate}">
                                         <button type="button" class="btn btn-link"
                                                 data-toggle="modal" data-target="#add-review"><spring:message
@@ -232,7 +290,7 @@
                                             </c:if>
                                         </div>
                                         <div class="col">
-                                          ${review.description}
+                                                ${review.description}
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -242,6 +300,9 @@
                                         <input type="hidden" name="showAllReviews" value="true">
                                         <c:if test="${not empty param.page}">
                                             <input type="hidden" name="page" value="${param.page}">
+                                        </c:if>
+                                        <c:if test="${not empty param.showAllAdopted}">
+                                            <input type="hidden" name="showAllAdopted" value="${param.showAllAdopted}">
                                         </c:if>
                                         <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
                                                 code="showAll"/></button>
@@ -254,6 +315,9 @@
                                         <input type="hidden" name="showAllReviews" value="false">
                                         <c:if test="${not empty param.page}">
                                             <input type="hidden" name="page" value="${param.page}">
+                                        </c:if>
+                                        <c:if test="${not empty param.showAllAdopted}">
+                                            <input type="hidden" name="showAllAdopted" value="${param.showAllAdopted}">
                                         </c:if>
                                         <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
                                                 code="showLess"/></button>

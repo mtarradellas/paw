@@ -64,7 +64,8 @@ public class UserController extends ParentController {
     public ModelAndView user(@PathVariable("id") long id,
                              @RequestParam(name = "page", required = false) String page,
                              @RequestParam(name = "descriptionTooLong", required = false) String toolong,
-                             @RequestParam(name = "showAllReviews", required = false) String showAllReviews) {
+                             @RequestParam(name = "showAllReviews", required = false) String showAllReviews,
+                             @RequestParam(name = "showAllAdopted", required = false) String showAllAdopted) {
 
         final ModelAndView mav = new ModelAndView("views/single_user");
         final String locale = getLocale();
@@ -78,15 +79,21 @@ public class UserController extends ParentController {
 
         boolean canRate = false;
 
-        if(loggedUser() != null && !(user.getId() == loggedUser().getId())){
-            for(Request request : loggedUser().getRequestList()){
-                if((request.getPet().getUser().getId() == user.getId()) && (request.getStatus().getValue() ==
-                        RequestStatus.ACCEPTED.getValue())){
+        if(loggedUser() != null && !(user.getId().equals(loggedUser().getId()))){
+//            for(Request request : loggedUser().getRequestList()){
+//                if((request.getPet().getUser().getId().equals(user.getId())) && (request.getStatus().getValue() ==
+//                        RequestStatus.ACCEPTED.getValue())){
+//                    canRate = true;
+//                }
+//            }
+            for(Pet pet : user.getPetList()){
+                if(pet.getNewOwner() != null && pet.getNewOwner().getId().equals( loggedUser().getId())){
                     canRate = true;
                 }
             }
+
             for(Review review : user.getTargetReviews()){
-                if(review.getOwner().getId() == loggedUser().getId()){
+                if(review.getOwner().getId().equals(loggedUser().getId())){
                     canRate = false;
                 }
             }
@@ -98,6 +105,10 @@ public class UserController extends ParentController {
             showAllReviews = "false";
         }
 
+        if(showAllAdopted == null || (!showAllAdopted.equals("true") && !showAllAdopted.equals("false"))){
+            showAllAdopted = "false";
+        }
+
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("userPets", petList);
@@ -105,6 +116,7 @@ public class UserController extends ParentController {
         mav.addObject("user", user);
         mav.addObject("canRate", canRate);
         mav.addObject("showAllReviews", showAllReviews);
+        mav.addObject("showAllAdopted", showAllAdopted);
         return mav;
     }
 

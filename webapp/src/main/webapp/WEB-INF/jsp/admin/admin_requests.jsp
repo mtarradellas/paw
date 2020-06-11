@@ -2,10 +2,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
 <spring:message code="adminTitle.request" var="requestTitle"/>
+
+<c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+<c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+<c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+<c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+
 
 <t:adminLayout title="${requestTitle}" item="requests">
     <jsp:body>
@@ -39,28 +47,24 @@
                                         <spring:message code="filter.any"/>
                                     </option>
 
-                                    <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
                                     <option value="${ACCEPTED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (ACCEPTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.accepted"/></option>
 
-                                    <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
                                     <option value="${REJECTED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (REJECTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.rejected"/></option>
 
-                                    <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
                                     <option value="${PENDING}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (PENDING eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.pending"/></option>
 
-                                    <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
                                     <option value="${CANCELED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (CANCELED eq param.status)}">
                                                 selected
@@ -150,37 +154,43 @@
                             </c:if>
                             <ul class="list-group list-group-flush ">
                                 <c:forEach var="request" items="${requestList}">
-                                    <%--                                    Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
+                                    <%-- Falta agregar que si el status es deleted lo muestra mas oscuro y con un boton distinto--%>
                                     <li     <c:if
-                                            test="${(request.status.value eq 0) or (request.status.value eq 1) or (request.status.value eq 2)}">
+                                            test="${(request.status.value eq PENDING)
+                                            or (request.status.value eq ACCEPTED)
+                                            or (request.status.value eq REJECTED)}">
                                         class="list-group-item"
                                     </c:if>
-                                            <c:if test="${(request.status.value eq 3)}">
+                                            <c:if test="${(request.status.value eq CANCELED)}">
                                                 class="list-group-item resolved"
                                             </c:if>
                                     >
                                         <div class="row ">
                                             <div class="col-lg-5">
+                                                <fmt:formatDate value="${request.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
                                                 <spring:message code="request.isInterested"
                                                                 arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.pet.id},${request.pet.petName}"/>
-                                                <small class="text-warning"> ${request.creationDate}</small>
+                                                <small class="text-warning"> ${creationDate}</small>
                                             </div>
                                             <div class="col-lg-2">
-                                                <c:if test="${request.status.value eq 0}">
+                                                <c:if test="${request.status.value eq PENDING}">
                                                     <spring:message code="request.pending"/>
                                                 </c:if>
-                                                <c:if test="${request.status.value eq 1}">
+                                                <c:if test="${request.status.value eq ACCEPTED}">
                                                     <spring:message code="request.accepted"/>
                                                 </c:if>
-                                                <c:if test="${request.status.value eq 2}">
+                                                <c:if test="${request.status.value eq REJECTED}">
                                                     <spring:message code="request.rejected"/>
                                                 </c:if>
-                                                <c:if test="${request.status.value eq 3}">
+                                                <c:if test="${request.status.value eq CANCELED}">
                                                     <spring:message code="request.canceled"/>
                                                 </c:if>
                                             </div>
                                             <div class="col text-center ml-3 ">
-                                                <c:if test="${request.status.value eq 0 or request.status.value eq 1 or request.status.value eq 2}">
+                                                <c:if test="${request.status.value eq PENDING
+                                                    or request.status.value eq ACCEPTED
+                                                    or request.status.value eq REJECTED}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/request/${request.id}/cancel"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.user.id}"/>"
@@ -196,7 +206,7 @@
                                                             <spring:message code="cancel"/></button>
                                                     </form>
                                                 </c:if>
-                                                <c:if test="${request.status.value eq 3}">
+                                                <c:if test="${request.status.value eq CANCELED}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/request/${request.id}/recover"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.user.id}"/>"

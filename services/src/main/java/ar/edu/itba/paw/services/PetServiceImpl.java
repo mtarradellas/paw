@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
@@ -10,10 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @Service
 public class PetServiceImpl implements PetService {
@@ -36,6 +35,8 @@ public class PetServiceImpl implements PetService {
     LocationService locationService;
     @Autowired
     RequestService requestService;
+    @Autowired
+    MailService mailService;
 
     @Override
     public List<Pet> list(String locale, int page, int pageSize) {
@@ -188,7 +189,7 @@ public class PetServiceImpl implements PetService {
         }
         Province province = opProvince.get();
 
-        if (!department.getProvince().equals(province)) {
+        if (!department.getProvince().getId().equals(province.getId())) {
             LOGGER.warn("Department {} does not belong to province {}, pet creation failed", departmentId, provinceId);
             return Optional.empty();
         }
@@ -207,7 +208,7 @@ public class PetServiceImpl implements PetService {
         }
         Breed breed = opBreed.get();
 
-        if (!breed.getSpecies().equals(species)) {
+        if (!breed.getSpecies().getId().equals(species.getId())) {
             LOGGER.warn("Breed {} does not belong to Species {}, pet creation failed", breedId, speciesId);
             return Optional.empty();
         }
@@ -277,7 +278,7 @@ public class PetServiceImpl implements PetService {
                 LOGGER.warn("User {} is not active, pet update failed", userId);
             }
 
-            if(!pet.getUser().equals(user)) {
+            if(!pet.getUser().getId().equals(user.getId())) {
                 LOGGER.warn("Logged user is not the owner of pet {}, update aborted", id);
                 return Optional.empty();
             }
@@ -298,7 +299,7 @@ public class PetServiceImpl implements PetService {
         }
         Province province = opProvince.get();
 
-        if (!department.getProvince().equals(province)) {
+        if (!department.getProvince().getId().equals(province.getId())) {
             LOGGER.warn("Department {} does not belong to province {}, pet update failed", departmentId, provinceId);
             return Optional.empty();
         }
@@ -368,7 +369,7 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public boolean sellPet(long petId, User owner, long newOwnerId) {
+    public boolean sellPet(long petId, User owner, long newOwnerId, String contextURL) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
@@ -376,7 +377,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(owner)) {
+        if (pet.getUser().getId().equals(owner.getId())) {
             Optional<User> opUser = userService.findById(newOwnerId);
             if (!opUser.isPresent()) {
                 LOGGER.warn("Target new owner {} was not found", newOwnerId);
@@ -384,6 +385,19 @@ public class PetServiceImpl implements PetService {
             }
             pet.setNewOwner(opUser.get());
             pet.setStatus(PetStatus.SOLD);
+
+            Map<String, Object> arguments = new HashMap<>();
+
+
+            arguments.put("petURL", contextURL + "/pet/" + pet.getId());
+            arguments.put("petName", pet.getPetName());
+            arguments.put("ownerUsername", pet.getUser().getUsername());
+            arguments.put("ownerURL", contextURL + "/user/" + pet.getUser().getId());
+
+            String userLocale = pet.getUser().getLocale();
+
+            mailService.sendMail(pet.getNewOwner().getMail(), userLocale, arguments, MailType.PET_SOLD);
+
             return petDao.update(pet).isPresent();
         }
         return false;
@@ -399,7 +413,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(user)) {
+        if (pet.getUser().getId().equals(user.getId())) {
             requestService.rejectAllByPet("LENIA", petId);
             pet.setStatus(PetStatus.REMOVED);
             return petDao.update(pet).isPresent();
@@ -417,7 +431,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().equals(user)) {
+        if (pet.getUser().getId().equals(user.getId())) {
             pet.setStatus(PetStatus.AVAILABLE);
             return petDao.update(pet).isPresent();
         }

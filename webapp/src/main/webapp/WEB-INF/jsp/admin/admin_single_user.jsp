@@ -1,3 +1,5 @@
+<%@ page import="ar.edu.itba.paw.models.constants.UserStatus" %>
+<%@ page import="ar.edu.itba.paw.models.constants.PetStatus" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -8,6 +10,25 @@
 <spring:message code="userTitle" var="userTitle"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
+
+<c:if test="${showAllAdopted eq 'true'}">
+    <c:set var="adoptedLimit" value="${user.newPets.size()}"/>
+</c:if>
+<c:if test="${showAllAdopted eq 'false' and user.newPets.size() > 4}">
+    <c:set var="adoptedLimit" value="4"/>
+</c:if>
+<c:if test="${showAllAdopted eq 'false' and user.newPets.size() <= 4}">
+    <c:set var="adoptedLimit" value="${user.newPets.size()}"/>
+</c:if>
+
+<c:set var="ACTIVE" value="<%=UserStatus.ACTIVE.getValue()%>"/>
+<c:set var="INACTIVE" value="<%=UserStatus.INACTIVE.getValue()%>"/>
+<c:set var="DELETED" value="<%=UserStatus.DELETED.getValue()%>"/>
+
+<c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
+<c:set var="REMOVED" value="<%=PetStatus.REMOVED.getValue()%>"/>
+<c:set var="SOLD" value="<%=PetStatus.SOLD.getValue()%>"/>
+<c:set var="UNAVAILABLE" value="<%=PetStatus.UNAVAILABLE.getValue()%>"/>
 
 <c:if test="${showAllReviews eq 'true'}">
     <c:set var="limit" value="${user.targetReviews.size()}"/>
@@ -28,33 +49,36 @@
             <div class="bg-light shadow ">
                 <div class="p-2 bg-dark ">
                     <div class="row text-whitesmoke">
-                        <h1 class="ml-4"><c:out value="${user.username}"/>
+                        <h1 class="ml-4 col"><c:out value="${user.username}"/>
                             (<c:out value="${user.status}"/>)
                         </h1>
-                        <c:if test="${(user.status.value eq 1) or (user.status.value eq 2)}">
-                            <h1 class="mt-2 ml-2">
-                                <form method="POST" class="m-0" action="<c:url value="/admin/user/${user.id}/remove"/>">
-                                    <button type="submit" class="btn btn-danger are-you-sure"><spring:message
-                                            code="petCard.remove"/></button>
-                                </form>
-                            </h1>
-                            <a class="edit-anchor" href="<c:url value="/edit-user/${loggedUser.id}"/>">
-                                <spring:message code="editUserForm.edit"/>
-                                <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15.502 1.94a.5.5 0 010 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 01.707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 00-.121.196l-.805 2.414a.25.25 0 00.316.316l2.414-.805a.5.5 0 00.196-.12l6.813-6.814z"></path>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 002.5 15h11a1.5 1.5 0 001.5-1.5v-6a.5.5 0 00-1 0v6a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5H9a.5.5 0 000-1H2.5A1.5 1.5 0 001 2.5v11z" clip-rule="evenodd"></path>
-                                </svg>
-                            </a>
-                        </c:if>
-                        <c:if test="${user.status.value eq 3}">
-                            <h1 class="mt-2 ml-2">
-                                <form method="POST" class="m-0"
-                                      action="<c:url value="/admin/user/${user.id}/recover"/>">
-                                    <button type="submit" class="btn btn-success"><spring:message
-                                            code="petCard.recover"/></button>
-                                </form>
-                            </h1>
-                        </c:if>
+                        <div class="col p-2">
+                            <div class="row float-right mr-4">
+                                <c:if test="${(user.status.value eq ACTIVE) or (user.status.value eq INACTIVE)}">
+                                    <form method="POST" class="m-0" action="<c:url value="/admin/user/${id}/remove" />">
+                                        <button type="submit" name="action"
+                                                class="btn btn-danger are-you-sure">
+                                            <i class="fas fa-times mr-2"></i>
+                                            <spring:message code="petCard.remove"/>
+                                        </button>
+                                    </form>
+                                </c:if>
+                                <c:if test="${user.status.value eq DELETED}">
+                                    <form method="POST" class="m-0"
+                                          action="<c:url value="/admin/user/${user.id}/recover"/>">
+                                        <button type="submit" class="btn btn-success"><spring:message
+                                                code="petCard.recover"/></button>
+                                    </form>
+                                </c:if>
+
+                                <a class="btn btn-link bg-light ml-2"
+                                   href="<c:url value="/admin/user/${user.id}/edit"/>">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                    <spring:message code="editUserForm.edit"/>
+
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -102,10 +126,10 @@
                         <div class="card-deck row">
 
                             <c:forEach var="pet" items="${userPets}">
-                            <c:if test="${pet.status.value eq 1}">
+                            <c:if test="${pet.status.value eq AVAILABLE}">
                             <div class="col-auto mb-3">
                                 </c:if>
-                                <c:if test="${pet.status.value ne 1 }">
+                                <c:if test="${pet.status.value ne AVAILABLE }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
                                     <t:animalCard pet="${pet}" level="admin"/>
@@ -130,6 +154,51 @@
 
                         </div>
                     </div>
+                    <hr>
+                    <c:if test="${user.newPets.size() > 0}">
+                        <div class="p-2" id="adopted">
+                            <h2><b><spring:message code="userPets.adopted"/></b>
+                                <spring:message code="showingOutOf" arguments="${adoptedLimit},${user.newPets.size()}"/>
+                            </h2>
+                            <div class="card-deck row">
+                                <c:forEach var="pet" items="${user.newPets}" end="${adoptedLimit-1}">
+                                    <div class="col-auto mb-3">
+                                        <t:animalCard pet="${pet}" level="user"/>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                        <c:if test="${user.newPets.size() > 4 and showAllAdopted eq 'false'}">
+                            <form method="get" class="text-center"
+                                  action="${pageContext.request.contextPath}/user/${user.id}#adopted">
+                                <input type="hidden" name="showAllAdopted" value="true">
+                                <c:if test="${not empty param.page}">
+                                    <input type="hidden" name="page" value="${param.page}">
+                                </c:if>
+                                <c:if test="${not empty param.showAllReviews}">
+                                    <input type="hidden" name="showAllReviews" value="${param.showAllReviews}">
+                                </c:if>
+                                <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                        code="showAll"/></button>
+
+                            </form>
+                        </c:if>
+                        <c:if test="${showAllAdopted eq 'true'}">
+                            <form method="get" class="text-center"
+                                  action="${pageContext.request.contextPath}/user/${user.id}#adopted">
+                                <input type="hidden" name="showAllAdopted" value="false">
+                                <c:if test="${not empty param.page}">
+                                    <input type="hidden" name="page" value="${param.page}">
+                                </c:if>
+                                <c:if test="${not empty param.showAllReviews}">
+                                    <input type="hidden" name="showAllReviews" value="${param.showAllReviews}">
+                                </c:if>
+                                <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
+                                        code="showLess"/></button>
+                            </form>
+                        </c:if>
+                    </c:if>
+
                     <hr>
                     <c:if test="${user.averageScore != -1}">
                         <div id="ratings" class="p-2">

@@ -12,7 +12,7 @@ public class EditPetForm {
     private List<Long> imagesIdToDelete;
 
     @NotNull
-    @FileSize
+    @FileSize(max=10)
     @ImageDimensions
     private List<MultipartFile> photos;
 

@@ -12,7 +12,7 @@ public class UploadPetForm {
 
     @Size(min=1, max=5)
     @NotNull
-    @FileSize
+    @FileSize(max=10)
     @NotEmptyMultipart
     @ImageDimensions
     private List<MultipartFile> photos;
