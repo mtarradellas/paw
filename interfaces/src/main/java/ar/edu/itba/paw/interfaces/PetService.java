@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces;
 
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import java.util.Date;
@@ -25,7 +26,8 @@ public interface PetService {
                         PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos);
     Optional<Pet> update(Pet pet);
     Optional<Pet> update(String locale, long id, Long userId, String petName, Date birthDate, String gender, boolean vaccinated, int price,
-                         String description, PetStatus status, long speciesId, long breedId, long provinceId, long department, List<byte[]> photos, List<Long> imagesToDelete);
+                         String description, PetStatus status, long speciesId, long breedId, long provinceId, long department, List<byte[]> photos, List<Long> imagesToDelete)
+                         throws InvalidImageQuantityException;
 
 
     boolean    sellPet(long petId, User owner, long newOwnerId, String contextURL);

@@ -173,7 +173,7 @@
           <artifactId>maven-war-plugin</artifactId>
           <configuration>
 <!--            TODO uncomment for production-->
-            <packagingExcludes>**/logback-test.xml</packagingExcludes>
+<!--            <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
           </configuration>
           <version>3.2.2</version>
         </plugin>

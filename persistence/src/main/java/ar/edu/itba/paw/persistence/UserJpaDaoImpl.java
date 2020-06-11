@@ -122,10 +122,10 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     private void indexUsers() {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        try {
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {}
+//        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+//        try {
+//            fullTextEntityManager.createIndexer().startAndWait();
+//        } catch(InterruptedException ignored) {}
     }
 
     @Override
