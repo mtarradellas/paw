@@ -5,8 +5,6 @@ import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
-
-import javax.persistence.Id;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
