@@ -50,26 +50,26 @@ public class PetServiceImpl implements PetService {
                                   PetStatus status, String searchCriteria, String searchOrder, int minPrice, int maxPrice,
                                   Long provinceId, Long departmentId, int page, int pageSize) {
         List<Pet> petList;
-            User user = null;
-            Breed breed = null;
-            Species species = null;
-            Department department = null;
-            Province province = null;
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
 
-            if (userId != null) user = userService.findById(userId).orElse(null);
-            breed = validateBreed(breedId, speciesId);
-            if (breed != null) species = breed.getSpecies();
-            else species = validateSpecies(speciesId);
+        if (userId != null) user = userService.findById(userId).orElse(null);
 
-            department = validateDepartment(departmentId, provinceId);
-            if (department != null) province = department.getProvince();
-            else province = validateProvince(provinceId);
+        breed = validateBreed(breedId, speciesId);
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
 
-            LOGGER.debug("Parameters for filteredList <Pet>: user {}, status {}, species {}, breed {}, gender {},  " +
-                            "min price {}, max price {}, province {}, department {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}", user, status, species, breed,
-                    gender, minPrice, maxPrice, province, department, searchCriteria, searchOrder, page, pageSize);
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
 
-            petList = petDao.searchList(locale, find, user, species, breed, gender, status, searchCriteria, searchOrder,
+        LOGGER.debug("Parameters for filteredList <Pet>: user {}, status {}, species {}, breed {}, gender {},  " +
+                    "min price {}, max price {}, province {}, department {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
+                    user, status, species, breed, gender, minPrice, maxPrice, province, department, searchCriteria, searchOrder, page, pageSize);
+
+
+        petList = petDao.searchList(locale, find, user, species, breed, gender, status, searchCriteria, searchOrder,
                     minPrice, maxPrice, province, department, page, pageSize);
 
         setLocale(locale, petList);
@@ -78,9 +78,10 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public List<Pet> listByUser(String locale, Long userId, int page, int pageSize) {
-        if (userId != null && !userService.findById(userId).isPresent()) userId = null;
-        return filteredList(locale,null,  userId, null, null, null, null,
-                null, null,0, -1, null,null, page, pageSize);
+        if (userId == null) return filteredList(locale,null,  userId, null, null, null, null, null, null,0, -1, null,null, page, pageSize);
+        List<Pet> petList = petDao.listByUser(userId, page, pageSize);
+        setLocale(locale, petList);
+        return petList;
     }
 
     @Override
@@ -111,8 +112,9 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public int getListByUserAmount(String locale, Long userId) {
-        return getFilteredListAmount(locale, null, userId, null, null, null, null,
+        if (userId == null) return getFilteredListAmount(locale, null, userId, null, null, null, null,
                 0, -1, null, null);
+        return petDao.getListByUserAmount(userId);
     }
 
     private Breed validateBreed(Long breedId, Long speciesId) {
@@ -505,5 +507,4 @@ public class PetServiceImpl implements PetService {
     public void setLocale(String locale, List<Pet> petList) {
         petList.forEach(pet -> pet.setLocale(locale));
     }
-
 }
