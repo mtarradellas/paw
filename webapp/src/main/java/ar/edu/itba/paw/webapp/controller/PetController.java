@@ -34,10 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -60,6 +57,9 @@ public class PetController extends ParentController {
 
     @Autowired
     private RequestService requestService;
+
+    @Autowired
+    private MailService mailService;
 
     private static final int PET_PAGE_SIZE = 12;
 

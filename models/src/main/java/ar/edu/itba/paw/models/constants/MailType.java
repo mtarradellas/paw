@@ -10,15 +10,13 @@ public enum MailType {
     RESET_PASSWORD("reset_password"),
     PET_SOLD("pet_sold");
 
+    private final String name;
 
-    private final String type;
-
-    MailType(String type){
-        this.type = type;
+    MailType(String name){
+        this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
-
 }

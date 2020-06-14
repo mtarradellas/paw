@@ -147,7 +147,6 @@ public class RequestServiceImpl implements RequestService {
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put("URL", contextURL );
         arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
         arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
@@ -190,7 +189,6 @@ public class RequestServiceImpl implements RequestService {
 
         Map<String, Object> arguments = new HashMap<>();
 
-        arguments.put("URL", contextURL );
         arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
         arguments.put("contactEmail", contact.getMail());
