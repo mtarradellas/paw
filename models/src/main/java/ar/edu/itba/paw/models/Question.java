@@ -135,6 +135,7 @@ public class Question {
 
     public Map<String, Object> toCommentJson() {
         Map<String, Object> question = new HashMap<>();
+        question.put("id", id);
         question.put("content", content);
         question.put("ownerUsername", user.getUsername());
         question.put("ownerId", user.getId());

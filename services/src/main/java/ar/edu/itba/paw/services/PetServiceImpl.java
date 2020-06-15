@@ -578,7 +578,7 @@ public class PetServiceImpl implements PetService {
         }
         Question question = opQuestion.get();
 
-        if (user.getId().equals(question.getTarget().getId())) {
+        if (user.getId().equals(question.getUser().getId())) {
             LOGGER.warn("User {} cannot answer his own question", question.getTarget());
             return Optional.empty();
         }

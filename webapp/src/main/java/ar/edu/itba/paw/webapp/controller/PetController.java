@@ -12,6 +12,7 @@ import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
+import ar.edu.itba.paw.webapp.form.QuestionAnswerForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -465,36 +466,39 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/question", method = RequestMethod.POST)
     public ModelAndView petQuestion(@PathVariable("id") long id,
-                                    @RequestParam(name = "content", required = false) String content) {
+                                    @Valid QuestionAnswerForm questionAnswerForm,
+                                    final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return getIdPet(id);
+        }
+
         User user = loggedUser();
         if (user == null) {
             LOGGER.warn("User not logged int");
             return new ModelAndView("redirect:/403");
         }
 
-        boolean success = petService.createQuestion(content, user, id).isPresent();
+        boolean success = petService.createQuestion(questionAnswerForm.getContent(), user, id).isPresent();
         return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
     }
 
     @RequestMapping(value = "/pet/{id}/answer", method = RequestMethod.POST)
     public ModelAndView petAnswer(@PathVariable("id") long id,
-                                  @RequestParam(name = "question", required = false) String question,
-                                  @RequestParam(name = "content", required = false) String content) {
+                                  @Valid final QuestionAnswerForm questionAnswerForm,
+                                  final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return getIdPet(id);
+        }
+
         User user = loggedUser();
         if (user == null) {
             LOGGER.warn("User not logged int");
             return new ModelAndView("redirect:/403");
         }
 
-        long questionNum = 0;
-        try {
-            questionNum = Long.parseLong(question);
-        } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid question ({}) parameter", question);
-        }
         boolean success = false;
-        if (questionNum > 1) {
-            success = petService.createAnswer(questionNum, content, user).isPresent();
+        if (questionAnswerForm.getAnswerId() > 0) {
+            success = petService.createAnswer(questionAnswerForm.getAnswerId(), questionAnswerForm.getContent(), user).isPresent();
         }
         return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
     }
