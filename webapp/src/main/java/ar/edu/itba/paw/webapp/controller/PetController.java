@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.interfaces.exception.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,10 +33,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -62,6 +58,7 @@ public class PetController extends ParentController {
     private RequestService requestService;
 
     private static final int PET_PAGE_SIZE = 12;
+    private static final int COMMENTS_PAGE_SIZE = 10;
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
@@ -71,7 +68,6 @@ public class PetController extends ParentController {
                                 @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                 @RequestParam(name = "find", required = false) String find,
                                 @RequestParam(name = "page", required = false) String page,
-//                                @RequestParam(name = "status", required = false) String status,
                                 @RequestParam(name = "priceRange", required = false) String priceRange,
                                 @RequestParam(name = "province", required = false) String province,
                                 @RequestParam(name = "department", required = false) String department) {
@@ -80,7 +76,6 @@ public class PetController extends ParentController {
         final String locale = getLocale();
 
         int pageNum = parsePage(page);
-//        PetStatus petStatus = parseStatus(PetStatus.class, status)
         Long speciesId = parseSpecies(species);
         Long breedId = parseSpecies(breed);
         gender = parseGender(gender);
@@ -441,4 +436,60 @@ public class PetController extends ParentController {
         }
         return new ModelAndView("redirect:/pet/" + opPet.get().getId());
     }
+
+    @RequestMapping(value = "/pet/{id}/comments")
+    public @ResponseBody
+    List<Map<String, Object>> petComments(@PathVariable("id") long id,
+                                    @RequestParam(name = "page", required = false) String page) {
+
+        int pageNum = parsePage(page);
+
+        List<Question> questionList = petService.listQuestions(id, pageNum, COMMENTS_PAGE_SIZE);
+
+        List<Map<String, Object>> commentsJson = questionList.stream().map(question -> {
+            Map<String, Object> comm = new HashMap<>();
+            comm.put("question", question.toCommentJson());
+            if (question.getAnswer() != null) comm.put("answer", question.getAnswer().toCommentJson());
+            return comm;
+        }).collect(Collectors.toList());
+
+        return commentsJson;
+    }
+
+    @RequestMapping(value = "/pet/{id}/question", method = RequestMethod.POST)
+    public ModelAndView petQuestion(@PathVariable("id") long id,
+                                    @RequestParam(name = "content", required = false) String content) {
+        User user = loggedUser();
+        if (user == null) {
+            LOGGER.warn("User not logged int");
+            return new ModelAndView("redirect:/403");
+        }
+
+        boolean success = petService.createQuestion(content, user, id).isPresent();
+        return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
+    }
+
+    @RequestMapping(value = "/pet/{id}/answer", method = RequestMethod.POST)
+    public ModelAndView petAnswer(@PathVariable("id") long id,
+                                  @RequestParam(name = "question", required = false) String question,
+                                  @RequestParam(name = "content", required = false) String content) {
+        User user = loggedUser();
+        if (user == null) {
+            LOGGER.warn("User not logged int");
+            return new ModelAndView("redirect:/403");
+        }
+
+        long questionNum = 0;
+        try {
+            questionNum = Long.parseLong(question);
+        } catch (NumberFormatException ex) {
+            LOGGER.debug("Invalid question ({}) parameter", question);
+        }
+        boolean success = false;
+        if (questionNum > 1) {
+            success = petService.createAnswer(questionNum, content, user).isPresent();
+        }
+        return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
+    }
+
 }

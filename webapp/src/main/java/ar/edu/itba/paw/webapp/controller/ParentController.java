@@ -133,7 +133,7 @@ public class ParentController {
     }
 
     public boolean isAllowedFind(String find) {
-        return find == null || find.matches("^[a-zA-Z \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
+        return find == null || find.matches("^[a-zA-Z0-9 \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
                                                 "\u00F3\u00FA\u00F1\u00FC]*$");
     }
 

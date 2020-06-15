@@ -72,23 +72,6 @@ public class WebConfig {
         return ds;
     }
 
-    /* TODO delete initializer and populator, not used with Hibernate JPA */
-    @Bean
-    public DataSourceInitializer dataSourceInitializer() {
-        DataSourceInitializer dsi = new DataSourceInitializer();
-        dsi.setDataSource(dataSource());
-        dsi.setDatabasePopulator(databasePopulator());
-
-        return dsi;
-    }
-
-    private DatabasePopulator databasePopulator() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(schemaSql);
-
-        return populator;
-    }
-
     @Bean
     public MessageSource messageSource(){
         final ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();

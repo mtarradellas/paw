@@ -60,10 +60,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        /* TODO descomentar para deployar*/
-//        try {
-//            fullTextEntityManager.createIndexer().startAndWait();
-//        } catch(InterruptedException ignored) {}
         LOGGER.debug("Preparing Lucene Query (Requests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
@@ -152,8 +148,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsByPetOwnerQuery(List<String> find, RequestStatus status, User user, Pet pet) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        /* TODO descomentar para deployar*/
-//        indexRequests();
         LOGGER.debug("Preparing Lucene Query (Interests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
@@ -187,13 +181,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
         jpaQuery.setProjection(ProjectionConstants.ID);
         return jpaQuery;
-    }
-
-    private void indexRequests() {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        try {
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {}
     }
 
     @Override
@@ -250,14 +237,12 @@ public class RequestJpaDaoImpl implements RequestDao {
         today = cal.getTime();
         Request request = new Request(today, status, user, pet.getUser(), pet);
         em.persist(request);
-        indexRequests();
         return request;
     }
 
     @Override
     public Optional<Request> update(Request request) {
         em.persist(request);
-        indexRequests();
         return Optional.of(request);
     }
 
@@ -269,7 +254,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
         query.executeUpdate();
-        indexRequests();
     }
 
     @Override
@@ -280,7 +264,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("new", newStatus.getValue());
         query.setParameter("target", petOwner.getId());
         query.executeUpdate();
-        indexRequests();
     }
 
     @Override
@@ -291,7 +274,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("new", newStatus.getValue());
         query.setParameter("pet", pet.getId());
         query.executeUpdate();
-        indexRequests();
     }
 
     @Override

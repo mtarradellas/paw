@@ -94,7 +94,7 @@
 //    private static final String MAIL = "user@mail.com";
 //    private static final UserStatus USER_STATUS = UserStatus.ACTIVE;
 //
-//    /* USER */
+//    /* OTHER USER */
 //    private static User O_USER;
 //    private static Long O_USER_ID;
 //    private static final String O_USERNAME = "other_username";

@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.interfaces;
 
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +28,8 @@ public interface PetService {
                         PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos);
     Optional<Pet> update(Pet pet);
     Optional<Pet> update(String locale, long id, Long userId, String petName, Date birthDate, String gender, boolean vaccinated, int price,
-                         String description, PetStatus status, long speciesId, long breedId, long provinceId, long department, List<byte[]> photos, List<Long> imagesToDelete);
+                         String description, PetStatus status, long speciesId, long breedId, long provinceId, long department, List<byte[]> photos, List<Long> imagesToDelete)
+                         throws InvalidImageQuantityException;
 
 
     boolean    sellPet(long petId, User owner, long newOwnerId, String contextURL);
@@ -43,4 +47,10 @@ public interface PetService {
     void setLocale(String locale, Pet pet);
     void setLocale(String locale, List<Pet> pet);
 
+    List<Question> listQuestions(long petId, int page, int pageSize);
+    int getListQuestionsAmount(long petId);
+    Optional<Question> findQuestionById(long id);
+    Optional<Answer> findAnswerById(long id);
+    Optional<Question> createQuestion(String content, User user, long petId);
+    Optional<Answer> createAnswer(long questionId, String content, User user);
 }
