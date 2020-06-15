@@ -221,13 +221,13 @@
                         <form class="form" method="post" action="${pageContext.request.contextPath}/pet/${pet.id}/question">
                             <div class="form-group mr-sm-3 mb-2">
                                 <label for="questionInput" class="sr-only">${ASK_SOMETHING_TXT}</label>
-                                <textarea name="content" class="form-control" id="questionInput" placeholder="${ASK_SOMETHING_TXT}"></textarea>
+                                <textarea name="content" class="form-control input-max-value" id="questionInput" placeholder="${ASK_SOMETHING_TXT}"></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary mb-2">${SEND_QUESTION_TXT}</button>
                         </form>
                     </c:if>
 
-                    <ul class="questions">
+                    <ul class="questions input-max-value-delegator">
 
                     </ul>
                     <button type="button" class="btn btn-outline-secondary btn-sm load-more">Cargar mas</button>
@@ -323,6 +323,7 @@
         const IS_OWNER = ${pet.user.id eq loggedUser.id};
     </script>
 
+    <script src="<c:url value="/resources/js/max_value_input.js"/>"></script>
     <script src="<c:url value="/resources/js/load_more_questions.js"/>"></script>
     <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>

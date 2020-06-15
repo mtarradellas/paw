@@ -24,7 +24,7 @@ function answerForm(answerId){
                 '<div class="form-group mr-sm-3 mb-2">' +
                     '<input name="answerId" value="' + answerId + '" type="hidden" />' +
                     '<label for="questionInput" class="sr-only">' + WRITE_AN_ANSWER_TXT + '</label>' +
-                    '<textarea name="content" class="form-control" id="questionInput" placeholder="' + WRITE_AN_ANSWER_TXT + '"></textarea>' +
+                    '<textarea name="content" class="form-control input-max-value" id="questionInput" placeholder="' + WRITE_AN_ANSWER_TXT + '"></textarea>' +
                 '</div>' +
                 '<button type="submit" class="btn btn-primary mb-2">' + SEND_ANSWER_TXT + '</button>' +
             '</form>';

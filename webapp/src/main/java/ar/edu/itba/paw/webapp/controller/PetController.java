@@ -466,7 +466,12 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/question", method = RequestMethod.POST)
     public ModelAndView petQuestion(@PathVariable("id") long id,
-                                    @Valid QuestionAnswerForm questionAnswerForm) {
+                                    @Valid QuestionAnswerForm questionAnswerForm,
+                                    final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return getIdPet(id);
+        }
+
         User user = loggedUser();
         if (user == null) {
             LOGGER.warn("User not logged int");
@@ -479,7 +484,12 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/answer", method = RequestMethod.POST)
     public ModelAndView petAnswer(@PathVariable("id") long id,
-                                  @Valid QuestionAnswerForm questionAnswerForm) {
+                                  @Valid final QuestionAnswerForm questionAnswerForm,
+                                  final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return getIdPet(id);
+        }
+
         User user = loggedUser();
         if (user == null) {
             LOGGER.warn("User not logged int");
