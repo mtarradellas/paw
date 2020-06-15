@@ -68,7 +68,7 @@ function ajaxSuccess(data){
     if(data.maxPage <= currentPage){
         $('.load-more').remove();
 
-        if(currentPage === 1){
+        if(currentPage === 1 && data.maxPage === 0){
             $('.questions').append(noQuestionsYet());
         }
     }
