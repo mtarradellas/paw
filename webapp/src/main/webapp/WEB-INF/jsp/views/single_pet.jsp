@@ -294,6 +294,10 @@
         </div>
     </div>
 
+    <script>
+        const server_url = "${pageContext.request.contextPath}";
+        const pet_id = ${pet.id};
+    </script>
     <script src="<c:url value="/resources/js/load_more_questions.js"/>"></script>
     <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
