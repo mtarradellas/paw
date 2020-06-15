@@ -212,7 +212,19 @@
                 </div>
 
                 <div class="p-3">
-                    <h2>Preguntas</h2>
+                    <h2 class="mb-4"><spring:message code="questions"/></h2>
+
+                    <spring:message var="ASK_SOMETHING_TXT" code="questions.askSomething"/>
+                    <spring:message var="SEND_QUESTION_TXT" code="questions.send"/>
+
+                    <form class="form" method="post" action="${pageContext.request.contextPath}/pet/${pet.id}/question">
+                        <div class="form-group mr-sm-3 mb-2">
+                            <label for="questionInput" class="sr-only">${ASK_SOMETHING_TXT}</label>
+                            <textarea name="content" class="form-control" id="questionInput" placeholder="${ASK_SOMETHING_TXT}"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-2">${SEND_QUESTION_TXT}</button>
+                    </form>
+
                     <ul class="questions">
 
                     </ul>
