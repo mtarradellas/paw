@@ -16,39 +16,61 @@ function createQuestion(question){
             '</svg>' +
             `<a>${question.ownerUsername}</a>: ${question.content}` +
         '</p>';
-
 }
 
-function createRespondButton(questionId){
+function answerForm(answerId){
+        return '' +
+            '<form class="form" method="post" action="' + SERVER_URL + '/pet/' + PET_ID + '/answer">' +
+                '<div class="form-group mr-sm-3 mb-2">' +
+                    '<input name="answerId" value="' + answerId + '" type="hidden" />' +
+                    '<label for="questionInput" class="sr-only">' + WRITE_AN_ANSWER_TXT + '</label>' +
+                    '<textarea name="content" class="form-control" id="questionInput" placeholder="' + WRITE_AN_ANSWER_TXT + '"></textarea>' +
+                '</div>' +
+                '<button type="submit" class="btn btn-primary mb-2">' + SEND_ANSWER_TXT + '</button>' +
+            '</form>';
+}
+
+function noAnswerYet(){
     return '' +
-        '<button data-questionId="' + questionId + '">' +
-            '' +
-        '</button>';
+        '<p class="a">' +
+            NO_ANSWER_YET_TXT +
+        '</p>';
 }
 
-function createQuestionAndAnswer(question, answer, isOwner, questionId){
-    const shouldRespond = !answer && isOwner;
+function createQuestionAndAnswer(question, answer, questionId){
 
     return '' +
         '<li class="question list-group-item">' +
             createQuestion(question) +
             (answer ? createAnswer(answer) : '') +
-            (shouldRespond ? createRespondButton(questionId) : '') +
+            (!answer && IS_OWNER ? answerForm(questionId) : '') +
+            (!answer && !IS_OWNER ? noAnswerYet() : '') +
         '</li>';
+}
+
+function noQuestionsYet(){
+    return '' +
+        '<p class="a">' +
+            NO_QUESTIONS_YET_TXT +
+        '</p>';
 }
 
 function ajaxSuccess(data){
     const mapped = data.commentList.map(qa=>{
         const {question, answer} = qa;
-        return createQuestionAndAnswer(question, answer, false);
+        return createQuestionAndAnswer(question, answer, question.id);
     });
 
     mapped.forEach(x=>{
         $('.questions').append(x);
     })
 
-    if(data.maxPage === currentPage){
+    if(data.maxPage <= currentPage){
         $('.load-more').remove();
+
+        if(currentPage === 1){
+            $('.questions').append(noQuestionsYet());
+        }
     }
 
     currentPage++;
@@ -58,7 +80,7 @@ let currentPage = 1;
 function queryForQuestions(){
     $.ajax({
         type: "GET",
-        url: server_url + "/pet/" + pet_id + "/comments" + "?page=" + currentPage,
+        url: SERVER_URL + "/pet/" + PET_ID + "/comments" + "?page=" + currentPage,
         success: ajaxSuccess,
         dataType: "json"
     });

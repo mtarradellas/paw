@@ -479,23 +479,16 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/answer", method = RequestMethod.POST)
     public ModelAndView petAnswer(@PathVariable("id") long id,
-                                  @RequestParam(name = "question", required = false) String question,
-                                  @RequestParam(name = "content", required = false) String content) {
+                                  @Valid QuestionAnswerForm questionAnswerForm) {
         User user = loggedUser();
         if (user == null) {
             LOGGER.warn("User not logged int");
             return new ModelAndView("redirect:/403");
         }
 
-        long questionNum = 0;
-        try {
-            questionNum = Long.parseLong(question);
-        } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid question ({}) parameter", question);
-        }
         boolean success = false;
-        if (questionNum > 1) {
-            success = petService.createAnswer(questionNum, content, user).isPresent();
+        if (questionAnswerForm.getAnswerId() > 0) {
+            success = petService.createAnswer(questionAnswerForm.getAnswerId(), questionAnswerForm.getContent(), user).isPresent();
         }
         return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
     }

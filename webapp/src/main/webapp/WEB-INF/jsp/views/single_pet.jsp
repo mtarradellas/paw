@@ -217,13 +217,15 @@
                     <spring:message var="ASK_SOMETHING_TXT" code="questions.askSomething"/>
                     <spring:message var="SEND_QUESTION_TXT" code="questions.send"/>
 
-                    <form class="form" method="post" action="${pageContext.request.contextPath}/pet/${pet.id}/question">
-                        <div class="form-group mr-sm-3 mb-2">
-                            <label for="questionInput" class="sr-only">${ASK_SOMETHING_TXT}</label>
-                            <textarea name="content" class="form-control" id="questionInput" placeholder="${ASK_SOMETHING_TXT}"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary mb-2">${SEND_QUESTION_TXT}</button>
-                    </form>
+                    <c:if test="${pet.user.id ne loggedUser.id}">
+                        <form class="form" method="post" action="${pageContext.request.contextPath}/pet/${pet.id}/question">
+                            <div class="form-group mr-sm-3 mb-2">
+                                <label for="questionInput" class="sr-only">${ASK_SOMETHING_TXT}</label>
+                                <textarea name="content" class="form-control" id="questionInput" placeholder="${ASK_SOMETHING_TXT}"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary mb-2">${SEND_QUESTION_TXT}</button>
+                        </form>
+                    </c:if>
 
                     <ul class="questions">
 
@@ -306,10 +308,21 @@
         </div>
     </div>
 
+    <spring:message var="NO_ANSWER_YET_TXT" code="questions.noAnswerYet"/>
+    <spring:message var="WRITE_AN_ANSWER" code="questions.writeAnAnswer"/>
+    <spring:message var="SEND_ANSWER" code="questions.sendAnswer"/>
+    <spring:message var="NO_QUESTIONS_YET_TXT" code="questions.noQuestionsYet"/>
+
     <script>
-        const server_url = "${pageContext.request.contextPath}";
-        const pet_id = ${pet.id};
+        const NO_ANSWER_YET_TXT = '${NO_ANSWER_YET_TXT}';
+        const NO_QUESTIONS_YET_TXT = '${NO_QUESTIONS_YET_TXT}';
+        const WRITE_AN_ANSWER_TXT = '${WRITE_AN_ANSWER}';
+        const SEND_ANSWER_TXT = '${SEND_ANSWER}';
+        const SERVER_URL = "${pageContext.request.contextPath}";
+        const PET_ID = ${pet.id};
+        const IS_OWNER = ${pet.user.id eq loggedUser.id};
     </script>
+
     <script src="<c:url value="/resources/js/load_more_questions.js"/>"></script>
     <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
