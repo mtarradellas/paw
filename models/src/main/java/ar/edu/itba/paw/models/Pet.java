@@ -46,7 +46,6 @@ public class Pet {
     @Column(length = 4086)
     private String description;
 
-
     @Field
     @NumericField
     private int status;

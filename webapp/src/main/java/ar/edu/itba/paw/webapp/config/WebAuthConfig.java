@@ -46,6 +46,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**").authenticated()
                 .antMatchers("/upload-pet").authenticated()
                 .antMatchers("/pet/*/request","/interests/**","/requests/**").authenticated()
+                .antMatchers("/pet/*/question", "/pet/*/answer").authenticated()
                 .antMatchers("/**").permitAll()
             .and().formLogin()
                 .loginPage("/login")
