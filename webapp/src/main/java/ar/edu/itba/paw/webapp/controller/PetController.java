@@ -439,21 +439,28 @@ public class PetController extends ParentController {
 
     @RequestMapping(value = "/pet/{id}/comments")
     public @ResponseBody
-    List<Map<String, Object>> petComments(@PathVariable("id") long id,
+    Map<String, Object> petComments(@PathVariable("id") long id,
                                     @RequestParam(name = "page", required = false) String page) {
 
         int pageNum = parsePage(page);
 
         List<Question> questionList = petService.listQuestions(id, pageNum, COMMENTS_PAGE_SIZE);
+        int amount = petService.getListQuestionsAmount(id);
 
-        List<Map<String, Object>> commentsJson = questionList.stream().map(question -> {
+        Map<String, Object> response = new HashMap<>();
+        List<Map<String, Object>> comments = questionList.stream().map(question -> {
             Map<String, Object> comm = new HashMap<>();
             comm.put("question", question.toCommentJson());
             if (question.getAnswer() != null) comm.put("answer", question.getAnswer().toCommentJson());
             return comm;
         }).collect(Collectors.toList());
 
-        return commentsJson;
+        response.put("currentPage", pageNum);
+        response.put("maxPage", (int) Math.ceil((double) amount / COMMENTS_PAGE_SIZE));
+        response.put("commentList", comments);
+        response.put("amount", amount);
+
+        return response;
     }
 
     @RequestMapping(value = "/pet/{id}/question", method = RequestMethod.POST)
