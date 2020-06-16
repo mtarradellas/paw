@@ -15,7 +15,9 @@ username VARCHAR(255) NOT NULL UNIQUE,
 password VARCHAR(255) NOT NULL,
 mail VARCHAR(255) NOT NULL UNIQUE,
 status INTEGER NOT NULL,
-locale CHAR(7)
+locale CHAR(7),
+interestsDate TIMESTAMP DEFAULT NOW(),
+requestsDate TIMESTAMP DEFAULT NOW()
 );
 CREATE TABLE IF NOT EXISTS admins (
 id BIGINT REFERENCES users(id) PRIMARY KEY
@@ -71,6 +73,7 @@ ownerId INTEGER references users(id),
 petId INTEGER references pets(id),
 status INTEGER,
 creationDate DATE DEFAULT CURRENT_DATE,
+updateDate TIMESTAMP DEFAULT NOW(),
 CONSTRAINT norepeats UNIQUE(ownerId, petId)
 );
 CREATE TABLE IF NOT EXISTS tokens (
