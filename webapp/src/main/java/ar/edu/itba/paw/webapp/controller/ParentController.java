@@ -31,6 +31,8 @@ public class ParentController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RequestService requestService;
 
     protected String getLocale() {
         Locale locale = LocaleContextHolder.getLocale();
@@ -56,6 +58,26 @@ public class ParentController {
             return opUser.get();
         }
         return null;
+    }
+
+    @ModelAttribute("interestNotif")
+    public int interestNotif() {
+        User user = loggedUser();
+        int interestNotif = 0;
+        if (user != null) {
+            interestNotif = requestService.interestNotifs(user);
+        }
+        return interestNotif;
+    }
+
+    @ModelAttribute("requestNotif")
+    public int requestNotif() {
+        User user = loggedUser();
+        int requestNotif = 0;
+        if (user != null) {
+            requestNotif = requestService.requestNotifs(user);
+        }
+        return requestNotif;
     }
 
     public int parsePage(String page) {

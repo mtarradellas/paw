@@ -4,6 +4,7 @@ import ar.edu.itba.paw.models.constants.RequestStatus;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -19,6 +20,9 @@ public class Request {
 
     @Column
     private Date creationDate;
+
+    @Column
+    private LocalDateTime updateDate;
 
     @Field
     @NumericField
@@ -104,5 +108,13 @@ public class Request {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 }
