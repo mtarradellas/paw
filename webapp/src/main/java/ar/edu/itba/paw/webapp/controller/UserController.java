@@ -136,9 +136,6 @@ public class UserController extends ParentController {
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
         int amount = requestService.getFilteredListAmount(user, null, findList, requestStatus);
 
-        System.out.println(amount + "AMMOUNTT\n\n\n\n\n");
-        System.out.println(requestList.size() + "numero \n\n\n\n");
-
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
         mav.addObject("requestList", requestList);
@@ -174,7 +171,7 @@ public class UserController extends ParentController {
                                       @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                       @RequestParam(name = "page", required = false) String page,
                                       @RequestParam(name = "find", required = false) String find,
-                                      @RequestParam(name = "petId", required = false) Long petId) {
+                                      @RequestParam(name = "petId", required = false) String petId) {
 
         final ModelAndView mav = new ModelAndView("views/interests");
         final User user = loggedUser();
@@ -183,6 +180,7 @@ public class UserController extends ParentController {
 
         searchCriteria = parseCriteria(searchCriteria);
         searchOrder = parseOrder(searchOrder);
+        Long pet = parsePet(petId);
 
         int pageNum = parsePage(page);
         RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
@@ -196,16 +194,6 @@ public class UserController extends ParentController {
         List<String> findList = parseFind(find);
 
         requestService.logInterestsAccess(user);
-
-        if(petId == null){
-            petId = (long) -1;
-        }
-
-        Optional<Pet> optPet = petService.findById(petId);
-        Pet pet = null;
-        if(optPet.isPresent()){
-            pet = optPet.get();
-        }
 
         List<Request> requestList = requestService.filteredListByPetOwner(user, pet, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
