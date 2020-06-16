@@ -57,20 +57,6 @@
                                     ><spring:message code="request.canceled"/></option>
 
                                 </select>
-<%--                                <label for="filter-pet"><spring:message code="pet"/></label>--%>
-<%--                                <select data-child="filter-pet" name="petId" class="selector-parent form-control" id="filter-pet">--%>
-<%--                                    <option value="-1"><spring:message code="filter.any"/></option>--%>
-<%--                                    <c:forEach items="${availablePets}" var="singlePet">--%>
-<%--                                        <c:set var="petId">${singlePet.id}</c:set>--%>
-<%--                                        <option value="${singlePet.id}"--%>
-<%--                                                <c:if test="${(not empty param.petId)  && (petId eq param.petId)}">--%>
-<%--                                                    selected--%>
-<%--                                                </c:if>--%>
-<%--                                        >--%>
-<%--                                                ${singlePet.petName}--%>
-<%--                                        </option>--%>
-<%--                                    </c:forEach>--%>
-<%--                                </select>--%>
                             </div>
                             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
                             <select name="searchCriteria" class="form-control" id="search-criteria">

@@ -173,10 +173,13 @@ public class UserController extends ParentController {
                                       @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                       @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                       @RequestParam(name = "page", required = false) String page,
-                                      @RequestParam(name = "find", required = false) String find) {
+                                      @RequestParam(name = "find", required = false) String find,
+                                      @RequestParam(name = "petId", required = false) Long petId) {
 
         final ModelAndView mav = new ModelAndView("views/interests");
         final User user = loggedUser();
+
+        List<Pet> availablePets = new ArrayList<>(user.getPetList());
 
         searchCriteria = parseCriteria(searchCriteria);
         searchOrder = parseOrder(searchOrder);
@@ -194,14 +197,25 @@ public class UserController extends ParentController {
 
         requestService.logInterestsAccess(user);
 
-        List<Request> requestList = requestService.filteredListByPetOwner(user, null, findList, requestStatus,
+        if(petId == null){
+            petId = (long) -1;
+        }
+
+        Optional<Pet> optPet = petService.findById(petId);
+        Pet pet = null;
+        if(optPet.isPresent()){
+            pet = optPet.get();
+        }
+
+        List<Request> requestList = requestService.filteredListByPetOwner(user, pet, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-        int amount = requestService.getFilteredListByPetOwnerAmount(user, null, findList, requestStatus);
+        int amount = requestService.getFilteredListByPetOwnerAmount(user, pet, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
         mav.addObject("interestList", requestList);
         mav.addObject("amount", amount);
+        mav.addObject("availablePets", availablePets);
 
         return mav;
     }
