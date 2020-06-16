@@ -78,6 +78,7 @@ public class UserController extends ParentController {
 
         boolean canRate = false;
 
+
         if (loggedUser != null && !user.getId().equals(loggedUser.getId())) {
             boolean acquiredPet = loggedUser.getNewPets().stream().anyMatch(p -> p.getUser().getId().equals(user.getId()));
             if (acquiredPet) {

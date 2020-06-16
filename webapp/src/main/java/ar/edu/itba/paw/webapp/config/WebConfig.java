@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.config;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -26,6 +25,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -79,6 +79,7 @@ public class WebConfig {
         messageSource.setCacheSeconds((int)TimeUnit.MINUTES.toSeconds(5));
         messageSource.setBasename("classpath:i18n/messages");
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        messageSource.setFallbackToSystemLocale(false);
 
         return messageSource;
     }
@@ -108,16 +109,12 @@ public class WebConfig {
         multipartResolver.setMaxUploadSize(-1);
         return multipartResolver;
     }
-    
 
     @Bean
-    public VelocityEngine velocityEngine() throws Exception {
-        Properties properties = new Properties();
-        properties.setProperty("input.encoding", "UTF-8");
-        properties.setProperty("output.encoding", "UTF-8");
-        properties.setProperty("resource.loader", "class");
-        properties.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-        return new VelocityEngine(properties);
+    public FreeMarkerConfigurationFactoryBean getFreeMarkerConfiguration() {
+        FreeMarkerConfigurationFactoryBean bean = new FreeMarkerConfigurationFactoryBean();
+        bean.setTemplateLoaderPath("/resources/mail_templates/");
+        return bean;
     }
 
     @Bean

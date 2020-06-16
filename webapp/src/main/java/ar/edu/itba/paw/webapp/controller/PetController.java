@@ -58,6 +58,9 @@ public class PetController extends ParentController {
     @Autowired
     private RequestService requestService;
 
+    @Autowired
+    private MailService mailService;
+
     private static final int PET_PAGE_SIZE = 12;
     private static final int COMMENTS_PAGE_SIZE = 10;
 
