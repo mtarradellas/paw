@@ -38,7 +38,7 @@ public class PetJpaDaoImpl implements PetDao {
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
         if(filteredIds.size() == 0){
-            return new ArrayList<Pet>();
+            return new ArrayList<>();
         }
         final TypedQuery<Pet> query = em.createQuery("from Pet where id in :filteredIds", Pet.class);
         query.setParameter("filteredIds", filteredIds);
@@ -55,6 +55,102 @@ public class PetJpaDaoImpl implements PetDao {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
         return paginationAndOrder(locale, jpaQuery,searchCriteria,searchOrder,page,pageSize);
+    }
+
+    @Override
+    public List<Breed> searchBreedList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
+                                       PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
+//        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find, user, species, breed, gender, status,
+//                minPrice,  maxPrice, province,  department);
+//        @SuppressWarnings("unchecked")
+//        List<Object[]> results = jpaQuery.getResultList();
+//        if (results.size() == 0) return new ArrayList<>();
+//        List<Long> filteredPetIds = new ArrayList<>();
+//        for (Object[] id:results) {
+//            filteredPetIds.add((Long)id[0]);
+//        }
+//        if (filteredPetIds.size() == 0) return new ArrayList<>();
+//        final TypedQuery<Breed> query = em.createQuery("from Breed where id in :filteredPetIds", Breed.class);
+//        query.setParameter("filteredPetIds", filteredPetIds);
+//
+//        final TypedQuery<Breed> query = em.createQuery("from Breed where id in :filteredIds", Breed.class);
+//        query.setParameter("filteredIds", filteredIds);
+//        return query.getResultList();
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        indexPets();
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(Pet.class)
+                .get();
+        locale = locale.toLowerCase();
+        String speciesField = "species." + locale;
+        String breedField = "breed." + locale;
+
+        BooleanJunction<BooleanJunction> boolJunction = queryBuilder.bool();
+        if(status != null) {
+            boolJunction.must(queryBuilder.range().onField("status").below(status.getValue()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("status").above(status.getValue()).createQuery());
+        }
+        else boolJunction.must(queryBuilder.range().onField("status").below(MAX_STATUS).createQuery());
+        if(find != null) {
+            for (String value : find) {
+                boolJunction.must(queryBuilder
+                        .keyword()
+                        .fuzzy()
+                        .withEditDistanceUpTo(1)
+                        .withPrefixLength(0)
+                        .onFields(speciesField, breedField, "gender", "petName", "province.name", "department.name")
+                        .ignoreAnalyzer()
+                        .matching(value)
+                        .createQuery());
+            }
+        }
+        if(user != null)  boolJunction.must(queryBuilder.keyword().onField("user.username").matching(user.getUsername()).createQuery());
+        if(species != null) boolJunction.must(queryBuilder.phrase().onField("species.en_us").sentence(species.getEn_us()).createQuery());
+        if(breed != null) boolJunction.must(queryBuilder.phrase().onField("breed.en_us").sentence(breed.getEn_us()).createQuery());
+        if(gender != null)boolJunction.must(queryBuilder.keyword().onField("gender").matching(gender).createQuery());
+        if(province != null)boolJunction.must(queryBuilder.phrase().onField("province.name").sentence(province.getName()).createQuery());
+        if(department != null)boolJunction.must(queryBuilder.phrase().onField("department.name").sentence(department.getName()).createQuery());
+        if(maxPrice != -1)boolJunction.must(queryBuilder.range().onField("price").below(maxPrice).createQuery());
+        boolJunction.must(queryBuilder.range().onField("price").above(minPrice).createQuery());
+
+        org.apache.lucene.search.Query query = boolJunction.createQuery();
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Pet.class);
+        jpaQuery.setProjection("price");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        List<Long> filteredIds = new ArrayList<>();
+        for (Object[] id:results) {
+            //filteredIds.add((Long)id[0]);
+            System.out.println("wwwwwwwwww");
+            System.out.println(id[0]);
+        }
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
+        final TypedQuery<Breed> query2 = em.createQuery("from Breed where id in :filteredIds", Breed.class);
+        query2.setParameter("filteredIds", filteredIds);
+        return query2.getResultList();
+    }
+
+    @Override
+    public List<Department> searchDepartmentList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
+                                                 PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(locale, find, user, species, breed, gender, status,
+                minPrice,  maxPrice, province,  department);
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        List<Long> filteredIds = new ArrayList<>();
+        for (Object[] id:results) {
+            filteredIds.add((Long)id[0]);
+        }
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
+        final TypedQuery<Department> query = em.createQuery("from Department where id in :filteredIds", Department.class);
+        query.setParameter("filteredIds", filteredIds);
+        return query.getResultList();
     }
 
     @Override

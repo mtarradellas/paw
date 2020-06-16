@@ -13,6 +13,10 @@ public interface PetDao {
     List<Pet> list(int page, int pageSize);
     List<Pet> searchList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                          String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
+    List<Breed> searchBreedList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status,
+                                int minPrice, int maxPrice, Province province, Department department);
+    List<Department> searchDepartmentList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status,
+                                            int minPrice, int maxPrice, Province province, Department department);
     List<Pet> filteredList(String locale, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                            String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
     List<Pet> listByUser(long userId, int page, int pageSize);

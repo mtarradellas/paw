@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 
 import javax.persistence.*;
 
@@ -16,7 +17,7 @@ public class Breed implements Comparable<Breed>{
     private Long id;
 
     @Column(nullable = false)
-    @Field
+    @Field(store = Store.YES)
     private String en_us;
 
     @Column(nullable = false)
