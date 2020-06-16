@@ -2,8 +2,8 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.annotations.*;
-
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -33,6 +33,12 @@ public class User {
     @Field
     @NumericField
     private int status;
+
+    @Column
+    private LocalDateTime interestsDate;
+
+    @Column
+    private LocalDateTime requestsDate;
 
     @ContainedIn
     @OneToMany(orphanRemoval = true, mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -197,5 +203,21 @@ public class User {
 
     public void setNewPets(List<Pet> newPets) {
         this.newPets = newPets;
+    }
+
+    public LocalDateTime getInterestsDate() {
+        return interestsDate;
+    }
+
+    public void setInterestsDate(LocalDateTime interestsDate) {
+        this.interestsDate = interestsDate;
+    }
+
+    public LocalDateTime getRequestsDate() {
+        return requestsDate;
+    }
+
+    public void setRequestsDate(LocalDateTime requestsDate) {
+        this.requestsDate = requestsDate;
     }
 }

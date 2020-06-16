@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,26 +51,26 @@ public class PetServiceImpl implements PetService {
                                   PetStatus status, String searchCriteria, String searchOrder, int minPrice, int maxPrice,
                                   Long provinceId, Long departmentId, int page, int pageSize) {
         List<Pet> petList;
-            User user = null;
-            Breed breed = null;
-            Species species = null;
-            Department department = null;
-            Province province = null;
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
 
-            if (userId != null) user = userService.findById(userId).orElse(null);
-            breed = validateBreed(breedId, speciesId);
-            if (breed != null) species = breed.getSpecies();
-            else species = validateSpecies(speciesId);
+        if (userId != null) user = userService.findById(userId).orElse(null);
 
-            department = validateDepartment(departmentId, provinceId);
-            if (department != null) province = department.getProvince();
-            else province = validateProvince(provinceId);
+        breed = validateBreed(breedId, speciesId);
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
 
-            LOGGER.debug("Parameters for filteredList <Pet>: user {}, status {}, species {}, breed {}, gender {},  " +
-                            "min price {}, max price {}, province {}, department {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}", user, status, species, breed,
-                    gender, minPrice, maxPrice, province, department, searchCriteria, searchOrder, page, pageSize);
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
 
-            petList = petDao.searchList(locale, find, user, species, breed, gender, status, searchCriteria, searchOrder,
+        LOGGER.debug("Parameters for filteredList <Pet>: user {}, status {}, species {}, breed {}, gender {},  " +
+                    "min price {}, max price {}, province {}, department {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
+                    user, status, species, breed, gender, minPrice, maxPrice, province, department, searchCriteria, searchOrder, page, pageSize);
+
+
+        petList = petDao.searchList(locale, find, user, species, breed, gender, status, searchCriteria, searchOrder,
                     minPrice, maxPrice, province, department, page, pageSize);
 
         setLocale(locale, petList);
@@ -78,9 +79,10 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public List<Pet> listByUser(String locale, Long userId, int page, int pageSize) {
-        if (userId != null && !userService.findById(userId).isPresent()) userId = null;
-        return filteredList(locale,null,  userId, null, null, null, null,
-                null, null,0, -1, null,null, page, pageSize);
+        if (userId == null) return filteredList(locale,null,  userId, null, null, null, null, null, null,0, -1, null,null, page, pageSize);
+        List<Pet> petList = petDao.listByUser(userId, page, pageSize);
+        setLocale(locale, petList);
+        return petList;
     }
 
     @Override
@@ -111,8 +113,9 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public int getListByUserAmount(String locale, Long userId) {
-        return getFilteredListAmount(locale, null, userId, null, null, null, null,
+        if (userId == null) return getFilteredListAmount(locale, null, userId, null, null, null, null,
                 0, -1, null, null);
+        return petDao.getListByUserAmount(userId);
     }
 
     private Breed validateBreed(Long breedId, Long speciesId) {
@@ -506,4 +509,87 @@ public class PetServiceImpl implements PetService {
         petList.forEach(pet -> pet.setLocale(locale));
     }
 
+    @Override
+    public List<Question> listQuestions(long petId, int page, int pageSize) {
+        Optional<Pet> pet = petDao.findById(petId);
+        List<Question> list = new ArrayList<>();
+        if (pet.isPresent()) {
+            list = petDao.listQuestions(petId, page, pageSize);
+        }
+        return list;
+    }
+
+    @Override
+    public int getListQuestionsAmount(long petId) {
+        Optional<Pet> pet = petDao.findById(petId);
+        int amount = 0;
+        if (pet.isPresent()) {
+            amount = petDao.getListQuestionsAmount(petId);
+        }
+        return amount;
+    }
+
+    @Override
+    public Optional<Question> findQuestionById(long id) {
+        return petDao.findQuestionById(id);
+    }
+
+    @Override
+    public Optional<Answer> findAnswerById(long id) {
+        return petDao.findAnswerById(id);
+    }
+
+    @Transactional
+    @Override
+    public Optional<Question> createQuestion(String content, User user, long petId) {
+        if (user == null) {
+            LOGGER.warn("User is null");
+            return Optional.empty();
+        }
+
+        Optional<Pet> opPet = petDao.findById(petId);
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet {} not found", petId);
+            return Optional.empty();
+        }
+        Pet pet = opPet.get();
+
+        if (user.getId().equals(pet.getUser().getId())) {
+            LOGGER.warn("User {} cannot ask question to himself", pet.getUser().getId());
+            return Optional.empty();
+        }
+
+        Question question = petDao.createQuestion(content, user, pet.getUser(), pet, QuestionStatus.VALID);
+        return Optional.of(question);
+    }
+
+    @Transactional
+    @Override
+    public Optional<Answer> createAnswer(long questionId, String content, User user) {
+        if (user == null) {
+            LOGGER.warn("User is null");
+            return Optional.empty();
+        }
+
+        Optional<Question> opQuestion = petDao.findQuestionById(questionId);
+        if (!opQuestion.isPresent()) {
+            LOGGER.warn("Question {} not found", questionId);
+            return Optional.empty();
+        }
+        Question question = opQuestion.get();
+
+        if (user.getId().equals(question.getUser().getId())) {
+            LOGGER.warn("User {} cannot answer his own question", question.getTarget());
+            return Optional.empty();
+        }
+
+        Pet pet = question.getPet();
+
+        if (!pet.getUser().getId().equals(user.getId())) {
+            LOGGER.warn("User {} is not pet {} owner", user.getId(), pet.getId());
+        }
+
+        Answer answer = petDao.createAnswer(question, content, user, question.getUser(), pet, QuestionStatus.VALID);
+        return Optional.of(answer);
+    }
 }

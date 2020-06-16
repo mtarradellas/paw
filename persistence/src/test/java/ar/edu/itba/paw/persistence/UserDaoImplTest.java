@@ -204,13 +204,6 @@ public class UserDaoImplTest {
 //    /* TODO Test tokens */
 //    public void testFindByTokenNotExists() {
 //
-//    }
-//
-//    public void testFindByTokenExists() {
-//
-//    }
-//
-//    public void testGetTokenNotExists() {
 //
 //    }
 //

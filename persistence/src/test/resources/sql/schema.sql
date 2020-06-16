@@ -15,7 +15,9 @@ username VARCHAR(255) NOT NULL UNIQUE,
 password VARCHAR(255) NOT NULL,
 mail VARCHAR(255) NOT NULL UNIQUE,
 status INTEGER NOT NULL,
-locale CHAR(7)
+locale CHAR(7),
+interestsDate TIMESTAMP DEFAULT NOW(),
+requestsDate TIMESTAMP DEFAULT NOW()
 );
 CREATE TABLE IF NOT EXISTS admins (
 id BIGINT REFERENCES users(id) PRIMARY KEY
@@ -71,6 +73,7 @@ ownerId INTEGER references users(id),
 petId INTEGER references pets(id),
 status INTEGER,
 creationDate DATE DEFAULT CURRENT_DATE,
+updateDate TIMESTAMP DEFAULT NOW(),
 CONSTRAINT norepeats UNIQUE(ownerId, petId)
 );
 CREATE TABLE IF NOT EXISTS tokens (
@@ -78,4 +81,23 @@ id SERIAL PRIMARY KEY,
 token VARCHAR(36),
 userId BIGINT REFERENCES users(id),
 expirationDate DATE
+);
+CREATE TABLE IF NOT EXISTS questions (
+id BIGSERIAL PRIMARY KEY,
+content VARCHAR(255) NOT NULL,
+ownerId BIGINT NOT NULL REFERENCES users(id),
+targetId BIGINT NOT NULL REFERENCES users(id),
+petId BIGINT NOT NULL REFERENCES pets(id),
+creationDate DATE DEFAULT CURRENT_DATE,
+status INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS answers (
+id BIGSERIAL PRIMARY KEY,
+questionId BIGINT NOT NULL REFERENCES questions(id),
+content VARCHAR(255) NOT NULL,
+ownerId BIGINT NOT NULL REFERENCES users(id),
+targetId BIGINT NOT NULL REFERENCES users(id),
+petId BIGINT NOT NULL REFERENCES pets(id),
+creationDate DATE DEFAULT CURRENT_DATE,
+status INTEGER NOT NULL
 );

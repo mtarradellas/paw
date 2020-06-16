@@ -2,6 +2,8 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -13,12 +15,14 @@ public interface PetDao {
                          String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
     List<Pet> filteredList(String locale, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                            String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize);
+    List<Pet> listByUser(long userId, int page, int pageSize);
 
     int getListAmount();
     int getSearchListAmount(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status,
                             int minPrice, int maxPrice, Province province, Department department);
     int getFilteredListAmount(String locale, User user, Species species, Breed breed, String gender, PetStatus status,
                               int minPrice, int maxPrice, Province province, Department department);
+    int getListByUserAmount(long userId);
 
     Optional<Pet> findById(long id);
 
@@ -28,4 +32,11 @@ public interface PetDao {
     void updateByStatusAndOwner(User user, PetStatus oldStatus, PetStatus newStatus);
 
     List<String> autocompleteFind(String locale, String find);
+
+    List<Question> listQuestions(long petId, int page, int pageSize);
+    int getListQuestionsAmount(long petId);
+    Optional<Question> findQuestionById(long questionId);
+    Optional<Answer> findAnswerById(long answerId);
+    Question createQuestion(String content, User user, User target, Pet pet, QuestionStatus status);
+    Answer createAnswer(Question question, String content, User user, User target, Pet pet, QuestionStatus status);
 }
