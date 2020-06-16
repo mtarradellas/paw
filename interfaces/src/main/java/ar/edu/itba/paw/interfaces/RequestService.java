@@ -36,4 +36,10 @@ public interface RequestService {
     void cancelAllByUser(User user);
     void rejectAllByPetOwner(long petOwnerId);
     void rejectAllByPet(String locale, long petId);
+
+    int interestNotifs(User user);
+    int requestNotifs(User user);
+
+    void logRequestsAccess(User user);
+    void logInterestsAccess(User user);
 }

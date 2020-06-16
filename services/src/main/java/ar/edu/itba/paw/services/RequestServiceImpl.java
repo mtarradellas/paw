@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -357,6 +359,28 @@ public class RequestServiceImpl implements RequestService {
         }
         Pet pet = opPet.get();
         requestDao.updateByStatusAndPet(pet, RequestStatus.PENDING, RequestStatus.REJECTED);
+    }
+
+    @Override
+    public int interestNotifs(User user) {
+        return requestDao.interestNotifs(user);
+    }
+
+    @Override
+    public int requestNotifs(User user) {
+        return requestDao.requestNotifs(user);
+    }
+
+    @Override
+    public void logRequestsAccess(User user) {
+        user.setRequestsDate(LocalDateTime.now());
+        userService.update(user);
+    }
+
+    @Override
+    public void logInterestsAccess(User user) {
+        user.setInterestsDate(LocalDateTime.now());
+        userService.update(user);
     }
 
 }

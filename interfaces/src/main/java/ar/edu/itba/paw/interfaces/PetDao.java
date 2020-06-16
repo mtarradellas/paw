@@ -2,6 +2,8 @@ package ar.edu.itba.paw.interfaces;
 
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -30,4 +32,11 @@ public interface PetDao {
     void updateByStatusAndOwner(User user, PetStatus oldStatus, PetStatus newStatus);
 
     List<String> autocompleteFind(String locale, String find);
+
+    List<Question> listQuestions(long petId, int page, int pageSize);
+    int getListQuestionsAmount(long petId);
+    Optional<Question> findQuestionById(long questionId);
+    Optional<Answer> findAnswerById(long answerId);
+    Question createQuestion(String content, User user, User target, Pet pet, QuestionStatus status);
+    Answer createAnswer(Question question, String content, User user, User target, Pet pet, QuestionStatus status);
 }

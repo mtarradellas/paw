@@ -38,7 +38,7 @@
 //    private static final String USER_TABLE = "users";
 //
 //    /* USER */
-//    private static Long USER_ID;
+//    private static Long USER_ID = 1L;
 //    private static final String USERNAME = "user_name";
 //    private static final String PASSWORD = "user_password";
 //    private static final String MAIL = "user@mail";
@@ -63,33 +63,34 @@
 //    private static final int PAGE = 1;
 //    private static final int PAGE_SIZE = 50;
 //
+//    @Autowired
 //    private UserJpaDaoImpl userDaoImpl;
+//
 //    private JdbcTemplate jdbcTemplate;
 //    private SimpleJdbcInsert jdbcInsert;
 //
 //    @Before
 //    public void setUp() {
 //
-//        userDaoImpl = new UserJpaDaoImpl();
 //
 //        jdbcTemplate = new JdbcTemplate(dataSource);
 //        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-//                .withTableName(USER_TABLE)
-//                .usingGeneratedKeyColumns("id");
+//                .withTableName(USER_TABLE);
 //
 //        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
 //    }
 //
-//    private User insertUser(String username, String password, String mail, UserStatus status, String locale) {
+//    private User insertUser(Long id, String username, String password, String mail, UserStatus status, String locale) {
 //        final Map<String, Object> values = new HashMap<>();
+//        values.put("id", id);
 //        values.put("username", username);
 //        values.put("password", password);
 //        values.put("mail", mail);
 //        values.put("status", status.ordinal());
 //        values.put("locale", locale);
-//        Number id = jdbcInsert.executeAndReturnKey(values);
+//        jdbcInsert.execute(values);
 //        User user = new User(username, password, mail, status, LOCALE);
-//        user.setId(id.longValue());
+//        user.setId(id);
 //        return user;
 //    }
 //
@@ -121,7 +122,7 @@
 //    @Test
 //    @Transactional
 //    public void testFindByIdExists() {
-//        User user = insertUser(USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
+//        User user = insertUser(USER_ID, USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
 //
 //        Optional<User> opUser = userDaoImpl.findById(user.getId());
 //

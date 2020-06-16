@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
 import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -15,10 +16,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -256,5 +254,64 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public List<String> autocompleteFind(String locale, String find) {
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<Question> listQuestions(long petId, int page, int pageSize) {
+        String qStr = "SELECT id FROM Questions where petId = :pet";
+        Query nativeQuery = em.createNativeQuery(qStr);
+        nativeQuery.setParameter("pet", petId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
+        List<? extends Number> resultList = nativeQuery.getResultList();
+        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+
+        if(filteredIds.size() == 0){
+            return new ArrayList<>();
+        }
+        final TypedQuery<Question> query = em.createQuery("from Question where id in :filteredIds", Question.class);
+        query.setParameter("filteredIds", filteredIds);
+        return query.getResultList();
+    }
+
+    @Override
+    public int getListQuestionsAmount(long petId) {
+        Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM Questions where petId = :pet");
+        nativeQuery.setParameter("pet", petId);
+        Number count = (Number) nativeQuery.getSingleResult();
+        return count.intValue();
+    }
+
+    @Override
+    public Optional<Question> findQuestionById(long questionId) {
+        return Optional.ofNullable(em.find(Question.class, questionId));
+    }
+
+    @Override
+    public Optional<Answer> findAnswerById(long answerId) {
+        return Optional.ofNullable(em.find(Answer.class, answerId));
+    }
+
+    @Override
+    public Question createQuestion(String content, User user, User target, Pet pet, QuestionStatus status) {
+        Date today = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(today);
+        today = cal.getTime();
+        Question question = new Question(content, user, target, pet, today, status);
+        em.persist(question);
+        return question;
+    }
+
+    @Override
+    public Answer createAnswer(Question question, String content, User user, User target, Pet pet, QuestionStatus status) {
+        Date today = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(today);
+        today = cal.getTime();
+        Answer answer = new Answer(question, content, user, target, pet, today, status);
+        em.persist(answer);
+        return answer;
     }
 }

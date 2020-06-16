@@ -34,5 +34,8 @@ public interface RequestDao {
     void updateByStatusAndPet(Pet pet, RequestStatus oldStatus, RequestStatus newStatus);
 
     boolean isRequestTarget(Request request, User user);
+
+    int interestNotifs(User user);
+    int requestNotifs(User user);
 }
 

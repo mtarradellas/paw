@@ -131,6 +131,8 @@ public class UserController extends ParentController {
         }
         List<String> findList = parseFind(find);
 
+        requestService.logRequestsAccess(user);
+
         List<Request> requestList = requestService.filteredList(user, null, findList, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
         int amount = requestService.getFilteredListAmount(user, null, findList, requestStatus);
@@ -187,6 +189,8 @@ public class UserController extends ParentController {
             mav.addObject("wrongSearch", false);
         }
         List<String> findList = parseFind(find);
+
+        requestService.logInterestsAccess(user);
 
         List<Request> requestList = requestService.filteredListByPetOwner(user, null, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);

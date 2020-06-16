@@ -3,6 +3,8 @@ package ar.edu.itba.paw.interfaces;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -45,4 +47,10 @@ public interface PetService {
     void setLocale(String locale, Pet pet);
     void setLocale(String locale, List<Pet> pet);
 
+    List<Question> listQuestions(long petId, int page, int pageSize);
+    int getListQuestionsAmount(long petId);
+    Optional<Question> findQuestionById(long id);
+    Optional<Answer> findAnswerById(long id);
+    Optional<Question> createQuestion(String content, User user, long petId);
+    Optional<Answer> createAnswer(long questionId, String content, User user);
 }
