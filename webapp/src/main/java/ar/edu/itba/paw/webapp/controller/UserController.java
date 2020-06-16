@@ -51,7 +51,7 @@ public class UserController extends ParentController {
     @Autowired
     private RequestService requestService;
 
-    private static final int REQ_PAGE_SIZE = 25;
+    private static final int REQ_PAGE_SIZE = 6;
     private static final int PET_PAGE_SIZE = 4;
     private static final int REV_PAGE_SIZE = 20;
 

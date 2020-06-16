@@ -153,6 +153,12 @@
                                 </div>
                             </c:if>
                         </c:forEach>
+                        <div class="m-2">
+                            <hr>
+                            <c:if test="${maxPage ne 1}">
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/requests'}"/>
+                            </c:if>
+                        </div>
                     </div>
                 </div>
             </div>
