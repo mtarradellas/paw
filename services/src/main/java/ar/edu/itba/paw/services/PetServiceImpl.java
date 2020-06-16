@@ -398,7 +398,7 @@ public class PetServiceImpl implements PetService {
 
             String userLocale = pet.getUser().getLocale();
 
-            mailService.sendMail(pet.getNewOwner().getMail(), userLocale, arguments, MailType.PET_SOLD);
+//            mailService.sendMail(pet.getNewOwner().getMail(), userLocale, arguments, MailType.PET_SOLD);
 
             return petDao.update(pet).isPresent();
         }
