@@ -1,8 +1,8 @@
 <%@ page import="ar.edu.itba.paw.models.constants.RequestStatus" %>
+<%@ page import="java.util.List" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
 
 <div class="col-md-2 search-tools">
     <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/${param.destination}">
@@ -45,6 +45,21 @@
                             </c:if>
                     ><spring:message code="request.canceled"/></option>
 
+                </select>
+                <label for="filter-pet"><spring:message code="pet"/></label>
+                <select data-child="filter-pet" name="petId" class="selector-parent form-control" id="filter-pet">
+                    <option value="-1"><spring:message code="filter.any"/></option>
+                    <c:forEach items="${myList}" var="singlePet">
+                        <option>${singlePet}</option>
+<%--                        <c:set var="petId">${pet.id}</c:set>--%>
+<%--                        <option value="${singlePet.id}"--%>
+<%--                                <c:if test="${(not empty param.petId)  && (petId eq param.petId)}">--%>
+<%--                                    selected--%>
+<%--                                </c:if>--%>
+<%--                        >--%>
+<%--                                ${singlePet.petName}--%>
+<%--                        </option>--%>
+                    </c:forEach>
                 </select>
             </div>
             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
