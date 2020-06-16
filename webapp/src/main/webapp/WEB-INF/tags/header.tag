@@ -23,13 +23,26 @@
 
             <c:if test="${not empty loggedUser}">
                 <li class="nav-item">
-                    <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests"><spring:message code="header.requests"/></a></h4>
-                    <h4>${requestNotif}</h4>
+                    <div class="notify-container">
+                        <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests"><spring:message code="header.requests"/></a></h4>
+                        <div class="notify-bubble">
+                                <c:if test="${requestNotif > 0}">
+                                    ${requestNotif}
+                                </c:if>
+                        </div>
+                    </div>
                 </li>
 
                 <li class="nav-item">
-                    <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
-                    <h4>${interestNotif}</h4>
+                    <div class="notify-container">
+                        <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
+                        <c:if test="${interestNotif > 0}">
+                            <div class="notify-bubble">
+                                    ${interestNotif}
+                            </div>
+                        </c:if>
+
+                    </div>
                 </li>
 
                 <li class="nav-item">

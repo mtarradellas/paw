@@ -31,9 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class UserController extends ParentController {
@@ -52,7 +50,7 @@ public class UserController extends ParentController {
     @Autowired
     private RequestService requestService;
 
-    private static final int REQ_PAGE_SIZE = 6;
+    private static final int REQ_PAGE_SIZE = 25;
     private static final int PET_PAGE_SIZE = 4;
     private static final int REV_PAGE_SIZE = 20;
 
@@ -114,13 +112,10 @@ public class UserController extends ParentController {
                                     @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                     @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                     @RequestParam(name = "page", required = false) String page,
-                                    @RequestParam(name = "find", required = false) String find,
-                                    @RequestParam(name = "petId", required = false) Long petId) {
+                                    @RequestParam(name = "find", required = false) String find) {
 
         final ModelAndView mav = new ModelAndView("views/requests");
         final User user = loggedUser();
-
-        List<Pet> availablePets = new ArrayList<>(user.getPetList());
 
         int pageNum = parsePage(page);
         RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
@@ -137,25 +132,17 @@ public class UserController extends ParentController {
 
         requestService.logRequestsAccess(user);
 
-        if(petId == null){
-            petId = (long) -1;
-        }
-
-        Optional<Pet> petOptional = petService.findById(petId);
-        Pet pet = null;
-        if(petOptional.isPresent()){
-            pet = petOptional.get();
-        }
-
-        List<Request> requestList = requestService.filteredList(user, pet, findList, requestStatus,
+        List<Request> requestList = requestService.filteredList(user, null, findList, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-        int amount = requestService.getFilteredListAmount(user, pet, findList, requestStatus);
-        
+        int amount = requestService.getFilteredListAmount(user, null, findList, requestStatus);
+
+        System.out.println(amount + "AMMOUNTT\n\n\n\n\n");
+        System.out.println(requestList.size() + "numero \n\n\n\n");
+
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
         mav.addObject("requestList", requestList);
         mav.addObject("amount", amount);
-        mav.addObject("availablePets", availablePets);
         return mav;
     }
 
