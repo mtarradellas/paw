@@ -292,7 +292,7 @@ public class RequestJpaDaoImpl implements RequestDao {
     public int interestNotifs(User user) {
         String qStr = "SELECT count(*) " +
                       "FROM requests " +
-                      "WHERE targetId = :user AND creationDate > :lastOnline ";
+                      "WHERE targetId = :user AND updateDate > :lastOnline ";
 
         Query query = em.createNativeQuery(qStr);
         query.setParameter("user", user.getId());
