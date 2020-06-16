@@ -1,9 +1,0 @@
-<html>
-    <body>
-        <p>${actionMsg}: <a href="${ownerURL}">${ownerUsername}</a>.</p>
-        <p>${petMsg}: <a href="${petURL}">${petName}</a>.</p>
-        <p>${mailMsg}.</p>
-        <p><a href="${URL}">${gotoSiteMsg}</a>.</p>
-        <p>${goodbyeMsg}</p>
-    </body>
-</html>

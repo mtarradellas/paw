@@ -7,18 +7,15 @@ public enum MailType {
     REQUEST_CANCEL("request_cancel"),
     REQUEST_RECOVER("request_recover"),
     ACTIVATE_ACCOUNT("activate_account"),
-    RESET_PASSWORD("reset_password"),
-    PET_SOLD("pet_sold");
+    RESET_PASSWORD("reset_password");
 
+    private final String name;
 
-    private final String type;
-
-    MailType(String type){
-        this.type = type;
+    MailType(String name){
+        this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
-
 }
