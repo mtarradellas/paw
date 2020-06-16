@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
@@ -165,9 +167,11 @@
                                     >
                                         <div class="row ">
                                             <div class="col-lg-5">
+                                                <fmt:formatDate value="${request.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
                                                 <spring:message code="request.isInterested"
                                                                 arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.pet.id},${request.pet.petName}"/>
-                                                <small class="text-warning"> ${request.creationDate}</small>
+                                                <small class="text-warning"> ${creationDate}</small>
                                             </div>
                                             <div class="col-lg-2">
                                                 <c:if test="${request.status.value eq PENDING}">

@@ -23,10 +23,7 @@
 //import javax.persistence.EntityManager;
 //import javax.persistence.PersistenceContext;
 //import javax.sql.DataSource;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.Optional;
+//import java.util.*;
 //import java.util.stream.Collectors;
 //
 //import static org.junit.Assert.*;
@@ -41,7 +38,7 @@
 //    private static final String USER_TABLE = "users";
 //
 //    /* USER */
-//    private static Long USER_ID;
+//    private static Long USER_ID = 1L;
 //    private static final String USERNAME = "user_name";
 //    private static final String PASSWORD = "user_password";
 //    private static final String MAIL = "user@mail";
@@ -66,37 +63,38 @@
 //    private static final int PAGE = 1;
 //    private static final int PAGE_SIZE = 50;
 //
+//    @Autowired
 //    private UserJpaDaoImpl userDaoImpl;
+//
 //    private JdbcTemplate jdbcTemplate;
 //    private SimpleJdbcInsert jdbcInsert;
 //
 //    @Before
 //    public void setUp() {
 //
-//        userDaoImpl = new UserJpaDaoImpl();
 //
 //        jdbcTemplate = new JdbcTemplate(dataSource);
 //        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-//                .withTableName(USER_TABLE)
-//                .usingGeneratedKeyColumns("id");
+//                .withTableName(USER_TABLE);
 //
 //        JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
 //    }
 //
-//    private User insertUser(String username, String password, String mail, UserStatus status, String locale) {
+//    private User insertUser(Long id, String username, String password, String mail, UserStatus status, String locale) {
 //        final Map<String, Object> values = new HashMap<>();
+//        values.put("id", id);
 //        values.put("username", username);
 //        values.put("password", password);
 //        values.put("mail", mail);
 //        values.put("status", status.ordinal());
 //        values.put("locale", locale);
-//        Number id = jdbcInsert.executeAndReturnKey(values);
+//        jdbcInsert.execute(values);
 //        User user = new User(username, password, mail, status, LOCALE);
-//        user.setId(id.longValue());
+//        user.setId(id);
 //        return user;
 //    }
 //
-//    private void assertUser(User user, long id, String username, String password, String mail, UserStatus status, String locale) {
+//    private void assertUser(User user, Long id, String username, String password, String mail, UserStatus status, String locale) {
 //        assertEquals(id, user.getId());
 //        assertEquals(username, user.getUsername());
 //        assertEquals(password, user.getPassword());
@@ -113,6 +111,7 @@
 //        assertEquals(review.getStatus(), status);
 //    }
 //
+//    @Transactional
 //    @Test
 //    public void testFindByIdNotExist() {
 //        Optional<User> opUser = userDaoImpl.findById(100);
@@ -123,14 +122,14 @@
 //    @Test
 //    @Transactional
 //    public void testFindByIdExists() {
-//        User user = insertUser(USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
+//        User user = insertUser(USER_ID, USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
 //
 //        Optional<User> opUser = userDaoImpl.findById(user.getId());
 //
 //        assertTrue(opUser.isPresent());
 //        assertUser(opUser.get(), user.getId(), USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
 //    }
-//
+///*
 //    @Test
 //    public void testFindByUsernameNotExist() {
 //        Optional<User> opUser = userDaoImpl.findByUsername(USERNAME);
@@ -169,8 +168,10 @@
 //    public void testSearchList() {
 //        User user = insertUser(USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
 //        insertUser(O_USERNAME, O_PASSWORD, O_MAIL, O_USER_STATUS, O_LOCALE);
+//        List<String> find = new ArrayList<>();
+//        find.add(USERNAME);
 //
-//        List<User> userList = userDaoImpl.searchList(USERNAME, PAGE, PAGE_SIZE);
+//        List<User> userList = userDaoImpl.searchList(find, USER_STATUS, null, null, PAGE, PAGE_SIZE);
 //
 //        assertEquals(1, userList.size());
 //        assertUser(userList.get(0), user.getId(), USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
@@ -209,7 +210,7 @@
 //        assertEquals(0, target.getOwnerReviews().size());
 //        assertReview(owner.getOwnerReviews().get(0), owner.getId(), target.getId(), SCORE, DESC, REVIEW_STATUS);
 //    }
-//
+//*/
 ////    /* TODO Test tokens */
 ////    public void testFindByTokenNotExists() {
 ////

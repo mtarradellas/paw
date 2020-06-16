@@ -1,9 +1,0 @@
-<html>
-    <body>
-        <p>${welcomeMsg}</p>
-        <p>${usernameMsg}: ${username}.</p>
-        <p>${linkMsg} <a href="${URLToken}"> ${URLToken}</a></p>
-        <p>${gotoSiteMsg}</p>
-        <p>${goodbyeMsg}</p>
-    </body>
-</html>

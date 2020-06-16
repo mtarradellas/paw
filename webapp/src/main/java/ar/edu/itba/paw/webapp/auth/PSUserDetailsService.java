@@ -11,9 +11,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import javax.persistence.NoResultException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Optional;
 
 @Component
 public class PSUserDetailsService implements UserDetailsService {
@@ -23,8 +26,15 @@ public class PSUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        final User user = userService.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username + " not found"));
+        Optional<User> opUser = Optional.empty();
+        try {
+            opUser = userService.findByUsername(username);
+        } catch (NoResultException ignored) {}
+        if (!opUser.isPresent()) {
+            throw new UsernameNotFoundException("Username" + username + " not found");
+        }
+
+        User user = opUser.get();
         UserStatus status = user.getStatus();
         if(status != UserStatus.ACTIVE){
             if(status == UserStatus.INACTIVE) {

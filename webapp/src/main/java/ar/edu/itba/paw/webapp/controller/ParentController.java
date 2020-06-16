@@ -31,6 +31,8 @@ public class ParentController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RequestService requestService;
 
     protected String getLocale() {
         Locale locale = LocaleContextHolder.getLocale();
@@ -56,6 +58,26 @@ public class ParentController {
             return opUser.get();
         }
         return null;
+    }
+
+    @ModelAttribute("interestNotif")
+    public int interestNotif() {
+        User user = loggedUser();
+        int interestNotif = 0;
+        if (user != null) {
+            interestNotif = requestService.interestNotifs(user);
+        }
+        return interestNotif;
+    }
+
+    @ModelAttribute("requestNotif")
+    public int requestNotif() {
+        User user = loggedUser();
+        int requestNotif = 0;
+        if (user != null) {
+            requestNotif = requestService.requestNotifs(user);
+        }
+        return requestNotif;
     }
 
     public int parsePage(String page) {
@@ -133,7 +155,7 @@ public class ParentController {
     }
 
     public boolean isAllowedFind(String find) {
-        return find == null || find.matches("^[a-zA-Z \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
+        return find == null || find.matches("^[a-zA-Z0-9 \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
                                                 "\u00F3\u00FA\u00F1\u00FC]*$");
     }
 

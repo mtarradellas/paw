@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
 
 <spring:message code="areYouSure.cancel" var="sureBody"/>
@@ -63,7 +64,9 @@
                                     <div class=" col-lg-7">
                                         <spring:message code="request.showedInterest"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${req.creationDate}</small>
+                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
+                                        <small class="text-warning"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <spring:message code="request.pending"/>
@@ -88,7 +91,9 @@
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasAccepted"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${req.creationDate}</small>
+                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
+                                        <small class="text-warning"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <spring:message code="request.accepted"/>
@@ -107,7 +112,9 @@
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasRejected"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${req.creationDate}</small>
+                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
+                                        <small class="text-warning"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <spring:message code="request.rejected"/>
@@ -126,7 +133,9 @@
                                     <div class=" col-lg-7">
                                         <spring:message code="request.wasCanceled"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${req.creationDate}</small>
+                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
+                                        <small class="text-warning"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-2">
                                         <spring:message code="request.canceled"/>
