@@ -56,7 +56,7 @@ public class RequestJpaDaoImpl implements RequestDao {
                                     String searchOrder, int page, int pageSize) {
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
-       List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+       List<Request> reqs = paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
         return reqs;
     }
 
@@ -88,8 +88,14 @@ public class RequestJpaDaoImpl implements RequestDao {
             }
         }
         if(user != null)  boolJunction.must(queryBuilder.phrase().onField("user.username").sentence(user.getUsername()).createQuery());
-        //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.username").sentence(user.getUsername()).createQuery());
+        //if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.petName").matching(pet.getPetName()).createQuery());
+        if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.eid").matching(pet.getPetName()).createQuery());
 
+        if(pet != null) {
+            System.out.println("\n\n\nwwwwwwwwwwwwwwwwwwww" +pet.getId());
+            //boolJunction.must(queryBuilder.range().onField("pet.id").below(pet.getId()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("pet.id_numeric").above(pet.getId()).createQuery());
+        }
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
@@ -102,10 +108,14 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setMaxResults(pageSize);
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
-        if (results.size() == 0) return new ArrayList<>();
+        if (results.size() == 0) {
+            System.out.println("QQQQQQQQQ");
+            return new ArrayList<>();
+        }
         List<Long> filteredIds = new ArrayList<>();
         for (Object[] id:results) {
             filteredIds.add((Long)id[0]);
+            System.out.println(id[0]);
         }
         if (filteredIds.size() == 0) return new ArrayList<>();
 
@@ -176,7 +186,13 @@ public class RequestJpaDaoImpl implements RequestDao {
             }
         }
         if(user != null)  boolJunction.must(queryBuilder.phrase().onField("pet.user.username").sentence(user.getUsername()).createQuery());
-        //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.username").sentence(user.getUsername()).createQuery());
+        //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.id").sentence(pet.getId().toString()).createQuery());
+
+        System.out.println("\n\n\nwwwwwwwwwwwwwwwwwwww" +pet.getId());
+        if(pet != null) {
+            boolJunction.must(queryBuilder.range().onField("pet.id").below(pet.getId()).createQuery());
+            boolJunction.must(queryBuilder.range().onField("pet.id").above(pet.getId()).createQuery());
+        }
 
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 

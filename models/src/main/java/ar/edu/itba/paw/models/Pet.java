@@ -4,6 +4,7 @@ import ar.edu.itba.paw.models.constants.PetStatus;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.bridge.builtin.EnumBridge;
 import org.hibernate.search.bridge.builtin.IntegerBridge;
+import org.hibernate.search.bridge.builtin.LongBridge;
 import org.hibernate.search.bridge.builtin.StringBridge;
 
 import javax.persistence.*;
@@ -18,8 +19,11 @@ public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pets_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "pets_id_seq", name = "pets_id_seq")
-    @DocumentId
+    @Field(name= "eid")
+    @FieldBridge(impl = LongBridge.class)
     private Long id;
+//    @Field(name="id_numeric")
+//    @NumericField(forField="id_numeric")
 
     @Column(nullable = false)
     @Field
