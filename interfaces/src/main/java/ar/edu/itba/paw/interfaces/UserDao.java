@@ -33,7 +33,7 @@ public interface UserDao {
                             String criteria, String order, int page, int pageSize);
     int getReviewListAmount(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status);
     Optional<Review> findReviewById(long id);
-    void addReview(User owner, User target, int score, String description, ReviewStatus status);
+    Review addReview(User owner, User target, int score, String description, ReviewStatus status);
     Optional<Review> updateReview(Review review);
 
     List<Token> listTokens();
@@ -42,4 +42,5 @@ public interface UserDao {
     boolean deleteToken(UUID token);
     void cleanOldTokens();
 
+    void indexUsers();
 }

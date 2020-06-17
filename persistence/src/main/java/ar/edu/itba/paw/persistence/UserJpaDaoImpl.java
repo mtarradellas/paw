@@ -11,10 +11,8 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.stereotype.Repository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+
+import javax.persistence.*;
 import javax.persistence.criteria.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,8 +47,6 @@ public class UserJpaDaoImpl implements UserDao {
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, UserStatus status) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        /* TODO descomentar para deployar*/
-//        indexUsers();
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(User.class)
@@ -121,11 +117,11 @@ public class UserJpaDaoImpl implements UserDao {
         return em.createQuery(cr).getResultList();
     }
 
-    private void indexUsers() {
-//        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-//        try {
-//            fullTextEntityManager.createIndexer().startAndWait();
-//        } catch(InterruptedException ignored) {}
+    public void indexUsers() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
     }
 
     @Override
@@ -164,8 +160,7 @@ public class UserJpaDaoImpl implements UserDao {
         final String qStr = "from User as u where u.username = :username";
         final TypedQuery<User> query = em.createQuery(qStr, User.class);
         query.setParameter("username", username);
-        User user = query.getSingleResult();
-        return Optional.of(user);
+        return query.getResultList().stream().findFirst();
     }
 
     @Override
@@ -189,14 +184,13 @@ public class UserJpaDaoImpl implements UserDao {
     public User create(String username, String password, String mail, UserStatus status, String locale) {
         final User user = new User(username, password, mail, status, locale);
         em.persist(user);
-        indexUsers();
+        em.flush();
         return user;
     }
 
     @Override
     public Optional<User> update(User user) {
         em.persist(user);
-        indexUsers();
         return Optional.of(user);
     }
 
@@ -217,20 +211,20 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public void addReview(User owner, User target, int score, String description, ReviewStatus status) {
+    public Review addReview(User owner, User target, int score, String description, ReviewStatus status) {
         Date today = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(today);
         today = cal.getTime();
         final Review review = new Review(owner, target, score, description, status, today);
         em.persist(review);
-        indexUsers();
+        em.flush();
+        return review;
     }
 
     @Override
     public Optional<Review> updateReview(Review review) {
         em.persist(review);
-        indexUsers();
         return Optional.of(review);
     }
 
