@@ -7,11 +7,12 @@
 <spring:message code="interestsTitle" var="titleVar"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
 <spring:message code="areYouSure.body" var="sureBody"/>
+
 <t:basicLayout title="${titleVar}">
     <jsp:body>
         <div class="container-fluid">
             <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
-            <jsp class="row">
+            <div class="row">
 
                 <div class="col-md-2 search-tools">
                     <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/interests">
@@ -130,7 +131,7 @@
                                 <div class="col-lg-5">
                                     <h5 class="text-left"><b><spring:message code="request"/></b></h5>
                                 </div>
-                                <div class="col-lg-2">
+                                <div class="col-lg-3">
                                     <h5 class="text-left"><b><spring:message code="request.status"/></b></h5>
                                 </div>
                                 <div class="col">
@@ -151,7 +152,7 @@
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.pending"/>
                                     </div>
                                     <div class="col text-center ">
@@ -164,7 +165,7 @@
                                                     code="visitUser"/></a>
                                             <form method="POST"
                                                   action="<c:url value="/interests/${req.id}/accept"/>">
-                                                <button type="submit" name="newStatus" class="btn btn-success are-you-sure">
+                                                <button type="submit" name="newStatus" class="btn btn-success accept-request">
                                                     <spring:message code="accept"/></button>
                                             </form>
                                             <form method="POST"
@@ -186,13 +187,18 @@
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
                                         <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
                                         <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
                                         <c:choose>
-                                            <c:when test="${req.status.value eq ACCEPTED}">
+                                            <c:when test="${req.status.value eq ACCEPTED and req.pet.newOwner eq null}">
+                                                <spring:message code="request.accepted"/> <spring:message code="pet.status.notSold"/>
+                                            </c:when>
+
+                                            <c:when test="${req.status.value eq ACCEPTED and req.pet.newOwner ne null}">
                                                 <spring:message code="request.accepted"/>
+                                                <spring:message code="pet.status.currentlySold.short" arguments="${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
                                             </c:when>
 
                                             <c:when test="${req.status.value eq CANCELED}">
@@ -204,13 +210,23 @@
                                             </c:when>
                                         </c:choose>
                                     </div>
-                                    <div class="col text-center">
-                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
-                                           type="button" class="btn btn-secondary"><spring:message
-                                                code="visitPet"/></a>
-                                        <a href="${pageContext.request.contextPath}/user/<c:out value="${req.user.id}"/>"
-                                           type="button" class=" btn btn-secondary"><spring:message
-                                                code="visitUser"/></a>
+                                    <div class="col text-center button-container">
+
+                                            <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
+                                               type="button" class="btn btn-secondary "><spring:message
+                                                    code="visitPet"/></a>
+                                            <a href="${pageContext.request.contextPath}/user/<c:out value="${req.user.id}"/>"
+                                               type="button" class=" btn btn-secondary"><spring:message
+                                                    code="visitUser"/></a>
+                                            <c:if test="${req.pet.newOwner eq null and req.status.value eq ACCEPTED}">
+                                                <form action="${pageContext.request.contextPath}/pet/${req.pet.id}/sell-adopt"
+                                                      method="post" enctype="multipart/form-data" >
+                                                    <input type="hidden" name="newowner" value="${req.user.id}"/>
+                                                    <spring:message code="petCard.reserve" var="submitText"/>
+                                                    <input type="submit" class="btn btn-success are-you-sure" value="${submitText}"/>
+                                                </form>
+                                            </c:if>
+
                                     </div>
                                 </div>
                             </c:if>
@@ -223,6 +239,28 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="accept-request" tabindex="-1" role="dialog" aria-labelledby="acceptTitle"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="acceptTitle"><spring:message code="areYouSure.title"/></h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><spring:message code="areYouSure.body.interests"/></p>
+                    </div>
+                    <div class="modal-footer button-container">
+                        <button type="button" class="btn btn-success"><spring:message code="areYouSure.accept"/></button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><spring:message code="areYouSure.decline"/></button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpTitle"

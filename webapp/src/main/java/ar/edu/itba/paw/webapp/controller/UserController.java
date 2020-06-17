@@ -195,6 +195,8 @@ public class UserController extends ParentController {
 
         requestService.logInterestsAccess(user);
 
+        System.out.println("PEEET " + pet);
+
         List<Request> requestList = requestService.filteredListByPetOwner(user, pet, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
         int amount = requestService.getFilteredListByPetOwnerAmount(user, pet, findList, requestStatus);

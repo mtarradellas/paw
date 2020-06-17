@@ -285,7 +285,7 @@
                                 <div class="text-right">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                                     </button>
-                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <spring:message code="petCard.reserve" var="submitText"/>
                                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                                 </div>
                             </form>
