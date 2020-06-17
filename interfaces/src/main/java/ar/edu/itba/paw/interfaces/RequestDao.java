@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -27,15 +28,15 @@ public interface RequestDao {
 
     Optional<Request> findById(long id);
 
-    Request create(User user, Pet pet, RequestStatus status);
+    Request create(User user, Pet pet, RequestStatus status, Date creationDate);
     Optional<Request> update(Request request);
     void updateByStatusAndUser(User user, RequestStatus oldStatus, RequestStatus newStatus);
     void updateByStatusAndPetOwner(User petOwner, RequestStatus oldStatus, RequestStatus newStatus);
     void updateByStatusAndPet(Pet pet, RequestStatus oldStatus, RequestStatus newStatus);
 
-    boolean isRequestTarget(Request request, User user);
-
     int interestNotifs(User user);
     int requestNotifs(User user);
+
+    void indexRequests();
 }
 
