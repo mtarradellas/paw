@@ -50,8 +50,8 @@ public class HomeController extends ParentController {
         ModelAndView mav = new ModelAndView("views/test");
 //        List<Question> questionList = petService.listQuestions(1, 1, 50);
 //        int amount = petService.getListQuestionsAmount(1);
-        mav.addObject("breedList", petService.filteredBreedList(getLocale(),null,null,1L,
-                null,null, PetStatus.AVAILABLE,0, -1,null, null));
+        mav.addObject("ranges", petService.filteredGenderList(getLocale(),null,null,1L,
+                null,null, PetStatus.AVAILABLE,0, -1,null, null).toArray());
         //mav.addObject("amount", amount);
         return mav;
     }

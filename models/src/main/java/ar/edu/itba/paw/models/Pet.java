@@ -29,7 +29,7 @@ public class Pet {
     private Date birthDate;
 
     @Column(length = 16, nullable = false)
-    @Field
+    @Field(store = Store.YES)
     private String gender;
 
     @Column(nullable = false)

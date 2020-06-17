@@ -17,12 +17,9 @@
 
 <%--                                <h1><c:out value="${amount}"/></h1>--%>
 
-                                <c:forEach items="${breedList}" var="breed">
+                                <c:forEach items="${ranges}" var="range">
                                     <div class="card-body">
-                                            ${breed}
-                                    </div>
-                                    <div class="card-body">
-                                            ${breed.name}
+                                            ${range}
                                     </div>
                                 </c:forEach>
 

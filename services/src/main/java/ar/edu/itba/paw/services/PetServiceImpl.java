@@ -89,21 +89,13 @@ public class PetServiceImpl implements PetService {
         if (userId != null) user = userService.findById(userId).orElse(null);
 
         breed = validateBreed(breedId, speciesId);
+
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
 
         department = validateDepartment(departmentId, provinceId);
         province = (department != null)? department.getProvince() : validateProvince(provinceId);
 
-        LOGGER.debug("Parameters for filteredList <Pet>: user {}, status {}, species {}, breed {}, gender {},  " +
-                        "min price {}, max price {}, province {}, department {}",
-                user, status, species, breed, gender, minPrice, maxPrice, province, department);
-
         List<Breed> breedList = petDao.searchBreedList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
-        System.out.println(breedList.size());
-
-        for (Breed b :breedList) {
-            System.out.println(b);
-        }
         speciesService.setBreedLocale(locale, breedList);
         return breedList;
     }
@@ -126,6 +118,45 @@ public class PetServiceImpl implements PetService {
         province = (department != null)? department.getProvince() : validateProvince(provinceId);
 
         return petDao.searchDepartmentList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
+    }
+
+    @Override
+    public Set<Integer> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                         PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
+
+        if (userId != null) user = userService.findById(userId).orElse(null);
+
+        breed = validateBreed(breedId, speciesId);
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
+
+        return petDao.searchRangesList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
+    }
+
+    @Override
+    public Set<String> filteredGenderList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender, PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
+
+        if (userId != null) user = userService.findById(userId).orElse(null);
+
+        breed = validateBreed(breedId, speciesId);
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
+
+        return petDao.searchGenderList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
     }
 
     @Override
