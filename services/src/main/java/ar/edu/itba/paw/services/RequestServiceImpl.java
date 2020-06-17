@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -32,16 +34,20 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> filteredList(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+    public List<Request> filteredList(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         LOGGER.debug("Parameters for filteredList <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
-                user, pet, status, searchCriteria, searchOrder, page, pageSize);
+                user, petId, status, searchCriteria, searchOrder, page, pageSize);
+
+        Pet pet = parsePet(petId);
         return requestDao.searchList(user, pet, find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
-    public List<Request> filteredListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+    public List<Request> filteredListByPetOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         LOGGER.debug("Parameters for filteredListByPetOwner <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
-                user, pet, status, searchCriteria, searchOrder, page, pageSize);
+                user, petId, status, searchCriteria, searchOrder, page, pageSize);
+
+        Pet pet = parsePet(petId);
         return requestDao.searchListByPetOwner(user, pet, find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
@@ -51,13 +57,23 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public int getFilteredListAmount(User user, Pet pet, List<String> find, RequestStatus status) {
+    public int getFilteredListAmount(User user, Long petId, List<String> find, RequestStatus status) {
+        Pet pet = parsePet(petId);
         return requestDao.getSearchListAmount(user, pet, find, status);
     }
 
     @Override
-    public int getFilteredListByPetOwnerAmount(User user, Pet pet, List<String> find, RequestStatus status) {
+    public int getFilteredListByPetOwnerAmount(User user, Long petId, List<String> find, RequestStatus status) {
+        Pet pet = parsePet(petId);
         return requestDao.getSearchListByPetOwnerAmount(user, pet, find, status);
+    }
+
+    private Pet parsePet(Long petId) {
+        Pet pet = null;
+        if (petId != null) {
+            pet = petService.findById(petId).orElse(null);
+        }
+        return pet;
     }
 
     @Override
@@ -147,7 +163,6 @@ public class RequestServiceImpl implements RequestService {
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put("URL", contextURL );
         arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
         arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
@@ -190,7 +205,6 @@ public class RequestServiceImpl implements RequestService {
 
         Map<String, Object> arguments = new HashMap<>();
 
-        arguments.put("URL", contextURL );
         arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("ownerUsername", contact.getUsername());
         arguments.put("contactEmail", contact.getMail());
@@ -359,6 +373,28 @@ public class RequestServiceImpl implements RequestService {
         }
         Pet pet = opPet.get();
         requestDao.updateByStatusAndPet(pet, RequestStatus.PENDING, RequestStatus.REJECTED);
+    }
+
+    @Override
+    public int interestNotifs(User user) {
+        return requestDao.interestNotifs(user);
+    }
+
+    @Override
+    public int requestNotifs(User user) {
+        return requestDao.requestNotifs(user);
+    }
+
+    @Override
+    public void logRequestsAccess(User user) {
+        user.setRequestsDate(LocalDateTime.now());
+        userService.update(user);
+    }
+
+    @Override
+    public void logInterestsAccess(User user) {
+        user.setInterestsDate(LocalDateTime.now());
+        userService.update(user);
     }
 
 }

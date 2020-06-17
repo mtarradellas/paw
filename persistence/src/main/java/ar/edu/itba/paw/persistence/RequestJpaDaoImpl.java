@@ -16,6 +16,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,48 +238,81 @@ public class RequestJpaDaoImpl implements RequestDao {
         cal.setTime(today);
         today = cal.getTime();
         Request request = new Request(today, status, user, pet.getUser(), pet);
+        request.setUpdateDate(LocalDateTime.now());
         em.persist(request);
         return request;
     }
 
     @Override
     public Optional<Request> update(Request request) {
+        request.setUpdateDate(LocalDateTime.now());
         em.persist(request);
         return Optional.of(request);
     }
 
     @Override
     public void updateByStatusAndUser(User user, RequestStatus oldStatus, RequestStatus newStatus) {
-        String qStr = "update Request set status = :new where user.id = :user and status = :old";
+        String qStr = "update Request set status = :new, updateDate = :now where user.id = :user and status = :old";
         Query query = em.createQuery(qStr);
         query.setParameter("old", oldStatus.getValue());
         query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
+        query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
     }
 
     @Override
     public void updateByStatusAndPetOwner(User petOwner, RequestStatus oldStatus, RequestStatus newStatus) {
-        String qStr = "update Request set status = :new where target.id = :target and status = :old";
+        String qStr = "update Request set status = :new, updateDate = :now where target.id = :target and status = :old";
         Query query = em.createQuery(qStr);
         query.setParameter("old", oldStatus.getValue());
         query.setParameter("new", newStatus.getValue());
         query.setParameter("target", petOwner.getId());
+        query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
     }
 
     @Override
     public void updateByStatusAndPet(Pet pet, RequestStatus oldStatus, RequestStatus newStatus) {
-        String qStr = "update Request set status = :new where pet.id = :pet and status = :old";
+        String qStr = "update Request set status = :new, updateDate = :now where pet.id = :pet and status = :old";
         Query query = em.createQuery(qStr);
         query.setParameter("old", oldStatus.getValue());
         query.setParameter("new", newStatus.getValue());
         query.setParameter("pet", pet.getId());
+        query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
     }
 
     @Override
     public boolean isRequestTarget(Request request, User user) {
         return false;
+    }
+
+    @Override
+    public int interestNotifs(User user) {
+        String qStr = "SELECT count(*) " +
+                      "FROM requests " +
+                      "WHERE targetId = :user AND updateDate > :lastOnline ";
+
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("user", user.getId());
+        Timestamp date = user.getInterestsDate()==null? Timestamp.valueOf("2005-07-01 01:01:01") : Timestamp.valueOf(user.getInterestsDate());
+        query.setParameter("lastOnline", date);
+        Number n = (Number) query.getSingleResult();
+        return n.intValue();
+    }
+
+    @Override
+    public int requestNotifs(User user) {
+        String qStr = "SELECT count(*) " +
+                "FROM requests " +
+                "WHERE ownerId = :user AND updateDate > :lastOnline ";
+
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("user", user.getId());
+        Timestamp date = user.getRequestsDate()==null? Timestamp.valueOf("2005-07-01 01:01:01") : Timestamp.valueOf(user.getRequestsDate());
+        query.setParameter("lastOnline", date);
+        Number n = (Number) query.getSingleResult();
+        return n.intValue();
     }
 }

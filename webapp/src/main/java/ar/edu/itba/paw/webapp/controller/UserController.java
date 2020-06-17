@@ -31,8 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class UserController extends ParentController {
@@ -77,6 +76,7 @@ public class UserController extends ParentController {
         User user = opUser.orElseThrow(UserNotFoundException::new);
 
         boolean canRate = false;
+
 
         if (loggedUser != null && !user.getId().equals(loggedUser.getId())) {
             boolean acquiredPet = loggedUser.getNewPets().stream().anyMatch(p -> p.getUser().getId().equals(user.getId()));
@@ -130,6 +130,8 @@ public class UserController extends ParentController {
         }
         List<String> findList = parseFind(find);
 
+        requestService.logRequestsAccess(user);
+
         List<Request> requestList = requestService.filteredList(user, null, findList, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
         int amount = requestService.getFilteredListAmount(user, null, findList, requestStatus);
@@ -168,13 +170,17 @@ public class UserController extends ParentController {
                                       @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                       @RequestParam(name = "searchOrder", required = false) String searchOrder,
                                       @RequestParam(name = "page", required = false) String page,
-                                      @RequestParam(name = "find", required = false) String find) {
+                                      @RequestParam(name = "find", required = false) String find,
+                                      @RequestParam(name = "petId", required = false) String petId) {
 
         final ModelAndView mav = new ModelAndView("views/interests");
         final User user = loggedUser();
 
+        List<Pet> availablePets = new ArrayList<>(user.getPetList());
+
         searchCriteria = parseCriteria(searchCriteria);
         searchOrder = parseOrder(searchOrder);
+        Long pet = parsePet(petId);
 
         int pageNum = parsePage(page);
         RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
@@ -187,14 +193,19 @@ public class UserController extends ParentController {
         }
         List<String> findList = parseFind(find);
 
-        List<Request> requestList = requestService.filteredListByPetOwner(user, null, findList, requestStatus,
+        requestService.logInterestsAccess(user);
+
+        System.out.println("PEEET " + pet);
+
+        List<Request> requestList = requestService.filteredListByPetOwner(user, pet, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
-        int amount = requestService.getFilteredListByPetOwnerAmount(user, null, findList, requestStatus);
+        int amount = requestService.getFilteredListByPetOwnerAmount(user, pet, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
         mav.addObject("interestList", requestList);
         mav.addObject("amount", amount);
+        mav.addObject("availablePets", availablePets);
 
         return mav;
     }

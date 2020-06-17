@@ -58,6 +58,9 @@ public class PetController extends ParentController {
     @Autowired
     private RequestService requestService;
 
+    @Autowired
+    private MailService mailService;
+
     private static final int PET_PAGE_SIZE = 12;
     private static final int COMMENTS_PAGE_SIZE = 10;
 
@@ -231,7 +234,7 @@ public class PetController extends ParentController {
 
         if (user != null && newOwner != null && petService.sellPet(id, user, newOwnerId, baseUrl)) {
             LOGGER.debug("Pet {} updated as sold", id);
-            return new ModelAndView("redirect:/");
+            return new ModelAndView("redirect:/interests");
         }
         LOGGER.warn("User is not pet owner, pet status not updated");
         return new ModelAndView("redirect:/403");
