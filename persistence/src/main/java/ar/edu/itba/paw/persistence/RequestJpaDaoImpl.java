@@ -62,6 +62,9 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+//        try {
+//            fullTextEntityManager.createIndexer().startAndWait();
+//        } catch(InterruptedException ignored) {}
         LOGGER.debug("Preparing Lucene Query (Requests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
@@ -88,14 +91,8 @@ public class RequestJpaDaoImpl implements RequestDao {
             }
         }
         if(user != null)  boolJunction.must(queryBuilder.phrase().onField("user.username").sentence(user.getUsername()).createQuery());
-        //if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.petName").matching(pet.getPetName()).createQuery());
-        if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.eid").matching(pet.getPetName()).createQuery());
-
-        if(pet != null) {
-            System.out.println("\n\n\nwwwwwwwwwwwwwwwwwwww" +pet.getId());
-            //boolJunction.must(queryBuilder.range().onField("pet.id").below(pet.getId()).createQuery());
-            boolJunction.must(queryBuilder.range().onField("pet.id_numeric").above(pet.getId()).createQuery());
-        }
+        if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.eid").matching(pet.getId()).createQuery());
+        
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
@@ -115,6 +112,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         List<Long> filteredIds = new ArrayList<>();
         for (Object[] id:results) {
             filteredIds.add((Long)id[0]);
+            System.out.println("EEEEEEEEEEEEE");
             System.out.println(id[0]);
         }
         if (filteredIds.size() == 0) return new ArrayList<>();

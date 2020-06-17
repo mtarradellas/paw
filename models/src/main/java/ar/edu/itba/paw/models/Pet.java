@@ -22,8 +22,6 @@ public class Pet {
     @Field(name= "eid")
     @FieldBridge(impl = LongBridge.class)
     private Long id;
-//    @Field(name="id_numeric")
-//    @NumericField(forField="id_numeric")
 
     @Column(nullable = false)
     @Field
