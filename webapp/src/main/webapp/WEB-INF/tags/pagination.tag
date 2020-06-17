@@ -44,6 +44,9 @@
             <c:if test="${not empty param.showAllReviews}">
                 <c:param name="showAllReviews" value="${param.showAllReviews}"/>
             </c:if>
+            <c:if test="${not empty param.petId}">
+                <c:param name="petId" value="${param.petId}"/>
+            </c:if>
         </c:url>
         <c:if test="${currentPage > 1}">
             <li class="page-item"><a class="page-link" href="<c:out value="${prev}" />" ><spring:message code="prev"/> </a></li>
@@ -93,6 +96,9 @@
                         <c:if test="${not empty param.showAllReviews}">
                             <c:param name="showAllReviews" value="${param.showAllReviews}"/>
                         </c:if>
+                        <c:if test="${not empty param.petId}">
+                            <c:param name="petId" value="${param.petId}"/>
+                        </c:if>
                     </c:url>
                     <li class="page-item"><a class="page-link" href='<c:out value="${url}" />'>${i.index}</a></li>
                 </c:otherwise>
@@ -136,6 +142,9 @@
             </c:if>
             <c:if test="${not empty param.showAllReviews}">
                 <c:param name="showAllReviews" value="${param.showAllReviews}"/>
+            </c:if>
+            <c:if test="${not empty param.petId}">
+                <c:param name="petId" value="${param.petId}"/>
             </c:if>
         </c:url>
         <c:if test="${currentPage + 1 <= maxPage}">

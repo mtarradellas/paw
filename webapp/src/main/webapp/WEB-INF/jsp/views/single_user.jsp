@@ -180,10 +180,15 @@
                                 </h2>
                                 <div class="card-deck row">
                                     <c:forEach var="pet" items="${user.newPets}" end="${adoptedLimit-1}">
+                                        <c:if test="${pet.status.value eq AVAILABLE}">
                                         <div class="col-auto mb-3">
-                                            <t:animalCard pet="${pet}" level="user"/>
-                                        </div>
-                                    </c:forEach>
+                                            </c:if>
+                                            <c:if test="${pet.status.value ne AVAILABLE }">
+                                            <div class="col-auto mb-3 resolved">
+                                                </c:if>
+                                                <t:animalCard pet="${pet}" level="user"/>
+                                            </div>
+                                            </c:forEach>
                                 </div>
                             </div>
                             <c:if test="${user.newPets.size() > 4 and showAllAdopted eq 'false'}">

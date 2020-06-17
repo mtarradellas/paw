@@ -37,7 +37,7 @@ $('.accept-request').on('click', function(ev){
 
     const btn = $(this);
     const modal = $('#accept-request');
-    const primaryBtn = $('.btn-success', modal);
+    const primaryBtn = $('.btn-danger', modal);
     const secondaryBtn = $('.btn-secondary', modal);
     const closeBtn = $('.close', modal);
 
