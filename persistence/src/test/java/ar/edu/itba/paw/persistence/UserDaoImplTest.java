@@ -187,4 +187,6 @@ public class UserDaoImplTest {
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, REVIEW_TABLE));
         assertReview(review, owner.getId(), target.getId(), SCORE, DESC, REVIEW_STATUS);
     }
+
+    /* TODO tokens */
 }
