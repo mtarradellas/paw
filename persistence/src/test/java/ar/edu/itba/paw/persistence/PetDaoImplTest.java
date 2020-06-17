@@ -317,11 +317,6 @@ public class PetDaoImplTest {
         Pet pet = new Pet(petName, birthDate, gender, vaccinated, price, uploadDate, description, status, user,
                 species, breed, province, department);
         pet.setId(id);
-        pet.setUser(user);
-        pet.setSpecies(species);
-        pet.setBreed(breed);
-        pet.setProvince(province);
-        pet.setDepartment(department);
 
         byte[] bytes = new byte[] {(byte) 0x3f};
         final Map<String, Object> imageValues = new HashMap<>();
@@ -346,10 +341,7 @@ public class PetDaoImplTest {
         assertDate(birthDate, pet.getBirthDate());
         assertDate(uploadDate, pet.getUploadDate());
         assertEquals(price, pet.getPrice());
-//        assertEquals(user.getId(), pet.getUser().getId());
         assertEquals(status, pet.getStatus());
-//        assertEquals(department.getId(), pet.getDepartment().getId());
-//        assertEquals(province.getId(), pet.getProvince().getId());
     }
 
     private void assertDate(Date expected, Date actual) {
