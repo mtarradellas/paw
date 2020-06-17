@@ -34,6 +34,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -326,7 +328,8 @@ public class PetController extends ParentController {
 
         Optional<Pet> opPet;
         try{
-            opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getBirthDate(), petForm.getGender(),
+            LocalDateTime birthDate = petForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
                     petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, user.getId(),
                     petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
         } catch (DataIntegrityViolationException ex) {
@@ -353,7 +356,7 @@ public class PetController extends ParentController {
             List<Department> departmentList = locationService.departmentList();
             List<Province> provinceList = locationService.provinceList();
 
-            petForm.setBirthDate(pet.getBirthDate());
+            petForm.setBirthDate(java.util.Date.from(pet.getBirthDate().atZone(ZoneId.systemDefault()).toInstant()));
             petForm.setBreedId(pet.getBreed().getId());
             petForm.setDescription(pet.getDescription());
             petForm.setGender(pet.getGender());
@@ -420,7 +423,8 @@ public class PetController extends ParentController {
 
         Optional<Pet> opPet;
         try {
-             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), editPetForm.getBirthDate(),
+            LocalDateTime birthDate = editPetForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), birthDate,
                      editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
                      null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
                      editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());

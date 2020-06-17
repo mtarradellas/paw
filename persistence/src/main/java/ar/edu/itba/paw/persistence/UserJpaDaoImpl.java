@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -212,11 +213,7 @@ public class UserJpaDaoImpl implements UserDao {
 
     @Override
     public Review addReview(User owner, User target, int score, String description, ReviewStatus status) {
-        Date today = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-        final Review review = new Review(owner, target, score, description, status, today);
+        final Review review = new Review(owner, target, score, description, status, LocalDateTime.now());
         em.persist(review);
         em.flush();
         return review;
@@ -251,7 +248,7 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<Token> createToken(UUID uuid, User user, Date expirationDate) {
+    public Optional<Token> createToken(UUID uuid, User user, LocalDateTime expirationDate) {
         Token token = new Token(uuid, expirationDate, user);
         em.persist(token);
         return Optional.of(token);

@@ -5,7 +5,7 @@ import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Reviews")
@@ -34,13 +34,13 @@ public class Review {
     private ReviewStatus status;
 
     @Column(nullable = false)
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
     protected Review() {
         // Hibernate
     }
 
-    public Review(User owner, User target, int score, String description, ReviewStatus status, Date uploadDate) {
+    public Review(User owner, User target, int score, String description, ReviewStatus status, LocalDateTime uploadDate) {
         this.owner = owner;
         this.target = target;
         this.score = score;
@@ -73,7 +73,7 @@ public class Review {
         return status;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
@@ -97,7 +97,7 @@ public class Review {
         this.status = status;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 }

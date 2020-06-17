@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -252,7 +253,7 @@ public class UserServiceImpl implements UserService {
         }
         final Token token = opToken.get();
 
-        if (new Date().after(token.getExpirationDate())) {
+        if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
             userDao.deleteToken(uuid);
             return Optional.empty();
@@ -394,12 +395,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Optional<Token> createToken(UUID token, User user) {
-        Date tomorrow = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(tomorrow);
-        cal.add(Calendar.DATE, 1);
-        tomorrow = cal.getTime();
-        return userDao.createToken(token, user, tomorrow);
+        return userDao.createToken(token, user, LocalDateTime.now().plusDays(1));
     }
 
     @Transactional
@@ -419,7 +415,7 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
         final Token token = opToken.get();
-        if (new Date().after(token.getExpirationDate())) {
+        if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
             userDao.deleteToken(uuid);
             return Optional.empty();

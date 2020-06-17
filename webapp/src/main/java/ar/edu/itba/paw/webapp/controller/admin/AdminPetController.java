@@ -24,7 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -149,7 +150,7 @@ public class AdminPetController extends ParentController {
             return uploadPetForm(petForm);
         }
 
-        Date birthDate = new Date(petForm.getBirthDate().getTime());
+        LocalDateTime birthDate = petForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
         List<byte[]> photos = new ArrayList<>();
         try {
@@ -219,7 +220,7 @@ public class AdminPetController extends ParentController {
     public ModelAndView editPet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
         Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
 
-        petForm.setBirthDate(pet.getBirthDate());
+        petForm.setBirthDate(java.util.Date.from(pet.getBirthDate().atZone(ZoneId.systemDefault()).toInstant()));
         petForm.setBreedId(pet.getBreed().getId());
         petForm.setDescription(pet.getDescription());
         petForm.setGender(pet.getGender());
@@ -278,7 +279,8 @@ public class AdminPetController extends ParentController {
 
         Optional<Pet> opPet;
         try {
-            opPet = petService.update(getLocale(), id, null, editPetForm.getPetName(), editPetForm.getBirthDate(), editPetForm.getGender(),
+            LocalDateTime birthDate = editPetForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            opPet = petService.update(getLocale(), id, null, editPetForm.getPetName(), birthDate, editPetForm.getGender(),
                     editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(), null, editPetForm.getSpeciesId(),
                     editPetForm.getBreedId(), editPetForm.getProvince(), editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
 

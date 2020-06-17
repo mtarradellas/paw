@@ -5,7 +5,8 @@ import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public interface UserDao {
 
     List<Token> listTokens();
     Optional<Token> findToken(UUID token);
-    Optional<Token> createToken(UUID token, User user, Date expirationDate);
+    Optional<Token> createToken(UUID token, User user, LocalDateTime expirationDate);
     boolean deleteToken(UUID token);
     void cleanOldTokens();
 

@@ -91,8 +91,8 @@ public class RequestDaoImplTest {
     private static final Boolean VACCINATED = true;
     private static final String GENDER = "gender";
     private static final String DESCRIPTION = "description";
-    private static final Date BIRTH_DATE = null;
-    private Date UPLOAD_DATE;
+    private static final LocalDateTime BIRTH_DATE = null;
+    private LocalDateTime UPLOAD_DATE = LocalDateTime.now();
     private static final int PRICE = 0;
     private static final PetStatus PET_STATUS = PetStatus.AVAILABLE;
 
@@ -153,12 +153,6 @@ public class RequestDaoImplTest {
         /* DEPARTMENT */
         jdbcInsertDepartment = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(DEPARTMENTS_TABLE);
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2001);
-        cal.set(Calendar.MONTH, 2);
-        cal.set(Calendar.DATE, 2);
-        UPLOAD_DATE = new Date(cal.getTimeInMillis());
 
         setUpTableContext();
     }
@@ -282,7 +276,7 @@ public class RequestDaoImplTest {
         O_PET.setId(O_PET_ID);
     }
 
-    private Request insertRequest(long id, Date creationDate, RequestStatus status, Pet pet, User user, User target, LocalDateTime updateDate) {
+    private Request insertRequest(long id, LocalDateTime creationDate, RequestStatus status, Pet pet, User user, User target, LocalDateTime updateDate) {
         final Map<String, Object> reqValues = new HashMap<>();
         reqValues.put("id", id);
         reqValues.put("creationDate", creationDate);
@@ -297,7 +291,7 @@ public class RequestDaoImplTest {
         return request;
     }
 
-    private void assertRequest(Request request, long id, Date creationDate, RequestStatus status) {
+    private void assertRequest(Request request, long id, LocalDateTime creationDate, RequestStatus status) {
         assertEquals(id, request.getId().longValue());
         assertEquals(creationDate, request.getCreationDate());
         assertEquals(status, request.getStatus());

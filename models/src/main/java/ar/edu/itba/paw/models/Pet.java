@@ -7,7 +7,7 @@ import org.hibernate.search.bridge.builtin.IntegerBridge;
 import org.hibernate.search.bridge.builtin.StringBridge;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -26,7 +26,7 @@ public class Pet {
     private String petName;
 
     @Column
-    private Date birthDate;
+    private LocalDateTime birthDate;
 
     @Column(length = 16, nullable = false)
     @Field
@@ -41,7 +41,7 @@ public class Pet {
     private int price;
 
     @Column(nullable = false)
-    private Date uploadDate;
+    private LocalDateTime uploadDate;
 
     @Column(length = 4086)
     private String description;
@@ -87,7 +87,7 @@ public class Pet {
         // Hibernate
     }
 
-    public Pet(String petName, Date birthDate, String gender, boolean vaccinated, int price, Date uploadDate,
+    public Pet(String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price, LocalDateTime uploadDate,
                String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department) {
 
         this.petName = petName;
@@ -142,7 +142,7 @@ public class Pet {
         return petName;
     }
 
-    public Date getBirthDate() {
+    public LocalDateTime getBirthDate() {
         return birthDate;
     }
 
@@ -158,7 +158,7 @@ public class Pet {
         return price;
     }
 
-    public Date getUploadDate() {
+    public LocalDateTime getUploadDate() {
         return uploadDate;
     }
 
@@ -206,7 +206,7 @@ public class Pet {
         this.petName = petName;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(LocalDateTime birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -222,7 +222,7 @@ public class Pet {
         this.price = price;
     }
 
-    public void setUploadDate(Date uploadDate) {
+    public void setUploadDate(LocalDateTime uploadDate) {
         this.uploadDate = uploadDate;
     }
 

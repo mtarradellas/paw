@@ -146,7 +146,8 @@
                             <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-5">
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <spring:message code="request.isInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
@@ -187,7 +188,8 @@
 
                                     <div class=" col-lg-5">
 
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <spring:message code="request.wasInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>

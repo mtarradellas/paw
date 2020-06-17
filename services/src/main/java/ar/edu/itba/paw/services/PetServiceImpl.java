@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -171,8 +172,8 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Pet> create(String locale, String petName, Date birthDate, String gender, boolean vaccinated, int price,
-                      String description, PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos) {
+    public Optional<Pet> create(String locale, String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price,
+                                String description, PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos) {
 
         LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, province: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, price: {}, owner: {}",
                petName, speciesId, breedId, departmentId, provinceId, vaccinated, gender, description, birthDate, price, userId);
@@ -227,12 +228,7 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("User {} is not active, pet creation failed", userId);
         }
 
-        java.util.Date today = new java.util.Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-
-        Pet pet = petDao.create(petName, birthDate, gender, vaccinated, price, (Date) today, description, status, user,
+        Pet pet = petDao.create(petName, birthDate, gender, vaccinated, price, LocalDateTime.now(), description, status, user,
                 species, breed, province, department);
 
         LOGGER.debug("Pet id: {} successfully created", pet);
@@ -252,7 +248,7 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Pet> update(String locale, long id, Long userId, String petName, Date birthDate, String gender,
+    public Optional<Pet> update(String locale, long id, Long userId, String petName, LocalDateTime birthDate, String gender,
                                 boolean vaccinated, int price, String description, PetStatus status, long speciesId,
                                 long breedId, long provinceId, long departmentId, List<byte[]> photos, List<Long> imagesToDelete) {
         LOGGER.debug("Attempting user {} update of pet {} with: petName: {}, speciesId: {}, breedId: {}, " +
