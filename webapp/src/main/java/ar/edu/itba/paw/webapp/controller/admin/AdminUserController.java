@@ -65,6 +65,7 @@ public class AdminUserController extends ParentController {
         searchCriteria = parseCriteria(searchCriteria);
         searchOrder = parseOrder(searchOrder);
 
+
         if (!isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
@@ -87,6 +88,8 @@ public class AdminUserController extends ParentController {
         mav.addObject("userList", userList);
         mav.addObject("amount", amount);
         mav.addObject("statusList", statusList);
+        mav.addObject("nanStatus", status == null);
+
 
         return mav;
     }

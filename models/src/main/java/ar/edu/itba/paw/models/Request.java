@@ -47,12 +47,6 @@ public class Request {
         // Hibernate
     }
 
-    public Request(Date creationDate, RequestStatus status, Pet pet) {
-        this.creationDate = creationDate;
-        this.pet = pet;
-        this.status = status.getValue();
-    }
-
     public Request(Date creationDate, RequestStatus status, User user, User target, Pet pet) {
         this.creationDate = creationDate;
         this.pet = pet;
@@ -82,8 +76,12 @@ public class Request {
         this.target = target;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public RequestStatus getStatus() {

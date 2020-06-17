@@ -222,6 +222,14 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
+    public void indexRequests() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
+    }
+
+    @Override
     @Deprecated
     public List<Request> filteredListByPetOwner(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         return searchListByPetOwner(user, pet, null, status, searchCriteria, searchOrder, page, pageSize);
@@ -268,14 +276,11 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    public Request create(User user, Pet pet, RequestStatus status) {
-        Date today = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-        Request request = new Request(today, status, user, pet.getUser(), pet);
+    public Request create(User user, Pet pet, RequestStatus status, Date creationDate) {
+        Request request = new Request(creationDate, status, user, pet.getUser(), pet);
         request.setUpdateDate(LocalDateTime.now());
         em.persist(request);
+        em.flush();
         return request;
     }
 
@@ -317,11 +322,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("pet", pet.getId());
         query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
-    }
-
-    @Override
-    public boolean isRequestTarget(Request request, User user) {
-        return false;
     }
 
     @Override

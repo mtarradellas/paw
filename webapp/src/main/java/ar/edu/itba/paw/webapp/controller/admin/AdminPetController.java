@@ -112,12 +112,15 @@ public class AdminPetController extends ParentController {
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("petList", petList);
         mav.addObject("amount", amount);
+
         mav.addObject("speciesList", speciesList);
         mav.addObject("breedList", breedList.toArray());
 //        mav.addObject("provinceList", provinceList);
 //        mav.addObject("departmentList", departmentList.toArray());
 //        mav.addObject("ranges", ranges);
 //        mav.addObject("genders", genders);
+
+        mav.addObject("nanStatus", status == null);
 
         return mav;
     }
