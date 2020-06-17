@@ -28,6 +28,7 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestJpaDaoImpl.class);
     private static final int MAX_STATUS = 3;
+    private static final int MAX_QUANTITY_OF_STATUS = 4;
 
     @PersistenceContext
     private EntityManager em;
@@ -56,8 +57,26 @@ public class RequestJpaDaoImpl implements RequestDao {
                                     String searchOrder, int page, int pageSize) {
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
-       List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+        jpaQuery.setProjection(ProjectionConstants.ID);
+        List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
         return reqs;
+    }
+
+    @Override
+    public Set<Integer> searchStatusList(User user, Pet pet, List<String> find, RequestStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
+        jpaQuery.setProjection("status");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new TreeSet<>();
+        Set<Integer> statuses = new TreeSet<>();
+        for (Object[] object:results) {
+            statuses.add((Integer)object[0]);
+            if(statuses.size() == MAX_QUANTITY_OF_STATUS) return statuses;
+        }
+        return statuses;
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {
@@ -93,7 +112,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
-        jpaQuery.setProjection(ProjectionConstants.ID);
         return jpaQuery;
     }
 
@@ -144,8 +162,26 @@ public class RequestJpaDaoImpl implements RequestDao {
     @Override
     public List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
+        jpaQuery.setProjection(ProjectionConstants.ID);
         List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
         return reqs;
+    }
+
+    @Override
+    public Set<Integer> searchStatusListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
+        jpaQuery.setProjection("status");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new TreeSet<>();
+        Set<Integer> statuses = new TreeSet<>();
+        for (Object[] object:results) {
+            statuses.add((Integer)object[0]);
+            if(statuses.size() == MAX_QUANTITY_OF_STATUS) return statuses;
+        }
+        return statuses;
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsByPetOwnerQuery(List<String> find, RequestStatus status, User user, Pet pet) {
@@ -181,7 +217,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
-        jpaQuery.setProjection(ProjectionConstants.ID);
+
         return jpaQuery;
     }
 

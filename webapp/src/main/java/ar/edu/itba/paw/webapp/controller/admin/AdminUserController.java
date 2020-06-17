@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import ar.edu.itba.paw.webapp.controller.ParentController;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,13 +75,21 @@ public class AdminUserController extends ParentController {
         List<String> findList = parseFind(find);
 
         List<User> userList = userService.filteredList(findList, userStatus, searchCriteria, searchOrder, pageNum, USER_PAGE_SIZE);
+        List<UserStatus> statusList;
+        if(userStatus == null) statusList = userService.filteredStatusList( findList, userStatus);
+        else {
+            statusList = new ArrayList<>();
+            statusList.add(userStatus);
+        }
         int amount = userService.getFilteredAmount(findList, userStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / USER_PAGE_SIZE));
         mav.addObject("userList", userList);
         mav.addObject("amount", amount);
+        mav.addObject("statusList", statusList);
         mav.addObject("nanStatus", status == null);
+
 
         return mav;
     }
