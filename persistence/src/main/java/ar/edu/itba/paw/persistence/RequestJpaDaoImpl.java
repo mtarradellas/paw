@@ -257,7 +257,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("old", oldStatus.getValue());
         query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
-        query.setParameter("now", Timestamp.valueOf(LocalDateTime.now()));
+        query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
     }
 
@@ -268,7 +268,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("old", oldStatus.getValue());
         query.setParameter("new", newStatus.getValue());
         query.setParameter("target", petOwner.getId());
-        query.setParameter("now", Timestamp.valueOf(LocalDateTime.now()));
+        query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
     }
 
@@ -279,7 +279,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("old", oldStatus.getValue());
         query.setParameter("new", newStatus.getValue());
         query.setParameter("pet", pet.getId());
-        query.setParameter("now", Timestamp.valueOf(LocalDateTime.now()));
+        query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
     }
 
@@ -292,7 +292,7 @@ public class RequestJpaDaoImpl implements RequestDao {
     public int interestNotifs(User user) {
         String qStr = "SELECT count(*) " +
                       "FROM requests " +
-                      "WHERE targetId = :user AND creationDate > :lastOnline ";
+                      "WHERE targetId = :user AND updateDate > :lastOnline ";
 
         Query query = em.createNativeQuery(qStr);
         query.setParameter("user", user.getId());

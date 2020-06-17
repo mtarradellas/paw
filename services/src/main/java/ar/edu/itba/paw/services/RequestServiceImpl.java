@@ -34,16 +34,20 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> filteredList(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+    public List<Request> filteredList(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         LOGGER.debug("Parameters for filteredList <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
-                user, pet, status, searchCriteria, searchOrder, page, pageSize);
+                user, petId, status, searchCriteria, searchOrder, page, pageSize);
+
+        Pet pet = parsePet(petId);
         return requestDao.searchList(user, pet, find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
-    public List<Request> filteredListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+    public List<Request> filteredListByPetOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         LOGGER.debug("Parameters for filteredListByPetOwner <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
-                user, pet, status, searchCriteria, searchOrder, page, pageSize);
+                user, petId, status, searchCriteria, searchOrder, page, pageSize);
+
+        Pet pet = parsePet(petId);
         return requestDao.searchListByPetOwner(user, pet, find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
@@ -53,13 +57,23 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public int getFilteredListAmount(User user, Pet pet, List<String> find, RequestStatus status) {
+    public int getFilteredListAmount(User user, Long petId, List<String> find, RequestStatus status) {
+        Pet pet = parsePet(petId);
         return requestDao.getSearchListAmount(user, pet, find, status);
     }
 
     @Override
-    public int getFilteredListByPetOwnerAmount(User user, Pet pet, List<String> find, RequestStatus status) {
+    public int getFilteredListByPetOwnerAmount(User user, Long petId, List<String> find, RequestStatus status) {
+        Pet pet = parsePet(petId);
         return requestDao.getSearchListByPetOwnerAmount(user, pet, find, status);
+    }
+
+    private Pet parsePet(Long petId) {
+        Pet pet = null;
+        if (petId != null) {
+            pet = petService.findById(petId).orElse(null);
+        }
+        return pet;
     }
 
     @Override

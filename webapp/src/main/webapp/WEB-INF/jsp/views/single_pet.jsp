@@ -167,9 +167,6 @@
                                     class="fas fa-check ml-2 "></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
                                     class="fas fa-times ml-2"></i></li>
-                            <li class="list-group-item"><b>
-                                <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
-                            </li>
                         </c:if>
                         <c:if test="${pet.price gt 0 and pet.status.value eq AVAILABLE}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
@@ -179,16 +176,8 @@
                                 (<spring:message code="petCard.price"/> <spring:message code="argPrice"
                                                                                         arguments="${pet.price}"/>)
                             </li>
-                            <li class="list-group-item"><b>
-                                <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
-                            </li>
                         </c:if>
                         <c:if test="${pet.status.value eq SOLD}">
-                            <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
-                                    class="fas fa-times ml-2"></i></li>
-                            <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
-                                    class="fas fa-times ml-2 "></i>
-                            </li>
                             <li class="list-group-item"><b>
                                 <spring:message code="status.sold"/>:</b><i class="fas fa-check ml-2 "></i>
                                 (<spring:message code="pet.status.currentlySold"
@@ -202,14 +191,7 @@
 
                 </div>
                 <hr>
-                <c:set var="ownerId" value="${pet.user.id}"/>
-                <a href="${pageContext.request.contextPath}/user/${ownerId}"
-                   class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
 
-
-                <div class="p-4">
-                    <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
-                </div>
 
                 <div class="p-3">
                     <h2 class="mb-4"><spring:message code="questions"/></h2>
@@ -232,7 +214,13 @@
                     </ul>
                     <button type="button" class="btn btn-outline-secondary btn-sm load-more">Cargar mas</button>
                 </div>
-
+                <hr>
+                <c:set var="ownerId" value="${pet.user.id}"/>
+                <a href="${pageContext.request.contextPath}/user/${ownerId}"
+                   class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
+                <div class="p-4">
+                    <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
+                </div>
             </div>
 
             <div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="full-image"
@@ -297,7 +285,7 @@
                                 <div class="text-right">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                                     </button>
-                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <spring:message code="petCard.reserve" var="submitText"/>
                                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                                 </div>
                             </form>
