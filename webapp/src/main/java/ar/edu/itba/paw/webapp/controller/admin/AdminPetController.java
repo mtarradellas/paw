@@ -105,6 +105,7 @@ public class AdminPetController extends ParentController {
         mav.addObject("amount", amount);
         mav.addObject("speciesList", speciesL);
         mav.addObject("breedList", breedL);
+        mav.addObject("nanStatus", status == null);
         return mav;
     }
 
