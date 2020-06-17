@@ -45,10 +45,10 @@
                         </c:if>
                         <c:if test="${not empty requestList}">
                             <div class="row">
-                                <div class="col-lg-7">
+                                <div class="col-lg-6">
                                     <h5 class="text-left"><b><spring:message code="request"/></b></h5>
                                 </div>
-                                <div class="col-lg-2">
+                                <div class="col-lg-3">
                                     <h5 class="text-left"><b><spring:message code="request.status"/></b></h5>
                                 </div>
                                 <div class="col">
@@ -61,14 +61,14 @@
                             <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
                             <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.showedInterest"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.pending"/>
                                     </div>
 
@@ -88,15 +88,22 @@
                             <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
                             <c:if test="${req.status.value eq ACCEPTED}">
                                 <div class="row p-1 bg-light resolved">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.wasAccepted"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.accepted"/>
+                                        <c:if test="${req.pet.newOwner eq null}">
+                                            <spring:message code="pet.status.notSold"/>
+                                        </c:if>
+                                        <c:if test="${req.pet.newOwner ne null}">
+                                            <spring:message code="pet.status.currentlySold.short" arguments="${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                        </c:if>
+
                                     </div>
                                     <div class="col text-center button-container">
                                         <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
@@ -109,14 +116,14 @@
                             <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
                             <c:if test="${req.status.value eq REJECTED}">
                                 <div class="row p-1 bg-light resolved">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.wasRejected"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.rejected"/>
                                     </div>
                                     <div class="col text-center button-container">
@@ -130,14 +137,14 @@
                             <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
                             <c:if test="${req.status.value eq CANCELED}">
                                 <div class="row p-1 bg-light resolved">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.wasCanceled"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
                                         <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.canceled"/>
                                     </div>
                                     <div class="col text-center button-container">

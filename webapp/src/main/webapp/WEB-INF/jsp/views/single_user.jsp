@@ -217,8 +217,8 @@
                             </c:if>
                         </c:if>
 
-                        <hr>
                         <c:if test="${user.averageScore != -1}">
+                            <hr>
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
 
@@ -370,7 +370,7 @@
                                 <div class="text-right">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                                     </button>
-                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <spring:message code="review" var="submitText"/>
                                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                                 </div>
                             </form>
