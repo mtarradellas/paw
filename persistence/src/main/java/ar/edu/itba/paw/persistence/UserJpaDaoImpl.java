@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.models.*;
 
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.engine.ProjectionConstants;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class UserJpaDaoImpl implements UserDao {
 
     private static final int MAX_STATUS = 3;
+    private static final int MAX_QUANTITY_OF_STATUS = 4;
 
     @PersistenceContext
     private EntityManager em;
@@ -44,6 +46,7 @@ public class UserJpaDaoImpl implements UserDao {
     @Override
     public List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
+        jpaQuery.setProjection(ProjectionConstants.ID);
         return paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
     }
 
@@ -79,7 +82,6 @@ public class UserJpaDaoImpl implements UserDao {
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, User.class);
-        jpaQuery.setProjection(ProjectionConstants.ID);
         return jpaQuery;
     }
 
@@ -132,6 +134,25 @@ public class UserJpaDaoImpl implements UserDao {
     @Deprecated
     public List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         return searchList(null, status, searchCriteria, searchOrder, page, pageSize);
+    }
+
+    @Override
+    public Set<Integer> searchStatusList(List<String> find,  UserStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
+        jpaQuery.setProjection("status");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new TreeSet<>();
+        Set<Integer> statuses = new TreeSet<>();
+        for (Object[] object:results) {
+            statuses.add((Integer)object[0]);
+            if(statuses.size() == MAX_QUANTITY_OF_STATUS) return statuses;
+        }
+        return statuses;
     }
 
     @Override

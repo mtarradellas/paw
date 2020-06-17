@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,12 +68,19 @@ public class AdminRequestController extends ParentController {
 
         List<Request> requestList = requestService.filteredList(null, null, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+        List<RequestStatus> statusList;
+        if(requestStatus == null) statusList = requestService.filteredStatusList(null, null, findList, requestStatus);
+        else {
+            statusList = new ArrayList<>();
+            statusList.add(requestStatus);
+        }
         int amount = requestService.getFilteredListAmount(null, null, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
         mav.addObject("requestList", requestList);
         mav.addObject("amount", amount);
+        mav.addObject("statusList", statusList);
 
         return mav;
     }

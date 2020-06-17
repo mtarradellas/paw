@@ -52,7 +52,7 @@ public class HomeController extends ParentController {
         ModelAndView mav = new ModelAndView("views/test");
 //        List<Question> questionList = petService.listQuestions(1, 1, 50);
 //        int amount = petService.getListQuestionsAmount(1);
-        mav.addObject("ranges", requestService.filteredStatusList(userService.findById(17L).get(),null, null, null));
+        mav.addObject("ranges", userService.filteredStatusList(null, null));
         //mav.addObject("amount", amount);
         return mav;
     }

@@ -30,7 +30,7 @@ public class User {
     @Column(length = 7)
     private String locale;
 
-    @Field
+    @Field(store = Store.YES)
     @NumericField
     private int status;
 
