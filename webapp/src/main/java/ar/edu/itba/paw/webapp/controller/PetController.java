@@ -112,6 +112,8 @@ public class PetController extends ParentController {
         Object[] provinceList = departmentList.stream().map(Department::getProvince).distinct().sorted(Province::compareTo).toArray();
         Object[] ranges = petService.filteredRangesList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
                 minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
+        Object[] genders = petService.filteredGenderList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
+                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
@@ -123,6 +125,7 @@ public class PetController extends ParentController {
         mav.addObject("provinceList", provinceList);
         mav.addObject("departmentList", departmentList.toArray());
         mav.addObject("ranges", ranges);
+        mav.addObject("genders", genders);
 
         mav.addObject("find", find);
         return mav;
