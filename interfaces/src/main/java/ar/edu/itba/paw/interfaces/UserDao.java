@@ -1,21 +1,21 @@
 package ar.edu.itba.paw.interfaces;
 
+import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 
 public interface UserDao {
 
     List<User> list(int page, int pageSize);
     List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
     List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-
+    Set<Integer> searchStatusList( List<String> find, UserStatus status);
     int getListAmount();
     int getSearchAmount(List<String> find, UserStatus status);
     int getFilteredAmount(UserStatus status);
@@ -33,7 +33,7 @@ public interface UserDao {
                             String criteria, String order, int page, int pageSize);
     int getReviewListAmount(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status);
     Optional<Review> findReviewById(long id);
-    void addReview(User owner, User target, int score, String description, ReviewStatus status);
+    Review addReview(User owner, User target, int score, String description, ReviewStatus status);
     Optional<Review> updateReview(Review review);
 
     List<Token> listTokens();
@@ -42,4 +42,5 @@ public interface UserDao {
     boolean deleteToken(UUID token);
     void cleanOldTokens();
 
+    void indexUsers();
 }

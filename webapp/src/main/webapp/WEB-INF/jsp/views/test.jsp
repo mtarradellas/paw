@@ -29,6 +29,7 @@
                                     </div>
                                     <div class="card-body">
                                             ${request.pet}
+
                                     </div>
                                 </c:forEach>
 

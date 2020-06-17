@@ -24,7 +24,7 @@ public class Request {
     @Column
     private LocalDateTime updateDate;
 
-    @Field
+    @Field(store = Store.YES)
     @NumericField
     private int status;
 
@@ -45,12 +45,6 @@ public class Request {
 
     protected Request() {
         // Hibernate
-    }
-
-    public Request(Date creationDate, RequestStatus status, Pet pet) {
-        this.creationDate = creationDate;
-        this.pet = pet;
-        this.status = status.getValue();
     }
 
     public Request(Date creationDate, RequestStatus status, User user, User target, Pet pet) {
@@ -82,8 +76,12 @@ public class Request {
         this.target = target;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public RequestStatus getStatus() {

@@ -180,10 +180,15 @@
                                 </h2>
                                 <div class="card-deck row">
                                     <c:forEach var="pet" items="${user.newPets}" end="${adoptedLimit-1}">
+                                        <c:if test="${pet.status.value eq AVAILABLE}">
                                         <div class="col-auto mb-3">
-                                            <t:animalCard pet="${pet}" level="user"/>
-                                        </div>
-                                    </c:forEach>
+                                            </c:if>
+                                            <c:if test="${pet.status.value ne AVAILABLE }">
+                                            <div class="col-auto mb-3 resolved">
+                                                </c:if>
+                                                <t:animalCard pet="${pet}" level="user"/>
+                                            </div>
+                                            </c:forEach>
                                 </div>
                             </div>
                             <c:if test="${user.newPets.size() > 4 and showAllAdopted eq 'false'}">
@@ -217,8 +222,8 @@
                             </c:if>
                         </c:if>
 
-                        <hr>
                         <c:if test="${user.averageScore != -1}">
+                            <hr>
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
 
@@ -370,7 +375,7 @@
                                 <div class="text-right">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                                     </button>
-                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <spring:message code="review" var="submitText"/>
                                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                                 </div>
                             </form>

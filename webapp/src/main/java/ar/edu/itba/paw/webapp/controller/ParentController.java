@@ -187,11 +187,11 @@ public class ParentController {
         int[] price;
         switch (range) {
             case "0" : price = new int[]{0, 0}; break;
-            case "1" : price = new int[]{1, 5000}; break;
-            case "2" : price = new int[]{5000, 10000}; break;
-            case "3" : price = new int[]{10000, 15000}; break;
-            case "4" : price = new int[]{15000, 20000}; break;
-            case "5" : price = new int[]{20000, 25000}; break;
+            case "1" : price = new int[]{1, 4999}; break;
+            case "2" : price = new int[]{5000, 9999}; break;
+            case "3" : price = new int[]{10000, 14999}; break;
+            case "4" : price = new int[]{15000, 19999}; break;
+            case "5" : price = new int[]{20000, 24999}; break;
             case "6" : price = new int[]{25000, -1}; break;
             default: price = new int[]{0, -1}; break;
         }
@@ -252,6 +252,18 @@ public class ParentController {
             }
         }
         return userId;
+    }
+
+    public Long parsePet(String petStr) {
+        Long petId = null;
+        if (petStr != null && !petStr.equalsIgnoreCase("any")) {
+            try {
+                petId = Long.parseLong(petStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.debug("Invalid pet id ({}) parameter", petStr);
+            }
+        }
+        return petId;
     }
 
     public int parseScore(String scoreStr, int defaultScore) {
