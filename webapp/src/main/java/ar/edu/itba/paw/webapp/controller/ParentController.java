@@ -254,6 +254,18 @@ public class ParentController {
         return userId;
     }
 
+    public Long parsePet(String petStr) {
+        Long petId = null;
+        if (petStr != null && !petStr.equalsIgnoreCase("any")) {
+            try {
+                petId = Long.parseLong(petStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.debug("Invalid pet id ({}) parameter", petStr);
+            }
+        }
+        return petId;
+    }
+
     public int parseScore(String scoreStr, int defaultScore) {
         if (scoreStr == null) return defaultScore;
         int score = defaultScore;

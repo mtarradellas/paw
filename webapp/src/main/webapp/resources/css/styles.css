@@ -502,7 +502,21 @@ html,body {
     margin: auto;
 }
 
+.notify-bubble {
+    position: absolute;
+    top: 27px;
+    right: -37px;
+    padding: 2px 5px 2px 5px;
+    background-color: forestgreen;
+    color: white;
+    font-size: 0.65em;
+    border-radius: 50%;
+}
 
+.notify-container {
+    position: relative;
+    display: inline-block;
+}
 
 
 
