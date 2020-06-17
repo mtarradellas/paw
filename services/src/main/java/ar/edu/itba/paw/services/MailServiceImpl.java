@@ -1,11 +1,14 @@
 package ar.edu.itba.paw.services;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Map;
 import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.models.constants.MailType;
-import freemarker.template.Configuration;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,7 @@ public class MailServiceImpl implements MailService {
     JavaMailSender mailSender;
 
     @Autowired
-    Configuration freemarkerConfiguration;
+    VelocityEngine velocityEngine;
 
     @Autowired
     MessageSource messageSource;
@@ -48,31 +51,24 @@ public class MailServiceImpl implements MailService {
             helper.setTo(recipient);
             helper.setSubject(messageSourceAccessor.getMessage(mailType.getName() + ".subject"));
 
-            String templateName = getMailTemplateName(mailType);
-            if (templateName.equals("")) {
-                LOGGER.warn("Could not find FreeMarker template for mail type");
-                return;
+            VelocityContext context = new VelocityContext();
+
+            for(String key : arguments.keySet()){
+                context.put(key,arguments.get(key));
             }
-            arguments.put("msg", messageSourceAccessor);
-            String text = geFreeMarkerTemplateContent(arguments, templateName);
+            context.put("msg", messageSourceAccessor);
+
+            StringWriter stringWriter = new StringWriter();
+            velocityEngine.mergeTemplate("mail_templates/" + mailType.getName() + ".vm",
+                    "UTF-8", context, stringWriter);
+            String text = stringWriter.toString();
+
 
             helper.setText(text,true);
         };
 
         /* TODO try catch for exception handling */
         mailSender.send(preparator);
-    }
-
-    private String geFreeMarkerTemplateContent(Map<String, Object> model, String templateName){
-        StringBuilder content = new StringBuilder();
-        try{
-            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(
-                    freemarkerConfiguration.getTemplate(templateName), model));
-            return content.toString();
-        }catch(Exception e){
-            LOGGER.warn("Exception occured while processing fmtemplate " + templateName);
-        }
-        return "";
     }
 
     private String getMailTemplateName(MailType mailType){
