@@ -24,7 +24,7 @@ public class Request {
     @Column
     private LocalDateTime updateDate;
 
-    @Field
+    @Field(store = Store.YES)
     @NumericField
     private int status;
 

@@ -7,15 +7,18 @@ import ar.edu.itba.paw.models.constants.RequestStatus;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public interface RequestDao {
 
     List<Request> list(int page, int pageSize);
     List<Request> searchList(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+    Set<Integer> searchStatusList(User user, Pet pet, List<String> find, RequestStatus status);
     List<Request> filteredList(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
     List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder,  int page, int pageSize);
+    Set<Integer> searchStatusListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status);
     List<Request> filteredListByPetOwner(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
     int getListAmount();

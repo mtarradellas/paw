@@ -134,12 +134,19 @@ public class UserController extends ParentController {
 
         List<Request> requestList = requestService.filteredList(user, null, findList, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+        List<RequestStatus> statusList;
+        if(requestStatus == null) statusList = requestService.filteredStatusList(user, null, findList, requestStatus);
+        else {
+            statusList = new ArrayList<>();
+            statusList.add(requestStatus);
+        }
         int amount = requestService.getFilteredListAmount(user, null, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / REQ_PAGE_SIZE));
         mav.addObject("requestList", requestList);
         mav.addObject("amount", amount);
+        mav.addObject("statusList", statusList);
         return mav;
     }
 
@@ -195,10 +202,14 @@ public class UserController extends ParentController {
 
         requestService.logInterestsAccess(user);
 
-        System.out.println("PEEET " + pet);
-
         List<Request> requestList = requestService.filteredListByPetOwner(user, pet, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+        List<RequestStatus> statusList;
+        if(requestStatus == null) statusList = requestService.filteredStatusListByPetOwner(user, null, findList, requestStatus);
+        else {
+            statusList = new ArrayList<>();
+            statusList.add(requestStatus);
+        }
         int amount = requestService.getFilteredListByPetOwnerAmount(user, pet, findList, requestStatus);
 
         mav.addObject("currentPage", pageNum);
@@ -206,6 +217,7 @@ public class UserController extends ParentController {
         mav.addObject("interestList", requestList);
         mav.addObject("amount", amount);
         mav.addObject("availablePets", availablePets);
+        mav.addObject("statusList", statusList);
 
         return mav;
     }

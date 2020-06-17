@@ -43,12 +43,30 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public List<RequestStatus> filteredStatusList(User user, Long petId, List<String> find, RequestStatus status) {
+        Pet pet = parsePet(petId);
+        Set<Integer> results = requestDao.searchStatusList(user, pet, find, status );
+        List<RequestStatus> toReturn = new ArrayList<>();
+        results.stream().forEach(r->toReturn.add(RequestStatus.values()[r]));
+        return toReturn;
+    }
+
+    @Override
     public List<Request> filteredListByPetOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         LOGGER.debug("Parameters for filteredListByPetOwner <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
                 user, petId, status, searchCriteria, searchOrder, page, pageSize);
 
         Pet pet = parsePet(petId);
         return requestDao.searchListByPetOwner(user, pet, find, status, searchCriteria, searchOrder, page, pageSize);
+    }
+
+    @Override
+    public List<RequestStatus> filteredStatusListByPetOwner(User user, Long petId, List<String> find, RequestStatus status) {
+        Pet pet = parsePet(petId);
+        Set<Integer> results = requestDao.searchStatusListByPetOwner(user, pet, find, status );
+        List<RequestStatus> toReturn = new ArrayList<>();
+        results.stream().forEach(r->toReturn.add(RequestStatus.values()[r]));
+        return toReturn;
     }
 
     @Override
