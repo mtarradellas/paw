@@ -117,7 +117,7 @@ public class PetJpaDaoImpl implements PetDao {
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Pet.class);
-        jpaQuery.setProjection("price");
+        jpaQuery.setProjection("breed.en_us");
         @SuppressWarnings("unchecked")
         List<Object[]> results = jpaQuery.getResultList();
         if (results.size() == 0) return new ArrayList<>();
