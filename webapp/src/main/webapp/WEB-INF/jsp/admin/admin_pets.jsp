@@ -35,8 +35,8 @@
                         <div class="card-body">
                             <div class="form-group">
                                 <label for="filter-species"><spring:message code="pet.species"/></label>
-                                <select name="species" class="form-control" id="filter-species">
-                                    <option value="any"><spring:message code="filter.any"/></option>
+                                <select data-child="filter-breed" name="species" class="selector-parent form-control" id="filter-species">
+                                    <option value="-1"><spring:message code="filter.any"/></option>
                                     <c:forEach items="${speciesList}" var="speciesValue">
                                         <c:set var="speciesId">${speciesValue.id}</c:set>
                                         <option value="${speciesValue.id}"
@@ -55,12 +55,12 @@
                                             disabled
                                         </c:if>
                                 >
-                                    <option class="species-any" value="any"><spring:message code="filter.any"/></option>
+                                    <option class="species-any" value="-1"><spring:message code="filter.any"/></option>
 
                                     <c:forEach items="${breedList}" var="breed">
                                         <c:set var="breedId">${breed.id}</c:set>
                                         <c:set var="speciesId">${breed.species.id}</c:set>
-                                        <option class="species-${breed.species.id}" value="${breed.id}"
+                                        <option data-dependency="${breed.species.id}" value="${breed.id}"
                                                 <c:if test="${(not empty param.species) && (param.species ne 'any') && (speciesId ne param.species)}">style="display: none;"</c:if>
                                                 <c:if test="${(not empty param.breed) && (param.breed ne 'any') && (breedId eq param.breed)}">selected</c:if>
                                         >
@@ -295,7 +295,9 @@
                 </div>
             </div>
         </div>
+
         <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
+        <script src="<c:url value="/resources/js/selector_dependency.js"/>"></script>
         <script src="<c:url value="/resources/js/index.js"/>"></script>
     </jsp:body>
 </t:adminLayout>

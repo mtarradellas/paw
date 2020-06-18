@@ -206,7 +206,7 @@
 
                                             <c:when test="${req.status.value eq ACCEPTED and req.pet.newOwner ne null}">
                                                 <spring:message code="request.accepted"/>
-                                                <spring:message code="pet.status.currentlySold.short" arguments="${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                                <spring:message code="pet.status.currentlySold.short" arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
                                             </c:when>
 
                                             <c:when test="${req.status.value eq CANCELED}">

@@ -227,8 +227,6 @@
                             <div id="ratings" class="p-2">
                                 <h2><b><spring:message code="user.reviews"/></b>
 
-                                    <spring:message code="showingOutOf"
-                                                    arguments="${limit}, ${user.targetReviews.size()}"/>
                                     <c:if test="${canRate}">
                                         <button type="button" class="btn btn-link"
                                                 data-toggle="modal" data-target="#add-review"><spring:message
@@ -249,86 +247,13 @@
                                     </div>
                                 </div>
                                 <hr class="m-0">
-                                <c:forEach var="review" items="${user.targetReviews}" begin="0" end="${limit-1}">
-                                    <div class="row ml-0 mr-0 bg-white">
-                                        <div class="col-lg-2">
-                                            <a href="${pageContext.request.contextPath}/user/${review.owner.id}">
-                                                    ${review.owner.username}
 
-                                            </a>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <c:if test="${review.score == 1}">
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                            </c:if>
-                                            <c:if test="${review.score == 2}">
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                            </c:if>
-                                            <c:if test="${review.score == 3}">
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                            </c:if>
-                                            <c:if test="${review.score == 4}">
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="far fa-star star-rating"></i>
-                                            </c:if>
-                                            <c:if test="${review.score == 5}">
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                                <i class="fas fa-star star-rating"></i>
-                                            </c:if>
-                                        </div>
-                                        <div class="col">
-                                                ${review.description}
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                                <c:if test="${user.targetReviews.size() > 5 and showAllReviews eq 'false'}">
-                                    <form method="get" class="text-center"
-                                          action="${pageContext.request.contextPath}/user/${user.id}#ratings">
-                                        <input type="hidden" name="showAllReviews" value="true">
-                                        <c:if test="${not empty param.page}">
-                                            <input type="hidden" name="page" value="${param.page}">
-                                        </c:if>
-                                        <c:if test="${not empty param.showAllAdopted}">
-                                            <input type="hidden" name="showAllAdopted" value="${param.showAllAdopted}">
-                                        </c:if>
-                                        <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
-                                                code="showAll"/></button>
+                                <div class="js-reviews-container">
 
-                                    </form>
-                                </c:if>
-                                <c:if test="${showAllReviews eq 'true'}">
-                                    <form method="get" class="text-center"
-                                          action="${pageContext.request.contextPath}/user/${user.id}#ratings">
-                                        <input type="hidden" name="showAllReviews" value="false">
-                                        <c:if test="${not empty param.page}">
-                                            <input type="hidden" name="page" value="${param.page}">
-                                        </c:if>
-                                        <c:if test="${not empty param.showAllAdopted}">
-                                            <input type="hidden" name="showAllAdopted" value="${param.showAllAdopted}">
-                                        </c:if>
-                                        <button class="btn btn-primary btn-lg mt-2" type="submit"><spring:message
-                                                code="showLess"/></button>
-                                    </form>
-                                </c:if>
+                                </div>
                                 <hr class="m-0">
+                                <button type="button" class="m-2 btn btn-outline-secondary btn-sm load-more"><spring:message code="load_more_btn"/></button>
+
                             </div>
                         </c:if>
 
@@ -384,7 +309,13 @@
                 </div>
             </div>
 
-            <script>let userScore =<c:out value="${user.averageScore}"/></script>
+            <script>
+                const USER_ID = "${user.id}";
+                const SERVER_URL = "${pageContext.request.contextPath}";
+                let userScore = <c:out value="${user.averageScore}"/>;
+            </script>
+
+            <script src="<c:url value="/resources/js/load_more_reviews.js"/>"></script>
             <script src="<c:url value="/resources/js/user_rating.js"/>"></script>
             <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
             <script src="<c:url value="/resources/js/pet_view.js"/>"></script>

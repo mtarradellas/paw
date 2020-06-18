@@ -7,7 +7,8 @@ public enum MailType {
     REQUEST_CANCEL("request_cancel"),
     REQUEST_RECOVER("request_recover"),
     ACTIVATE_ACCOUNT("activate_account"),
-    RESET_PASSWORD("reset_password");
+    RESET_PASSWORD("reset_password"),
+    PET_SOLD("pet_sold");
 
     private final String name;
 

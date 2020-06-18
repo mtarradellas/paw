@@ -256,7 +256,12 @@ public class PetController extends ParentController {
     @RequestMapping(value = "/pet/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
         User user = loggedUser();
-        if (user != null && petService.recoverPet(id, user)) {
+        Optional<Pet> pet = petService.findById(id);
+        if(!pet.isPresent()){
+            return new ModelAndView("redirect:/403");
+        }
+
+        if (user != null && pet.get().getNewOwner() == null  && petService.recoverPet(id, user)) {
             LOGGER.debug("Pet {} updated as recovered", id);
             return new ModelAndView("redirect:/pet/{id}");
         }

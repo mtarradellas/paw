@@ -176,7 +176,8 @@
                                             <spring:message code="pet.status.notSold"/>
                                         </c:if>
                                         <c:if test="${req.pet.newOwner ne null}">
-                                            <spring:message code="pet.status.currentlySold.short" arguments="${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                            <spring:message code="pet.status.currentlySold.short"
+                                                            arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
                                         </c:if>
 
                                     </div>
