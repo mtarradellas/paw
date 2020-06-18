@@ -12,7 +12,9 @@
 <c:set var="UNAVAILABLE" value="<%=PetStatus.UNAVAILABLE.getValue()%>"/>
 
 <c:set var="cprice" scope="application" value="${pet.price}"/>
-<fmt:formatDate value="${pet.uploadDate}" var="date" type="date" pattern="dd-MM-yyyy"/>
+
+<fmt:parseDate  value="${pet.uploadDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+<fmt:formatDate value="${parsedDate}" var="date" type="date" pattern="dd-MM-yyyy"/>
 
 <spring:message code="argPrice" arguments="${cprice}" var="price"/>
 

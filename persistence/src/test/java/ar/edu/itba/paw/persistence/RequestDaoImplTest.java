@@ -91,8 +91,8 @@ public class RequestDaoImplTest {
     private static final Boolean VACCINATED = true;
     private static final String GENDER = "gender";
     private static final String DESCRIPTION = "description";
-    private static final Date BIRTH_DATE = null;
-    private Date UPLOAD_DATE;
+    private static final LocalDateTime BIRTH_DATE = LocalDateTime.now().minusMonths(1);
+    private LocalDateTime UPLOAD_DATE = LocalDateTime.now();
     private static final int PRICE = 0;
     private static final PetStatus PET_STATUS = PetStatus.AVAILABLE;
 
@@ -153,12 +153,6 @@ public class RequestDaoImplTest {
         /* DEPARTMENT */
         jdbcInsertDepartment = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(DEPARTMENTS_TABLE);
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2001);
-        cal.set(Calendar.MONTH, 2);
-        cal.set(Calendar.DATE, 2);
-        UPLOAD_DATE = new Date(cal.getTimeInMillis());
 
         setUpTableContext();
     }
@@ -248,8 +242,8 @@ public class RequestDaoImplTest {
         petValues.put("vaccinated", VACCINATED);
         petValues.put("gender", GENDER);
         petValues.put("description", DESCRIPTION);
-        petValues.put("birthDate", BIRTH_DATE);
-        petValues.put("uploadDate", UPLOAD_DATE);
+        petValues.put("birthDate", Timestamp.valueOf(BIRTH_DATE));
+        petValues.put("uploadDate", Timestamp.valueOf(UPLOAD_DATE));
         petValues.put("price", PRICE);
         petValues.put("ownerId", O_USER.getId());
         petValues.put("status", STATUS.ordinal());
@@ -269,8 +263,8 @@ public class RequestDaoImplTest {
         o_petValues.put("vaccinated", VACCINATED);
         o_petValues.put("gender", GENDER);
         o_petValues.put("description", DESCRIPTION);
-        o_petValues.put("birthDate", BIRTH_DATE);
-        o_petValues.put("uploadDate", UPLOAD_DATE);
+        o_petValues.put("birthDate", Timestamp.valueOf(BIRTH_DATE));
+        o_petValues.put("uploadDate", Timestamp.valueOf(UPLOAD_DATE));
         o_petValues.put("price", PRICE);
         o_petValues.put("ownerId", USER.getId());
         o_petValues.put("status", STATUS.ordinal());
@@ -282,10 +276,10 @@ public class RequestDaoImplTest {
         O_PET.setId(O_PET_ID);
     }
 
-    private Request insertRequest(long id, Date creationDate, RequestStatus status, Pet pet, User user, User target, LocalDateTime updateDate) {
+    private Request insertRequest(long id, LocalDateTime creationDate, RequestStatus status, Pet pet, User user, User target, LocalDateTime updateDate) {
         final Map<String, Object> reqValues = new HashMap<>();
         reqValues.put("id", id);
-        reqValues.put("creationDate", creationDate);
+        reqValues.put("creationDate", Timestamp.valueOf(creationDate));
         reqValues.put("updateDate", Timestamp.valueOf(updateDate));
         reqValues.put("status", status.ordinal());
         reqValues.put("ownerId", user.getId());
@@ -297,7 +291,7 @@ public class RequestDaoImplTest {
         return request;
     }
 
-    private void assertRequest(Request request, long id, Date creationDate, RequestStatus status) {
+    private void assertRequest(Request request, long id, LocalDateTime creationDate, RequestStatus status) {
         assertEquals(id, request.getId().longValue());
         assertEquals(creationDate, request.getCreationDate());
         assertEquals(status, request.getStatus());
@@ -344,19 +338,18 @@ public class RequestDaoImplTest {
         assertRequest(reqL, request.getId(), UPLOAD_DATE, STATUS);
     }
 
-    /* TODO not yet implemented */
-//    @Test
-//    public void testSearchListPet() {
-//        Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
-//        insertRequest(REQ_ID+1, UPLOAD_DATE, STATUS, O_PET, O_USER, USER, UPDATE_DATE);
-//
-//        requestDao.indexRequests();
-//        List<Request> requestList = requestDao.searchList(null, PET, null, null, null, null, PAGE, PAGE_SIZE);
-//
-//        assertEquals(1, requestList.size());
-//        Request reqL = requestList.get(0);
-//        assertRequest(reqL, request.getId(), UPLOAD_DATE, STATUS);
-//    }
+    @Test
+    public void testSearchListPet() {
+        Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
+        insertRequest(REQ_ID+1, UPLOAD_DATE, STATUS, O_PET, O_USER, USER, UPDATE_DATE);
+
+        requestDao.indexRequests();
+        List<Request> requestList = requestDao.searchList(null, PET, null, null, null, null, PAGE, PAGE_SIZE);
+
+        assertEquals(1, requestList.size());
+        Request reqL = requestList.get(0);
+        assertRequest(reqL, request.getId(), UPLOAD_DATE, STATUS);
+    }
 
     @Test
     public void testSearchListStatus() {

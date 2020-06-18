@@ -129,11 +129,7 @@ public class RequestServiceImpl implements RequestService {
             }
         }
 
-        Date today = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-        Request request = requestDao.create(user, pet, RequestStatus.PENDING, today);
+        Request request = requestDao.create(user, pet, RequestStatus.PENDING, LocalDateTime.now());
 
         Map<String, Object> arguments = new HashMap<>();
 

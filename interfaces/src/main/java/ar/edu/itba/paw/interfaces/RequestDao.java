@@ -4,8 +4,9 @@ import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
+import org.hibernate.search.backend.impl.LocalBackendQueueProcessor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +32,7 @@ public interface RequestDao {
 
     Optional<Request> findById(long id);
 
-    Request create(User user, Pet pet, RequestStatus status, Date creationDate);
+    Request create(User user, Pet pet, RequestStatus status, LocalDateTime creationDate);
     Optional<Request> update(Request request);
     void updateByStatusAndUser(User user, RequestStatus oldStatus, RequestStatus newStatus);
     void updateByStatusAndPetOwner(User petOwner, RequestStatus oldStatus, RequestStatus newStatus);

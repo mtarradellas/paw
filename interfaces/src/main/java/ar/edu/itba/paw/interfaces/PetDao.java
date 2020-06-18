@@ -4,7 +4,7 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.QuestionStatus;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,7 +35,7 @@ public interface PetDao {
 
     Optional<Pet> findById(long id);
 
-    Pet create(String petName, Date birthDate, String gender, boolean vaccinated, int price, Date uploadDate,
+    Pet create(String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price, LocalDateTime uploadDate,
                String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department);
     Optional<Pet> update(Pet pet);
     void updateByStatusAndOwner(User user, PetStatus oldStatus, PetStatus newStatus);

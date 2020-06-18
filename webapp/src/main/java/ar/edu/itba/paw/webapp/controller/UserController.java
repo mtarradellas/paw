@@ -205,7 +205,7 @@ public class UserController extends ParentController {
         List<Request> requestList = requestService.filteredListByPetOwner(user, pet, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
         List<RequestStatus> statusList;
-        if(requestStatus == null) statusList = requestService.filteredStatusListByPetOwner(user, null, findList, requestStatus);
+        if(requestStatus == null) statusList = requestService.filteredStatusListByPetOwner(user, null, findList, null);
         else {
             statusList = new ArrayList<>();
             statusList.add(requestStatus);

@@ -16,6 +16,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class PetJpaDaoImpl implements PetDao {
                                 String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize) {
 
         /* TODO descomentar para deployar*/
-//        indexPets();
+        indexPets();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
@@ -63,6 +64,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public List<Breed> searchBreedList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                        PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
+
         indexPets();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
@@ -316,7 +318,7 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public Pet create(String petName, Date birthDate, String gender, boolean vaccinated, int price, Date uploadDate, String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department) {
+    public Pet create(String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price, LocalDateTime uploadDate, String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department) {
         Pet pet = new Pet(petName, birthDate, gender, vaccinated, price, uploadDate, description, status, user, species, breed,
                 province, department);
         em.persist(pet);
@@ -384,22 +386,14 @@ public class PetJpaDaoImpl implements PetDao {
 
     @Override
     public Question createQuestion(String content, User user, User target, Pet pet, QuestionStatus status) {
-        Date today = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-        Question question = new Question(content, user, target, pet, today, status);
+        Question question = new Question(content, user, target, pet, LocalDateTime.now(), status);
         em.persist(question);
         return question;
     }
 
     @Override
     public Answer createAnswer(Question question, String content, User user, User target, Pet pet, QuestionStatus status) {
-        Date today = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-        Answer answer = new Answer(question, content, user, target, pet, today, status);
+        Answer answer = new Answer(question, content, user, target, pet, LocalDateTime.now(), status);
         em.persist(answer);
         return answer;
     }

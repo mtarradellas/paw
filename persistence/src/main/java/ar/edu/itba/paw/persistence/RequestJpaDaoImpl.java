@@ -125,14 +125,11 @@ public class RequestJpaDaoImpl implements RequestDao {
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
         if (results.size() == 0) {
-            System.out.println("QQQQQQQQQ");
             return new ArrayList<>();
         }
         List<Long> filteredIds = new ArrayList<>();
         for (Object[] id:results) {
             filteredIds.add((Long)id[0]);
-            System.out.println("EEEEEEEEEEEEE");
-            System.out.println(id[0]);
         }
         if (filteredIds.size() == 0) return new ArrayList<>();
 
@@ -223,7 +220,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         if(user != null)  boolJunction.must(queryBuilder.phrase().onField("pet.user.username").sentence(user.getUsername()).createQuery());
         if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.eid").sentence(pet.getId().toString()).createQuery());
 
-
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
@@ -286,7 +282,7 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    public Request create(User user, Pet pet, RequestStatus status, Date creationDate) {
+    public Request create(User user, Pet pet, RequestStatus status, LocalDateTime creationDate) {
         Request request = new Request(creationDate, status, user, pet.getUser(), pet);
         request.setUpdateDate(LocalDateTime.now());
         em.persist(request);
