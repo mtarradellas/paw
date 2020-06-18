@@ -75,9 +75,7 @@ public class UserController extends ParentController {
         double reviewAverage = userService.getReviewAverage(id);
         int reviewAmount = userService.getReviewListAmount(null, id, 0, -1, ReviewStatus.VALID);
 
-
         boolean canRate = false;
-
 
         if (loggedUser != null && !user.getId().equals(loggedUser.getId())) {
             boolean acquiredPet = loggedUser.getNewPets().stream().anyMatch(p -> p.getUser().getId().equals(user.getId()));
