@@ -4,6 +4,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+<c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+<c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+<c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+<c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+
 
 <spring:message code="areYouSure.cancel" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
@@ -28,33 +34,35 @@
                                             </c:if>
                                     ><spring:message code="filter.any"/></option>
 
-                                    <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
                                     <option value="${ACCEPTED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (ACCEPTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.accepted"/></option>
 
-                                    <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
                                     <option value="${REJECTED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (REJECTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.rejected"/></option>
 
-                                    <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
                                     <option value="${PENDING}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (PENDING eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.pending"/></option>
 
-                                    <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
                                     <option value="${CANCELED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (CANCELED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
+
+                                    <option value="${SOLD}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (SOLD eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.sold"/></option>
 
                                 </select>
                             </div>
@@ -131,7 +139,6 @@
                             <hr class="m-0">
                         </c:if>
                         <c:forEach var="req" items="${requestList}">
-                            <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
                             <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-6">
@@ -159,8 +166,7 @@
                                 </div>
                             </c:if>
 
-                            <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
-                            <c:if test="${req.status.value eq ACCEPTED}">
+                            <c:if test="${req.status.value eq ACCEPTED || req.status.value eq SOLD}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-6">
                                         <spring:message code="request.wasAccepted"
@@ -172,13 +178,15 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.accepted"/>
-                                        <c:if test="${req.pet.newOwner eq null}">
-                                            <spring:message code="pet.status.notSold"/>
-                                        </c:if>
-                                        <c:if test="${req.pet.newOwner ne null}">
-                                            <spring:message code="pet.status.currentlySold.short"
-                                                            arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="${req.status.value eq ACCEPTED}">
+                                                <spring:message code="pet.status.notSold"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <spring:message code="pet.status.currentlySold.short"
+                                                                arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                            </c:otherwise>
+                                        </c:choose>
 
                                     </div>
                                     <div class="col text-center button-container">
