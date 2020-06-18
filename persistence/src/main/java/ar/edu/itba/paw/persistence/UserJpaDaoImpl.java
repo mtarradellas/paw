@@ -219,12 +219,44 @@ public class UserJpaDaoImpl implements UserDao {
     @Override
     public List<Review> reviewList(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status, String criteria,
                                    String order, int page, int pageSize) {
-        return new ArrayList<>();
+
+        Query nativeQuery = reviewListQuery("id", userId, targetId, minScore, maxScore, status);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+
+        @SuppressWarnings("unchecked")
+        List<? extends Number> resultList = nativeQuery.getResultList();
+        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+
+        final TypedQuery<Review> query = em.createQuery("from Review where id IN :filteredIds", Review.class);
+        query.setParameter("filteredIds", filteredIds);
+        return query.getResultList();
     }
 
     @Override
     public int getReviewListAmount(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
-        return 0;
+
+        Query nativeQuery = reviewListQuery("count(*)", userId, targetId, minScore, maxScore, status);
+        return ((Number)nativeQuery.getSingleResult()).intValue();
+    }
+
+    private Query reviewListQuery(String select, Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
+        StringBuilder str = new StringBuilder("SELECT " + select + " FROM reviews WHERE ");
+        str.append("score >= :min ");
+        str.append("AND score <= :max ");
+        if (userId != null) str.append("AND ownerId = :owner ");
+        if (targetId != null) str.append("AND targetId = :target ");
+        if (status != null) str.append("AND status = :status ");
+
+        Query nativeQuery = em.createNativeQuery(str.toString());
+        nativeQuery.setParameter("min", minScore);
+        if (maxScore == -1) maxScore = 5;
+        nativeQuery.setParameter("max", maxScore);
+        if (userId != null) nativeQuery.setParameter("owner", userId);
+        if (targetId != null) nativeQuery.setParameter("target", targetId);
+        if (status != null) nativeQuery.setParameter("status", status.ordinal());
+
+        return nativeQuery;
     }
 
     @Override
