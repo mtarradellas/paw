@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +17,7 @@ public class Token {
     private UUID token;
 
     @Column
-    private Date expirationDate;
+    private LocalDateTime expirationDate;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
@@ -27,12 +27,12 @@ public class Token {
         // Hibernate
     }
 
-    public Token(UUID token, Date expirationDate) {
+    public Token(UUID token, LocalDateTime expirationDate) {
         this.token = token;
         this.expirationDate = expirationDate;
     }
 
-    public Token(UUID token, Date expirationDate, User user) {
+    public Token(UUID token, LocalDateTime expirationDate, User user) {
         this.token = token;
         this.user = user;
         this.expirationDate = expirationDate;
@@ -58,11 +58,11 @@ public class Token {
         this.user = user;
     }
 
-    public Date getExpirationDate() {
+    public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
     }
 }

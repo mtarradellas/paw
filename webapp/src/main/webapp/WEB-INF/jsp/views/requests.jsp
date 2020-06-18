@@ -137,7 +137,8 @@
                                     <div class=" col-lg-6">
                                         <spring:message code="request.showedInterest"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
@@ -164,7 +165,8 @@
                                     <div class=" col-lg-6">
                                         <spring:message code="request.wasAccepted"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
@@ -192,7 +194,8 @@
                                     <div class=" col-lg-6">
                                         <spring:message code="request.wasRejected"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
@@ -213,7 +216,8 @@
                                     <div class=" col-lg-6">
                                         <spring:message code="request.wasCanceled"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>

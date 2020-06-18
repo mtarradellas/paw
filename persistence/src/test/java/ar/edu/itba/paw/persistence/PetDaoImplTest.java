@@ -14,7 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import static org.junit.Assert.*;
 
@@ -107,8 +108,8 @@ public class PetDaoImplTest {
     private static final Boolean VACCINATED = true;
     private static final String GENDER = "gender";
     private static final String DESCRIPTION = "description";
-    private static final Date BIRTH_DATE = null;
-    private Date UPLOAD_DATE;
+    private static final LocalDateTime BIRTH_DATE = LocalDateTime.now().minusMonths(1);
+    private LocalDateTime UPLOAD_DATE = LocalDateTime.now();
     private static final int PRICE = 0;
     private static final PetStatus STATUS = PetStatus.AVAILABLE;
 
@@ -118,8 +119,7 @@ public class PetDaoImplTest {
     private static final Boolean O_VACCINATED = false;
     private static final String O_GENDER = "another";
     private static final String O_DESCRIPTION = "other_description";
-    private static final Date O_BIRTH_DATE = null;
-    private Date O_UPLOAD_DATE;
+    private static final LocalDateTime O_BIRTH_DATE = LocalDateTime.now().minusMonths(2);
     private static final int O_PRICE = 100;
     private static final PetStatus O_STATUS = PetStatus.UNAVAILABLE;
 
@@ -168,12 +168,6 @@ public class PetDaoImplTest {
         /* DEPARTMENT */
         jdbcInsertDepartment = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(DEPARTMENTS_TABLE);
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2001);
-        cal.set(Calendar.MONTH, 2);
-        cal.set(Calendar.DATE, 2);
-        UPLOAD_DATE = new Date(cal.getTimeInMillis());
 
         setUpTablePetContext();
     }
@@ -296,7 +290,7 @@ public class PetDaoImplTest {
         O_BREED.setSpecies(O_SPECIES);
     }
 
-    private Pet insertPet(long id, String petName, Date birthDate, String gender, boolean vaccinated, int price, Date uploadDate,
+    private Pet insertPet(long id, String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price, LocalDateTime uploadDate,
                            String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department) {
         final Map<String, Object> petValues = new HashMap<>();
         petValues.put("id", id);
@@ -306,8 +300,8 @@ public class PetDaoImplTest {
         petValues.put("vaccinated", vaccinated);
         petValues.put("gender", gender);
         petValues.put("description", description);
-        petValues.put("birthDate", birthDate);
-        petValues.put("uploadDate", uploadDate);
+        petValues.put("birthDate", Timestamp.valueOf(birthDate));
+        petValues.put("uploadDate", Timestamp.valueOf(uploadDate));
         petValues.put("price", price);
         petValues.put("ownerId", user.getId());
         petValues.put("status", status.ordinal());
@@ -328,7 +322,7 @@ public class PetDaoImplTest {
         return pet;
     }
 
-    private void assertPet(Pet pet, long id, String petName, Date birthDate, String gender, boolean vaccinated, int price, Date uploadDate,
+    private void assertPet(Pet pet, long id, String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price, LocalDateTime uploadDate,
                            String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department) {
 
         assertEquals(id, pet.getId().longValue());
@@ -344,7 +338,7 @@ public class PetDaoImplTest {
         assertEquals(status, pet.getStatus());
     }
 
-    private void assertDate(Date expected, Date actual) {
+    private void assertDate(LocalDateTime expected, LocalDateTime actual) {
         assertTrue((expected == null && actual == null) || (expected != null && actual != null));
         if (expected != null) assertEquals(expected, actual);
     }

@@ -167,7 +167,8 @@
                                     >
                                         <div class="row ">
                                             <div class="col-lg-5">
-                                                <fmt:formatDate value="${request.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                                <fmt:parseDate  value="${request.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                                <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                                 <spring:message code="request.isInterested"
                                                                 arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.pet.id},${request.pet.petName}"/>
