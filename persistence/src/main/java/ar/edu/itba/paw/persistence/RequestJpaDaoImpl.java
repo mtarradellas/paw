@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.RequestDao;
+import ar.edu.itba.paw.models.Department;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
@@ -78,6 +79,24 @@ public class RequestJpaDaoImpl implements RequestDao {
             if(statuses.size() == MAX_QUANTITY_OF_STATUS) return statuses;
         }
         return statuses;
+    }
+
+    @Override
+    public List<Pet> searchPetListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
+        jpaQuery.setProjection("pet.eid");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        Set<Long> filteredIds = new TreeSet<>();
+        for (Object[] object:results) filteredIds.add((Long) object[0]);
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
+        final TypedQuery<Pet> query2 = em.createQuery("from Pet where id in :filteredIds", Pet.class);
+        query2.setParameter("filteredIds", filteredIds);
+        return query2.getResultList();
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {

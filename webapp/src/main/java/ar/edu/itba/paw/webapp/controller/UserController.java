@@ -183,7 +183,7 @@ public class UserController extends ParentController {
         final ModelAndView mav = new ModelAndView("views/interests");
         final User user = loggedUser();
 
-        List<Pet> availablePets = new ArrayList<>(user.getPetList());
+
 
         searchCriteria = parseCriteria(searchCriteria);
         searchOrder = parseOrder(searchOrder);
@@ -204,6 +204,8 @@ public class UserController extends ParentController {
 
         List<Request> requestList = requestService.filteredListByPetOwner(user, pet, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
+        List<Pet> availablePets = requestService.filteredPetListByPetOwner(user, pet, findList, requestStatus);
+
         List<RequestStatus> statusList;
         if(requestStatus == null) statusList = requestService.filteredStatusListByPetOwner(user, null, findList, null);
         else {

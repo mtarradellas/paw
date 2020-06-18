@@ -19,7 +19,7 @@ public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pets_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "pets_id_seq", name = "pets_id_seq")
-    @Field(name= "eid")
+    @Field(name= "eid", store = Store.YES)
     @FieldBridge(impl = LongBridge.class)
     private Long id;
 
