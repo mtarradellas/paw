@@ -15,11 +15,21 @@
                             <div class="card">
                                     <%--                            TEST                --%>
 
-<%--                                <h1><c:out value="${amount}"/></h1>--%>
+                                <h1><c:out value="${amount}"/></h1>
 
-                                <c:forEach items="${ranges}" var="range">
+                                <c:forEach items="${filteredRe}" var="request">
                                     <div class="card-body">
-                                            ${range}
+                                            ${request.id}
+                                    </div>
+                                    <div class="card-body">
+                                            ${request.target}
+                                    </div>
+                                    <div class="card-body">
+                                            ${request.user}
+                                    </div>
+                                    <div class="card-body">
+                                            ${request.pet}
+
                                     </div>
                                 </c:forEach>
 
