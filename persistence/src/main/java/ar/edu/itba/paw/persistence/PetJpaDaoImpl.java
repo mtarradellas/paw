@@ -53,7 +53,7 @@ public class PetJpaDaoImpl implements PetDao {
                                 String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize) {
 
         /* TODO descomentar para deployar*/
-//        indexPets();
+        indexPets();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
