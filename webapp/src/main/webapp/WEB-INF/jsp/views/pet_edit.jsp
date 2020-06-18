@@ -172,7 +172,8 @@
                                     <div class="form-group">
                                         <spring:message code="uploadPetForm.birthDate" var="birthDateTxt"/>
                                         <form:label path="birthDate" for="birthDate">${birthDateTxt}: </form:label>
-                                        <fmt:formatDate var="birthDate" value="${pet.birthDate}" pattern="yyyy-MM-dd"/>
+                                        <fmt:parseDate  value="${pet.birthDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate var="birthDate" value="${parsedDate}" pattern="yyyy-MM-dd"/>
                                         <div class="input-modifiable-div" data-current="${birthDate}">
                                             <form:input type="date" id="birthDate" path="birthDate" cssClass="input-modifiable form-control ${status.error ? 'is-invalid' : ''}"/>
                                             <a class="revert-input-anchor">

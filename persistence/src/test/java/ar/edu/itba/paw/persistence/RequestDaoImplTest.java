@@ -338,19 +338,18 @@ public class RequestDaoImplTest {
         assertRequest(reqL, request.getId(), UPLOAD_DATE, STATUS);
     }
 
-    /* TODO not yet implemented */
-//    @Test
-//    public void testSearchListPet() {
-//        Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
-//        insertRequest(REQ_ID+1, UPLOAD_DATE, STATUS, O_PET, O_USER, USER, UPDATE_DATE);
-//
-//        requestDao.indexRequests();
-//        List<Request> requestList = requestDao.searchList(null, PET, null, null, null, null, PAGE, PAGE_SIZE);
-//
-//        assertEquals(1, requestList.size());
-//        Request reqL = requestList.get(0);
-//        assertRequest(reqL, request.getId(), UPLOAD_DATE, STATUS);
-//    }
+    @Test
+    public void testSearchListPet() {
+        Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
+        insertRequest(REQ_ID+1, UPLOAD_DATE, STATUS, O_PET, O_USER, USER, UPDATE_DATE);
+
+        requestDao.indexRequests();
+        List<Request> requestList = requestDao.searchList(null, PET, null, null, null, null, PAGE, PAGE_SIZE);
+
+        assertEquals(1, requestList.size());
+        Request reqL = requestList.get(0);
+        assertRequest(reqL, request.getId(), UPLOAD_DATE, STATUS);
+    }
 
     @Test
     public void testSearchListStatus() {

@@ -15,7 +15,7 @@
                             <div class="card">
                                     <%--                            TEST                --%>
 
-<%--                                <h1><c:out value="${amount}"/></h1>--%>
+                                <h1><c:out value="${amount}"/></h1>
 
                                 <c:forEach items="${filteredRe}" var="request">
                                     <div class="card-body">

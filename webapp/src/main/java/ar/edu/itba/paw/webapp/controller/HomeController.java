@@ -52,8 +52,9 @@ public class HomeController extends ParentController {
     public ModelAndView test() {
         ModelAndView mav = new ModelAndView("views/test");
 
-        List<Request> reqList = requestService.filteredList(null,12L,
+        List<Request> reqList = requestService.filteredList(null,2L,
                 null,null,null,null,1,12 );
+        mav.addObject("amount", reqList.size());
         mav.addObject("filteredRe", reqList);
 
         return mav;
