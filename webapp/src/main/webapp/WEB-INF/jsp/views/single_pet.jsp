@@ -98,7 +98,7 @@
 
                             </c:if>
 
-                            <c:if test="${pet.status.value ne AVAILABLE}">
+                            <c:if test="${pet.status.value ne AVAILABLE && pet.newOwner eq null}">
                                 <div class="col p-2">
                                     <div class="row float-right mr-4">
                                         <form method="POST" class="m-0" action="<c:url value="/pet/${id}/recover" />">
