@@ -63,7 +63,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public List<Breed> searchBreedList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                        PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
-        //indexPets();
+        indexPets();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
 
