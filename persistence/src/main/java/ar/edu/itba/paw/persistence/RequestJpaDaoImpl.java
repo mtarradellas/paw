@@ -291,7 +291,7 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    public Request create(User user, Pet pet, RequestStatus status, Date creationDate) {
+    public Request create(User user, Pet pet, RequestStatus status, LocalDateTime creationDate) {
         Request request = new Request(creationDate, status, user, pet.getUser(), pet);
         request.setUpdateDate(LocalDateTime.now());
         em.persist(request);

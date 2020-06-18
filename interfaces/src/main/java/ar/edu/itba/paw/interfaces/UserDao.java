@@ -8,14 +8,18 @@ import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public interface UserDao {
 
     List<User> list(int page, int pageSize);
     List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
     List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-    Set<Integer> searchStatusList( List<String> find, UserStatus status);
+    Set<Integer> searchStatusList(List<String> find, UserStatus status);
     int getListAmount();
     int getSearchAmount(List<String> find, UserStatus status);
     int getFilteredAmount(UserStatus status);
@@ -38,7 +42,7 @@ public interface UserDao {
 
     List<Token> listTokens();
     Optional<Token> findToken(UUID token);
-    Optional<Token> createToken(UUID token, User user, Date expirationDate);
+    Optional<Token> createToken(UUID token, User user, LocalDateTime expirationDate);
     boolean deleteToken(UUID token);
     void cleanOldTokens();
 

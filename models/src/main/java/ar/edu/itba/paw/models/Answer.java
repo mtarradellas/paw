@@ -5,7 +5,7 @@ import org.hibernate.search.annotations.DocumentId;
 import org.omg.CORBA.AnySeqHelper;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +38,7 @@ public class Answer {
     private Pet pet;
 
     @Column
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
     @Column
     private int status;
@@ -47,7 +47,7 @@ public class Answer {
         // Hibernate
     }
 
-    public Answer(Question question, String content, User user, User target, Pet pet, Date creationDate, QuestionStatus status) {
+    public Answer(Question question, String content, User user, User target, Pet pet, LocalDateTime creationDate, QuestionStatus status) {
         this.question = question;
         this.content = content;
         this.user = user;
@@ -112,11 +112,11 @@ public class Answer {
         this.pet = pet;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
