@@ -6,6 +6,8 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name = "Reviews")
@@ -99,5 +101,18 @@ public class Review {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Map<String, Object> toJson() {
+        Map<String, Object> review = new HashMap<>();
+        review.put("id", id);
+        review.put("score", score);
+        review.put("content", description);
+        review.put("ownerUsername", owner.getUsername());
+        review.put("ownerId", owner.getId());
+        review.put("targetUsername", target.getUsername());
+        review.put("targetId", target.getId());
+        review.put("creationDate", creationDate);
+        return review;
     }
 }
