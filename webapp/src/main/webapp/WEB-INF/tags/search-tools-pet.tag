@@ -7,7 +7,8 @@
 <%@attribute name="speciesList" required="true" type="ar.edu.itba.paw.models.Species[]" %>
 <%@attribute name="departmentList" required="true" type="ar.edu.itba.paw.models.Department[]" %>
 <%@attribute name="provinceList" required="true" type="ar.edu.itba.paw.models.Province[]" %>
-
+<%@attribute name="genders" required="true" type="java.lang.String[]" %>
+<%@attribute name="ranges" required="true" type="java.lang.String[]" %>
 
 <div class="col-md-2 search-tools">
     <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/">
@@ -52,45 +53,49 @@
                 <label for="filter-price"><spring:message code="pet.price"/></label>
                 <select  name="priceRange" class=" form-control" id="filter-price">
                     <option value="-1"><spring:message code="filter.any"/></option>
-                    <option value="0"
-                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '0')}">selected</c:if>
-                    ><spring:message code="pet.forAdoption"/></option>
-                    <option value="1"
-                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '1')}">selected</c:if>
-                    ><spring:message code="argPrice" arguments="1"/>-<spring:message code="argPrice" arguments="5000"/>
-                    </option>
-                    <option value="2"
-                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '2')}">selected</c:if>
-                    ><spring:message code="argPrice" arguments="5000"/>-<spring:message code="argPrice" arguments="10000"/>
-                    </option>
-                    <option value="3"
-                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '3')}">selected</c:if>
-                    ><spring:message code="argPrice" arguments="10000"/>-<spring:message code="argPrice" arguments="15000"/>
-                    </option>
-                    <option value="4"
-                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '4')}">selected</c:if>
-                    ><spring:message code="argPrice" arguments="15000"/>-<spring:message code="argPrice" arguments="20000"/>
-                    </option>
-                    <option value="5"
-                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '5')}">selected</c:if>
-                    ><spring:message code="argPrice" arguments="20000"/>-<spring:message code="argPrice" arguments="25000"/>
-                    </option>
-                    <option value="6"
-                            <c:if test="${(not empty param.priceRange) && (param.priceRange eq '6')}">selected</c:if>
-                    ><spring:message code="argPrice" arguments="25000"/>+
-                    </option>
+                    <c:forEach var="range" items="${ranges}">
+                        <option value="${range}"
+                                <c:if test="${(not empty param.priceRange) && (param.priceRange eq range)}">selected</c:if>
+                        >
+                            <c:choose>
+                                <c:when test="${range eq 0}">
+                                    <spring:message code="pet.forAdoption"/>
+                                </c:when>
+                                <c:when test="${range eq 1}" >
+                                    <spring:message code="argPrice" arguments="1"/>-<spring:message code="argPrice" arguments="4999"/>
+                                </c:when>
+                                <c:when test="${range eq 2}">
+                                    <spring:message code="argPrice" arguments="5000"/>-<spring:message code="argPrice" arguments="9999"/>
+                                </c:when>
+                                <c:when test="${range eq 3}">
+                                    <spring:message code="argPrice" arguments="10000"/>-<spring:message code="argPrice" arguments="14999"/>
+                                </c:when>
+                                <c:when test="${range eq 4}">
+                                    <spring:message code="argPrice" arguments="15000"/>-<spring:message code="argPrice" arguments="19999"/>
+                                </c:when>
+                                <c:when test="${range eq 5}">
+                                    <spring:message code="argPrice" arguments="20000"/>-<spring:message code="argPrice" arguments="24999"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <spring:message code="argPrice" arguments="25000"/>+
+                                </c:otherwise>
+                            </c:choose>
+                        </option>
+                    </c:forEach>
+
                 </select>
 
 
                 <label for="filter-gender"><spring:message code="pet.sex"/></label>
                 <select name="gender" class="form-control" id="filter-gender">
                     <option value="-1"><spring:message code="filter.any"/></option>
-                    <option value="male"
-                            <c:if test="${(not empty param.gender) && (param.gender eq 'male')}">selected</c:if>
-                    ><spring:message code="pet.male"/></option>
-                    <option value="female"
-                            <c:if test="${(not empty param.gender) && (param.gender eq 'female')}">selected</c:if>
-                    ><spring:message code="pet.female"/></option>
+                    <c:forEach items="${genders}" var="gender">
+                        <option value="${gender}"
+                                <c:if test="${(not empty param.gender) && (param.gender eq gender)}">selected</c:if>
+                        >
+                            <spring:message code="pet.${gender}"/>
+                        </option>
+                    </c:forEach>
                 </select>
 
                 <label for="filter-province"><spring:message code="searchTool.province"/></label>
