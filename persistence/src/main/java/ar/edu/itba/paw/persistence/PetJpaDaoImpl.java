@@ -177,8 +177,7 @@ public class PetJpaDaoImpl implements PetDao {
         return query.getResultList();
     }
 
-    @Async
-    public void indexPets() {
+    private void indexPets() {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         try {
             fullTextEntityManager.createIndexer().startAndWait();

@@ -41,7 +41,5 @@ public interface RequestDao {
 
     int interestNotifs(User user);
     int requestNotifs(User user);
-
-    void indexRequests();
 }
 

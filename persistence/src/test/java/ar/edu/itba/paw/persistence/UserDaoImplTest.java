@@ -5,6 +5,8 @@ import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.util.*;
 import static org.junit.Assert.*;
@@ -25,6 +30,9 @@ public class UserDaoImplTest {
 
     @Autowired
     private DataSource dataSource;
+
+    @PersistenceContext
+    private EntityManager em;
 
     private static final String USER_TABLE = "users";
     private static final String REVIEW_TABLE = "reviews";
@@ -68,6 +76,13 @@ public class UserDaoImplTest {
                 .withTableName(USER_TABLE);
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
+    }
+
+    private void indexTables() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
     }
 
     private User insertUser(long id, String username, String password, String mail, UserStatus status, String locale) {
@@ -156,10 +171,10 @@ public class UserDaoImplTest {
     public void testSearchList() {
         User user = insertUser(USER_ID, USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
         insertUser(O_USER_ID, O_USERNAME, O_PASSWORD, O_MAIL, O_USER_STATUS, O_LOCALE);
+        indexTables();
         List<String> find = new ArrayList<>();
         find.add(USERNAME);
 
-        userDaoImpl.indexUsers();
         List<User> userList = userDaoImpl.searchList(find, USER_STATUS, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, userList.size());

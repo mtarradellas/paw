@@ -46,6 +46,4 @@ public interface UserDao {
     Optional<Token> createToken(UUID token, User user, LocalDateTime expirationDate);
     boolean deleteToken(UUID token);
     void cleanOldTokens();
-
-    void indexUsers();
 }

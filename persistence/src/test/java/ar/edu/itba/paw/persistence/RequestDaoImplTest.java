@@ -4,6 +4,8 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +18,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -112,6 +116,9 @@ public class RequestDaoImplTest {
 
     @Autowired
     private RequestJpaDaoImpl requestDao;
+
+    @PersistenceContext
+    private EntityManager em;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -276,6 +283,13 @@ public class RequestDaoImplTest {
         O_PET.setId(O_PET_ID);
     }
 
+    private void indexTables() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
+    }
+
     private Request insertRequest(long id, LocalDateTime creationDate, RequestStatus status, Pet pet, User user, User target, LocalDateTime updateDate) {
         final Map<String, Object> reqValues = new HashMap<>();
         reqValues.put("id", id);
@@ -329,8 +343,8 @@ public class RequestDaoImplTest {
     public void testSearchListUser() {
         Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
         insertRequest(REQ_ID+1, UPLOAD_DATE, STATUS, O_PET, O_USER, USER, UPDATE_DATE);
+        indexTables();
 
-        requestDao.indexRequests();
         List<Request> requestList = requestDao.searchList(USER, null, null, null, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, requestList.size());
@@ -342,8 +356,8 @@ public class RequestDaoImplTest {
     public void testSearchListPet() {
         Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
         insertRequest(REQ_ID+1, UPLOAD_DATE, STATUS, O_PET, O_USER, USER, UPDATE_DATE);
+        indexTables();
 
-        requestDao.indexRequests();
         List<Request> requestList = requestDao.searchList(null, PET, null, null, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, requestList.size());
@@ -355,8 +369,8 @@ public class RequestDaoImplTest {
     public void testSearchListStatus() {
         Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
         insertRequest(REQ_ID+1, UPLOAD_DATE, RequestStatus.CANCELED, O_PET, O_USER, USER, UPDATE_DATE);
+        indexTables();
 
-        requestDao.indexRequests();
         List<Request> requestList = requestDao.searchList(null, null, null, STATUS, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, requestList.size());
@@ -368,8 +382,8 @@ public class RequestDaoImplTest {
     public void testSearchListByPetOwner() {
         Request request = insertRequest(REQ_ID, UPLOAD_DATE, STATUS, PET, USER, O_USER, UPDATE_DATE);
         insertRequest(REQ_ID+1, UPLOAD_DATE, RequestStatus.CANCELED, O_PET, O_USER, USER, UPDATE_DATE);
+        indexTables();
 
-        requestDao.indexRequests();
         List<Request> requestList = requestDao.searchListByPetOwner(O_USER, null, null, null, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, requestList.size());
