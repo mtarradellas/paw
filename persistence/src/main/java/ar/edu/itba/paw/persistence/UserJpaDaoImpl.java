@@ -279,6 +279,14 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
+    public double getReviewAverage(long userId) {
+        String qStr = "SELECT AVG(score) FROM reviews WHERE targetid = :target";
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("target", userId);
+        return ((Number)query.getSingleResult()).doubleValue();
+    }
+
+    @Override
     public boolean isAdmin(User user) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM admins WHERE id = :id");
         nativeQuery.setParameter("id", user.getId());

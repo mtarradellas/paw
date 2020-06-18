@@ -42,6 +42,7 @@ public interface UserService {
     Optional<Review> updateReview(Review review);
     Optional<Review> updateReview(long id, long ownerId, long targetId, int score, String description);
     Optional<Review> updateReview(long id, User owner, long targetId, int score, String description);
+    double getReviewAverage(long userId);
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);
     boolean isAdmin(User user);

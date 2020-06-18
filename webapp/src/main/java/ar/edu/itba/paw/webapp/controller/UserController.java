@@ -72,6 +72,9 @@ public class UserController extends ParentController {
         int amount = petService.getListByUserAmount(locale, id);
         Optional<User> opUser = userService.findById(id);
         User user = opUser.orElseThrow(UserNotFoundException::new);
+        double reviewAverage = userService.getReviewAverage(id);
+        int reviewAmount = userService.getReviewListAmount(null, id, 0, -1, ReviewStatus.VALID);
+
 
         boolean canRate = false;
 
@@ -101,6 +104,8 @@ public class UserController extends ParentController {
         mav.addObject("canRate", canRate);
         mav.addObject("showAllReviews", showAllReviews);
         mav.addObject("showAllAdopted", showAllAdopted);
+        mav.addObject("reviewAverage", reviewAverage);
+        mav.addObject("reviewAmount", reviewAmount);
         return mav;
     }
 
