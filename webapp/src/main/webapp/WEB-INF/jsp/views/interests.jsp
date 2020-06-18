@@ -4,6 +4,13 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+<c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+<c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+<c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+<c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+
+
 <spring:message code="interestsTitle" var="titleVar"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
 <spring:message code="areYouSure.body" var="sureBody"/>
@@ -27,35 +34,30 @@
                                             </c:if>
                                     ><spring:message code="filter.any"/></option>
 
-                                    <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
                                     <option value="${ACCEPTED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (ACCEPTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.accepted"/></option>
 
-                                    <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
                                     <option value="${REJECTED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (REJECTED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.rejected"/></option>
 
-                                    <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
                                     <option value="${PENDING}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (PENDING eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.pending"/></option>
 
-                                    <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
                                     <option value="${CANCELED}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (CANCELED eq param.status)}">
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
 
-                                    <c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
                                     <option value="${SOLD}"
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (SOLD eq param.status)}">
                                                 selected
@@ -186,15 +188,15 @@
                                 </div>
                             </c:if>
                             <c:if test="${req.status.value ne PENDING}">
-                                <c:choose>
-                                    <c:when test="${req.status.value eq ACCEPTED && req.pet.newOwner eq null}">
-                                        <div class="row bg-light p-1 ">
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="row bg-light p-1 resolved">
-                                    </c:otherwise>
-                                </c:choose>
 
+                            <c:choose>
+                                <c:when test="${req.status.value eq SOLD}">
+                                    <div class="row bg-light p-1 resolved">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="row bg-light p-1 ">
+                                </c:otherwise>
+                            </c:choose>
 
                                     <div class=" col-lg-5">
 
@@ -206,24 +208,16 @@
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-3">
-                                        <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
-                                        <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
-                                        <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
-                                        <c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+
+
                                         <c:choose>
-                                            <c:when test="${req.status.value eq ACCEPTED }">
-                                                <spring:message code="request.accepted"/>
-                                                <c:if test="${req.pet.newOwner eq null}">
-                                                    <spring:message code="pet.status.notSold"/>
-                                                </c:if>
-                                                <c:if test="${req.pet.newOwner ne null and loggedUser.id ne req.pet.newOwner.id}">
-                                                    <spring:message code="pet.status.currentlySold.short"
-                                                                    arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
-                                                </c:if>
+                                            <c:when test="${req.status.value eq ACCEPTED}">
+                                                <spring:message code="request.accepted"/> <spring:message code="pet.status.notSold"/>
                                             </c:when>
 
                                             <c:when test="${req.status.value eq SOLD}">
-                                                <spring:message code="status.sold"/>
+                                                <spring:message code="request.accepted"/>
+                                                <spring:message code="pet.status.currentlySold.short" arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
                                             </c:when>
 
                                             <c:when test="${req.status.value eq CANCELED}">
@@ -233,6 +227,7 @@
                                             <c:when test="${req.status.value eq REJECTED}">
                                                 <spring:message code="request.rejected"/>
                                             </c:when>
+
                                         </c:choose>
                                     </div>
                                     <div class="col text-center button-container">
@@ -243,7 +238,7 @@
                                             <a href="${pageContext.request.contextPath}/user/<c:out value="${req.user.id}"/>"
                                                type="button" class=" btn btn-secondary"><spring:message
                                                     code="visitUser"/></a>
-                                            <c:if test="${req.pet.newOwner eq null and req.status.value eq ACCEPTED}">
+                                            <c:if test="${req.status.value eq ACCEPTED}">
                                                 <form action="${pageContext.request.contextPath}/pet/${req.pet.id}/sell-adopt"
                                                       method="post" enctype="multipart/form-data" >
                                                     <input type="hidden" name="newowner" value="${req.user.id}"/>
