@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.models.Answer;
 import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ public class HomeController extends ParentController {
     private PetService petService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RequestService requestService;
 
     @Autowired
     private LocationService locationService;
@@ -47,10 +50,10 @@ public class HomeController extends ParentController {
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public ModelAndView test() {
         ModelAndView mav = new ModelAndView("views/test");
-        List<Question> questionList = petService.listQuestions(1, 1, 50);
-        int amount = petService.getListQuestionsAmount(1);
-        mav.addObject("questionList", questionList);
-        mav.addObject("amount", amount);
+//        List<Question> questionList = petService.listQuestions(1, 1, 50);
+//        int amount = petService.getListQuestionsAmount(1);
+        mav.addObject("ranges", userService.filteredStatusList(null, null));
+        //mav.addObject("amount", amount);
         return mav;
     }
 

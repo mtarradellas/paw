@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import static org.junit.Assert.*;
@@ -107,7 +108,7 @@ public class PetDaoImplTest {
     private static final Boolean VACCINATED = true;
     private static final String GENDER = "gender";
     private static final String DESCRIPTION = "description";
-    private static final LocalDateTime BIRTH_DATE = null;
+    private static final LocalDateTime BIRTH_DATE = LocalDateTime.now().minusMonths(1);
     private LocalDateTime UPLOAD_DATE = LocalDateTime.now();
     private static final int PRICE = 0;
     private static final PetStatus STATUS = PetStatus.AVAILABLE;
@@ -118,7 +119,7 @@ public class PetDaoImplTest {
     private static final Boolean O_VACCINATED = false;
     private static final String O_GENDER = "another";
     private static final String O_DESCRIPTION = "other_description";
-    private static final LocalDateTime O_BIRTH_DATE = null;
+    private static final LocalDateTime O_BIRTH_DATE = LocalDateTime.now().minusMonths(2);
     private static final int O_PRICE = 100;
     private static final PetStatus O_STATUS = PetStatus.UNAVAILABLE;
 
@@ -299,8 +300,8 @@ public class PetDaoImplTest {
         petValues.put("vaccinated", vaccinated);
         petValues.put("gender", gender);
         petValues.put("description", description);
-        petValues.put("birthDate", birthDate);
-        petValues.put("uploadDate", uploadDate);
+        petValues.put("birthDate", Timestamp.valueOf(birthDate));
+        petValues.put("uploadDate", Timestamp.valueOf(uploadDate));
         petValues.put("price", price);
         petValues.put("ownerId", user.getId());
         petValues.put("status", status.ordinal());

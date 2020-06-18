@@ -91,7 +91,7 @@ public class RequestDaoImplTest {
     private static final Boolean VACCINATED = true;
     private static final String GENDER = "gender";
     private static final String DESCRIPTION = "description";
-    private static final LocalDateTime BIRTH_DATE = null;
+    private static final LocalDateTime BIRTH_DATE = LocalDateTime.now().minusMonths(1);
     private LocalDateTime UPLOAD_DATE = LocalDateTime.now();
     private static final int PRICE = 0;
     private static final PetStatus PET_STATUS = PetStatus.AVAILABLE;
@@ -242,8 +242,8 @@ public class RequestDaoImplTest {
         petValues.put("vaccinated", VACCINATED);
         petValues.put("gender", GENDER);
         petValues.put("description", DESCRIPTION);
-        petValues.put("birthDate", BIRTH_DATE);
-        petValues.put("uploadDate", UPLOAD_DATE);
+        petValues.put("birthDate", Timestamp.valueOf(BIRTH_DATE));
+        petValues.put("uploadDate", Timestamp.valueOf(UPLOAD_DATE));
         petValues.put("price", PRICE);
         petValues.put("ownerId", O_USER.getId());
         petValues.put("status", STATUS.ordinal());
@@ -263,8 +263,8 @@ public class RequestDaoImplTest {
         o_petValues.put("vaccinated", VACCINATED);
         o_petValues.put("gender", GENDER);
         o_petValues.put("description", DESCRIPTION);
-        o_petValues.put("birthDate", BIRTH_DATE);
-        o_petValues.put("uploadDate", UPLOAD_DATE);
+        o_petValues.put("birthDate", Timestamp.valueOf(BIRTH_DATE));
+        o_petValues.put("uploadDate", Timestamp.valueOf(UPLOAD_DATE));
         o_petValues.put("price", PRICE);
         o_petValues.put("ownerId", USER.getId());
         o_petValues.put("status", STATUS.ordinal());
@@ -279,7 +279,7 @@ public class RequestDaoImplTest {
     private Request insertRequest(long id, LocalDateTime creationDate, RequestStatus status, Pet pet, User user, User target, LocalDateTime updateDate) {
         final Map<String, Object> reqValues = new HashMap<>();
         reqValues.put("id", id);
-        reqValues.put("creationDate", creationDate);
+        reqValues.put("creationDate", Timestamp.valueOf(creationDate));
         reqValues.put("updateDate", Timestamp.valueOf(updateDate));
         reqValues.put("status", status.ordinal());
         reqValues.put("ownerId", user.getId());

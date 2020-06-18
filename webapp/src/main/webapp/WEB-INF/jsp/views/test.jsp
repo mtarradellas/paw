@@ -15,14 +15,11 @@
                             <div class="card">
                                     <%--                            TEST                --%>
 
-                                <h1><c:out value="${amount}"/></h1>
+<%--                                <h1><c:out value="${amount}"/></h1>--%>
 
-                                <c:forEach items="${questionList}" var="question">
+                                <c:forEach items="${ranges}" var="range">
                                     <div class="card-body">
-                                            ${question}
-                                    </div>
-                                    <div class="card-body">
-                                            ${question.answer}
+                                            ${range}
                                     </div>
                                 </c:forEach>
 

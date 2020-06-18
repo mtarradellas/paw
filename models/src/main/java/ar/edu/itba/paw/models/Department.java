@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.models;
 
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.bridge.builtin.LongBridge;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -14,6 +17,8 @@ public class Department implements Comparable<Department>{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departments_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "departments_id_seq", name = "departments_id_seq")
+    @Field(name = "eid", store = Store.YES)
+    @FieldBridge(impl = LongBridge.class)
     private Long id;
 
     @Column(length = 255, nullable = false)

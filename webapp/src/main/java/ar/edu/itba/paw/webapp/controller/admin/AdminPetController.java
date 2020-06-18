@@ -97,15 +97,32 @@ public class AdminPetController extends ParentController {
         int amount = petService.getFilteredListAmount(locale, findList, null, speciesId, breedId, gender, petStatus, minPriceNum,
                 maxPriceNum, provinceId, departmentId);
 
-        List<Breed> breedL = petList.stream().map(Pet::getBreed).distinct().sorted(Breed::compareTo).collect(Collectors.toList());
-        List<Species> speciesL = petList.stream().map(Pet::getSpecies).distinct().sorted(Species::compareTo).collect(Collectors.toList());
+        List<Breed> breedList = petService.filteredBreedList(locale, findList, null, speciesId, breedId, gender, petStatus,
+                minPriceNum, maxPriceNum, provinceId, departmentId);
+        Object[] speciesList = breedList.stream().map(Breed::getSpecies).distinct().sorted(Species::compareTo).toArray();
+//        List<Department> departmentList = petService.filteredDepartmentList(locale, findList, null, speciesId, breedId, gender, petStatus,
+//                minPriceNum, maxPriceNum, provinceId, departmentId);
+//        Object[] provinceList = departmentList.stream().map(Department::getProvince).distinct().sorted(Province::compareTo).toArray();
+//        Object[] ranges = petService.filteredRangesList(locale, findList, null, speciesId, breedId, gender, petStatus,
+//                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
+//        Object[] genders = petService.filteredGenderList(locale, findList, null, speciesId, breedId, gender, petStatus,
+//                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
+
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("petList", petList);
         mav.addObject("amount", amount);
-        mav.addObject("speciesList", speciesL);
-        mav.addObject("breedList", breedL);
+
+        mav.addObject("speciesList", speciesList);
+        mav.addObject("breedList", breedList.toArray());
+//        mav.addObject("provinceList", provinceList);
+//        mav.addObject("departmentList", departmentList.toArray());
+//        mav.addObject("ranges", ranges);
+//        mav.addObject("genders", genders);
+
+        mav.addObject("nanStatus", status == null);
+
         return mav;
     }
 

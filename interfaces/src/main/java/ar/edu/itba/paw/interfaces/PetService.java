@@ -8,12 +8,21 @@ import ar.edu.itba.paw.models.constants.QuestionStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface PetService {
 
     List<Pet> list(String locale, int page, int pageSize);
     List<Pet> filteredList(String locale, List<String> find, Long userId, Long species, Long breed, String gender, PetStatus status, String searchCriteria,
                            String searchOrder, int minPrice, int maxPrice, Long province, Long department, int page, int pageSize);
+    List<Breed> filteredBreedList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                  PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
+    List<Department> filteredDepartmentList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                            PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
+    Set<Integer> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                  PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
+    Set<String> filteredGenderList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                    PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
     List<Pet> listByUser(String locale, Long userId, int page, int pageSize);
 
     int getListAmount();

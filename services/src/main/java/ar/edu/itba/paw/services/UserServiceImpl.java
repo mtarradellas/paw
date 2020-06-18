@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
@@ -42,6 +43,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> filteredList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         return userDao.searchList(find, status, searchCriteria, searchOrder, page, pageSize);
+    }
+
+    @Override
+    public List<UserStatus> filteredStatusList( List<String> find, UserStatus status) {
+        Set<Integer> results = userDao.searchStatusList(find, status);
+        List<UserStatus> toReturn = new ArrayList<>();
+        results.stream().forEach(r->toReturn.add(UserStatus.values()[r]));
+        return toReturn;
     }
 
     @Override

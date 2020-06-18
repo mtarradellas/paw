@@ -1,14 +1,17 @@
 package ar.edu.itba.paw.interfaces;
 
+import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface UserDao {
@@ -16,7 +19,7 @@ public interface UserDao {
     List<User> list(int page, int pageSize);
     List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
     List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-
+    Set<Integer> searchStatusList(List<String> find, UserStatus status);
     int getListAmount();
     int getSearchAmount(List<String> find, UserStatus status);
     int getFilteredAmount(UserStatus status);
