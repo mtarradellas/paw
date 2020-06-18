@@ -218,7 +218,7 @@ public class RequestJpaDaoImpl implements RequestDao {
             }
         }
         if(user != null)  boolJunction.must(queryBuilder.phrase().onField("pet.user.username").sentence(user.getUsername()).createQuery());
-        if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.eid").sentence(pet.getId().toString()).createQuery());
+        if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.eid").matching(pet.getId().toString()).createQuery());
 
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
