@@ -246,8 +246,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         return jpaQuery;
     }
 
-    @Override
-    public void indexRequests() {
+    private void indexRequests() {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         try {
             fullTextEntityManager.createIndexer().startAndWait();

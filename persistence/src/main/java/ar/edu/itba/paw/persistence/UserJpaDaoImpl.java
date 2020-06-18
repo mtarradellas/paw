@@ -120,7 +120,7 @@ public class UserJpaDaoImpl implements UserDao {
         return em.createQuery(cr).getResultList();
     }
 
-    public void indexUsers() {
+    private void indexUsers() {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         try {
             fullTextEntityManager.createIndexer().startAndWait();
