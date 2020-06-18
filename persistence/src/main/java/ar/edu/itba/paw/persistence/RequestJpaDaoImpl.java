@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 public class RequestJpaDaoImpl implements RequestDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestJpaDaoImpl.class);
-    private static final int MAX_STATUS = 3;
-    private static final int MAX_QUANTITY_OF_STATUS = 4;
+    private static final int MAX_STATUS = RequestStatus.maxValue();
+    private static final int MAX_QUANTITY_OF_STATUS = RequestStatus.amount();
 
     @PersistenceContext
     private EntityManager em;
@@ -318,10 +318,10 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public void updateByStatusAndUser(User user, RequestStatus oldStatus, RequestStatus newStatus) {
-        String qStr = "update Request set status = :new, updateDate = :now where user.id = :user and status = :old";
+        String qStr = "update Request set status = :new, updateDate = :now where (user.id = :user and status = :old)";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus.getValue());
-        query.setParameter("new", newStatus.getValue());
+        query.setParameter("old", oldStatus.ordinal());
+        query.setParameter("new", newStatus.ordinal());
         query.setParameter("user", user.getId());
         query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
@@ -329,10 +329,10 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public void updateByStatusAndPetOwner(User petOwner, RequestStatus oldStatus, RequestStatus newStatus) {
-        String qStr = "update Request set status = :new, updateDate = :now where target.id = :target and status = :old";
+        String qStr = "update Request set status = :new, updateDate = :now where (target.id = :target and status = :old)";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus.getValue());
-        query.setParameter("new", newStatus.getValue());
+        query.setParameter("old", oldStatus.ordinal());
+        query.setParameter("new", newStatus.ordinal());
         query.setParameter("target", petOwner.getId());
         query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
@@ -340,10 +340,10 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public void updateByStatusAndPet(Pet pet, RequestStatus oldStatus, RequestStatus newStatus) {
-        String qStr = "update Request set status = :new, updateDate = :now where pet.id = :pet and status = :old";
+        String qStr = "update Request set status = :new, updateDate = :now where (pet.id = :pet and status = :old)";
         Query query = em.createQuery(qStr);
-        query.setParameter("old", oldStatus.getValue());
-        query.setParameter("new", newStatus.getValue());
+        query.setParameter("old", oldStatus.ordinal());
+        query.setParameter("new", newStatus.ordinal());
         query.setParameter("pet", pet.getId());
         query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();

@@ -28,6 +28,7 @@ public interface RequestService {
     boolean  accept(long id, User user, String contextURL);
     boolean  reject(long id, User user, String contextURL);
     boolean recover(long id, User user, String contextURL);
+    boolean sell(Pet pet, User user);
 
     void adminUpdateStatus(long id, RequestStatus status);
     void  adminCancel(long id);
@@ -37,7 +38,7 @@ public interface RequestService {
 
     void cancelAllByUser(User user);
     void rejectAllByPetOwner(long petOwnerId);
-    void rejectAllByPet(String locale, long petId);
+    void rejectAllByPet(long petId);
 
     int interestNotifs(User user);
     int requestNotifs(User user);

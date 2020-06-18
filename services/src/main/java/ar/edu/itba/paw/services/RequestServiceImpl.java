@@ -339,6 +339,20 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
+    public boolean sell(Pet pet, User user) {
+        Optional<Request> opRequest = user.getRequestList().stream().filter(r -> r.getPet().getId().equals(pet.getId())).findFirst();
+        if (!opRequest.isPresent()) {
+            LOGGER.warn("No request from user {} to pet {} found", user.getId(), pet.getId());
+            return false;
+        }
+        Request request = opRequest.get();
+        request.setStatus(RequestStatus.SOLD);
+        requestDao.update(request);
+        return true;
+    }
+
+    @Transactional
+    @Override
     public void adminUpdateStatus(long id, RequestStatus status) {
         Optional<Request> opRequest = requestDao.findById(id);
         if (!opRequest.isPresent()) {
@@ -390,18 +404,20 @@ public class RequestServiceImpl implements RequestService {
         }
         User petOwner = opPetOwner.get();
         requestDao.updateByStatusAndPetOwner(petOwner, RequestStatus.PENDING, RequestStatus.REJECTED);
+        requestDao.updateByStatusAndPetOwner(petOwner, RequestStatus.ACCEPTED, RequestStatus.REJECTED);
     }
 
     @Transactional
     @Override
-    public void rejectAllByPet(String locale, long petId) {
-        Optional<Pet> opPet = petService.findById(locale, petId);
+    public void rejectAllByPet(long petId) {
+        Optional<Pet> opPet = petService.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
             return;
         }
         Pet pet = opPet.get();
         requestDao.updateByStatusAndPet(pet, RequestStatus.PENDING, RequestStatus.REJECTED);
+        requestDao.updateByStatusAndPet(pet, RequestStatus.ACCEPTED, RequestStatus.REJECTED);
     }
 
     @Override

@@ -466,6 +466,7 @@ public class PetServiceImpl implements PetService {
             }
             pet.setNewOwner(opUser.get());
             pet.setStatus(PetStatus.SOLD);
+            requestService.sell(pet, opUser.get());
 
             Map<String, Object> arguments = new HashMap<>();
 
@@ -479,7 +480,11 @@ public class PetServiceImpl implements PetService {
 
 //            mailService.sendMail(pet.getNewOwner().getMail(), userLocale, arguments, MailType.PET_SOLD);
 
-            return petDao.update(pet).isPresent();
+            boolean updated = petDao.update(pet).isPresent();
+            if (updated) {
+                requestService.rejectAllByPet(pet.getUser().getId());
+            }
+            return updated;
         }
         return false;
     }
@@ -495,7 +500,7 @@ public class PetServiceImpl implements PetService {
         Pet pet = opPet.get();
 
         if (pet.getUser().getId().equals(user.getId())) {
-            requestService.rejectAllByPet("LENIA", petId);
+            requestService.rejectAllByPet(petId);
             pet.setStatus(PetStatus.REMOVED);
             return petDao.update(pet).isPresent();
         }
@@ -512,7 +517,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().getId().equals(user.getId())) {
+        if (pet.getUser().getId().equals(user.getId()) && pet.getNewOwner() == null) {
             pet.setStatus(PetStatus.AVAILABLE);
             return petDao.update(pet).isPresent();
         }
@@ -547,7 +552,7 @@ public class PetServiceImpl implements PetService {
             return false;
         }
         Pet pet = opPet.get();
-        requestService.rejectAllByPet("LENIA", petId);
+        requestService.rejectAllByPet(petId);
         pet.setStatus(PetStatus.REMOVED);
         return petDao.update(pet).isPresent();
     }

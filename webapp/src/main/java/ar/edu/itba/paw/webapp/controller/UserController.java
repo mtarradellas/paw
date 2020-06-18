@@ -122,8 +122,6 @@ public class UserController extends ParentController {
         criteria = parseCriteria(criteria);
         order = parseOrder(order);
         int pageNum = parsePage(page);
-        System.out.println("Owner: " + ownerId + ", target: " + id + ", min: " + min + ", max: " + max + ", status: " +
-                reviewStatus + ", criteria: " + criteria + ", order: " + order + ", page: " + pageNum);
         List<Review> reviewList = userService.reviewList(ownerId, id, min, max, reviewStatus, criteria, order,
                 pageNum, REV_PAGE_SIZE);
         int amount = userService.getReviewListAmount(ownerId, id, min, max, reviewStatus);
@@ -243,7 +241,9 @@ public class UserController extends ParentController {
         List<Pet> availablePets = requestService.filteredPetListByPetOwner(user, pet, findList, requestStatus);
 
         List<RequestStatus> statusList;
-        if(requestStatus == null) statusList = requestService.filteredStatusListByPetOwner(user, null, findList, null);
+        if(requestStatus == null) {
+            statusList = requestService.filteredStatusListByPetOwner(user, null, findList, null);
+        }
         else {
             statusList = new ArrayList<>();
             statusList.add(requestStatus);
