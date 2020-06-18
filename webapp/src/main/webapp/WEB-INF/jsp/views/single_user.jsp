@@ -7,11 +7,11 @@
 
 <c:set var="AVAILABLE" value="<%=PetStatus.AVAILABLE.getValue()%>"/>
 
+<fmt:formatNumber type="number" maxFractionDigits="2" var="score" value="${reviewAverage}"/>
+
 <spring:message code="userTitle" var="title"/>
 <spring:message code="areYouSure.delete" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
-
-<fmt:formatNumber type="number" maxFractionDigits="2" var="score" value="${user.averageScore}"/>
 
 <c:if test="${showAllReviews eq 'true'}">
     <c:set var="limit" value="${user.targetReviews.size()}"/>
@@ -72,7 +72,7 @@
                     </div>
                 </c:if>
                 <c:choose>
-                    <c:when test="${user.averageScore == -1}">
+                    <c:when test="${reviewAverage == -1}">
                         <h3 class="p-2">
                             <b><spring:message code="user.rating"/>:</b>
                             <spring:message code="user.noReviews"/>
@@ -97,8 +97,9 @@
                             <i id="star4" class="star-rating"></i>
                             <i id="star5" class="star-rating"></i>
                         </h3>
+
                         <p class="p-2">(<spring:message code="user.average"
-                                                        arguments="${score},${user.targetReviews.size()}"/>)
+                                                        arguments="${score};${reviewAmount}" argumentSeparator=";"/>)
                             <c:if test="${canRate}">
                                 <button type="button" class="btn btn-link"
                                         data-toggle="modal" data-target="#add-review"><spring:message
