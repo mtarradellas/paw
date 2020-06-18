@@ -82,18 +82,30 @@
                                 </select>
                                 <label for="filter-status"><spring:message code="status"/></label>
                                 <select name="status" class="form-control" id="filter-status">
-                                    <option value="any"><spring:message code="filter.any"/></option>
+                                    <option value="any"
+                                            <c:if test="${(not empty param.status) && (param.status eq 'any') || nanStatus}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="filter.any"/></option>
                                     <option value="${AVAILABLE}"
-                                            <c:if test="${(not empty param.status) && (param.status eq AVAILABLE)}">selected</c:if>
+                                            <c:if test="${(not empty param.status) && !nanStatus && (param.status ne 'any') && (AVAILABLE eq param.status)}">
+                                                selected
+                                            </c:if>
                                     ><spring:message code="status.available"/></option>
                                     <option value="${REMOVED}"
-                                            <c:if test="${(not empty param.status) && (param.status eq REMOVED)}">selected</c:if>
+                                            <c:if test="${(not empty param.status) && !nanStatus && (param.status ne 'any') && (REMOVED eq param.status)}">
+                                                selected
+                                            </c:if>
                                     ><spring:message code="status.removed"/></option>
                                     <option value="${SOLD}"
-                                            <c:if test="${(not empty param.status) && (param.status eq SOLD)}">selected</c:if>
+                                            <c:if test="${(not empty param.status) && !nanStatus && (param.status ne 'any') && (SOLD eq param.status)}">
+                                                selected
+                                            </c:if>
                                     ><spring:message code="status.sold"/></option>
                                     <option value="${UNAVAILABLE}"
-                                            <c:if test="${(not empty param.status) && (param.status eq UNAVAILABLE)}">selected</c:if>
+                                            <c:if test="${(not empty param.status) && !nanStatus && (param.status ne 'any') && (UNAVAILABLE eq param.status)}">
+                                                selected
+                                            </c:if>
                                     ><spring:message code="status.unavailable"/></option>
                                 </select>
                             </div>

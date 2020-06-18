@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.models;
 
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.bridge.builtin.LongBridge;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,6 +18,8 @@ public class Province implements Comparable<Province>, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "provinces_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "provinces_id_seq", name = "provinces_id_seq")
+    @Field(name= "eid")
+    @FieldBridge(impl = LongBridge.class)
     private Long id;
 
 

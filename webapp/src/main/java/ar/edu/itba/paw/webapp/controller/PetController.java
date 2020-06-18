@@ -34,6 +34,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,20 +109,28 @@ public class PetController extends ParentController {
         int amount = petService.getFilteredListAmount(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE, minPriceNum,
                 maxPriceNum, provinceId, departmentId);
 
-        Object[] departments = petList.stream().map(Pet::getDepartment).distinct().sorted(Department::compareTo).toArray();
-        Object[] provinces = petList.stream().map(Pet::getProvince).distinct().sorted(Province::compareTo).toArray();
-        Object[] breeds = petList.stream().map(Pet::getBreed).distinct().sorted(Breed::compareTo).toArray();
-        Object[] speciesL = petList.stream().map(Pet::getSpecies).distinct().sorted(Species::compareTo).toArray();
+        List<Breed> breedList = petService.filteredBreedList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
+                 minPriceNum, maxPriceNum, provinceId, departmentId);
+        Object[] speciesList = breedList.stream().map(Breed::getSpecies).distinct().sorted(Species::compareTo).toArray();
+        List<Department> departmentList = petService.filteredDepartmentList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
+                minPriceNum, maxPriceNum, provinceId, departmentId);
+        Object[] provinceList = departmentList.stream().map(Department::getProvince).distinct().sorted(Province::compareTo).toArray();
+        Object[] ranges = petService.filteredRangesList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
+                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
+        Object[] genders = petService.filteredGenderList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
+                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
         mav.addObject("homePetList", petList.toArray());
         mav.addObject("amount", amount);
 
-        mav.addObject("speciesList", speciesL);
-        mav.addObject("breedList", breeds);
-        mav.addObject("provinceList", provinces);
-        mav.addObject("departmentList", departments);
+        mav.addObject("speciesList", speciesList);
+        mav.addObject("breedList", breedList.toArray());
+        mav.addObject("provinceList", provinceList);
+        mav.addObject("departmentList", departmentList.toArray());
+        mav.addObject("ranges", ranges);
+        mav.addObject("genders", genders);
 
         mav.addObject("find", find);
         return mav;
@@ -326,7 +336,8 @@ public class PetController extends ParentController {
 
         Optional<Pet> opPet;
         try{
-            opPet = petService.create(getLocale(), petForm.getPetName(), petForm.getBirthDate(), petForm.getGender(),
+            LocalDateTime birthDate = petForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
                     petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, user.getId(),
                     petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
         } catch (DataIntegrityViolationException ex) {
@@ -353,7 +364,7 @@ public class PetController extends ParentController {
             List<Department> departmentList = locationService.departmentList();
             List<Province> provinceList = locationService.provinceList();
 
-            petForm.setBirthDate(pet.getBirthDate());
+            petForm.setBirthDate(java.util.Date.from(pet.getBirthDate().atZone(ZoneId.systemDefault()).toInstant()));
             petForm.setBreedId(pet.getBreed().getId());
             petForm.setDescription(pet.getDescription());
             petForm.setGender(pet.getGender());
@@ -420,7 +431,8 @@ public class PetController extends ParentController {
 
         Optional<Pet> opPet;
         try {
-             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), editPetForm.getBirthDate(),
+            LocalDateTime birthDate = editPetForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), birthDate,
                      editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
                      null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
                      editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());

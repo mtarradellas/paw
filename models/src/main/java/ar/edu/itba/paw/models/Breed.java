@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.models;
 
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.bridge.builtin.LongBridge;
 
 import javax.persistence.*;
 
@@ -13,10 +16,12 @@ public class Breed implements Comparable<Breed>{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "breeds_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "breeds_id_seq", name = "breeds_id_seq")
+    @Field(name = "eid", store = Store.YES)
+    @FieldBridge(impl = LongBridge.class)
     private Long id;
 
     @Column(nullable = false)
-    @Field
+    @Field(store = Store.YES)
     private String en_us;
 
     @Column(nullable = false)

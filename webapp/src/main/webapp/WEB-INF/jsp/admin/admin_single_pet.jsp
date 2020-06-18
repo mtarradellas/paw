@@ -4,8 +4,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:formatDate value="${pet.uploadDate}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
-<fmt:formatDate value="${pet.birthDate}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
+<fmt:parseDate  value="${pet.uploadDate}"  type="date" pattern="yyyy-MM-dd" var="parsedUpload" />
+<fmt:formatDate value="${parsedUpload}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
+
+<fmt:parseDate  value="${pet.birthDate}"  type="date" pattern="yyyy-MM-dd" var="parsedBirth" />
+<fmt:formatDate value="${parsedBirth}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
 
 <c:if test="${pet.gender eq 'male'}"><spring:message var="pronoun" code="pet.him"/> </c:if>
 <c:if test="${pet.gender eq 'female' }"><spring:message var="pronoun" code="pet.her"/> </c:if>

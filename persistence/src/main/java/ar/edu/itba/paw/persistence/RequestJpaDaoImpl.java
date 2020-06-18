@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.RequestDao;
+import ar.edu.itba.paw.models.Department;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
@@ -28,6 +29,7 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestJpaDaoImpl.class);
     private static final int MAX_STATUS = 3;
+    private static final int MAX_QUANTITY_OF_STATUS = 4;
 
     @PersistenceContext
     private EntityManager em;
@@ -56,12 +58,52 @@ public class RequestJpaDaoImpl implements RequestDao {
                                     String searchOrder, int page, int pageSize) {
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
-       List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+        jpaQuery.setProjection(ProjectionConstants.ID);
+        List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
+
         return reqs;
+    }
+
+    @Override
+    public Set<Integer> searchStatusList(User user, Pet pet, List<String> find, RequestStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet);
+        jpaQuery.setProjection("status");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new TreeSet<>();
+        Set<Integer> statuses = new TreeSet<>();
+        for (Object[] object:results) {
+            statuses.add((Integer)object[0]);
+            if(statuses.size() == MAX_QUANTITY_OF_STATUS) return statuses;
+        }
+        return statuses;
+    }
+
+    @Override
+    public List<Pet> searchPetListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
+        jpaQuery.setProjection("pet.eid");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new ArrayList<>();
+        Set<Long> filteredIds = new TreeSet<>();
+        for (Object[] object:results) filteredIds.add((Long) object[0]);
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
+        final TypedQuery<Pet> query2 = em.createQuery("from Pet where id in :filteredIds", Pet.class);
+        query2.setParameter("filteredIds", filteredIds);
+        return query2.getResultList();
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+//        try {
+//            fullTextEntityManager.createIndexer().startAndWait();
+//        } catch(InterruptedException ignored) {}
         LOGGER.debug("Preparing Lucene Query (Requests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
@@ -88,12 +130,11 @@ public class RequestJpaDaoImpl implements RequestDao {
             }
         }
         if(user != null)  boolJunction.must(queryBuilder.phrase().onField("user.username").sentence(user.getUsername()).createQuery());
-        //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.username").sentence(user.getUsername()).createQuery());
-
+        if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.eid").matching(pet.getId()).createQuery());
+        
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
-        jpaQuery.setProjection(ProjectionConstants.ID);
         return jpaQuery;
     }
 
@@ -102,7 +143,9 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setMaxResults(pageSize);
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
-        if (results.size() == 0) return new ArrayList<>();
+        if (results.size() == 0) {
+            return new ArrayList<>();
+        }
         List<Long> filteredIds = new ArrayList<>();
         for (Object[] id:results) {
             filteredIds.add((Long)id[0]);
@@ -144,8 +187,26 @@ public class RequestJpaDaoImpl implements RequestDao {
     @Override
     public List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
+        jpaQuery.setProjection(ProjectionConstants.ID);
         List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
         return reqs;
+    }
+
+    @Override
+    public Set<Integer> searchStatusListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet);
+        jpaQuery.setProjection("status");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new TreeSet<>();
+        Set<Integer> statuses = new TreeSet<>();
+        for (Object[] object:results) {
+            statuses.add((Integer)object[0]);
+            if(statuses.size() == MAX_QUANTITY_OF_STATUS) return statuses;
+        }
+        return statuses;
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsByPetOwnerQuery(List<String> find, RequestStatus status, User user, Pet pet) {
@@ -176,13 +237,21 @@ public class RequestJpaDaoImpl implements RequestDao {
             }
         }
         if(user != null)  boolJunction.must(queryBuilder.phrase().onField("pet.user.username").sentence(user.getUsername()).createQuery());
-        //if(pet != null)  boolJunction.must(queryBuilder.phrase().onField("pet.username").sentence(user.getUsername()).createQuery());
+        if(pet != null)  boolJunction.must(queryBuilder.keyword().onField("pet.eid").matching(pet.getId().toString()).createQuery());
 
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Request.class);
-        jpaQuery.setProjection(ProjectionConstants.ID);
+
         return jpaQuery;
+    }
+
+    @Override
+    public void indexRequests() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
     }
 
     @Override
@@ -232,14 +301,11 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    public Request create(User user, Pet pet, RequestStatus status) {
-        Date today = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-        Request request = new Request(today, status, user, pet.getUser(), pet);
+    public Request create(User user, Pet pet, RequestStatus status, LocalDateTime creationDate) {
+        Request request = new Request(creationDate, status, user, pet.getUser(), pet);
         request.setUpdateDate(LocalDateTime.now());
         em.persist(request);
+        em.flush();
         return request;
     }
 
@@ -281,11 +347,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("pet", pet.getId());
         query.setParameter("now", LocalDateTime.now());
         query.executeUpdate();
-    }
-
-    @Override
-    public boolean isRequestTarget(Request request, User user) {
-        return false;
     }
 
     @Override

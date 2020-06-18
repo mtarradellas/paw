@@ -146,7 +146,8 @@
                             <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-5">
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <spring:message code="request.isInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
@@ -178,10 +179,17 @@
                                 </div>
                             </c:if>
                             <c:if test="${req.status.value ne PENDING}">
-                                <div class="row bg-light p-1 resolved">
+                                <c:if test="${req.pet.newOwner eq null}">
+                                    <div class="row bg-light p-1 ">
+                                </c:if>
+                                <c:if test="${req.pet.newOwner ne null}">
+                                    <div class="row bg-light p-1 resolved">
+                                </c:if>
+
                                     <div class=" col-lg-5">
 
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <spring:message code="request.wasInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
@@ -198,7 +206,7 @@
 
                                             <c:when test="${req.status.value eq ACCEPTED and req.pet.newOwner ne null}">
                                                 <spring:message code="request.accepted"/>
-                                                <spring:message code="pet.status.currentlySold.short" arguments="${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                                <spring:message code="pet.status.currentlySold.short" arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
                                             </c:when>
 
                                             <c:when test="${req.status.value eq CANCELED}">
@@ -222,7 +230,7 @@
                                                 <form action="${pageContext.request.contextPath}/pet/${req.pet.id}/sell-adopt"
                                                       method="post" enctype="multipart/form-data" >
                                                     <input type="hidden" name="newowner" value="${req.user.id}"/>
-                                                    <spring:message code="petCard.reserve" var="submitText"/>
+                                                    <spring:message code="sell" var="submitText"/>
                                                     <input type="submit" class="btn btn-success are-you-sure" value="${submitText}"/>
                                                 </form>
                                             </c:if>
@@ -242,6 +250,7 @@
             </div>
         </div>
 
+
         <div class="modal fade" id="accept-request" tabindex="-1" role="dialog" aria-labelledby="acceptTitle"
              aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -256,7 +265,7 @@
                         <p><spring:message code="areYouSure.body.interests"/></p>
                     </div>
                     <div class="modal-footer button-container">
-                        <button type="button" class="btn btn-success"><spring:message code="areYouSure.accept"/></button>
+                        <button type="button" class="btn btn-danger"><spring:message code="areYouSure.accept"/></button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal"><spring:message code="areYouSure.decline"/></button>
                     </div>
                 </div>

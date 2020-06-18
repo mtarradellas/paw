@@ -11,8 +11,10 @@ public interface RequestService {
 
     List<Request> list(int page, int pageSize);
     List<Request> filteredList(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+    List<RequestStatus> filteredStatusList(User user, Long petId, List<String> find, RequestStatus status);
+    List<Pet> filteredPetListByPetOwner(User user, Long petId, List<String> find, RequestStatus status);
     List<Request> filteredListByPetOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-
+    List<RequestStatus> filteredStatusListByPetOwner(User user, Long petId, List<String> find, RequestStatus status);
     int getListAmount();
     int getFilteredListAmount(User user, Long petId, List<String> find, RequestStatus status);
     int getFilteredListByPetOwnerAmount(User user, Long petId, List<String> find, RequestStatus status);

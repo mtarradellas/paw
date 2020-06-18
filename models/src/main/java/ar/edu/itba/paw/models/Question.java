@@ -4,7 +4,7 @@ import ar.edu.itba.paw.models.constants.QuestionStatus;
 import org.hibernate.search.annotations.DocumentId;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public class Question {
     private Pet pet;
 
     @Column
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
     @Column
     private int status;
@@ -45,7 +45,7 @@ public class Question {
         // Hibernate
     }
 
-    public Question(String content, User user, User target, Pet pet, Date creationDate, QuestionStatus status) {
+    public Question(String content, User user, User target, Pet pet, LocalDateTime creationDate, QuestionStatus status) {
         this.content = content;
         this.user = user;
         this.target = target;
@@ -117,11 +117,11 @@ public class Question {
         this.pet = pet;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 

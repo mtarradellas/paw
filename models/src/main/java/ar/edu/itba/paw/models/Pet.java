@@ -4,10 +4,11 @@ import ar.edu.itba.paw.models.constants.PetStatus;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.bridge.builtin.EnumBridge;
 import org.hibernate.search.bridge.builtin.IntegerBridge;
+import org.hibernate.search.bridge.builtin.LongBridge;
 import org.hibernate.search.bridge.builtin.StringBridge;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,8 @@ public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pets_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "pets_id_seq", name = "pets_id_seq")
-    @DocumentId
+    @Field(name= "eid", store = Store.YES)
+    @FieldBridge(impl = LongBridge.class)
     private Long id;
 
     @Column(nullable = false)
@@ -26,22 +28,22 @@ public class Pet {
     private String petName;
 
     @Column
-    private Date birthDate;
+    private LocalDateTime birthDate;
 
     @Column(length = 16, nullable = false)
-    @Field
+    @Field(store = Store.YES)
     private String gender;
 
     @Column(nullable = false)
     private boolean vaccinated;
 
-    @Field
+    @Field(store = Store.YES)
     @NumericField
     @Column(nullable = false)
     private int price;
 
     @Column(nullable = false)
-    private Date uploadDate;
+    private LocalDateTime uploadDate;
 
     @Column(length = 4086)
     private String description;
@@ -87,7 +89,7 @@ public class Pet {
         // Hibernate
     }
 
-    public Pet(String petName, Date birthDate, String gender, boolean vaccinated, int price, Date uploadDate,
+    public Pet(String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price, LocalDateTime uploadDate,
                String description, PetStatus status, User user, Species species, Breed breed, Province province, Department department) {
 
         this.petName = petName;
@@ -142,7 +144,7 @@ public class Pet {
         return petName;
     }
 
-    public Date getBirthDate() {
+    public LocalDateTime getBirthDate() {
         return birthDate;
     }
 
@@ -158,7 +160,7 @@ public class Pet {
         return price;
     }
 
-    public Date getUploadDate() {
+    public LocalDateTime getUploadDate() {
         return uploadDate;
     }
 
@@ -206,7 +208,7 @@ public class Pet {
         this.petName = petName;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(LocalDateTime birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -222,7 +224,7 @@ public class Pet {
         this.price = price;
     }
 
-    public void setUploadDate(Date uploadDate) {
+    public void setUploadDate(LocalDateTime uploadDate) {
         this.uploadDate = uploadDate;
     }
 

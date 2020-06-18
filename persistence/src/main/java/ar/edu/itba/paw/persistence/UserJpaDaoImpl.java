@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.models.*;
 
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.engine.ProjectionConstants;
@@ -11,11 +12,10 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.stereotype.Repository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+
+import javax.persistence.*;
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class UserJpaDaoImpl implements UserDao {
 
     private static final int MAX_STATUS = 3;
+    private static final int MAX_QUANTITY_OF_STATUS = 4;
 
     @PersistenceContext
     private EntityManager em;
@@ -44,13 +45,12 @@ public class UserJpaDaoImpl implements UserDao {
     @Override
     public List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
+        jpaQuery.setProjection(ProjectionConstants.ID);
         return paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
     }
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, UserStatus status) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        /* TODO descomentar para deployar*/
-//        indexUsers();
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(User.class)
@@ -79,7 +79,6 @@ public class UserJpaDaoImpl implements UserDao {
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, User.class);
-        jpaQuery.setProjection(ProjectionConstants.ID);
         return jpaQuery;
     }
 
@@ -121,17 +120,36 @@ public class UserJpaDaoImpl implements UserDao {
         return em.createQuery(cr).getResultList();
     }
 
-    private void indexUsers() {
-//        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-//        try {
-//            fullTextEntityManager.createIndexer().startAndWait();
-//        } catch(InterruptedException ignored) {}
+    public void indexUsers() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
     }
 
     @Override
     @Deprecated
     public List<User> filteredList(UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         return searchList(null, status, searchCriteria, searchOrder, page, pageSize);
+    }
+
+    @Override
+    public Set<Integer> searchStatusList(List<String> find,  UserStatus status) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
+        jpaQuery.setProjection("status");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = jpaQuery.getResultList();
+        if (results.size() == 0) return new TreeSet<>();
+        Set<Integer> statuses = new TreeSet<>();
+        for (Object[] object:results) {
+            statuses.add((Integer)object[0]);
+            if(statuses.size() == MAX_QUANTITY_OF_STATUS) return statuses;
+        }
+        return statuses;
     }
 
     @Override
@@ -164,8 +182,7 @@ public class UserJpaDaoImpl implements UserDao {
         final String qStr = "from User as u where u.username = :username";
         final TypedQuery<User> query = em.createQuery(qStr, User.class);
         query.setParameter("username", username);
-        User user = query.getSingleResult();
-        return Optional.of(user);
+        return query.getResultList().stream().findFirst();
     }
 
     @Override
@@ -189,26 +206,57 @@ public class UserJpaDaoImpl implements UserDao {
     public User create(String username, String password, String mail, UserStatus status, String locale) {
         final User user = new User(username, password, mail, status, locale);
         em.persist(user);
-        indexUsers();
+        em.flush();
         return user;
     }
 
     @Override
     public Optional<User> update(User user) {
         em.persist(user);
-        indexUsers();
         return Optional.of(user);
     }
 
     @Override
     public List<Review> reviewList(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status, String criteria,
                                    String order, int page, int pageSize) {
-        return new ArrayList<>();
+
+        Query nativeQuery = reviewListQuery("id", userId, targetId, minScore, maxScore, status);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+
+        @SuppressWarnings("unchecked")
+        List<? extends Number> resultList = nativeQuery.getResultList();
+        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+
+        final TypedQuery<Review> query = em.createQuery("from Review where id IN :filteredIds", Review.class);
+        query.setParameter("filteredIds", filteredIds);
+        return query.getResultList();
     }
 
     @Override
     public int getReviewListAmount(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
-        return 0;
+
+        Query nativeQuery = reviewListQuery("count(*)", userId, targetId, minScore, maxScore, status);
+        return ((Number)nativeQuery.getSingleResult()).intValue();
+    }
+
+    private Query reviewListQuery(String select, Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
+        StringBuilder str = new StringBuilder("SELECT " + select + " FROM reviews WHERE ");
+        str.append("score >= :min ");
+        str.append("AND score <= :max ");
+        if (userId != null) str.append("AND ownerId = :owner ");
+        if (targetId != null) str.append("AND targetId = :target ");
+        if (status != null) str.append("AND status = :status ");
+
+        Query nativeQuery = em.createNativeQuery(str.toString());
+        nativeQuery.setParameter("min", minScore);
+        if (maxScore == -1) maxScore = 5;
+        nativeQuery.setParameter("max", maxScore);
+        if (userId != null) nativeQuery.setParameter("owner", userId);
+        if (targetId != null) nativeQuery.setParameter("target", targetId);
+        if (status != null) nativeQuery.setParameter("status", status.ordinal());
+
+        return nativeQuery;
     }
 
     @Override
@@ -217,20 +265,16 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public void addReview(User owner, User target, int score, String description, ReviewStatus status) {
-        Date today = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-        final Review review = new Review(owner, target, score, description, status, today);
+    public Review addReview(User owner, User target, int score, String description, ReviewStatus status) {
+        final Review review = new Review(owner, target, score, description, status, LocalDateTime.now());
         em.persist(review);
-        indexUsers();
+        em.flush();
+        return review;
     }
 
     @Override
     public Optional<Review> updateReview(Review review) {
         em.persist(review);
-        indexUsers();
         return Optional.of(review);
     }
 
@@ -257,7 +301,7 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<Token> createToken(UUID uuid, User user, Date expirationDate) {
+    public Optional<Token> createToken(UUID uuid, User user, LocalDateTime expirationDate) {
         Token token = new Token(uuid, expirationDate, user);
         em.persist(token);
         return Optional.of(token);
