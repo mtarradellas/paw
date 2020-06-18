@@ -155,7 +155,9 @@ public class UserJpaDaoImpl implements UserDao {
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM users");
-        return ((Number)nativeQuery.getSingleResult()).intValue();
+        Number n = (Number) nativeQuery.getSingleResult();
+        if (n == null) return 0;
+        return n.intValue();
     }
 
     @Override
@@ -237,7 +239,9 @@ public class UserJpaDaoImpl implements UserDao {
     public int getReviewListAmount(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
 
         Query nativeQuery = reviewListQuery("count(*)", userId, targetId, minScore, maxScore, status);
-        return ((Number)nativeQuery.getSingleResult()).intValue();
+        Number n = (Number) nativeQuery.getSingleResult();
+        if (n == null) return 0;
+        return n.intValue();
     }
 
     private Query reviewListQuery(String select, Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
@@ -276,6 +280,16 @@ public class UserJpaDaoImpl implements UserDao {
     public Optional<Review> updateReview(Review review) {
         em.persist(review);
         return Optional.of(review);
+    }
+
+    @Override
+    public double getReviewAverage(long userId) {
+        String qStr = "SELECT AVG(score) FROM reviews WHERE targetid = :target";
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("target", userId);
+        Number av = (Number)query.getSingleResult();
+        if (av == null) return -1;
+        return av.doubleValue();
     }
 
     @Override

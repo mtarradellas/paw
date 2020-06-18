@@ -39,6 +39,7 @@ public interface UserDao {
     Optional<Review> findReviewById(long id);
     Review addReview(User owner, User target, int score, String description, ReviewStatus status);
     Optional<Review> updateReview(Review review);
+    double getReviewAverage(long userId);
 
     List<Token> listTokens();
     Optional<Token> findToken(UUID token);

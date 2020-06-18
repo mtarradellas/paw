@@ -62,7 +62,7 @@
                                             <c:if test="${(not empty param.status) && (param.status ne 'any') && (SOLD eq param.status)}">
                                                 selected
                                             </c:if>
-                                    ><spring:message code="request.sold"/></option>
+                                    ><spring:message code="status.sold"/></option>
 
                                 </select>
                                 <label for="filter-pet"><spring:message code="pet"/></label>
@@ -151,6 +151,7 @@
 
                         </c:if>
                         <c:forEach var="req" items="${interestList}">
+                            <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
                             <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
                                     <div class=" col-lg-5">

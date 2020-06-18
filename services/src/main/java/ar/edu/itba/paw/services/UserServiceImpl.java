@@ -362,6 +362,11 @@ public class UserServiceImpl implements UserService {
         return userDao.updateReview(review);
     }
 
+    @Override
+    public double getReviewAverage(long userId) {
+        return userDao.getReviewAverage(userId);
+    }
+
     @Transactional
     @Override
     public Optional<User> adminCreate(String username, String password, String mail, String locale) {
