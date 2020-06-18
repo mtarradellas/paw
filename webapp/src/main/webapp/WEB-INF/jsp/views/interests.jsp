@@ -55,6 +55,13 @@
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
 
+                                    <c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+                                    <option value="${SOLD}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (SOLD eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="status.sold"/></option>
+
                                 </select>
                                 <label for="filter-pet"><spring:message code="pet"/></label>
                                 <select data-child="filter-pet" name="petId" class="selector-parent form-control" id="filter-pet">
@@ -179,12 +186,15 @@
                                 </div>
                             </c:if>
                             <c:if test="${req.status.value ne PENDING}">
-                                <c:if test="${req.pet.newOwner eq null}">
-                                    <div class="row bg-light p-1 ">
-                                </c:if>
-                                <c:if test="${req.pet.newOwner ne null}">
-                                    <div class="row bg-light p-1 resolved">
-                                </c:if>
+                                <c:choose>
+                                    <c:when test="${req.status.value eq ACCEPTED && req.pet.newOwner eq null}">
+                                        <div class="row bg-light p-1 ">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="row bg-light p-1 resolved">
+                                    </c:otherwise>
+                                </c:choose>
+
 
                                     <div class=" col-lg-5">
 
@@ -199,14 +209,21 @@
                                         <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
                                         <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
                                         <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+                                        <c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
                                         <c:choose>
-                                            <c:when test="${req.status.value eq ACCEPTED and req.pet.newOwner eq null}">
-                                                <spring:message code="request.accepted"/> <spring:message code="pet.status.notSold"/>
+                                            <c:when test="${req.status.value eq ACCEPTED }">
+                                                <spring:message code="request.accepted"/>
+                                                <c:if test="${req.pet.newOwner eq null}">
+                                                    <spring:message code="pet.status.notSold"/>
+                                                </c:if>
+                                                <c:if test="${req.pet.newOwner ne null and loggedUser.id ne req.pet.newOwner.id}">
+                                                    <spring:message code="pet.status.currentlySold.short"
+                                                                    arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                                </c:if>
                                             </c:when>
 
-                                            <c:when test="${req.status.value eq ACCEPTED and req.pet.newOwner ne null}">
-                                                <spring:message code="request.accepted"/>
-                                                <spring:message code="pet.status.currentlySold.short" arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                            <c:when test="${req.status.value eq SOLD}">
+                                                <spring:message code="status.sold"/>
                                             </c:when>
 
                                             <c:when test="${req.status.value eq CANCELED}">

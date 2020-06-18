@@ -56,6 +56,13 @@
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
 
+                                    <c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+                                    <option value="${SOLD}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (SOLD eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="status.sold"/></option>
+
                                 </select>
                             </div>
                             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
@@ -160,7 +167,29 @@
                             </c:if>
 
                             <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
-                            <c:if test="${req.status.value eq ACCEPTED}">
+                            <c:if test="${req.status.value eq ACCEPTED and req.pet.newOwner eq null}">
+                                <div class="row p-1 bg-light resolved">
+                                    <div class=" col-lg-6">
+                                        <spring:message code="request.wasAccepted"
+                                                        arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
+                                        <small class="text-warning"> ${creationDate}</small>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <spring:message code="request.accepted"/> <spring:message code="pet.status.notSold"/>
+                                    </div>
+                                    <div class="col text-center button-container">
+                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
+                                           type="button" class="btn btn-secondary"><spring:message
+                                                code="visitPet"/></a>
+                                    </div>
+                                </div>
+                            </c:if>
+
+                            <c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+                            <c:if test="${req.status.value eq SOLD or (req.status.value eq ACCEPTED and req.pet.newOwner ne null)}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-6">
                                         <spring:message code="request.wasAccepted"
@@ -172,13 +201,11 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.accepted"/>
-                                        <c:if test="${req.pet.newOwner eq null}">
-                                            <spring:message code="pet.status.notSold"/>
-                                        </c:if>
-                                        <c:if test="${req.pet.newOwner ne null}">
+                                        <c:if test="${req.pet.newOwner ne null and loggedUser.id ne req.pet.newOwner.id}">
                                             <spring:message code="pet.status.currentlySold.short"
                                                             arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
                                         </c:if>
+
 
                                     </div>
                                     <div class="col text-center button-container">
