@@ -2,6 +2,8 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.annotations.*;
+import org.hibernate.search.bridge.builtin.LongBridge;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +16,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "users_id_seq", name = "users_id_seq")
+    @Field(name= "eid")
+    @FieldBridge(impl = LongBridge.class)
     private Long id;
 
     @Column(nullable = false)

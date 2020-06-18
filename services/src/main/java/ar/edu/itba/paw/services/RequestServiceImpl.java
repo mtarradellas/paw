@@ -52,6 +52,17 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public List<Pet> filteredPetListByPetOwner(User user, Long petId, List<String> find, RequestStatus status) {
+        Pet pet = parsePet(petId);
+        if(pet != null) {
+            List<Pet> pets = new ArrayList<>();
+            pets.add(pet);
+            return pets;
+        }
+        return requestDao.searchPetListByPetOwner(user, null, find, status);
+    }
+
+    @Override
     public List<Request> filteredListByPetOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         LOGGER.debug("Parameters for filteredListByPetOwner <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
                 user, petId, status, searchCriteria, searchOrder, page, pageSize);

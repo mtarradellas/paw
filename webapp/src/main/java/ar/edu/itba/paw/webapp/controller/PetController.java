@@ -132,9 +132,6 @@ public class PetController extends ParentController {
         mav.addObject("ranges", ranges);
         mav.addObject("genders", genders);
 
-        System.out.println(genders[0] + "\n\n\n\n\n\n\nSKERE");
-        System.out.println(ranges[0] + "\n\n\n\n\n\n\nSKERE");
-
         mav.addObject("find", find);
         return mav;
     }

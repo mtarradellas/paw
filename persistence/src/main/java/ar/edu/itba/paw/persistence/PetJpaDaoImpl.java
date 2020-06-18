@@ -65,6 +65,7 @@ public class PetJpaDaoImpl implements PetDao {
     public List<Breed> searchBreedList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                        PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
 
+        //indexPets();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
 
@@ -264,12 +265,12 @@ public class PetJpaDaoImpl implements PetDao {
                         .createQuery());
             }
         }
-        if(user != null)  boolJunction.must(queryBuilder.keyword().onField("user.username").matching(user.getUsername()).createQuery());
-        if(species != null) boolJunction.must(queryBuilder.phrase().onField("species.en_us").sentence(species.getEn_us()).createQuery());
-        if(breed != null) boolJunction.must(queryBuilder.phrase().withSlop(0).onField("breed.en_us").sentence(breed.getEn_us()).createQuery());
+        if(user != null)  boolJunction.must(queryBuilder.keyword().onField("user.eid").matching(user.getId()).createQuery());
+        if(species != null)  boolJunction.must(queryBuilder.keyword().onField("species.eid").matching(species.getId()).createQuery());
+        if(breed != null)  boolJunction.must(queryBuilder.keyword().onField("breed.eid").matching(breed.getId()).createQuery());
         if(gender != null)boolJunction.must(queryBuilder.keyword().onField("gender").matching(gender).createQuery());
-        if(province != null)boolJunction.must(queryBuilder.phrase().withSlop(0).onField("province.name").sentence(province.getName()).createQuery());
-        if(department != null)boolJunction.must(queryBuilder.phrase().withSlop(0).onField("department.name").sentence(department.getName()).createQuery());
+        if(province != null)  boolJunction.must(queryBuilder.keyword().onField("province.eid").matching(province.getId()).createQuery());
+        if(department != null)  boolJunction.must(queryBuilder.keyword().onField("department.eid").matching(department.getId()).createQuery());
         if(maxPrice != -1)boolJunction.must(queryBuilder.range().onField("price").below(maxPrice).createQuery());
         boolJunction.must(queryBuilder.range().onField("price").above(minPrice).createQuery());
 

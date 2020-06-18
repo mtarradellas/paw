@@ -17,6 +17,7 @@ public interface RequestDao {
     List<Request> list(int page, int pageSize);
     List<Request> searchList(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
     Set<Integer> searchStatusList(User user, Pet pet, List<String> find, RequestStatus status);
+    List<Pet> searchPetListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status);
     List<Request> filteredList(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
 
     List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder,  int page, int pageSize);
