@@ -215,7 +215,7 @@
                     <ul class="questions input-max-value-delegator">
 
                     </ul>
-                    <button type="button" class="btn btn-outline-secondary btn-sm load-more">Cargar mas</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm load-more"><spring:message code="load_more_btn"/></button>
                 </div>
                 <hr>
                 <c:set var="ownerId" value="${pet.user.id}"/>

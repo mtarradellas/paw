@@ -252,7 +252,7 @@
 
                                 </div>
                                 <hr class="m-0">
-                                <button type="button" class="m-2 btn btn-outline-secondary btn-sm load-more">Cargar mas</button>
+                                <button type="button" class="m-2 btn btn-outline-secondary btn-sm load-more"><spring:message code="load_more_btn"/></button>
 
                             </div>
                         </c:if>
