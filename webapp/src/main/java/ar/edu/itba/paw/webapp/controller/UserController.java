@@ -49,7 +49,7 @@ public class UserController extends ParentController {
     private RequestService requestService;
 
     private static final int REQ_PAGE_SIZE = 25;
-    private static final int PET_PAGE_SIZE = 4;
+    private static final int PET_PAGE_SIZE = 8;
     private static final int REV_PAGE_SIZE = 5;
 
     private static final int MIN_SCORE = 1;
@@ -172,7 +172,7 @@ public class UserController extends ParentController {
         List<Request> requestList = requestService.filteredList(user, null, findList, requestStatus,
                     searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
         List<RequestStatus> statusList;
-        if(requestStatus == null) statusList = requestService.filteredStatusList(user, null, findList, requestStatus);
+        if(requestStatus == null) statusList = requestService.filteredStatusList(user, null, findList, null);
         else {
             statusList = new ArrayList<>();
             statusList.add(requestStatus);

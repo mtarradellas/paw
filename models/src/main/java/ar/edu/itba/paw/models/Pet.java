@@ -82,6 +82,10 @@ public class Pet {
     @IndexedEmbedded(depth = 1)
     private Department department;
 
+    @OneToMany(orphanRemoval = true, mappedBy = "pet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column
+    private List<Question> questionList;
+
     @OneToMany(orphanRemoval = true, mappedBy = "petId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ImageDTO> images;
 
@@ -198,6 +202,10 @@ public class Pet {
 
     public List<ImageDTO> getImages() {
         return images;
+    }
+
+    public long getUnansweredQuestionsAmount() {
+        return questionList.stream().filter(q -> q.getAnswer() == null).count();
     }
 
     public void setId(long id) {
