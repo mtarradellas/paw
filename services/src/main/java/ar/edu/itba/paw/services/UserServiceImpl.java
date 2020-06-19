@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
@@ -14,9 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -43,6 +43,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> filteredList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         return userDao.searchList(find, status, searchCriteria, searchOrder, page, pageSize);
+    }
+
+    @Override
+    public List<UserStatus> filteredStatusList( List<String> find, UserStatus status) {
+        Set<Integer> results = userDao.searchStatusList(find, status);
+        List<UserStatus> toReturn = new ArrayList<>();
+        results.stream().forEach(r->toReturn.add(UserStatus.values()[r]));
+        return toReturn;
     }
 
     @Override
@@ -254,7 +262,7 @@ public class UserServiceImpl implements UserService {
         }
         final Token token = opToken.get();
 
-        if (new Date().after(token.getExpirationDate())) {
+        if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
             userDao.deleteToken(uuid);
             return Optional.empty();
@@ -354,6 +362,11 @@ public class UserServiceImpl implements UserService {
         return userDao.updateReview(review);
     }
 
+    @Override
+    public double getReviewAverage(long userId) {
+        return userDao.getReviewAverage(userId);
+    }
+
     @Transactional
     @Override
     public Optional<User> adminCreate(String username, String password, String mail, String locale) {
@@ -396,12 +409,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Optional<Token> createToken(UUID token, User user) {
-        Date tomorrow = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(tomorrow);
-        cal.add(Calendar.DATE, 1);
-        tomorrow = cal.getTime();
-        return userDao.createToken(token, user, tomorrow);
+        return userDao.createToken(token, user, LocalDateTime.now().plusDays(1));
     }
 
     @Transactional
@@ -421,7 +429,7 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
         final Token token = opToken.get();
-        if (new Date().after(token.getExpirationDate())) {
+        if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
             userDao.deleteToken(uuid);
             return Optional.empty();

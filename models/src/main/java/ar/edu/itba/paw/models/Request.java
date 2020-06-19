@@ -4,7 +4,7 @@ import ar.edu.itba.paw.models.constants.RequestStatus;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Indexed
@@ -18,9 +18,12 @@ public class Request {
     private Long id;
 
     @Column
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
-    @Field
+    @Column
+    private LocalDateTime updateDate;
+
+    @Field(store = Store.YES)
     @NumericField
     private int status;
 
@@ -43,13 +46,7 @@ public class Request {
         // Hibernate
     }
 
-    public Request(Date creationDate, RequestStatus status, Pet pet) {
-        this.creationDate = creationDate;
-        this.pet = pet;
-        this.status = status.getValue();
-    }
-
-    public Request(Date creationDate, RequestStatus status, User user, User target, Pet pet) {
+    public Request(LocalDateTime creationDate, RequestStatus status, User user, User target, Pet pet) {
         this.creationDate = creationDate;
         this.pet = pet;
         this.status = status.getValue();
@@ -78,8 +75,12 @@ public class Request {
         this.target = target;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public RequestStatus getStatus() {
@@ -98,11 +99,19 @@ public class Request {
         this.pet = pet;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 }

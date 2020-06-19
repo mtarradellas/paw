@@ -4,7 +4,8 @@ public enum RequestStatus {
     PENDING(0),
     ACCEPTED(1),
     REJECTED(2),
-    CANCELED(3);
+    CANCELED(3),
+    SOLD(4);
 
     final private int value;
 
@@ -14,5 +15,13 @@ public enum RequestStatus {
 
     public int getValue() {
         return this.value;
+    }
+
+    public static int maxValue() {
+        return SOLD.ordinal();
+    }
+
+    public static int amount() {
+        return RequestStatus.values().length;
     }
 }

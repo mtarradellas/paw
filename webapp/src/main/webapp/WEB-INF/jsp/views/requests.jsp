@@ -4,6 +4,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
+<c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
+<c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+<c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+<c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+
 
 <spring:message code="areYouSure.cancel" var="sureBody"/>
 <spring:message code="areYouSure.title" var="sureTitle"/>
@@ -14,9 +20,84 @@
         <t:are-you-sure title="${sureTitle}" body="${sureBody}"/>
         <div class="container-fluid">
             <div class="row">
-                <jsp:include page="/WEB-INF/jsp/parts/search-tools-interests.jsp">
-                    <jsp:param name="destination" value="requests"/>
-                </jsp:include>
+
+                <div class="col-md-2 search-tools">
+                    <form class="card shadow p-3" method="get" action="${pageContext.request.contextPath}/requests">
+
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="filter-status"><spring:message code="request.status"/></label>
+                                <select name="status" class="form-control" id="filter-status">
+                                    <option value="any"
+                                            <c:if test="${(not empty param.status) && (param.status eq 'any')}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="filter.any"/></option>
+
+                                    <option value="${ACCEPTED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (ACCEPTED eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.accepted"/></option>
+
+                                    <option value="${REJECTED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (REJECTED eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.rejected"/></option>
+
+                                    <option value="${PENDING}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (PENDING eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.pending"/></option>
+
+                                    <option value="${CANCELED}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (CANCELED eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.canceled"/></option>
+
+                                    <option value="${SOLD}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (SOLD eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="status.sold"/></option>
+
+                                </select>
+                            </div>
+                            <label for="search-criteria"><spring:message code="filter.criteria"/></label>
+                            <select name="searchCriteria" class="form-control" id="search-criteria">
+                                <option value="any"><spring:message code="filter.any"/></option>
+                                <option value="date"
+                                        <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'date')}">selected</c:if>
+                                ><spring:message code="request.date"/></option>
+                                <option value="petName"
+                                        <c:if test="${(not empty param.searchCriteria) && (param.searchCriteria eq 'petName')}">selected</c:if>
+                                ><spring:message code="request.petName"/></option>
+                            </select>
+                            <label for="search-order"><spring:message code="filter.order"/></label>
+                            <select name="searchOrder" class="form-control" id="search-order"
+                                    <c:if test="${(empty param.searchCriteria) || (param.searchCriteria eq 'any')}">
+                                        disabled
+                                    </c:if>
+                            >
+                                <option value="asc"
+                                        <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'asc')}">selected</c:if>
+                                ><spring:message code="filter.ascending"/></option>
+                                <option value="desc"
+                                        <c:if test="${(not empty param.searchOrder) && (param.searchOrder eq 'desc')}">selected</c:if>
+                                ><spring:message code="filter.descending"/></option>
+                            </select>
+                        </div>
+                        <div class="card-footer" id="search-tools-submit">
+                            <button type="submit" class="btn btn-primary"><spring:message code="filter"/></button>
+                            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/requests"><spring:message code="filter.clear"/></a>
+                        </div>
+                    </form>
+                </div>
+
+
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">
                         <div class="row">
@@ -45,10 +126,10 @@
                         </c:if>
                         <c:if test="${not empty requestList}">
                             <div class="row">
-                                <div class="col-lg-7">
+                                <div class="col-lg-6">
                                     <h5 class="text-left"><b><spring:message code="request"/></b></h5>
                                 </div>
-                                <div class="col-lg-2">
+                                <div class="col-lg-3">
                                     <h5 class="text-left"><b><spring:message code="request.status"/></b></h5>
                                 </div>
                                 <div class="col">
@@ -61,14 +142,15 @@
                             <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
                             <c:if test="${req.status.value eq PENDING}">
                                 <div class="row bg-light p-1">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.showedInterest"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.pending"/>
                                     </div>
 
@@ -85,18 +167,49 @@
                                 </div>
                             </c:if>
 
-                            <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
-                            <c:if test="${req.status.value eq ACCEPTED}">
+<%--                            <c:if test="${req.status.value eq ACCEPTED || req.status.value eq SOLD}">--%>
+<%--                                <div class="row p-1 bg-light resolved">--%>
+<%--                                    <div class=" col-lg-6">--%>
+<%--                                        <spring:message code="request.wasAccepted"--%>
+<%--                                                        arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>--%>
+<%--                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />--%>
+<%--                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>--%>
+
+<%--                                        <small class="text-warning"> ${creationDate}</small>--%>
+<%--                                    </div>--%>
+<%--                                    <div class="col-lg-3">--%>
+<%--                                        <spring:message code="request.accepted"/> <spring:message code="pet.status.notSold"/>--%>
+<%--                                    </div>--%>
+<%--                                    <div class="col text-center button-container">--%>
+<%--                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"--%>
+<%--                                           type="button" class="btn btn-secondary"><spring:message--%>
+<%--                                                code="visitPet"/></a>--%>
+<%--                                    </div>--%>
+<%--                                </div>--%>
+<%--                            </c:if>--%>
+
+                            <c:if test="${req.status.value eq SOLD or req.status.value eq ACCEPTED}">
                                 <div class="row p-1 bg-light resolved">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.wasAccepted"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.accepted"/>
+                                        <c:choose>
+                                            <c:when test="${req.status.value eq ACCEPTED}">
+                                                <spring:message code="pet.status.notSold"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <spring:message code="pet.status.currentlySold.short"
+                                                                arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                            </c:otherwise>
+                                        </c:choose>
+
                                     </div>
                                     <div class="col text-center button-container">
                                         <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
@@ -109,14 +222,15 @@
                             <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
                             <c:if test="${req.status.value eq REJECTED}">
                                 <div class="row p-1 bg-light resolved">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.wasRejected"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.rejected"/>
                                     </div>
                                     <div class="col text-center button-container">
@@ -130,14 +244,15 @@
                             <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
                             <c:if test="${req.status.value eq CANCELED}">
                                 <div class="row p-1 bg-light resolved">
-                                    <div class=" col-lg-7">
+                                    <div class=" col-lg-6">
                                         <spring:message code="request.wasCanceled"
                                                         arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <fmt:formatDate value="${req.creationDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
                                         <small class="text-warning"> ${creationDate}</small>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-3">
                                         <spring:message code="request.canceled"/>
                                     </div>
                                     <div class="col text-center button-container">
@@ -153,6 +268,12 @@
                                 </div>
                             </c:if>
                         </c:forEach>
+                        <div class="m-2">
+                            <hr>
+                            <c:if test="${maxPage ne 1}">
+                                <t:pagination currentPage="${currentPage}" maxPage="${maxPage}" baseURL="${'/requests'}"/>
+                            </c:if>
+                        </div>
                     </div>
                 </div>
             </div>

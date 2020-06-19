@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -74,6 +76,88 @@ public class PetServiceImpl implements PetService {
 
         setLocale(locale, petList);
         return petList;
+    }
+
+    @Override
+    public List<Breed> filteredBreedList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                         PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
+
+        if (userId != null) user = userService.findById(userId).orElse(null);
+
+        breed = validateBreed(breedId, speciesId);
+
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
+
+        List<Breed> breedList = petDao.searchBreedList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
+        speciesService.setBreedLocale(locale, breedList);
+        return breedList;
+    }
+
+    @Override
+    public List<Department> filteredDepartmentList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                                   PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
+
+        if (userId != null) user = userService.findById(userId).orElse(null);
+
+        breed = validateBreed(breedId, speciesId);
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
+
+        return petDao.searchDepartmentList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
+    }
+
+    @Override
+    public Set<Integer> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+                                         PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
+
+        if (userId != null) user = userService.findById(userId).orElse(null);
+
+        breed = validateBreed(breedId, speciesId);
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
+
+        return petDao.searchRangesList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
+    }
+
+    @Override
+    public Set<String> filteredGenderList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender, PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
+        User user = null;
+        Breed breed = null;
+        Species species = null;
+        Department department = null;
+        Province province = null;
+
+        if (userId != null) user = userService.findById(userId).orElse(null);
+
+        breed = validateBreed(breedId, speciesId);
+        species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+
+        department = validateDepartment(departmentId, provinceId);
+        province = (department != null)? department.getProvince() : validateProvince(provinceId);
+
+        return petDao.searchGenderList(locale, find, user, species, breed, gender, status, minPrice, maxPrice, province, department);
     }
 
     @Override
@@ -170,8 +254,8 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Pet> create(String locale, String petName, Date birthDate, String gender, boolean vaccinated, int price,
-                      String description, PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos) {
+    public Optional<Pet> create(String locale, String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price,
+                                String description, PetStatus status, long userId, long speciesId, long breedId, long provinceId, long departmentId, List<byte[]> photos) {
 
         LOGGER.debug("Attempting to create pet with name: {}, species: {}, breed: {}, department: {}, province: {}, vaccinated: {}, gender: {}, description: {}, birthdate: {}, price: {}, owner: {}",
                petName, speciesId, breedId, departmentId, provinceId, vaccinated, gender, description, birthDate, price, userId);
@@ -226,12 +310,7 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("User {} is not active, pet creation failed", userId);
         }
 
-        java.util.Date today = new java.util.Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
-        today = cal.getTime();
-
-        Pet pet = petDao.create(petName, birthDate, gender, vaccinated, price, (Date) today, description, status, user,
+        Pet pet = petDao.create(petName, birthDate, gender, vaccinated, price, LocalDateTime.now(), description, status, user,
                 species, breed, province, department);
 
         LOGGER.debug("Pet id: {} successfully created", pet);
@@ -251,7 +330,7 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Pet> update(String locale, long id, Long userId, String petName, Date birthDate, String gender,
+    public Optional<Pet> update(String locale, long id, Long userId, String petName, LocalDateTime birthDate, String gender,
                                 boolean vaccinated, int price, String description, PetStatus status, long speciesId,
                                 long breedId, long provinceId, long departmentId, List<byte[]> photos, List<Long> imagesToDelete) {
         LOGGER.debug("Attempting user {} update of pet {} with: petName: {}, speciesId: {}, breedId: {}, " +
@@ -387,6 +466,7 @@ public class PetServiceImpl implements PetService {
             }
             pet.setNewOwner(opUser.get());
             pet.setStatus(PetStatus.SOLD);
+            requestService.sell(pet, opUser.get());
 
             Map<String, Object> arguments = new HashMap<>();
 
@@ -400,7 +480,11 @@ public class PetServiceImpl implements PetService {
 
             mailService.sendMail(pet.getNewOwner().getMail(), userLocale, arguments, MailType.PET_SOLD);
 
-            return petDao.update(pet).isPresent();
+            boolean updated = petDao.update(pet).isPresent();
+            if (updated) {
+                requestService.rejectAllByPet(pet.getUser().getId());
+            }
+            return updated;
         }
         return false;
     }
@@ -416,7 +500,7 @@ public class PetServiceImpl implements PetService {
         Pet pet = opPet.get();
 
         if (pet.getUser().getId().equals(user.getId())) {
-            requestService.rejectAllByPet("LENIA", petId);
+            requestService.rejectAllByPet(petId);
             pet.setStatus(PetStatus.REMOVED);
             return petDao.update(pet).isPresent();
         }
@@ -433,7 +517,7 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
-        if (pet.getUser().getId().equals(user.getId())) {
+        if (pet.getUser().getId().equals(user.getId()) && pet.getNewOwner() == null) {
             pet.setStatus(PetStatus.AVAILABLE);
             return petDao.update(pet).isPresent();
         }
@@ -468,7 +552,7 @@ public class PetServiceImpl implements PetService {
             return false;
         }
         Pet pet = opPet.get();
-        requestService.rejectAllByPet("LENIA", petId);
+        requestService.rejectAllByPet(petId);
         pet.setStatus(PetStatus.REMOVED);
         return petDao.update(pet).isPresent();
     }
@@ -506,5 +590,89 @@ public class PetServiceImpl implements PetService {
     @Override
     public void setLocale(String locale, List<Pet> petList) {
         petList.forEach(pet -> pet.setLocale(locale));
+    }
+
+    @Override
+    public List<Question> listQuestions(long petId, int page, int pageSize) {
+        Optional<Pet> pet = petDao.findById(petId);
+        List<Question> list = new ArrayList<>();
+        if (pet.isPresent()) {
+            list = petDao.listQuestions(petId, page, pageSize);
+        }
+        return list;
+    }
+
+    @Override
+    public int getListQuestionsAmount(long petId) {
+        Optional<Pet> pet = petDao.findById(petId);
+        int amount = 0;
+        if (pet.isPresent()) {
+            amount = petDao.getListQuestionsAmount(petId);
+        }
+        return amount;
+    }
+
+    @Override
+    public Optional<Question> findQuestionById(long id) {
+        return petDao.findQuestionById(id);
+    }
+
+    @Override
+    public Optional<Answer> findAnswerById(long id) {
+        return petDao.findAnswerById(id);
+    }
+
+    @Transactional
+    @Override
+    public Optional<Question> createQuestion(String content, User user, long petId) {
+        if (user == null) {
+            LOGGER.warn("User is null");
+            return Optional.empty();
+        }
+
+        Optional<Pet> opPet = petDao.findById(petId);
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet {} not found", petId);
+            return Optional.empty();
+        }
+        Pet pet = opPet.get();
+
+        if (user.getId().equals(pet.getUser().getId())) {
+            LOGGER.warn("User {} cannot ask question to himself", pet.getUser().getId());
+            return Optional.empty();
+        }
+
+        Question question = petDao.createQuestion(content, user, pet.getUser(), pet, QuestionStatus.VALID);
+        return Optional.of(question);
+    }
+
+    @Transactional
+    @Override
+    public Optional<Answer> createAnswer(long questionId, String content, User user) {
+        if (user == null) {
+            LOGGER.warn("User is null");
+            return Optional.empty();
+        }
+
+        Optional<Question> opQuestion = petDao.findQuestionById(questionId);
+        if (!opQuestion.isPresent()) {
+            LOGGER.warn("Question {} not found", questionId);
+            return Optional.empty();
+        }
+        Question question = opQuestion.get();
+
+        if (user.getId().equals(question.getUser().getId())) {
+            LOGGER.warn("User {} cannot answer his own question", question.getTarget());
+            return Optional.empty();
+        }
+
+        Pet pet = question.getPet();
+
+        if (!pet.getUser().getId().equals(user.getId())) {
+            LOGGER.warn("User {} is not pet {} owner", user.getId(), pet.getId());
+        }
+
+        Answer answer = petDao.createAnswer(question, content, user, question.getUser(), pet, QuestionStatus.VALID);
+        return Optional.of(answer);
     }
 }

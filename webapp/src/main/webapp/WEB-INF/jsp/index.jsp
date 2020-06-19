@@ -23,7 +23,8 @@
             <div class="row">
 
                 <t:search-tools-pet breedList="${breedList}" speciesList="${speciesList}"
-                                    provinceList="${provinceList}" departmentList="${departmentList}"/>
+                                    provinceList="${provinceList}" departmentList="${departmentList}"
+                                    genders="${genders}" ranges="${ranges}" />
 
                 <div class="col">
                     <div class="shadow p-3 bg-white rounded">

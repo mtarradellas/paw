@@ -2,8 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@attribute name="loggedUser" required="true" type="ar.edu.itba.paw.models.User"%>
-
-
+<%@attribute name="interestNotif" required="true" type="java.lang.Integer"%>
+<%@attribute name="requestNotif" required="true" type="java.lang.Integer"%>
 
 <nav class="navbar navbar-expand-lg header">
     <a class="navbar-brand" href="${pageContext.request.contextPath}/">
@@ -23,11 +23,26 @@
 
             <c:if test="${not empty loggedUser}">
                 <li class="nav-item">
-                    <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests"><spring:message code="header.requests"/></a></h4>
+                    <div class="notify-container">
+                        <h4><a class="nav-link" href="${pageContext.request.contextPath}/requests"><spring:message code="header.requests"/></a></h4>
+                        <c:if test="${requestNotif > 0}">
+                            <div class="notify-bubble">
+                                    ${requestNotif}
+                            </div>
+                        </c:if>
+                    </div>
                 </li>
 
                 <li class="nav-item">
-                    <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
+                    <div class="notify-container">
+                        <h4><a class="nav-link" href="${pageContext.request.contextPath}/interests"><spring:message code="header.interests"/></a></h4>
+                        <c:if test="${interestNotif > 0}">
+                            <div class="notify-bubble">
+                                    ${interestNotif}
+                            </div>
+                        </c:if>
+
+                    </div>
                 </li>
 
                 <li class="nav-item">

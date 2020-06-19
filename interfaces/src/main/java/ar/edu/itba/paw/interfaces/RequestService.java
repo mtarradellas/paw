@@ -10,12 +10,14 @@ import java.util.Optional;
 public interface RequestService {
 
     List<Request> list(int page, int pageSize);
-    List<Request> filteredList(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-    List<Request> filteredListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-
+    List<Request> filteredList(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+    List<RequestStatus> filteredStatusList(User user, Long petId, List<String> find, RequestStatus status);
+    List<Pet> filteredPetListByPetOwner(User user, Long petId, List<String> find, RequestStatus status);
+    List<Request> filteredListByPetOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+    List<RequestStatus> filteredStatusListByPetOwner(User user, Long petId, List<String> find, RequestStatus status);
     int getListAmount();
-    int getFilteredListAmount(User user, Pet pet, List<String> find, RequestStatus status);
-    int getFilteredListByPetOwnerAmount(User user, Pet pet, List<String> find, RequestStatus status);
+    int getFilteredListAmount(User user, Long petId, List<String> find, RequestStatus status);
+    int getFilteredListByPetOwnerAmount(User user, Long petId, List<String> find, RequestStatus status);
 
     Optional<Request> findById(long id);
 
@@ -26,6 +28,7 @@ public interface RequestService {
     boolean  accept(long id, User user, String contextURL);
     boolean  reject(long id, User user, String contextURL);
     boolean recover(long id, User user, String contextURL);
+    boolean sell(Pet pet, User user);
 
     void adminUpdateStatus(long id, RequestStatus status);
     void  adminCancel(long id);
@@ -35,5 +38,11 @@ public interface RequestService {
 
     void cancelAllByUser(User user);
     void rejectAllByPetOwner(long petOwnerId);
-    void rejectAllByPet(String locale, long petId);
+    void rejectAllByPet(long petId);
+
+    int interestNotifs(User user);
+    int requestNotifs(User user);
+
+    void logRequestsAccess(User user);
+    void logInterestsAccess(User user);
 }

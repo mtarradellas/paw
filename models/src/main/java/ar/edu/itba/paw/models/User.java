@@ -2,8 +2,10 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.annotations.*;
+import org.hibernate.search.bridge.builtin.LongBridge;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,6 +16,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "users_id_seq", name = "users_id_seq")
+    @Field(name= "eid")
+    @FieldBridge(impl = LongBridge.class)
     private Long id;
 
     @Column(nullable = false)
@@ -30,9 +34,15 @@ public class User {
     @Column(length = 7)
     private String locale;
 
-    @Field
+    @Field(store = Store.YES)
     @NumericField
     private int status;
+
+    @Column
+    private LocalDateTime interestsDate;
+
+    @Column
+    private LocalDateTime requestsDate;
 
     @ContainedIn
     @OneToMany(orphanRemoval = true, mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -197,5 +207,21 @@ public class User {
 
     public void setNewPets(List<Pet> newPets) {
         this.newPets = newPets;
+    }
+
+    public LocalDateTime getInterestsDate() {
+        return interestsDate;
+    }
+
+    public void setInterestsDate(LocalDateTime interestsDate) {
+        this.interestsDate = interestsDate;
+    }
+
+    public LocalDateTime getRequestsDate() {
+        return requestsDate;
+    }
+
+    public void setRequestsDate(LocalDateTime requestsDate) {
+        this.requestsDate = requestsDate;
     }
 }

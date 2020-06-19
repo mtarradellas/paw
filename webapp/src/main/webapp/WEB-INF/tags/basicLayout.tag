@@ -19,9 +19,9 @@
         </title>
     </head>
     <body>
-        <script src="<c:url value="/resources/jquery/jquery-3.4.1.slim.min.js"/>"></script>
+        <script src="<c:url value="/resources/jquery/jquery-3.5.1.min.js"/>"></script>
 
-        <t:header loggedUser="${loggedUser}"/>
+        <t:header loggedUser="${loggedUser}" interestNotif="${interestNotif}" requestNotif="${requestNotif}"/>
 
         <div id="body" class="page-content">
                 <jsp:doBody/>

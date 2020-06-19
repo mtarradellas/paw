@@ -482,3 +482,62 @@ html,body {
 .break-text {
     word-break: break-all;
 }
+
+.questions {
+    padding: 0;
+}
+
+.question {
+    font-weight: 100;
+    margin: 1rem 0 1rem 0;
+}
+
+.question {
+    font-weight: 100;
+    margin: 0.5rem 0 0.5rem 0;
+}
+
+.load-more {
+    font-weight: 400;
+    margin: auto;
+}
+
+.notify-bubble {
+    position: absolute;
+    top: 27px;
+    right: -37px;
+    padding: 2px 5px 2px 5px;
+    background-color: forestgreen;
+    color: white;
+    font-size: 0.65em;
+    border-radius: 50%;
+}
+
+.notify-container {
+    position: relative;
+    display: inline-block;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

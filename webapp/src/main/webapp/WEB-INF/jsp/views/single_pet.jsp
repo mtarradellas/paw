@@ -4,8 +4,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:formatDate value="${pet.uploadDate}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
-<fmt:formatDate value="${pet.birthDate}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
+<fmt:parseDate  value="${pet.uploadDate}"  type="date" pattern="yyyy-MM-dd" var="parsedUpload" />
+<fmt:formatDate value="${parsedUpload}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
+
+<fmt:parseDate  value="${pet.birthDate}"  type="date" pattern="yyyy-MM-dd" var="parsedBirth" />
+<fmt:formatDate value="${parsedBirth}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
 
 
 <c:set var="petName" value="${pet.petName}"/>
@@ -95,7 +98,7 @@
 
                             </c:if>
 
-                            <c:if test="${pet.status.value ne AVAILABLE}">
+                            <c:if test="${pet.status.value ne AVAILABLE && pet.status.value ne SOLD}">
                                 <div class="col p-2">
                                     <div class="row float-right mr-4">
                                         <form method="POST" class="m-0" action="<c:url value="/pet/${id}/recover" />">
@@ -167,9 +170,6 @@
                                     class="fas fa-check ml-2 "></i></li>
                             <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
                                     class="fas fa-times ml-2"></i></li>
-                            <li class="list-group-item"><b>
-                                <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
-                            </li>
                         </c:if>
                         <c:if test="${pet.price gt 0 and pet.status.value eq AVAILABLE}">
                             <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
@@ -179,16 +179,8 @@
                                 (<spring:message code="petCard.price"/> <spring:message code="argPrice"
                                                                                         arguments="${pet.price}"/>)
                             </li>
-                            <li class="list-group-item"><b>
-                                <spring:message code="status.sold"/>:</b><i class="fas fa-times ml-2 "></i>
-                            </li>
                         </c:if>
                         <c:if test="${pet.status.value eq SOLD}">
-                            <li class="list-group-item"><b><spring:message code="petCard.forAdoption"/></b><i
-                                    class="fas fa-times ml-2"></i></li>
-                            <li class="list-group-item"><b><spring:message code="petCard.forSale"/></b><i
-                                    class="fas fa-times ml-2 "></i>
-                            </li>
                             <li class="list-group-item"><b>
                                 <spring:message code="status.sold"/>:</b><i class="fas fa-check ml-2 "></i>
                                 (<spring:message code="pet.status.currentlySold"
@@ -202,11 +194,33 @@
 
                 </div>
                 <hr>
+
+
+                <div class="p-3">
+                    <h2 class="mb-4"><spring:message code="questions"/></h2>
+
+                    <spring:message var="ASK_SOMETHING_TXT" code="questions.askSomething"/>
+                    <spring:message var="SEND_QUESTION_TXT" code="questions.send"/>
+
+                    <c:if test="${pet.user.id ne loggedUser.id}">
+                        <form class="form" method="post" action="${pageContext.request.contextPath}/pet/${pet.id}/question">
+                            <div class="form-group mr-sm-3 mb-2">
+                                <label for="questionInput" class="sr-only">${ASK_SOMETHING_TXT}</label>
+                                <textarea name="content" class="form-control input-max-value" id="questionInput" placeholder="${ASK_SOMETHING_TXT}"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary mb-2">${SEND_QUESTION_TXT}</button>
+                        </form>
+                    </c:if>
+
+                    <ul class="questions input-max-value-delegator">
+
+                    </ul>
+                    <button type="button" class="btn btn-outline-secondary btn-sm load-more"><spring:message code="load_more_btn"/></button>
+                </div>
+                <hr>
                 <c:set var="ownerId" value="${pet.user.id}"/>
                 <a href="${pageContext.request.contextPath}/user/${ownerId}"
                    class="btn darkblue-action p-2 m-3"><spring:message code="petCard.gotoOwnerPage"/></a>
-
-
                 <div class="p-4">
                     <a href="${pageContext.request.contextPath}/"><spring:message code="backToHome"/></a>
                 </div>
@@ -274,7 +288,7 @@
                                 <div class="text-right">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                                     </button>
-                                    <spring:message code="uploadPetForm.submit" var="submitText"/>
+                                    <spring:message code="petCard.reserve" var="submitText"/>
                                     <input type="submit" class="btn btn-primary" value="${submitText}"/>
                                 </div>
                             </form>
@@ -285,6 +299,23 @@
         </div>
     </div>
 
+    <spring:message var="NO_ANSWER_YET_TXT" code="questions.noAnswerYet"/>
+    <spring:message var="WRITE_AN_ANSWER" code="questions.writeAnAnswer"/>
+    <spring:message var="SEND_ANSWER" code="questions.sendAnswer"/>
+    <spring:message var="NO_QUESTIONS_YET_TXT" code="questions.noQuestionsYet"/>
+
+    <script>
+        const NO_ANSWER_YET_TXT = '${NO_ANSWER_YET_TXT}';
+        const NO_QUESTIONS_YET_TXT = '${NO_QUESTIONS_YET_TXT}';
+        const WRITE_AN_ANSWER_TXT = '${WRITE_AN_ANSWER}';
+        const SEND_ANSWER_TXT = '${SEND_ANSWER}';
+        const SERVER_URL = "${pageContext.request.contextPath}";
+        const PET_ID = ${pet.id};
+        const IS_OWNER = ${pet.user.id eq loggedUser.id};
+    </script>
+
+    <script src="<c:url value="/resources/js/max_value_input.js"/>"></script>
+    <script src="<c:url value="/resources/js/load_more_questions.js"/>"></script>
     <script src="<c:url value="/resources/js/are_you_sure.js"/>"></script>
     <script src="<c:url value="/resources/js/pet_view.js"/>"></script>
 </t:basicLayout>

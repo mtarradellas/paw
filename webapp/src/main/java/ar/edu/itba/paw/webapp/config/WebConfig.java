@@ -79,6 +79,7 @@ public class WebConfig {
         messageSource.setCacheSeconds((int)TimeUnit.MINUTES.toSeconds(5));
         messageSource.setBasename("classpath:i18n/messages");
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        messageSource.setFallbackToSystemLocale(false);
 
         return messageSource;
     }
@@ -108,7 +109,6 @@ public class WebConfig {
         multipartResolver.setMaxUploadSize(-1);
         return multipartResolver;
     }
-    
 
     @Bean
     public VelocityEngine velocityEngine() throws Exception {
