@@ -6,9 +6,9 @@
 
 <c:set var="ACCEPTED" value="<%=RequestStatus.ACCEPTED.getValue()%>"/>
 <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
-<c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
+<c:set var="PENDING"  value="<%=RequestStatus.PENDING.getValue()%>"/>
 <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
-<c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
+<c:set var="SOLD"     value="<%=RequestStatus.SOLD.getValue()%>"/>
 
 
 <spring:message code="interestsTitle" var="titleVar"/>
@@ -190,7 +190,7 @@
                             <c:if test="${req.status.value ne PENDING}">
 
                             <c:choose>
-                                <c:when test="${req.status.value eq SOLD}">
+                                <c:when test="${req.status.value eq SOLD or req.status.value eq REJECTED or req.status.value eq CANCELED}">
                                     <div class="row bg-light p-1 resolved">
                                 </c:when>
                                 <c:otherwise>
