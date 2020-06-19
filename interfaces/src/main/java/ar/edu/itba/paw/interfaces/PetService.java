@@ -60,6 +60,6 @@ public interface PetService {
     int getListQuestionsAmount(long petId);
     Optional<Question> findQuestionById(long id);
     Optional<Answer> findAnswerById(long id);
-    Optional<Question> createQuestion(String content, User user, long petId);
-    Optional<Answer> createAnswer(long questionId, String content, User user);
+    Optional<Question> createQuestion(String content, User user, long petId, String contextUrl);
+    Optional<Answer> createAnswer(long questionId, String content, User user, String contextUrl);
 }
