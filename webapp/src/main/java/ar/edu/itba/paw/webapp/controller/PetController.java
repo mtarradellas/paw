@@ -161,8 +161,9 @@ public class PetController extends ParentController {
 
         RequestStatus lastRequest = null;
         boolean requestExists = false;
-        List<User> availableUsers = null;
         boolean acquired = false;
+        List<User> availableUsers = null;
+        int availableAmount = 0;
 
         Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
 
@@ -187,6 +188,7 @@ public class PetController extends ParentController {
                 availableUsers = user.getInterestList().stream()
                         .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().getId().equals(pet.getId()))
                         .map(Request::getUser).collect(Collectors.toList());
+                availableAmount = availableUsers.size();
             }
 
             if (user.getNewPets().contains(pet)) acquired = true;
@@ -196,6 +198,7 @@ public class PetController extends ParentController {
         mav.addObject("lastRequest", lastRequest);
         mav.addObject("requestExists", requestExists);
         mav.addObject("availableUsers", availableUsers);
+        mav.addObject("availableAmount", availableAmount);
         mav.addObject("acquired", acquired);
         return mav;
     }
