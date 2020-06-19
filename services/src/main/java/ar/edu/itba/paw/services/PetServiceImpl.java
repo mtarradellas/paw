@@ -458,6 +458,11 @@ public class PetServiceImpl implements PetService {
         }
         Pet pet = opPet.get();
 
+        if (pet.getNewOwner() != null) {
+            LOGGER.warn("Pet {} is already sold to user {}", petId, pet.getNewOwner().getId());
+            return false;
+        }
+
         if (pet.getUser().getId().equals(owner.getId())) {
             Optional<User> opUser = userService.findById(newOwnerId);
             if (!opUser.isPresent()) {
@@ -470,7 +475,6 @@ public class PetServiceImpl implements PetService {
 
             Map<String, Object> arguments = new HashMap<>();
 
-
             arguments.put("petURL", contextURL + "/pet/" + pet.getId());
             arguments.put("petName", pet.getPetName());
             arguments.put("ownerUsername", pet.getUser().getUsername());
@@ -482,7 +486,7 @@ public class PetServiceImpl implements PetService {
 
             boolean updated = petDao.update(pet).isPresent();
             if (updated) {
-                requestService.rejectAllByPet(pet.getUser().getId());
+                requestService.rejectAllByPet(pet.getId());
             }
             return updated;
         }
