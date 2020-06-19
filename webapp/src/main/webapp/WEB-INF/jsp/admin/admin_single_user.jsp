@@ -132,7 +132,7 @@
                                 <c:if test="${pet.status.value ne AVAILABLE }">
                                 <div class="col-auto mb-3 resolved">
                                     </c:if>
-                                    <t:animalCard pet="${pet}" level="admin"/>
+                                    <t:animalCard pet="${pet}" level="admin" loggedUser="${loggedUser}"/>
 
                                 </div>
                                 </c:forEach>
@@ -163,7 +163,7 @@
                             <div class="card-deck row">
                                 <c:forEach var="pet" items="${user.newPets}" end="${adoptedLimit-1}">
                                     <div class="col-auto mb-3">
-                                        <t:animalCard pet="${pet}" level="user"/>
+                                        <t:animalCard pet="${pet}" level="user" loggedUser="${loggedUser}"/>
                                     </div>
                                 </c:forEach>
                             </div>

@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@tag description="Animal card" pageEncoding="UTF-8" %>
 <%@attribute name="pet" required="true" type="ar.edu.itba.paw.models.Pet" %>
+<%@attribute name="loggedUser" required="false" type="ar.edu.itba.paw.models.User"%>
 <%@attribute name="level" required="true" type="java.lang.String" %>
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
@@ -19,10 +20,19 @@
 <spring:message code="argPrice" arguments="${cprice}" var="price"/>
 
 <div class="card animal-list-card">
-    <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link">
-        <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0].id}"/>"
-             class="card-img-top" alt="">
-    </a>
+
+    <div class="pet-image-container">
+        <c:if test="${loggedUser ne null and loggedUser.id eq pet.user.id and pet.unansweredQuestionsAmount gt 0}">
+            <div class="notify-bubble-questions">
+                <spring:message code="petCard.newQuestions"/>
+            </div>
+        </c:if>
+        <a href="${pageContext.request.contextPath}/pet/<c:out value="${pet.id}"/>" class="card-link">
+            <img src="<c:out value="${pageContext.request.contextPath}/img/${pet.images[0].id}"/>"
+                 class="card-img-top" alt="pet image">
+        </a>
+    </div>
+
 
     <div class="card-body">
 
