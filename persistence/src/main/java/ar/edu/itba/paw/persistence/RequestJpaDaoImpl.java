@@ -101,9 +101,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, RequestStatus status, User user, Pet pet) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-//        try {
-//            fullTextEntityManager.createIndexer().startAndWait();
-//        } catch(InterruptedException ignored) {}
         LOGGER.debug("Preparing Lucene Query (Requests): user {}, pet {}, status {}", user, pet, status);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()

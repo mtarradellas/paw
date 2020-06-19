@@ -135,10 +135,6 @@ public class UserJpaDaoImpl implements UserDao {
 
     @Override
     public Set<Integer> searchStatusList(List<String> find,  UserStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        try {
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {}
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
         jpaQuery.setProjection("status");
         @SuppressWarnings("unchecked")

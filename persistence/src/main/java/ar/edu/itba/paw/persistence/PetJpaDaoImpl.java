@@ -65,7 +65,6 @@ public class PetJpaDaoImpl implements PetDao {
     public List<Breed> searchBreedList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                        PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
 
-        //indexPets();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
 
@@ -87,7 +86,6 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public List<Department> searchDepartmentList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                                  PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
-        //indexPets();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
 
@@ -106,7 +104,6 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public Set<Integer> searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                                  PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
-        //indexPets();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
 
@@ -132,7 +129,6 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public Set<String> searchGenderList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                         PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
-        //indexPets();
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department);
 
