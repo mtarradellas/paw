@@ -10,7 +10,7 @@
     <li>${msg.getMessage("mail.question_answer.question")}: <p>${question}</p></li>
     <li>${msg.getMessage("mail.question_answer.answer")}: <p>${answer}</p></li>
 </ul>
-<a href="${petURL}">${msg.getMessage("mail.question_ask.clickHere")}</a>
+<a href="${petURL}">${msg.getMessage("mail.question_answer.clickHere")}</a>
 <p>${msg.getMessage("mail.goodbye")}</p>
 <hr>
 <small>${msg.getMessage("mail.wrongMail")}</small>
