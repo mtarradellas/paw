@@ -148,7 +148,7 @@
                                         <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
                                         <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
-                                        <small class="text-warning"> ${creationDate}</small>
+                                        <small class="date-text"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.pending"/>
@@ -175,7 +175,7 @@
 <%--                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />--%>
 <%--                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>--%>
 
-<%--                                        <small class="text-warning"> ${creationDate}</small>--%>
+<%--                                        <small class="date-text"> ${creationDate}</small>--%>
 <%--                                    </div>--%>
 <%--                                    <div class="col-lg-3">--%>
 <%--                                        <spring:message code="request.accepted"/> <spring:message code="pet.status.notSold"/>--%>
@@ -196,7 +196,7 @@
                                         <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
                                         <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
-                                        <small class="text-warning"> ${creationDate}</small>
+                                        <small class="date-text"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.accepted"/>
@@ -205,8 +205,8 @@
                                                 <spring:message code="pet.status.notSold"/>
                                             </c:when>
                                             <c:otherwise>
-                                                <spring:message code="pet.status.currentlySold.short"
-                                                                arguments="${pageContext.request.contextPath}/user/${req.pet.newOwner.id},${req.pet.newOwner.username}"/>
+                                                <spring:message code="pet.status.currentlyBought.short"
+                                                                arguments="${pageContext.request.contextPath}/user/${req.pet.user.id},${req.pet.user.username}"/>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -228,7 +228,7 @@
                                         <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
                                         <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
-                                        <small class="text-warning"> ${creationDate}</small>
+                                        <small class="date-text"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.rejected"/>
@@ -250,7 +250,7 @@
                                         <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
                                         <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
 
-                                        <small class="text-warning"> ${creationDate}</small>
+                                        <small class="date-text"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.canceled"/>
