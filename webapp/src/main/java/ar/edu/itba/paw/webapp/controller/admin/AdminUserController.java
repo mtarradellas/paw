@@ -2,10 +2,8 @@ package ar.edu.itba.paw.webapp.controller.admin;
 
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import ar.edu.itba.paw.webapp.controller.ParentController;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;

@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.interfaces.exception;
+package ar.edu.itba.paw.interfaces.exceptions;
 
 public class InvalidPasswordException extends RuntimeException {
     public InvalidPasswordException() {
