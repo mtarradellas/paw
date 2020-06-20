@@ -658,7 +658,7 @@ public class PetServiceImpl implements PetService {
 
         String userLocale = pet.getUser().getLocale();
 
-//        mailService.sendMail(pet.getUser().getMail(), userLocale, arguments, MailType.QUESTION_ASK);
+        mailService.sendMail(pet.getUser().getMail(), userLocale, arguments, MailType.QUESTION_ASK);
 
         return Optional.of(question);
     }
@@ -695,14 +695,14 @@ public class PetServiceImpl implements PetService {
 
         arguments.put("petURL", contextURL + "/pet/" + pet.getId());
         arguments.put("petName", pet.getPetName());
-        arguments.put("ownerUsername", user.getUsername()); // User who answered the question (pet owner)
-        arguments.put("ownerURL", contextURL + "/user/" + user.getId()); // User who answered the question (pet owner)
+        arguments.put("userUsername", user.getUsername()); // User who answered the question (pet owner)
+        arguments.put("userURL", contextURL + "/user/" + user.getId()); // User who answered the question (pet owner)
         arguments.put("question", question.getContent());
         arguments.put("answer", content);
 
         String userLocale = question.getUser().getLocale();
 
-//        mailService.sendMail(question.getUser().getMail(), userLocale, arguments, MailType.QUESTION_ANSWER);
+        mailService.sendMail(question.getUser().getMail(), userLocale, arguments, MailType.QUESTION_ANSWER);
 
         return Optional.of(answer);
     }

@@ -500,8 +500,8 @@ public class PetController extends ParentController {
             LOGGER.warn("User not logged int");
             return new ModelAndView("redirect:/403");
         }
-
-        boolean success = petService.createQuestion(questionAnswerForm.getContent(), user, id).isPresent();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        boolean success = petService.createQuestion(questionAnswerForm.getContent(), user, id, baseUrl).isPresent();
         return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
     }
 
@@ -521,7 +521,8 @@ public class PetController extends ParentController {
 
         boolean success = false;
         if (questionAnswerForm.getAnswerId() > 0) {
-            success = petService.createAnswer(questionAnswerForm.getAnswerId(), questionAnswerForm.getContent(), user).isPresent();
+            final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            success = petService.createAnswer(questionAnswerForm.getAnswerId(), questionAnswerForm.getContent(), user, baseUrl).isPresent();
         }
         return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
     }
