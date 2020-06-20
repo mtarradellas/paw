@@ -242,7 +242,7 @@
                                                 <form action="${pageContext.request.contextPath}/pet/${req.pet.id}/sell-adopt"
                                                       method="post" enctype="multipart/form-data" >
                                                     <input type="hidden" name="newowner" value="${req.user.id}"/>
-                                                    <spring:message code="sell" var="submitText"/>
+                                                    <spring:message code="petCard.reserve" var="submitText"/>
                                                     <input type="submit" class="btn btn-success are-you-sure" value="${submitText}"/>
                                                 </form>
                                             </c:if>
