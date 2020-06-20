@@ -9,7 +9,7 @@
     <li>${msg.getMessage("mail.question_ask.user")}: <a href="${userURL}">${userUsername}</a></li>
     <li>${msg.getMessage("mail.question_ask.question")}: <p>${question}</p></li>
 </ul>
-<a href="${requestURL}">${msg.getMessage("mail.question_ask.clickHere")}</a>
+<a href="${petURL}">${msg.getMessage("mail.question_ask.clickHere")}</a>
 <p>${msg.getMessage("mail.goodbye")}</p>
 <hr>
 <small>${msg.getMessage("mail.wrongMail")}</small>
