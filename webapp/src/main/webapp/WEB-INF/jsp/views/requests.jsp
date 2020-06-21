@@ -188,7 +188,7 @@
 <%--                                </div>--%>
 <%--                            </c:if>--%>
 
-                            <c:if test="${req.status.value eq SOLD or req.status.value eq ACCEPTED}">
+                            <c:if test="${req.status.value eq SOLD}">
                                 <div class="row p-1 bg-light resolved">
                                     <div class=" col-lg-6">
                                         <spring:message code="request.wasAccepted"
@@ -200,16 +200,30 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.accepted"/>
-                                        <c:choose>
-                                            <c:when test="${req.status.value eq ACCEPTED}">
-                                                <spring:message code="pet.status.notSold"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <spring:message code="pet.status.currentlyBought.short"
-                                                                arguments="${pageContext.request.contextPath}/user/${req.pet.user.id},${req.pet.user.username}"/>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <spring:message code="pet.status.currentlyBought.short"
+                                                        arguments="${pageContext.request.contextPath}/user/${req.pet.user.id},${req.pet.user.username}"/>
+                                    </div>
+                                    <div class="col text-center button-container">
+                                        <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
+                                           type="button" class="btn btn-secondary"><spring:message
+                                                code="visitPet"/></a>
+                                    </div>
+                                </div>
+                            </c:if>
 
+                            <c:if test="${req.status.value eq ACCEPTED}">
+                                <div class="row p-1 bg-light">
+                                    <div class=" col-lg-6">
+                                        <spring:message code="request.wasAccepted"
+                                                        arguments="${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
+                                        <fmt:parseDate  value="${req.creationDate}"  type="date" pattern="yyyy-MM-dd" var="parsedDate" />
+                                        <fmt:formatDate value="${parsedDate}" var="creationDate" type="date" pattern="dd-MM-yyyy"/>
+
+                                        <small class="date-text"> ${creationDate}</small>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <spring:message code="request.accepted"/>
+                                        <spring:message code="pet.status.notSold"/>
                                     </div>
                                     <div class="col text-center button-container">
                                         <a href="${pageContext.request.contextPath}/pet/<c:out value="${req.pet.id}"/>"
