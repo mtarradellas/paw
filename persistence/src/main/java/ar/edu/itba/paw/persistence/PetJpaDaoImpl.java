@@ -171,7 +171,7 @@ public class PetJpaDaoImpl implements PetDao {
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
         if(filteredIds.size() == 0){
-            return new ArrayList<Pet>();
+            return new ArrayList<>();
         }
         final TypedQuery<Pet> query = em.createQuery("from Pet where id in :filteredIds", Pet.class);
         query.setParameter("filteredIds", filteredIds);
@@ -378,9 +378,8 @@ public class PetJpaDaoImpl implements PetDao {
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
-        if(filteredIds.size() == 0){
-            return new ArrayList<>();
-        }
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
         final TypedQuery<Question> query = em.createQuery("from Question where id in :filteredIds", Question.class);
         query.setParameter("filteredIds", filteredIds);
         return query.getResultList();

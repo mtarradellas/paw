@@ -75,6 +75,9 @@ public class UserController extends ParentController {
         User user = opUser.orElseThrow(UserNotFoundException::new);
         double reviewAverage = userService.getReviewAverage(id);
         int reviewAmount = userService.getReviewListAmount(null, id, 0, -1, ReviewStatus.VALID);
+        boolean acceptedRequest = user.getInterestList().stream()
+                .filter(r -> r.getStatus().equals(RequestStatus.ACCEPTED) || r.getStatus().equals(RequestStatus.SOLD))
+                .anyMatch(r -> r.getUser().getId().equals(loggedUser.getId()));
 
         boolean canRate = false;
 
@@ -105,6 +108,7 @@ public class UserController extends ParentController {
         mav.addObject("showAllAdopted", showAllAdopted);
         mav.addObject("reviewAverage", reviewAverage);
         mav.addObject("reviewAmount", reviewAmount);
+        mav.addObject("acceptedRequest", acceptedRequest);
         return mav;
     }
 

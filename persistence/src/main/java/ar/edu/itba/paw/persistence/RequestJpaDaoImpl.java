@@ -201,8 +201,7 @@ public class RequestJpaDaoImpl implements RequestDao {
     public List<Request> searchListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet, null, null);
         jpaQuery.setProjection(ProjectionConstants.ID);
-        List<Request> reqs =paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
-        return reqs;
+        return paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override

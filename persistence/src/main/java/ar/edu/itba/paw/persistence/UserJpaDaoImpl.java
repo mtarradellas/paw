@@ -37,6 +37,7 @@ public class UserJpaDaoImpl implements UserDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        if (filteredIds.size() == 0) return new ArrayList<>();
 
         final TypedQuery<User> query = em.createQuery("from User where id IN :filteredIds", User.class);
         query.setParameter("filteredIds", filteredIds);
@@ -241,6 +242,7 @@ public class UserJpaDaoImpl implements UserDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        if (filteredIds.size() == 0) return new ArrayList<>();
 
         final TypedQuery<Review> query = em.createQuery("from Review where id IN :filteredIds", Review.class);
         query.setParameter("filteredIds", filteredIds);

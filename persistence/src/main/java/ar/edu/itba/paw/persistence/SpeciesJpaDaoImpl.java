@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
     @SuppressWarnings("unchecked")
     List<? extends Number> resultList = nativeQuery.getResultList();
     List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+    if (filteredIds.size() == 0) return new ArrayList<>();
 
     final TypedQuery<Species> query = em.createQuery("from Species where id IN :filteredIds", Species.class);
     query.setParameter("filteredIds", filteredIds);
@@ -40,6 +42,7 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        if (filteredIds.size() == 0) return new ArrayList<>();
 
         final TypedQuery<Breed> query = em.createQuery("from Breed where id IN :filteredIds", Breed.class);
         query.setParameter("filteredIds", filteredIds);
