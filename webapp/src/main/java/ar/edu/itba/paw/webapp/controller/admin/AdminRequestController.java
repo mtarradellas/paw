@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.controller.ParentController;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.form.AdminUploadRequestForm;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,18 +54,18 @@ public class AdminRequestController extends ParentController {
 
         ModelAndView mav = new ModelAndView("admin/admin_requests");
 
-        int pageNum = parsePage(page);
-        RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
-        searchCriteria = parseCriteria(searchCriteria);
-        searchOrder = parseOrder(searchOrder);
+        int pageNum = ParseUtils.parsePage(page);
+        RequestStatus requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
+        searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+        searchOrder = ParseUtils.parseOrder(searchOrder);
 
-        if (!isAllowedFind(find)) {
+        if (!ParseUtils.isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
             mav.addObject("wrongSearch", false);
         }
-        List<String> findList = parseFind(find);
+        List<String> findList = ParseUtils.parseFind(find);
 
         List<Request> requestList = requestService.filteredList(null, null, findList, requestStatus,
                 searchCriteria, searchOrder, pageNum, REQ_PAGE_SIZE);
@@ -150,7 +151,7 @@ public class AdminRequestController extends ParentController {
                                       @RequestParam(name = "newStatus", required = false) String status) {
 
         /* TODO better error handling */
-        RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
+        RequestStatus requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
         if (requestStatus == null) new ModelAndView("redirect:/admin/requests").addObject("invalidStatus", true);
 
         try {

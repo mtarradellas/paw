@@ -11,6 +11,7 @@ import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
 import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class UserController extends ParentController {
         final String locale = getLocale();
         final User loggedUser = loggedUser();
 
-        int pageNum = parsePage(page);
+        int pageNum = ParseUtils.parsePage(page);
 
         List<Pet> petList = petService.listByUser(locale, id, pageNum, PET_PAGE_SIZE);
         int amount = petService.getListByUserAmount(locale, id);
@@ -118,13 +119,13 @@ public class UserController extends ParentController {
                                     @RequestParam(name = "order", required = false) String order,
                                     @RequestParam(name = "page", required = false) String page) {
 
-        Long ownerId = parseUser(owner);
-        int min = parseScore(minscore, MIN_SCORE);
-        int max = parseScore(maxscore, MAX_SCORE);
-        ReviewStatus reviewStatus = parseStatus(ReviewStatus.class, status);
-        criteria = parseCriteria(criteria);
-        order = parseOrder(order);
-        int pageNum = parsePage(page);
+        Long ownerId = ParseUtils.parseUser(owner);
+        int min = ParseUtils.parseScore(minscore, MIN_SCORE);
+        int max = ParseUtils.parseScore(maxscore, MAX_SCORE);
+        ReviewStatus reviewStatus = ParseUtils.parseStatus(ReviewStatus.class, status);
+        criteria = ParseUtils.parseCriteria(criteria);
+        order = ParseUtils.parseOrder(order);
+        int pageNum = ParseUtils.parsePage(page);
         List<Review> reviewList = userService.reviewList(ownerId, id, min, max, reviewStatus, criteria, order,
                 pageNum, REV_PAGE_SIZE);
         int amount = userService.getReviewListAmount(ownerId, id, min, max, reviewStatus);
@@ -154,18 +155,18 @@ public class UserController extends ParentController {
         final ModelAndView mav = new ModelAndView("views/requests");
         final User user = loggedUser();
 
-        int pageNum = parsePage(page);
-        RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
-        searchCriteria = parseCriteria(searchCriteria);
-        searchOrder = parseOrder(searchOrder);
+        int pageNum = ParseUtils.parsePage(page);
+        RequestStatus requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
+        searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+        searchOrder = ParseUtils.parseOrder(searchOrder);
 
-        if (!isAllowedFind(find)) {
+        if (!ParseUtils.isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
             mav.addObject("wrongSearch", false);
         }
-        List<String> findList = parseFind(find);
+        List<String> findList = ParseUtils.parseFind(find);
 
         requestService.logRequestsAccess(user);
 
@@ -222,20 +223,20 @@ public class UserController extends ParentController {
 
 
 
-        searchCriteria = parseCriteria(searchCriteria);
-        searchOrder = parseOrder(searchOrder);
-        Long pet = parsePet(petId);
+        searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+        searchOrder = ParseUtils.parseOrder(searchOrder);
+        Long pet = ParseUtils.parsePet(petId);
 
-        int pageNum = parsePage(page);
-        RequestStatus requestStatus = parseStatus(RequestStatus.class, status);
+        int pageNum = ParseUtils.parsePage(page);
+        RequestStatus requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
 
-        if (!isAllowedFind(find)) {
+        if (!ParseUtils.isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
             mav.addObject("wrongSearch", false);
         }
-        List<String> findList = parseFind(find);
+        List<String> findList = ParseUtils.parseFind(find);
 
         requestService.logInterestsAccess(user);
 
@@ -390,7 +391,7 @@ public class UserController extends ParentController {
         }
         User user = loggedUser();
         if (user != null) {
-            int score = parseReviewScore(scoreStr);
+            int score = ParseUtils.parseReviewScore(scoreStr);
             try {
                 userService.addReview(user, id, score, description);
             } catch (DataIntegrityViolationException ex) {
