@@ -26,6 +26,7 @@ public class Pet {
 
     @Column(nullable = false)
     @Field
+    @SortableField
     private String petName;
 
     @Column

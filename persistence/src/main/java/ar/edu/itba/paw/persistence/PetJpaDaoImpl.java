@@ -293,8 +293,9 @@ public class PetJpaDaoImpl implements PetDao {
             else {
                 sort = queryBuilder.sort().byField(orderBy).asc().andByField("eid");
             }
-            jpaQuery.setSort(sort.createSort());
         }
+        else sort = queryBuilder.sort().byField("eid");
+        jpaQuery.setSort(sort.createSort());
 
         return jpaQuery;
     }
