@@ -21,6 +21,7 @@ public class Pet {
     @SequenceGenerator(allocationSize = 1, sequenceName = "pets_id_seq", name = "pets_id_seq")
     @Field(name= "eid", store = Store.YES)
     @FieldBridge(impl = LongBridge.class)
+    @SortableField(forField = "eid")
     private Long id;
 
     @Column(nullable = false)
@@ -32,6 +33,7 @@ public class Pet {
 
     @Column(length = 16, nullable = false)
     @Field(store = Store.YES)
+    @SortableField
     private String gender;
 
     @Column(nullable = false)
@@ -40,9 +42,13 @@ public class Pet {
     @Field(store = Store.YES)
     @NumericField
     @Column(nullable = false)
+    @SortableField
     private int price;
 
     @Column(nullable = false)
+    @Field
+    //@FieldBridge(impl = .class)
+    @SortableField
     private LocalDateTime uploadDate;
 
     @Column(length = 4086)
