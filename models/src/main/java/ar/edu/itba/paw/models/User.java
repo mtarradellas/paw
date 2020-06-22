@@ -18,10 +18,12 @@ public class User {
     @SequenceGenerator(allocationSize = 1, sequenceName = "users_id_seq", name = "users_id_seq")
     @Field(name= "eid")
     @FieldBridge(impl = LongBridge.class)
+    @SortableField
     private Long id;
 
     @Column(nullable = false)
     @Field
+    @SortableField
     private String username;
 
     @Column(nullable = false)
@@ -29,6 +31,7 @@ public class User {
 
     @Column(nullable = false)
     @Field
+    @SortableField
     private String mail;
 
     @Column(length = 7)

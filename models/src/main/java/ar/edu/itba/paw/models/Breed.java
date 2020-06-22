@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.models;
 
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.*;
 import org.hibernate.search.bridge.builtin.LongBridge;
 
 import javax.persistence.*;
@@ -22,10 +19,12 @@ public class Breed implements Comparable<Breed>{
 
     @Column(nullable = false)
     @Field(store = Store.YES)
+    @SortableField
     private String en_us;
 
     @Column(nullable = false)
     @Field
+    @SortableField
     private String es_ar;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
