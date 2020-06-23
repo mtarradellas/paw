@@ -2,10 +2,8 @@ package ar.edu.itba.paw.webapp.controller.admin;
 
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exception.InvalidPasswordException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import ar.edu.itba.paw.webapp.controller.ParentController;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
@@ -13,6 +11,7 @@ import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
 import ar.edu.itba.paw.webapp.form.groups.ChangePasswordEditUser;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,23 +59,23 @@ public class AdminUserController extends ParentController {
 
         ModelAndView mav = new ModelAndView("admin/admin_users");
 
-        int pageNum = parsePage(page);
-        UserStatus userStatus = parseStatus(UserStatus.class, status);
-        searchCriteria = parseCriteria(searchCriteria);
-        searchOrder = parseOrder(searchOrder);
+        int pageNum = ParseUtils.parsePage(page);
+        UserStatus userStatus = ParseUtils.parseStatus(UserStatus.class, status);
+        searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+        searchOrder = ParseUtils.parseOrder(searchOrder);
 
 
-        if (!isAllowedFind(find)) {
+        if (!ParseUtils.isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
             mav.addObject("wrongSearch", false);
         }
-        List<String> findList = parseFind(find);
+        List<String> findList = ParseUtils.parseFind(find);
 
         List<User> userList = userService.filteredList(findList, userStatus, searchCriteria, searchOrder, pageNum, USER_PAGE_SIZE);
         List<UserStatus> statusList;
-        if(userStatus == null) statusList = userService.filteredStatusList( findList, userStatus);
+        if(userStatus == null) statusList = userService.filteredStatusList( findList, null);
         else {
             statusList = new ArrayList<>();
             statusList.add(userStatus);
@@ -110,7 +109,7 @@ public class AdminUserController extends ParentController {
             showAllAdopted = "false";
         }
 
-        int pageNum = parsePage(page);
+        int pageNum = ParseUtils.parsePage(page);
 
         List<Pet> petList = petService.listByUser(locale, id, pageNum, PET_PAGE_SIZE);
         int amount = petService.getListByUserAmount(locale, id);

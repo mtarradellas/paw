@@ -4,10 +4,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:parseDate  value="${pet.uploadDate}"  type="date" pattern="yyyy-MM-dd" var="parsedUpload" />
+<fmt:parseDate value="${pet.uploadDate}" type="date" pattern="yyyy-MM-dd" var="parsedUpload"/>
 <fmt:formatDate value="${parsedUpload}" var="uploadDate" type="date" pattern="dd-MM-yyyy"/>
 
-<fmt:parseDate  value="${pet.birthDate}"  type="date" pattern="yyyy-MM-dd" var="parsedBirth" />
+<fmt:parseDate value="${pet.birthDate}" type="date" pattern="yyyy-MM-dd" var="parsedBirth"/>
 <fmt:formatDate value="${parsedBirth}" var="birthDate" type="date" pattern="dd-MM-yyyy"/>
 
 
@@ -78,10 +78,13 @@
                             <c:if test="${pet.status.value eq AVAILABLE}">
                                 <div class="col p-2">
                                     <div class="row float-right mr-4">
-                                        <button type="button" class="btn btn-success"
-                                                data-toggle="modal" data-target="#sell-adopt">
-                                            <spring:message code="petCard.reserve"/></button>
-                                        <form method="POST" class="m-0 ml-2" action="<c:url value="/pet/${id}/remove" />">
+                                        <c:if test="${availableUsers.size() ne 0}">
+                                            <button type="button" class="btn btn-success"
+                                                    data-toggle="modal" data-target="#sell-adopt">
+                                                <spring:message code="petCard.reserve"/></button>
+                                        </c:if>
+                                        <form method="POST" class="m-0 ml-2"
+                                              action="<c:url value="/pet/${id}/remove" />">
                                             <button type="submit" name="action"
                                                     class="btn btn-danger are-you-sure">
                                                 <i class="fas fa-times mr-2"></i>
@@ -203,10 +206,12 @@
                     <spring:message var="SEND_QUESTION_TXT" code="questions.send"/>
 
                     <c:if test="${pet.user.id ne loggedUser.id}">
-                        <form class="form" method="post" action="${pageContext.request.contextPath}/pet/${pet.id}/question">
+                        <form class="form" method="post"
+                              action="${pageContext.request.contextPath}/pet/${pet.id}/question">
                             <div class="form-group mr-sm-3 mb-2">
                                 <label for="questionInput" class="sr-only">${ASK_SOMETHING_TXT}</label>
-                                <textarea name="content" class="form-control input-max-value" id="questionInput" placeholder="${ASK_SOMETHING_TXT}"></textarea>
+                                <textarea name="content" class="form-control input-max-value" id="questionInput"
+                                          placeholder="${ASK_SOMETHING_TXT}"></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary mb-2">${SEND_QUESTION_TXT}</button>
                         </form>
@@ -215,7 +220,8 @@
                     <ul class="questions input-max-value-delegator">
 
                     </ul>
-                    <button type="button" class="btn btn-outline-secondary btn-sm load-more"><spring:message code="load_more_btn"/></button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm load-more"><spring:message
+                            code="load_more_btn"/></button>
                 </div>
                 <hr>
                 <c:set var="ownerId" value="${pet.user.id}"/>

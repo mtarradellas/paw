@@ -12,6 +12,7 @@ import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,26 +71,25 @@ public class AdminPetController extends ParentController {
         ModelAndView mav = new ModelAndView("admin/admin_pets");
         final String locale = getLocale();
 
-        int pageNum = parsePage(page);
-        PetStatus petStatus = parseStatus(PetStatus.class, status);
-        Long speciesId = parseSpecies(species);
-        Long breedId = parseSpecies(breed);
-        gender = parseGender(gender);
-        searchCriteria = parseCriteria(searchCriteria);
-        searchOrder = parseOrder(searchOrder);
-        int[] price = parseRange(priceRange);
+        int pageNum = ParseUtils.parsePage(page);
+        PetStatus petStatus = ParseUtils.parseStatus(PetStatus.class, status);
+        Long speciesId = ParseUtils.parseSpecies(species);
+        Long breedId = ParseUtils.parseSpecies(breed);
+        gender = ParseUtils.parseGender(gender);
+        searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+        searchOrder = ParseUtils.parseOrder(searchOrder);
+        int[] price = ParseUtils.parseRange(priceRange);
         int minPriceNum = price[0];
         int maxPriceNum = price[1];
-        Long provinceId = parseProvince(province);
-        Long departmentId = parseDepartment(department);
+        Long provinceId = ParseUtils.parseProvince(province);
+        Long departmentId = ParseUtils.parseDepartment(department);
 
         List<String> findList = null;
-        if (!isAllowedFind(find)) {
+        if (!ParseUtils.isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
-            find = null;
         } else {
             mav.addObject("wrongSearch", false);
-            findList = parseFind(find);
+            findList = ParseUtils.parseFind(find);
         }
 
         List<Pet> petList = petService.filteredList(locale, findList, null, speciesId, breedId, gender, petStatus, searchCriteria,
@@ -216,7 +216,7 @@ public class AdminPetController extends ParentController {
     public ModelAndView petUpdateSold(@PathVariable("id") long id,
                                       @RequestParam(name = "newowner", required = false) String newOwner) {
 
-        Long newOwnerId = parseUser(newOwner);
+        Long newOwnerId = ParseUtils.parseUser(newOwner);
         if (newOwnerId != null) {
             petService.adminSellPet(id, newOwnerId);
             LOGGER.debug("Pet {} updated as sold", id);

@@ -4,11 +4,16 @@ import ar.edu.itba.paw.interfaces.PetDao;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.QuestionStatus;
+import org.apache.lucene.document.SortedDocValuesField;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortedNumericSortField;
 import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.query.dsl.sort.SortTermination;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
@@ -56,7 +61,7 @@ public class PetJpaDaoImpl implements PetDao {
         indexPets();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
-                minPrice,  maxPrice, province,  department);
+                minPrice,  maxPrice, province,  department, searchCriteria, searchOrder);
         jpaQuery.setProjection(ProjectionConstants.ID);
         return paginationAndOrder(locale, jpaQuery,searchCriteria,searchOrder,page,pageSize);
     }
@@ -66,7 +71,7 @@ public class PetJpaDaoImpl implements PetDao {
                                        PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
-                minPrice,  maxPrice, province,  department);
+                minPrice,  maxPrice, province,  department, null, null);
 
         jpaQuery.setProjection("breed.eid");
         @SuppressWarnings("unchecked")
@@ -87,7 +92,7 @@ public class PetJpaDaoImpl implements PetDao {
     public List<Department> searchDepartmentList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                                  PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
-                minPrice,  maxPrice, province,  department);
+                minPrice,  maxPrice, province,  department, null,null);
 
         jpaQuery.setProjection("department.eid");
         @SuppressWarnings("unchecked")
@@ -105,7 +110,7 @@ public class PetJpaDaoImpl implements PetDao {
     public Set<Integer> searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                                  PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
-                minPrice,  maxPrice, province,  department);
+                minPrice,  maxPrice, province,  department, null, null);
 
         jpaQuery.setProjection("price");
         @SuppressWarnings("unchecked")
@@ -130,7 +135,7 @@ public class PetJpaDaoImpl implements PetDao {
     public Set<String> searchGenderList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                         PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
-                minPrice,  maxPrice, province,  department);
+                minPrice,  maxPrice, province,  department, null, null);
 
         jpaQuery.setProjection("gender");
         @SuppressWarnings("unchecked")
@@ -166,7 +171,7 @@ public class PetJpaDaoImpl implements PetDao {
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
         if(filteredIds.size() == 0){
-            return new ArrayList<Pet>();
+            return new ArrayList<>();
         }
         final TypedQuery<Pet> query = em.createQuery("from Pet where id in :filteredIds", Pet.class);
         query.setParameter("filteredIds", filteredIds);
@@ -231,7 +236,7 @@ public class PetJpaDaoImpl implements PetDao {
     private org.hibernate.search.jpa.FullTextQuery searchQuery(String locale, List<String> find, User user, Species species,
                                                                   Breed breed, String gender, PetStatus status, int minPrice,
                                                                   int maxPrice, Province province,
-                                                                  Department department) {
+                                                                  Department department, String searchCriteria, String searchOrder) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
@@ -270,8 +275,28 @@ public class PetJpaDaoImpl implements PetDao {
         boolJunction.must(queryBuilder.range().onField("price").above(minPrice).createQuery());
 
         org.apache.lucene.search.Query query = boolJunction.createQuery();
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Pet.class);
+
+        SortTermination sort;
+        if (searchCriteria != null ) {
+            String orderBy;
+            locale = locale.toLowerCase();
+            if (searchCriteria.toLowerCase().contains("gender")) orderBy = "gender";
+            else if (searchCriteria.toLowerCase().contains("species")) orderBy = "species." + locale;
+            else if (searchCriteria.toLowerCase().contains("breed")) orderBy = "breed." + locale;
+            else if (searchCriteria.toLowerCase().contains("price")) orderBy = "price";
+            else orderBy = "uploadDate";
+
+            if (searchOrder.toLowerCase().contains("desc")) {
+                sort = queryBuilder.sort().byField(orderBy).desc().andByField("eid");
+            }
+            else {
+                sort = queryBuilder.sort().byField(orderBy).asc().andByField("eid");
+            }
+        }
+        else sort = queryBuilder.sort().byField("eid");
+        jpaQuery.setSort(sort.createSort());
+
         return jpaQuery;
     }
 
@@ -286,7 +311,7 @@ public class PetJpaDaoImpl implements PetDao {
     public int getSearchListAmount(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status,
                                    int minPrice, int maxPrice, Province province, Department department) {
         org.hibernate.search.jpa.FullTextQuery query = searchQuery(locale, find, user, species, breed, gender, status,
-                minPrice,  maxPrice, province,  department);
+                minPrice,  maxPrice, province,  department, null, null);
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
         return results.size();
@@ -353,9 +378,8 @@ public class PetJpaDaoImpl implements PetDao {
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
 
-        if(filteredIds.size() == 0){
-            return new ArrayList<>();
-        }
+        if (filteredIds.size() == 0) return new ArrayList<>();
+
         final TypedQuery<Question> query = em.createQuery("from Question where id in :filteredIds", Question.class);
         query.setParameter("filteredIds", filteredIds);
         return query.getResultList();

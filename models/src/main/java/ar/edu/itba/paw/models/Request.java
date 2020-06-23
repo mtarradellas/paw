@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import org.hibernate.search.annotations.*;
+import org.hibernate.search.bridge.builtin.LongBridge;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,9 +16,14 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "requests_id_seq")
     @SequenceGenerator(allocationSize = 1, sequenceName = "requests_id_seq", name = "requests_id_seq")
     @DocumentId
+    @Field(name= "eid", store = Store.YES)
+    @FieldBridge(impl = LongBridge.class)
+    @SortableField(forField = "eid")
     private Long id;
 
     @Column
+    @Field
+    @SortableField
     private LocalDateTime creationDate;
 
     @Column

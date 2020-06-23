@@ -480,7 +480,7 @@ public class PetServiceImpl implements PetService {
             arguments.put("ownerUsername", pet.getUser().getUsername());
             arguments.put("ownerURL", contextURL + "/user/" + pet.getUser().getId());
 
-            String userLocale = pet.getUser().getLocale();
+            String userLocale = pet.getNewOwner().getLocale();
 
             mailService.sendMail(pet.getNewOwner().getMail(), userLocale, arguments, MailType.PET_SOLD);
 
@@ -628,7 +628,7 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Question> createQuestion(String content, User user, long petId) {
+    public Optional<Question> createQuestion(String content, User user, long petId, String contextURL) {
         if (user == null) {
             LOGGER.warn("User is null");
             return Optional.empty();
@@ -647,12 +647,25 @@ public class PetServiceImpl implements PetService {
         }
 
         Question question = petDao.createQuestion(content, user, pet.getUser(), pet, QuestionStatus.VALID);
+
+        Map<String, Object> arguments = new HashMap<>();
+
+        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
+        arguments.put("petName", pet.getPetName());
+        arguments.put("userUsername", user.getUsername()); // User who asked the question
+        arguments.put("userURL", contextURL + "/user/" + user.getId()); // User who asked the question
+        arguments.put("question", content);
+
+        String userLocale = pet.getUser().getLocale();
+
+        mailService.sendMail(pet.getUser().getMail(), userLocale, arguments, MailType.QUESTION_ASK);
+
         return Optional.of(question);
     }
 
     @Transactional
     @Override
-    public Optional<Answer> createAnswer(long questionId, String content, User user) {
+    public Optional<Answer> createAnswer(long questionId, String content, User user, String contextURL) {
         if (user == null) {
             LOGGER.warn("User is null");
             return Optional.empty();
@@ -677,6 +690,20 @@ public class PetServiceImpl implements PetService {
         }
 
         Answer answer = petDao.createAnswer(question, content, user, question.getUser(), pet, QuestionStatus.VALID);
+
+        Map<String, Object> arguments = new HashMap<>();
+
+        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
+        arguments.put("petName", pet.getPetName());
+        arguments.put("userUsername", user.getUsername()); // User who answered the question (pet owner)
+        arguments.put("userURL", contextURL + "/user/" + user.getId()); // User who answered the question (pet owner)
+        arguments.put("question", question.getContent());
+        arguments.put("answer", content);
+
+        String userLocale = question.getUser().getLocale();
+
+        mailService.sendMail(question.getUser().getMail(), userLocale, arguments, MailType.QUESTION_ANSWER);
+
         return Optional.of(answer);
     }
 }

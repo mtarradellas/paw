@@ -14,6 +14,7 @@ import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditPetForm;
 import ar.edu.itba.paw.webapp.form.QuestionAnswerForm;
 import ar.edu.itba.paw.webapp.form.UploadPetForm;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,19 +82,19 @@ public class PetController extends ParentController {
         final ModelAndView mav = new ModelAndView("index");
         final String locale = getLocale();
 
-        int pageNum = parsePage(page);
-        Long speciesId = parseSpecies(species);
-        Long breedId = parseSpecies(breed);
-        gender = parseGender(gender);
-        searchCriteria = parseCriteria(searchCriteria);
-        searchOrder = parseOrder(searchOrder);
-        int[] price = parseRange(priceRange);
+        int pageNum = ParseUtils.parsePage(page);
+        Long speciesId = ParseUtils.parseSpecies(species);
+        Long breedId = ParseUtils.parseSpecies(breed);
+        gender = ParseUtils.parseGender(gender);
+        searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+        searchOrder = ParseUtils.parseOrder(searchOrder);
+        int[] price = ParseUtils.parseRange(priceRange);
         int minPriceNum = price[0];
         int maxPriceNum = price[1];
-        Long provinceId = parseProvince(province);
-        Long departmentId = parseDepartment(department);
+        Long provinceId = ParseUtils.parseProvince(province);
+        Long departmentId = ParseUtils.parseDepartment(department);
 
-        if (!isAllowedFind(find)) {
+        if (!ParseUtils.isAllowedFind(find)) {
             mav.addObject("wrongSearch", true);
             find = null;
         } else {
@@ -102,7 +103,7 @@ public class PetController extends ParentController {
         if(find != null && (find.equals("") || find.trim().length() == 0)){
             find = null;
         }
-        List<String> findList = parseFind(find);
+        List<String> findList = ParseUtils.parseFind(find);
 
         List<Pet> petList = petService.filteredList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
                 searchCriteria, searchOrder, minPriceNum, maxPriceNum, provinceId, departmentId, pageNum, PET_PAGE_SIZE);
@@ -234,7 +235,7 @@ public class PetController extends ParentController {
     public ModelAndView petUpdateSold(@PathVariable("id") long id,
                                       @RequestParam(name = "newowner", required = false) String newOwner) {
         User user = loggedUser();
-        Long newOwnerId = parseUser(newOwner);
+        Long newOwnerId = ParseUtils.parseUser(newOwner);
         final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
         if (user != null && newOwner != null && petService.sellPet(id, user, newOwnerId, baseUrl)) {
@@ -466,7 +467,7 @@ public class PetController extends ParentController {
     Map<String, Object> petComments(@PathVariable("id") long id,
                                     @RequestParam(name = "page", required = false) String page) {
 
-        int pageNum = parsePage(page);
+        int pageNum = ParseUtils.parsePage(page);
 
         List<Question> questionList = petService.listQuestions(id, pageNum, COMMENTS_PAGE_SIZE);
         int amount = petService.getListQuestionsAmount(id);
@@ -500,8 +501,8 @@ public class PetController extends ParentController {
             LOGGER.warn("User not logged int");
             return new ModelAndView("redirect:/403");
         }
-
-        boolean success = petService.createQuestion(questionAnswerForm.getContent(), user, id).isPresent();
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        boolean success = petService.createQuestion(questionAnswerForm.getContent(), user, id, baseUrl).isPresent();
         return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
     }
 
@@ -521,7 +522,8 @@ public class PetController extends ParentController {
 
         boolean success = false;
         if (questionAnswerForm.getAnswerId() > 0) {
-            success = petService.createAnswer(questionAnswerForm.getAnswerId(), questionAnswerForm.getContent(), user).isPresent();
+            final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            success = petService.createAnswer(questionAnswerForm.getAnswerId(), questionAnswerForm.getContent(), user, baseUrl).isPresent();
         }
         return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
     }

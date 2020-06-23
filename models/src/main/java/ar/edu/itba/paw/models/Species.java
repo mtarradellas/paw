@@ -3,6 +3,7 @@ package ar.edu.itba.paw.models;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.SortableField;
 import org.hibernate.search.bridge.builtin.LongBridge;
 
 import javax.persistence.*;
@@ -22,10 +23,12 @@ public class Species implements Comparable<Species>{
 
     @Column(nullable = false)
     @Field
+    @SortableField
     private String en_us;
 
     @Column(nullable = false)
     @Field
+    @SortableField
     private String es_ar;
 
     @OneToMany(orphanRemoval = true, mappedBy = "species", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

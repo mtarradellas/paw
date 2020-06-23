@@ -11,6 +11,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.query.dsl.sort.SortTermination;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
@@ -36,6 +37,7 @@ public class UserJpaDaoImpl implements UserDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        if (filteredIds.size() == 0) return new ArrayList<>();
 
         final TypedQuery<User> query = em.createQuery("from User where id IN :filteredIds", User.class);
         query.setParameter("filteredIds", filteredIds);
@@ -44,12 +46,12 @@ public class UserJpaDaoImpl implements UserDao {
 
     @Override
     public List<User> searchList(List<String> find, UserStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, searchCriteria, searchOrder);
         jpaQuery.setProjection(ProjectionConstants.ID);
         return paginationAndOrder(jpaQuery, searchCriteria, searchOrder, page, pageSize);
     }
 
-    private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, UserStatus status) {
+    private org.hibernate.search.jpa.FullTextQuery searchIdsQuery(List<String> find, UserStatus status, String searchCriteria, String searchOrder) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
@@ -79,6 +81,21 @@ public class UserJpaDaoImpl implements UserDao {
         org.apache.lucene.search.Query query = boolJunction.createQuery();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, User.class);
+        SortTermination sort;
+        if (searchCriteria != null ) {
+            String orderBy;
+            if (searchCriteria.toLowerCase().contains("mail")) orderBy = "mail";
+            else orderBy = "username";
+
+            if (searchOrder.toLowerCase().contains("desc")) {
+                sort = queryBuilder.sort().byField(orderBy).desc().andByField("eid");
+            }
+            else {
+                sort = queryBuilder.sort().byField(orderBy).asc().andByField("eid");
+            }
+        }
+        else sort = queryBuilder.sort().byField("eid");
+        jpaQuery.setSort(sort.createSort());
         return jpaQuery;
     }
 
@@ -135,7 +152,7 @@ public class UserJpaDaoImpl implements UserDao {
 
     @Override
     public Set<Integer> searchStatusList(List<String> find,  UserStatus status) {
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status);
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, null, null);
         jpaQuery.setProjection("status");
         @SuppressWarnings("unchecked")
         List<Object[]> results = jpaQuery.getResultList();
@@ -158,7 +175,7 @@ public class UserJpaDaoImpl implements UserDao {
 
     @Override
     public int getSearchAmount(List<String> find, UserStatus status) {
-        org.hibernate.search.jpa.FullTextQuery query = searchIdsQuery(find, status);
+        org.hibernate.search.jpa.FullTextQuery query = searchIdsQuery(find, status, null, null);
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
         return results.size();
@@ -225,6 +242,7 @@ public class UserJpaDaoImpl implements UserDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        if (filteredIds.size() == 0) return new ArrayList<>();
 
         final TypedQuery<Review> query = em.createQuery("from Review where id IN :filteredIds", Review.class);
         query.setParameter("filteredIds", filteredIds);
