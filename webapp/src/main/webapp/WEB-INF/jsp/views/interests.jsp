@@ -160,7 +160,7 @@
 
                                         <spring:message code="request.isInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${creationDate}</small>
+                                        <small class="date-text"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-3">
                                         <spring:message code="request.pending"/>
@@ -205,7 +205,7 @@
 
                                         <spring:message code="request.wasInterested"
                                                         arguments="${pageContext.request.contextPath}/user/${req.user.id},${req.user.username},${pageContext.request.contextPath}/pet/${req.pet.id},${req.pet.petName}"/>
-                                        <small class="text-warning"> ${creationDate}</small>
+                                        <small class="date-text"> ${creationDate}</small>
                                     </div>
                                     <div class="col-lg-3">
 

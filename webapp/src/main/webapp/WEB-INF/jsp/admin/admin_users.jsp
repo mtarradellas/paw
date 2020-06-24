@@ -148,7 +148,7 @@
                                         <div class="row ">
                                             <div class="col-lg-7">
                                                 <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${user.id}"/>">
-                                                    <c:out value="${user.username}"/> - <c:out value="${user.mail}"/>
+                                                    <c:out value="${user.username}"/> - <c:out value="${user.mail}"/><span> (id: ${user.id})</span>
                                                 </a>
                                             </div>
                                             <div class="col text-center ml-3">
