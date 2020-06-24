@@ -100,6 +100,10 @@ public class Review {
         this.creationDate = creationDate;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Map<String, Object> toJson() {
         Map<String, Object> review = new HashMap<>();
         review.put("id", id);
