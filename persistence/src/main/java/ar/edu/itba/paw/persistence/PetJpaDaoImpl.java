@@ -337,7 +337,6 @@ public class PetJpaDaoImpl implements PetDao {
         Pet pet = new Pet(petName, birthDate, gender, vaccinated, price, uploadDate, description, status, user, species, breed,
                 province, department);
         em.persist(pet);
-        em.flush();
         return pet;
     }
 

@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -334,6 +335,12 @@ public class RequestDaoImplTest {
     @Transactional
     public void testCreate() {
         Request request = requestDao.create(USER, PET, STATUS, UPLOAD_DATE);
+        try {
+            em.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail("Create request failed");
+        }
 
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, REQUESTS_TABLE));
         assertRequest(request, request.getId(), UPLOAD_DATE, STATUS);

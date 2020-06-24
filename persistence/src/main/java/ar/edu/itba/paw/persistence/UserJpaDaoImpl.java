@@ -218,7 +218,6 @@ public class UserJpaDaoImpl implements UserDao {
     public User create(String username, String password, String mail, UserStatus status, String locale) {
         final User user = new User(username, password, mail, status, locale);
         em.persist(user);
-        em.flush();
         return user;
     }
 
@@ -283,7 +282,6 @@ public class UserJpaDaoImpl implements UserDao {
     public Review addReview(User owner, User target, int score, String description, ReviewStatus status) {
         final Review review = new Review(owner, target, score, description, status, LocalDateTime.now());
         em.persist(review);
-        em.flush();
         return review;
     }
 
