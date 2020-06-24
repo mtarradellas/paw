@@ -119,7 +119,6 @@ public class RequestServiceImplTest {
     public void testFilteredListRequest() {
         List<Request> requestList = new ArrayList<>();
         requestList.add(REQUEST);
-        when(petService.findById(REQUEST.getPet().getId())).thenReturn(Optional.of(REQUEST.getPet()));
         when(requestDao.searchList(eq(REQUEST.getUser()), any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(requestList);
 
