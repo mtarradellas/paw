@@ -172,7 +172,7 @@
 
                                                 <spring:message code="request.isInterested"
                                                                 arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.pet.id},${request.pet.petName}"/>
-                                                <small class="date-text"> ${creationDate}</small>
+                                                <small class="date-text"> ${creationDate}</small><span> (id: ${request.id})</span>
                                             </div>
                                             <div class="col-lg-2">
                                                 <c:if test="${request.status.value eq PENDING}">
