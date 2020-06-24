@@ -91,9 +91,10 @@ public class UserServiceImplTest {
     public void testFindById() {
         when(userDao.findById(eq(USER.getId()))).thenReturn(Optional.of(USER));
 
-        User user = userServiceImpl.findById(USER.getId()).get();
+        Optional<User> opUser = userServiceImpl.findById(USER.getId());
 
-        assertUser(user, USER.getId(), USER.getUsername(), USER.getPassword(),USER.getMail(),USER.getStatus(),USER.getLocale());
+        assertTrue(opUser.isPresent());
+        assertUser(opUser.get(), USER.getId(), USER.getUsername(), USER.getPassword(),USER.getMail(),USER.getStatus(),USER.getLocale());
     }
 
     @Test
