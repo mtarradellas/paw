@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.controller.admin;
 
 import ar.edu.itba.paw.interfaces.RequestService;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.controller.BaseController;
@@ -91,9 +93,12 @@ public class AdminRequestController extends BaseController {
         final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
         try {
             optionalRequest = requestService.create(locale, requestForm.getUserId(), requestForm.getPetId(), baseUrl);
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException | UserException | PetException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return uploadRequestForm(requestForm).addObject("requestError", true);
+            return uploadRequestForm(requestForm)
+                    .addObject("requestError", true)
+                    .addObject("invalidUser", ex.getMessage().contains("user"))
+                    .addObject("invalidPet", ex.getMessage().contains("pet"));
         }
 
         if (!optionalRequest.isPresent()) {

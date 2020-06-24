@@ -2,6 +2,8 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
@@ -302,7 +304,7 @@ public class PetServiceImpl implements PetService {
         Optional<User> opUser = userService.findById(userId);
         if (!opUser.isPresent()) {
             LOGGER.warn("User {} not found, pet creation failed", userId);
-            throw new RuntimeException("Invalid user");
+            throw new UserException("Invalid user");
         }
         User user = opUser.get();
 

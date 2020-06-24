@@ -2,6 +2,8 @@ package ar.edu.itba.paw.services;
 
 
 import ar.edu.itba.paw.interfaces.*;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.RequestStatus;
@@ -116,14 +118,14 @@ public class RequestServiceImpl implements RequestService {
         Optional<User> opUser = userService.findById(userId);
         if (!opUser.isPresent()) {
             LOGGER.warn("User {} not found", userId);
-            return Optional.empty();
+            throw new UserException("Invalid user");
         }
         User user = opUser.get();
 
         Optional<Pet> opPet = petService.findById(locale, petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
-            return Optional.empty();
+            throw new PetException("Invalid pet");
         }
         Pet pet = opPet.get();
 
