@@ -96,7 +96,7 @@ public class AdminRequestController extends BaseController {
         } catch (DataIntegrityViolationException | UserException | PetException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return uploadRequestForm(requestForm)
-                    .addObject("requestError", true)
+                    .addObject("requestError", !ex.getMessage().contains("user")&&!ex.getMessage().contains("pet"))
                     .addObject("invalidUser", ex.getMessage().contains("user"))
                     .addObject("invalidPet", ex.getMessage().contains("pet"));
         }

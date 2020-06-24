@@ -170,7 +170,7 @@ public class AdminPetController extends BaseController {
         } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return uploadPetForm(petForm)
-                    .addObject("petError", true)
+                    .addObject("petError", !ex.getMessage().contains("user"))
                     .addObject("invalidUser", ex.getMessage().contains("user"));
         }
 
