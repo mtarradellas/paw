@@ -116,12 +116,12 @@
                                         <div class="form-group">
                                             <spring:message code="uploadPetForm.owner" var="ownerText"/>
                                             <form:label path="owner" for="owner">${ownerText}: </form:label>
-                                            <form:select id="owner" path="owner" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                                <form:options items="${userList}" itemValue="id" itemLabel="username" />
-                                            </form:select>
+                                            <form:input placeholder="${ownerText}" type="number" id="price" path="owner"
+                                                        cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                             <form:errors path="owner" element="div" cssClass="invalid-feedback"/>
                                         </div>
                                     </spring:bind>
+
                                 </div>
                                 <div class="col">
 
