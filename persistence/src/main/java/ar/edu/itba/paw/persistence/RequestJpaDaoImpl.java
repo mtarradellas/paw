@@ -333,7 +333,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         Request request = new Request(creationDate, status, user, pet.getUser(), pet);
         request.setUpdateDate(LocalDateTime.now());
         em.persist(request);
-        em.flush();
         return request;
     }
 

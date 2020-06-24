@@ -13,6 +13,7 @@
 <c:set var="REJECTED" value="<%=RequestStatus.REJECTED.getValue()%>"/>
 <c:set var="PENDING" value="<%=RequestStatus.PENDING.getValue()%>"/>
 <c:set var="CANCELED" value="<%=RequestStatus.CANCELED.getValue()%>"/>
+<c:set var="SOLD" value="<%=RequestStatus.SOLD.getValue()%>"/>
 
 
 <t:adminLayout title="${requestTitle}" item="requests">
@@ -70,6 +71,12 @@
                                                 selected
                                             </c:if>
                                     ><spring:message code="request.canceled"/></option>
+
+                                    <option value="${SOLD}"
+                                            <c:if test="${(not empty param.status) && (param.status ne 'any') && (SOLD eq param.status)}">
+                                                selected
+                                            </c:if>
+                                    ><spring:message code="request.sold"/></option>
                                 </select>
                             </div>
                             <label for="search-criteria"><spring:message code="filter.criteria"/></label>
@@ -161,7 +168,8 @@
                                             or (request.status.value eq REJECTED)}">
                                         class="list-group-item"
                                     </c:if>
-                                            <c:if test="${(request.status.value eq CANCELED)}">
+                                            <c:if test="${(request.status.value eq CANCELED)
+                                                          or (request.status.value eq SOLD)}">
                                                 class="list-group-item resolved"
                                             </c:if>
                                     >
@@ -172,7 +180,7 @@
 
                                                 <spring:message code="request.isInterested"
                                                                 arguments="${pageContext.request.contextPath}/admin/user/${request.user.id}, ${request.user.username}, ${pageContext.request.contextPath}/admin/pet/${request.pet.id},${request.pet.petName}"/>
-                                                <small class="text-warning"> ${creationDate}</small>
+                                                <small class="date-text"> ${creationDate}</small><span> (id: ${request.id})</span>
                                             </div>
                                             <div class="col-lg-2">
                                                 <c:if test="${request.status.value eq PENDING}">
@@ -186,6 +194,9 @@
                                                 </c:if>
                                                 <c:if test="${request.status.value eq CANCELED}">
                                                     <spring:message code="request.canceled"/>
+                                                </c:if>
+                                                <c:if test="${request.status.value eq SOLD}">
+                                                    <spring:message code="request.sold"/>
                                                 </c:if>
                                             </div>
                                             <div class="col text-center ml-3 ">
@@ -207,7 +218,7 @@
                                                             <spring:message code="cancel"/></button>
                                                     </form>
                                                 </c:if>
-                                                <c:if test="${request.status.value eq CANCELED}">
+                                                <c:if test="${request.status.value eq CANCELED or request.status.value eq SOLD}">
                                                     <form method="POST" class="m-0"
                                                           action="<c:url value="/admin/request/${request.id}/recover"/>">
                                                         <a href="${pageContext.request.contextPath}/admin/user/<c:out value="${request.user.id}"/>"

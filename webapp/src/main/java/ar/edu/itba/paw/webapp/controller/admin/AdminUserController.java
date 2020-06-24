@@ -5,7 +5,7 @@ import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.UserStatus;
-import ar.edu.itba.paw.webapp.controller.ParentController;
+import ar.edu.itba.paw.webapp.controller.BaseController;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-public class AdminUserController extends ParentController {
+public class AdminUserController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminUserController.class);
 

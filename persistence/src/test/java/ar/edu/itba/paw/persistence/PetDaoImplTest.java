@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -364,6 +365,12 @@ public class PetDaoImplTest {
         Pet pet = petDaoImpl.create(PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
 
+        try {
+            em.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail("Create Pet failed");
+        }
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PETS_TABLE));
         assertPet(pet, pet.getId(), PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);

@@ -117,14 +117,14 @@
                 <hr>
                 <div class="p-2">
 
-                    <c:if test="${loggedUser.id eq user.id}">
+                    <c:if test="${loggedUser.id eq user.id or acceptedRequest}">
                         <ul class="list-group">
                             <li class="list-group-item"><b><spring:message code="user.email"/>:</b> <c:out
                                     value="${user.mail}"/></li>
                         </ul>
 
                     </c:if>
-                    <c:if test="${loggedUser.id ne user.id}">
+                    <c:if test="${loggedUser.id ne user.id and not acceptedRequest}">
                         <h5 class="text-center"><b><spring:message code="otherUserProfile"/></b></h5>
                     </c:if>
                     <hr>

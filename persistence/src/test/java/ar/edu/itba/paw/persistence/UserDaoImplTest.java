@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -186,6 +187,12 @@ public class UserDaoImplTest {
     public void testCreateUser() {
         User user = userDaoImpl.create(USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
 
+        try {
+            em.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail("Create user failed");
+        }
         assertNotNull(user);
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, USER_TABLE));
         assertUser(user, user.getId(), USERNAME, PASSWORD, MAIL, USER_STATUS, LOCALE);
@@ -198,6 +205,12 @@ public class UserDaoImplTest {
         User target = insertUser(O_USER_ID, O_USERNAME, O_PASSWORD, O_MAIL, UserStatus.INACTIVE, O_LOCALE);
 
         Review review = userDaoImpl.addReview(owner, target, SCORE, DESC, REVIEW_STATUS);
+        try {
+            em.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail("Add review failed");
+        }
 
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, REVIEW_TABLE));
         assertReview(review, owner.getId(), target.getId(), SCORE, DESC, REVIEW_STATUS);

@@ -24,16 +24,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
 
 @Controller
 @ComponentScan("ar.edu.itba.paw.webapp.auth")
-public class LoginAndRegisterController extends ParentController {
+public class LoginAndRegisterController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginAndRegisterController.class);
 
@@ -161,7 +159,6 @@ public class LoginAndRegisterController extends ParentController {
                                            final BindingResult errors) {
         return requestResetPassword(mailForm, errors);
     }
-
 
     @RequestMapping(value = "/403")
     public ModelAndView accessDenied() {
