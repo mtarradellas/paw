@@ -5,8 +5,6 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -18,14 +16,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 @Controller
-public class ParentController {
+public class BaseController {
 
     @Autowired
     private UserService userService;
