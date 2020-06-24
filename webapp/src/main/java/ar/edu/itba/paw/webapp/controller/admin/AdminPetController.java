@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller.admin;
 import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
@@ -44,13 +43,6 @@ public class AdminPetController extends BaseController {
 
     @Autowired
     private LocationService locationService;
-
-    @Autowired
-    private UserService userService;
-
-    /* TODO placeholders for max number (no pagination) */
-    private static final int PAGE = 1;
-    private static final int PAGE_MAX = 500;
 
     private static final int PET_PAGE_SIZE = 25;
 
@@ -99,14 +91,6 @@ public class AdminPetController extends BaseController {
         List<Breed> breedList = petService.filteredBreedList(locale, findList, null, speciesId, breedId, gender, petStatus,
                 minPriceNum, maxPriceNum, provinceId, departmentId);
         Object[] speciesList = breedList.stream().map(Breed::getSpecies).distinct().sorted(Species::compareTo).toArray();
-//        List<Department> departmentList = petService.filteredDepartmentList(locale, findList, null, speciesId, breedId, gender, petStatus,
-//                minPriceNum, maxPriceNum, provinceId, departmentId);
-//        Object[] provinceList = departmentList.stream().map(Department::getProvince).distinct().sorted(Province::compareTo).toArray();
-//        Object[] ranges = petService.filteredRangesList(locale, findList, null, speciesId, breedId, gender, petStatus,
-//                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
-//        Object[] genders = petService.filteredGenderList(locale, findList, null, speciesId, breedId, gender, petStatus,
-//                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
-
 
         mav.addObject("currentPage", pageNum);
         mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
@@ -115,10 +99,6 @@ public class AdminPetController extends BaseController {
 
         mav.addObject("speciesList", speciesList);
         mav.addObject("breedList", breedList.toArray());
-//        mav.addObject("provinceList", provinceList);
-//        mav.addObject("departmentList", departmentList.toArray());
-//        mav.addObject("ranges", ranges);
-//        mav.addObject("genders", genders);
 
         mav.addObject("nanStatus", status == null);
 
@@ -147,13 +127,10 @@ public class AdminPetController extends BaseController {
         List<Department> departmentList = locationService.departmentList();
         List<Province> provinceList = locationService.provinceList();
 
-        List<User> userList = userService.list(PAGE, PAGE_MAX);
-
         mav.addObject("provinceList", provinceList);
         mav.addObject("departmentList", departmentList);
         mav.addObject("speciesList", speciesList);
         mav.addObject("breedList", breedList);
-        mav.addObject("userList", userList);
         return mav;
     }
 

@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
@@ -160,7 +159,6 @@ public class LoginAndRegisterController extends BaseController {
                                            final BindingResult errors) {
         return requestResetPassword(mailForm, errors);
     }
-
 
     @RequestMapping(value = "/403")
     public ModelAndView accessDenied() {

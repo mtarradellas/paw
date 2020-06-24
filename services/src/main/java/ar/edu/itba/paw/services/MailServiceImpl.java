@@ -1,7 +1,5 @@
 package ar.edu.itba.paw.services;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Map;
@@ -9,25 +7,17 @@ import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.models.constants.MailType;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-import sun.util.locale.LocaleUtils;
 
 @Service("mailService")
 public class MailServiceImpl implements MailService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestServiceImpl.class);
 
     @Autowired
     JavaMailSender mailSender;

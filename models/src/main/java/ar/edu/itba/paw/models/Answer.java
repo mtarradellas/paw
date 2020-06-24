@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.QuestionStatus;
-import org.hibernate.search.annotations.DocumentId;
-import org.omg.CORBA.AnySeqHelper;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;

@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.webapp.controller.admin;
 
-import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.RequestService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.controller.BaseController;
@@ -17,7 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -32,17 +29,7 @@ public class AdminRequestController extends BaseController {
     @Autowired
     private RequestService requestService;
 
-    @Autowired
-    private PetService petService;
-
-    @Autowired
-    private UserService userService;
-
     private static final int REQ_PAGE_SIZE = 25;
-
-    /* TODO placeholders for max number (no pagination) */
-    private static final int PAGE = 1;
-    private static final int PAGE_MAX = 500;
 
     @RequestMapping(value = "/admin/requests")
     public ModelAndView getRequestsAdmin(@RequestParam(name = "status", required = false) String status,
@@ -88,9 +75,7 @@ public class AdminRequestController extends BaseController {
     @RequestMapping(value ="/admin/upload-request", method = { RequestMethod.GET })
     public ModelAndView uploadRequestForm(@ModelAttribute("adminUploadRequestForm") final AdminUploadRequestForm requestForm) {
         String locale = getLocale();
-        return new ModelAndView("admin/admin_upload_request")
-                .addObject("petList", petService.list(locale, PAGE, PAGE_MAX))
-                .addObject("userList",userService.list(PAGE, PAGE_MAX));
+        return new ModelAndView("admin/admin_upload_request");
     }
 
     @RequestMapping(value = "/admin/upload-request", method = { RequestMethod.POST })
