@@ -62,7 +62,7 @@ public class PetController extends BaseController {
     private RequestService requestService;
 
     private static final int PET_PAGE_SIZE = 12;
-    private static final int COMMENTS_PAGE_SIZE = 10;
+    private static final int COMMENTS_PAGE_SIZE = 5;
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
