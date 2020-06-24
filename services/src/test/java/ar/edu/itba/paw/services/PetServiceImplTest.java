@@ -29,67 +29,58 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PetServiceImplTest {
 
-    /* TABLES */
-    private final String PETS_TABLE = "pets";
-    private final String USERS_TABLE = "users";
-    private final String PROVINCES_TABLE = "provinces";
-    private final String DEPARTMENTS_TABLE = "departments";
-    private final String SPECIES_TABLE = "species";
-    private final String BREEDS_TABLE = "breeds";
-    private final String IMAGES_TABLE = "images";
-
     private static final String LOCALE = "en_US";
 
     /* SPECIES */
     private static final Long SPEC_ID = 1L;
-    private static Species SPECIES = new Species("species", "species");
+    private static final Species SPECIES = new Species("species", "species");
 
     private static final Long O_SPEC_ID = 2L;
-    private static Species O_SPECIES = new Species("other_species", "other_species");
+    private static final Species O_SPECIES = new Species("other_species", "other_species");
 
     /* BREED */
     private static final Long BREED_ID = 1L;
-    private static Breed BREED = new Breed(SPECIES, "breed", "breed");
+    private static final Breed BREED = new Breed(SPECIES, "breed", "breed");
 
     private static final Long O_BREED_ID = 2L;
-    private static Breed O_BREED = new Breed(O_SPECIES, "other_breed", "other_breed");
+    private static final Breed O_BREED = new Breed(O_SPECIES, "other_breed", "other_breed");
 
     /* PROVINCE */
     private static final Long PROV_ID = 1L;
-    private static Province PROVINCE = new Province("province", 10, 10);
+    private static final Province PROVINCE = new Province("province", 10, 10);
 
     private static final Long O_PROV_ID = 2L;
-    private static Province O_PROVINCE = new Province("another", 50, 50);
+    private static final Province O_PROVINCE = new Province("another", 50, 50);
 
     /* DEPARTMENT */
     private static final Long DEPT_ID = 1L;
-    private static Department DEPARTMENT = new Department("department", 10, 10, PROVINCE);
+    private static final Department DEPARTMENT = new Department("department", 10, 10, PROVINCE);
 
     private static final Long O_DEPT_ID = 2L;
-    private static Department O_DEPARTMENT = new Department("other_dep", 50, 50, O_PROVINCE);
+    private static final Department O_DEPARTMENT = new Department("other_dep", 50, 50, O_PROVINCE);
 
     /* USER */
     private static final Long USER_ID = 1L;
-    private static User USER = new User("username", "password", "mail@mail.com", UserStatus.ACTIVE, LOCALE);
+    private static final User USER = new User("username", "password", "mail@mail.com", UserStatus.ACTIVE, LOCALE);
 
     private static final Long O_USER_ID = 2L;
-    private static User O_USER = new User("other_username", "other_password", "other_mail@mail.com", UserStatus.ACTIVE, LOCALE);
+    private static final User O_USER = new User("other_username", "other_password", "other_mail@mail.com", UserStatus.ACTIVE, LOCALE);
 
     /* PET */
     private static final Long PET_ID = 1L;
     private static final List<byte[]> PHOTOS = new ArrayList<>();
-    private Pet PET = new Pet("petname", LocalDateTime.now(), "gender", true, 0, LocalDateTime.now(),
+    private static final Pet PET = new Pet("petname", LocalDateTime.now(), "gender", true, 0, LocalDateTime.now(),
             "description", PetStatus.AVAILABLE, USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
 
     private static final Long O_PET_ID = 2L;
-    private Pet O_PET = new Pet("other_pet", LocalDateTime.now().minusMonths(3L), "another", false, 500, LocalDateTime.now().minusMonths(3L),
+    private static final Pet O_PET = new Pet("other_pet", LocalDateTime.now().minusMonths(3L), "another", false, 500, LocalDateTime.now().minusMonths(3L),
             "other pet", PetStatus.UNAVAILABLE, O_USER, O_SPECIES, O_BREED, O_PROVINCE, O_DEPARTMENT);
 
     /* COMMENTS */
     private static final Long QUESTION_ID = 1L;
-    private Question QUESTION = new Question("hello?", O_USER, USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
+    private static final Question QUESTION = new Question("hello?", O_USER, USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
     private static final Long ANSWER_ID = 1L;
-    private Answer ANSWER = new Answer(QUESTION, "hi", USER, O_USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
+    private static final Answer ANSWER = new Answer(QUESTION, "hi", USER, O_USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
 
     private static final int PAGE = 1;
     private static final int PAGE_SIZE = 50;
