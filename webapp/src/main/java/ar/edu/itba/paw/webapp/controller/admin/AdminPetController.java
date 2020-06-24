@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.controller.BaseController;
@@ -166,9 +167,11 @@ public class AdminPetController extends BaseController {
                     petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, petForm.getOwner(),
                     petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
 
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return uploadPetForm(petForm).addObject("petError", true);
+            return uploadPetForm(petForm)
+                    .addObject("petError", !ex.getMessage().contains("user"))
+                    .addObject("invalidUser", ex.getMessage().contains("user"));
         }
 
         if (!opPet.isPresent()) {
