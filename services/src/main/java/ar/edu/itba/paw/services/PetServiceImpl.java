@@ -302,7 +302,7 @@ public class PetServiceImpl implements PetService {
         Optional<User> opUser = userService.findById(userId);
         if (!opUser.isPresent()) {
             LOGGER.warn("User {} not found, pet creation failed", userId);
-            return Optional.empty();
+            throw new RuntimeException("Invalid user");
         }
         User user = opUser.get();
 
