@@ -87,9 +87,9 @@ public class PetServiceImplTest {
 
     /* COMMENTS */
     private static final Long QUESTION_ID = 1L;
-    private Question QUESTION = new Question("hello?", USER, O_USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
+    private Question QUESTION = new Question("hello?", O_USER, USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
     private static final Long ANSWER_ID = 1L;
-    private Answer ANSWER = new Answer(QUESTION, "hi", O_USER, USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
+    private Answer ANSWER = new Answer(QUESTION, "hi", USER, O_USER, PET, LocalDateTime.now(), QuestionStatus.VALID);
 
     private static final int PAGE = 1;
     private static final int PAGE_SIZE = 50;
@@ -108,6 +108,8 @@ public class PetServiceImplTest {
     private SpeciesService speciesService;
     @Mock
     private ImageService imageService;
+    @Mock
+    private MailService mailService;
 
     @Before
     public void setUp() {
@@ -123,6 +125,8 @@ public class PetServiceImplTest {
         O_USER.setId(O_USER_ID);
         PET.setId(PET_ID);
         O_PET.setId(O_PET_ID);
+        QUESTION.setId(QUESTION_ID);
+        ANSWER.setId(ANSWER_ID);
     }
 
     private void assertPet(Pet pet, long id, String petName, LocalDateTime birthDate, String gender, boolean vaccinated, int price, LocalDateTime uploadDate,
@@ -233,7 +237,7 @@ public class PetServiceImplTest {
     @Test
     public void testCreatePet() {
         when(petDao.create(eq(PET.getPetName()), eq(PET.getBirthDate()), eq(PET.getGender()), eq(PET.isVaccinated()),
-                eq(PET.getPrice()), eq(PET.getUploadDate()), eq(PET.getDescription()), eq(PET.getStatus()), eq(PET.getUser()), eq(PET.getSpecies()),
+                eq(PET.getPrice()), any(), eq(PET.getDescription()), eq(PET.getStatus()), eq(PET.getUser()), eq(PET.getSpecies()),
                 eq(PET.getBreed()), eq(PET.getProvince()), eq(PET.getDepartment()))).thenReturn(PET);
         when(locationService.findProvinceById(anyLong())).thenReturn(Optional.of(PET.getProvince()));
         when(locationService.findDepartmentById(anyLong())).thenReturn(Optional.of(PET.getDepartment()));
@@ -263,6 +267,7 @@ public class PetServiceImplTest {
         List<Question> questionList = new ArrayList<>();
         questionList.add(QUESTION);
         when(petDao.listQuestions(eq(QUESTION.getPet().getId()), anyInt(), anyInt())).thenReturn(questionList);
+        when(petDao.findById(QUESTION.getPet().getId())).thenReturn(Optional.of(QUESTION.getPet()));
 
         List<Question> returnList = petServiceImpl.listQuestions(QUESTION.getPet().getId(), PAGE, PAGE_SIZE);
 
@@ -280,8 +285,6 @@ public class PetServiceImplTest {
         when(petDao.createQuestion(eq(QUESTION.getContent()), eq(QUESTION.getUser()), eq(QUESTION.getTarget()),
                 eq(QUESTION.getPet()), eq(QUESTION.getStatus()))).thenReturn(QUESTION);
         when(petDao.findById(eq(QUESTION.getPet().getId()))).thenReturn(Optional.of(PET));
-        when(userService.findById(eq(QUESTION.getUser().getId()))).thenReturn(Optional.of(QUESTION.getUser()));
-        when(userService.findById(eq(QUESTION.getTarget().getId()))).thenReturn(Optional.of(QUESTION.getTarget()));
 
         Optional<Question> opQuestion = Optional.empty();
         try {
@@ -301,5 +304,27 @@ public class PetServiceImplTest {
                 pet.getSpecies(), pet.getBreed(), pet.getProvince(), pet.getDepartment());
     }
 
+    @Test
+    public void testCreateAnswer() {
+        when(petDao.createAnswer(eq(QUESTION), eq(ANSWER.getContent()), eq(ANSWER.getUser()), eq(ANSWER.getTarget()),
+                eq(ANSWER.getPet()), eq(ANSWER.getStatus()))).thenReturn(ANSWER);
+        when(petDao.findQuestionById(eq(QUESTION.getId().longValue()))).thenReturn(Optional.of(QUESTION));
 
+        Optional<Answer> opAnswer = Optional.empty();
+        try {
+            opAnswer = petServiceImpl.createAnswer(QUESTION.getId(), ANSWER.getContent(), ANSWER.getUser(), null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("unexpected error during operation create answer");
+        }
+
+        assertTrue(opAnswer.isPresent());
+        Answer answer = opAnswer.get();
+        assertEquals(answer.getId(), ANSWER.getId());
+        assertEquals(answer.getContent(), ANSWER.getContent());
+        Pet pet = ANSWER.getPet();
+        assertPet(ANSWER.getPet(), pet.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
+                pet.getPrice(), pet.getUploadDate(), pet.getDescription(), pet.getStatus(), pet.getUser(),
+                pet.getSpecies(), pet.getBreed(), pet.getProvince(), pet.getDepartment());
+    }
 }
