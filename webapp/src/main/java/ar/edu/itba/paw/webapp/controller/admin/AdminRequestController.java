@@ -5,8 +5,7 @@ import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.constants.RequestStatus;
-import ar.edu.itba.paw.webapp.controller.ParentController;
-import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.controller.BaseController;
 import ar.edu.itba.paw.webapp.form.AdminUploadRequestForm;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-public class AdminRequestController extends ParentController {
+public class AdminRequestController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRequestController.class);
 

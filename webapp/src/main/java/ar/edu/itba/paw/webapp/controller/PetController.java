@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 
 @Controller
-public class PetController extends ParentController {
+public class PetController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 

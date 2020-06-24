@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 @Controller
-public class ParentController {
+public class BaseController {
 
     @Autowired
     private UserService userService;

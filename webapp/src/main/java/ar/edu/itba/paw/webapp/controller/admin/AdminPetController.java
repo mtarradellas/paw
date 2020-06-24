@@ -7,7 +7,7 @@ import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.webapp.controller.ParentController;
+import ar.edu.itba.paw.webapp.controller.BaseController;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
 import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
@@ -30,10 +30,9 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
-public class AdminPetController extends ParentController {
+public class AdminPetController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminPetController.class);
 
