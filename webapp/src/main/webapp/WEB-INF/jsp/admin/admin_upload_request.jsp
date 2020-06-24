@@ -23,14 +23,15 @@
                                 <div class="col">
                                     <spring:bind path="userId">
                                         <div class="form-group">
-                                            <spring:message code="user" var="userText"/>
+                                            <spring:message code="uploadRequest.admin.user" var="userText"/>
                                             <form:label path="userId" for="userId">${userText}: </form:label>
-                                            <form:select id="userId" path="userId"
-                                                         cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                                <form:options items="${userList}" itemValue="id"
-                                                              itemLabel="username"/>
-                                            </form:select>
+                                            <form:input placeholder="${userText}" type="number" id="price" path="userId"
+                                                        cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                             <form:errors path="userId" element="div" cssClass="invalid-feedback"/>
+
+                                            <c:if test="${invalidUser}">
+                                                <div class="text-error"><spring:message code="uploadRequest.admin.invalidUser"/></div>
+                                            </c:if>
                                         </div>
                                     </spring:bind>
 
@@ -38,19 +39,21 @@
                                 <div class="col">
                                     <spring:bind path="petId">
                                         <div class="form-group">
-                                            <spring:message code="pet" var="petText"/>
+                                            <spring:message code="uploadRequest.admin.pet" var="petText"/>
                                             <form:label path="petId" for="petId">${petText}: </form:label>
-                                            <form:select id="petId" path="petId"
-                                                         cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                                <form:options items="${petList}" itemValue="id"
-                                                              itemLabel="petName"/>
-                                            </form:select>
+                                            <form:input placeholder="${petText}" type="number" id="price" path="petId"
+                                                        cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                             <form:errors path="petId" element="div" cssClass="invalid-feedback"/>
+
+                                            <c:if test="${invalidPet}">
+                                                <div class="text-error"><spring:message code="uploadRequest.admin.invalidPet"/></div>
+                                            </c:if>
                                         </div>
                                     </spring:bind>
 
                                 </div>
                             </div>
+
                             <c:if test="${requestError eq true}">
                                 <p class="error"><spring:message code="Request.wrongRequest"/></p>
                             </c:if>

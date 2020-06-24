@@ -218,6 +218,7 @@
                                                     <c:if test="${empty pet.petName}">
                                                         <spring:message code="pet.unnamed"/>
                                                     </c:if>
+                                                    <span> (id: ${pet.id})</span>
                                                 </a>
                                             </div>
                                             <div class="col text-center pt-3 ml-3">

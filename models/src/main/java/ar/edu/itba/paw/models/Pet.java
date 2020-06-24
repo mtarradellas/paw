@@ -2,11 +2,7 @@ package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.PetStatus;
 import org.hibernate.search.annotations.*;
-import org.hibernate.search.bridge.builtin.EnumBridge;
-import org.hibernate.search.bridge.builtin.IntegerBridge;
 import org.hibernate.search.bridge.builtin.LongBridge;
-import org.hibernate.search.bridge.builtin.StringBridge;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -114,14 +114,18 @@
                                     </spring:bind>
                                     <spring:bind path="owner">
                                         <div class="form-group">
-                                            <spring:message code="uploadPetForm.owner" var="ownerText"/>
+                                            <spring:message code="uploadPetForm.admin.owner" var="ownerText"/>
                                             <form:label path="owner" for="owner">${ownerText}: </form:label>
-                                            <form:select id="owner" path="owner" cssClass="form-control ${status.error ? 'is-invalid' : ''}">
-                                                <form:options items="${userList}" itemValue="id" itemLabel="username" />
-                                            </form:select>
+                                            <form:input placeholder="${ownerText}" type="number" id="price" path="owner"
+                                            cssClass="form-control ${status.error ? 'is-invalid' : ''}"/>
                                             <form:errors path="owner" element="div" cssClass="invalid-feedback"/>
+
+                                            <c:if test="${invalidUser}">
+                                                <div class="text-error"><spring:message code="uploadPetForm.admin.invalidOwner"/></div>
+                                            </c:if>
                                         </div>
                                     </spring:bind>
+
                                 </div>
                                 <div class="col">
 

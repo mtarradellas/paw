@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-public class UserController extends ParentController {
+public class UserController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -335,6 +335,7 @@ public class UserController extends ParentController {
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return editUserForm(editUserForm, id)
+                    .addObject("loggedUser", loggedUser())
                     .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"));
         }
         if(!opUser.isPresent()){

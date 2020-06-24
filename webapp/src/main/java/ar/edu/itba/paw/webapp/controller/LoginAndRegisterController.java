@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.form.RequestMail;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
@@ -24,16 +25,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
 
 @Controller
 @ComponentScan("ar.edu.itba.paw.webapp.auth")
-public class LoginAndRegisterController extends ParentController {
+public class LoginAndRegisterController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginAndRegisterController.class);
 
@@ -75,7 +74,7 @@ public class LoginAndRegisterController extends ParentController {
         try {
             opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail(), locale, baseUrl);
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return registerForm(userForm)
                     .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"))
@@ -161,7 +160,6 @@ public class LoginAndRegisterController extends ParentController {
                                            final BindingResult errors) {
         return requestResetPassword(mailForm, errors);
     }
-
 
     @RequestMapping(value = "/403")
     public ModelAndView accessDenied() {

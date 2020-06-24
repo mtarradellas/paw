@@ -1,9 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
-
-import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.hibernate.search.engine.ProjectionConstants;
@@ -12,8 +11,8 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
+import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Repository;
-
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
@@ -221,7 +220,11 @@ public class UserJpaDaoImpl implements UserDao {
     public User create(String username, String password, String mail, UserStatus status, String locale) {
         final User user = new User(username, password, mail, status, locale);
         em.persist(user);
-        em.flush();
+        try {
+            em.flush();
+        } catch (PersistenceException ex) {
+            throw new UserException(ex.getCause().getCause().getMessage());
+        }
         return user;
     }
 
@@ -286,7 +289,6 @@ public class UserJpaDaoImpl implements UserDao {
     public Review addReview(User owner, User target, int score, String description, ReviewStatus status) {
         final Review review = new Review(owner, target, score, description, status, LocalDateTime.now());
         em.persist(review);
-        em.flush();
         return review;
     }
 

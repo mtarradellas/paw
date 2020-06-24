@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.models;
 
 import ar.edu.itba.paw.models.constants.ReviewStatus;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.IndexedEmbedded;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -101,6 +98,10 @@ public class Review {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Map<String, Object> toJson() {

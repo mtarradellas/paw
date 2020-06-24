@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 
 @Controller
-public class PetController extends ParentController {
+public class PetController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
@@ -61,11 +61,8 @@ public class PetController extends ParentController {
     @Autowired
     private RequestService requestService;
 
-    @Autowired
-    private MailService mailService;
-
     private static final int PET_PAGE_SIZE = 12;
-    private static final int COMMENTS_PAGE_SIZE = 10;
+    private static final int COMMENTS_PAGE_SIZE = 5;
 
     @RequestMapping(value = "/", method = { RequestMethod.GET})
     public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
