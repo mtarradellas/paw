@@ -2,7 +2,7 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<t:basicLayout title="LENIA TEST">
+<t:basicLayout title="TEST">
     <jsp:body>
         <div class="row">
             <div class="col-md-10 offset-md-1">

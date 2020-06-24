@@ -88,7 +88,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> create(String username, String password, String mail, String locale, String contextURL) {
         LOGGER.debug("Attempting user creation with username: {}, mail: {}", username, mail);
-        System.out.println(encoder == null);
         User user = userDao.create(username, encoder.encode(password), mail, UserStatus.INACTIVE, locale);
 
         UUID uuid = UUID.randomUUID();
