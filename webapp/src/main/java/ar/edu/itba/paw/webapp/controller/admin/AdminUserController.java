@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller.admin;
 
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.UserStatus;
@@ -149,7 +150,7 @@ public class AdminUserController extends BaseController {
         try {
             opUser = userService.adminCreate(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail(), locale);
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return uploadUserForm(userForm)
                     .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"))

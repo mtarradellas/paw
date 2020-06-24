@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.form.RequestMail;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
@@ -73,7 +74,7 @@ public class LoginAndRegisterController extends BaseController {
         try {
             opUser = userService.create(userForm.getUsername(), userForm.getPassword(),
                     userForm.getMail(), locale, baseUrl);
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return registerForm(userForm)
                     .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"))

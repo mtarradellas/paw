@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.UserDao;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
@@ -10,6 +11,7 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
+import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Repository;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
@@ -218,6 +220,11 @@ public class UserJpaDaoImpl implements UserDao {
     public User create(String username, String password, String mail, UserStatus status, String locale) {
         final User user = new User(username, password, mail, status, locale);
         em.persist(user);
+        try {
+            em.flush();
+        } catch (PersistenceException ex) {
+            throw new UserException(ex.getCause().getCause().getMessage());
+        }
         return user;
     }
 

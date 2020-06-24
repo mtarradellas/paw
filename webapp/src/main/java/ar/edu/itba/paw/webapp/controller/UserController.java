@@ -335,6 +335,7 @@ public class UserController extends BaseController {
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return editUserForm(editUserForm, id)
+                    .addObject("loggedUser", loggedUser())
                     .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"));
         }
         if(!opUser.isPresent()){
