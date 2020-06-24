@@ -7,8 +7,10 @@ import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,9 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RequestServiceImplTest {
 
     private static final String LOCALE = "en_US";
@@ -82,6 +86,10 @@ public class RequestServiceImplTest {
     private RequestDao requestDao;
     @Mock
     private PetService petService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private MailService mailService;
 
     @Before
     public void setUp() {
@@ -98,6 +106,7 @@ public class RequestServiceImplTest {
         PET.setId(PET_ID);
         O_PET.setId(O_PET_ID);
         REQUEST.setId(REQ_ID);
+        O_USER.setRequestList(new ArrayList<>());
     }
 
     private void assertRequest(Request request, long id, LocalDateTime creationDate, RequestStatus status) {
@@ -107,12 +116,13 @@ public class RequestServiceImplTest {
     }
 
     @Test
-    public void testFilteredListUser() {
+    public void testFilteredListRequest() {
         List<Request> requestList = new ArrayList<>();
         requestList.add(REQUEST);
+        when(petService.findById(REQUEST.getPet().getId())).thenReturn(Optional.of(REQUEST.getPet()));
         when(requestDao.searchList(eq(REQUEST.getUser()), any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(requestList);
-        when(petService.findById(REQUEST.getPet().getId())).thenReturn(Optional.of(REQUEST.getPet()));
+
 
         List<Request> returnList = requestService.filteredList(REQUEST.getUser(), null, null, null,
                 null,  null, PAGE, PAGE_SIZE);
@@ -121,4 +131,39 @@ public class RequestServiceImplTest {
         assertRequest(returnList.get(0), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
     }
 
+    @Test
+    public void testFindById() {
+        when(requestDao.findById(eq(USER.getId()))).thenReturn(Optional.of(REQUEST));
+
+        Optional<Request> opRequest = requestService.findById(REQUEST.getId());
+
+        assertTrue(opRequest.isPresent());
+        assertRequest(opRequest.get(), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
+    }
+
+    @Test
+    public void testFilteredListRequestByPetOwner() {
+        List<Request> requestList = new ArrayList<>();
+        requestList.add(REQUEST);
+        when(requestDao.searchListByPetOwner(eq(REQUEST.getTarget()), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+                .thenReturn(requestList);
+
+        List<Request> returnList = requestService.filteredListByPetOwner(REQUEST.getTarget(), null, null, null,
+                null,  null, PAGE, PAGE_SIZE);
+
+        assertEquals(1, returnList.size());
+        assertRequest(returnList.get(0), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
+    }
+
+    @Test
+    public void testCreate() {
+        when(requestDao.create(eq(REQUEST.getUser()), eq(REQUEST.getPet()),eq(REQUEST.getStatus()), any())).thenReturn(REQUEST);
+        when(userService.findById(anyLong())).thenReturn(Optional.of(REQUEST.getUser()));
+        when(petService.findById(any(), eq(REQUEST.getPet().getId()))).thenReturn(Optional.of(REQUEST.getPet()));
+
+        Optional<Request> opRequest = requestService.create(LOCALE, REQUEST.getUser().getId(), REQUEST.getPet().getId(), null);
+
+        assertTrue(opRequest.isPresent());
+        assertRequest(opRequest.get(), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
+    }
 }
