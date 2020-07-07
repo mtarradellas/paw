@@ -12,7 +12,7 @@ import java.util.Optional;
 public class LocationService implements ar.edu.itba.paw.interfaces.LocationService {
 
     @Autowired
-    LocationDao locationDao;
+    private LocationDao locationDao;
 
     @Override
     public List<Province> provinceList() {

@@ -47,7 +47,7 @@ public class PetController extends BaseController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
     @Autowired
-    PetService petService;
+    private PetService petService;
 
     @Autowired
     private SpeciesService speciesService;

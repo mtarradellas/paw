@@ -27,20 +27,20 @@ public class PetServiceImpl implements PetService {
     private static final int MAX_IMAGES = 5;
 
     @Autowired
-    PetDao petDao;
+    private PetDao petDao;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    SpeciesService speciesService;
+    private SpeciesService speciesService;
     @Autowired
-    ImageService imageService;
+    private ImageService imageService;
     @Autowired
-    LocationService locationService;
+    private LocationService locationService;
     @Autowired
-    RequestService requestService;
+    private RequestService requestService;
     @Autowired
-    MailService mailService;
+    private MailService mailService;
 
     @Override
     public List<Pet> list(String locale, int page, int pageSize) {
