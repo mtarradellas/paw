@@ -20,13 +20,13 @@ import org.springframework.stereotype.Service;
 public class MailServiceImpl implements MailService {
 
     @Autowired
-    JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
     @Autowired
-    VelocityEngine velocityEngine;
+    private VelocityEngine velocityEngine;
 
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
 
     @Async
     public void sendMail(String recipient, String recipientLocale, Map<String, Object> arguments, MailType mailType){
