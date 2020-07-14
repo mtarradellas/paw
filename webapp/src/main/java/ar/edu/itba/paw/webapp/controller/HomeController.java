@@ -1,28 +1,39 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.*;
+import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.stereotype.Component;
 
-@Controller
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+@Path("/")
 public class HomeController extends BaseController {
 
     @Autowired
     private SpeciesService speciesService;
 
-    @RequestMapping("/available")
-    public ModelAndView getAvailable() {
+    @GET
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getAvailable() {
         final String locale = getLocale();
-        return new ModelAndView("views/available")
-                    .addObject("speciesList", speciesService.speciesList(locale).toArray())
-                    .addObject("breedList", speciesService.breedList(locale).toArray());
+        final List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(SpeciesDto::fromSpecies).collect(Collectors.toList());
+        return Response.ok(new GenericEntity<List<SpeciesDto>>(speciesList) {}).build();
     }
 
-    @RequestMapping(value = "/admin")
-    public ModelAndView getAdminHome() {
-        return new ModelAndView("admin/admin");
-    }
+//    public ModelAndView getAdminHome() {
+//        return new ModelAndView("admin/admin");
+//    }
 
 }

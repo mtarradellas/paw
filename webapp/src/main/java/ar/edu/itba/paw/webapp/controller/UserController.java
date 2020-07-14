@@ -5,8 +5,12 @@ import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
+import ar.edu.itba.paw.webapp.dto.RequestDto;
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
+import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.EditUserForm;
 import ar.edu.itba.paw.webapp.form.groups.BasicInfoEditUser;
@@ -22,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -29,10 +34,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Controller
+@Component
+@Path("/users")
 public class UserController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
@@ -53,10 +62,116 @@ public class UserController extends BaseController {
     private static final int PET_PAGE_SIZE = 8;
     private static final int REV_PAGE_SIZE = 5;
 
+    /* TODO remove. Only here for testing */
+    private static final int USR_PAGE_SIZE = 25;
+
     private static final int MIN_SCORE = 1;
     private static final int MAX_SCORE = 5;
 
-    @RequestMapping(value = "/user/{id}")
+    @Context
+    private UriInfo uriInfo;
+
+    /* TODO this method should not be here. Users are listed only on admin page */
+    @GET
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getUserList(@QueryParam("page") @DefaultValue("1") int page) {
+
+        final List<UserDto> userList = userService.list(page, USR_PAGE_SIZE).stream()
+                .map(u -> UserDto.fromUserForList(u, uriInfo)).collect(Collectors.toList());
+        final int amount = userService.getListAmount();
+
+        final int firstPage = 1;
+        final int lastPage  = (int) Math.ceil((double) amount / USR_PAGE_SIZE);
+        final int prevPage  = (page == 1) ? lastPage : page - 1;
+        final int nextPage  = (page == lastPage) ? firstPage : page + 1;
+
+        final URI first = uriInfo.getAbsolutePathBuilder().queryParam("page", firstPage).build();
+        final URI last  = uriInfo.getAbsolutePathBuilder().queryParam("page", lastPage).build();
+        final URI prev  = uriInfo.getAbsolutePathBuilder().queryParam("page", prevPage).build();
+        final URI next  = uriInfo.getAbsolutePathBuilder().queryParam("page", nextPage).build();
+
+        return Response.ok(new GenericEntity<List<UserDto>>(userList) {})
+                .link(first, "first")
+                .link(last, "last")
+                .link(prev, "prev")
+                .link(next, "next")
+                .build();
+    }
+
+    @POST
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response create(final UserDto user) {
+        final String locale = getLocale();
+
+        final Optional<User> opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getPath());
+        if (!opNewUser.isPresent()) {
+            LOGGER.warn("User creation failed");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final URI userUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewUser.get().getId())).build();
+        return Response.created(userUri).build();
+    }
+
+    @DELETE
+    @Path("/{userId}")
+    public Response deleteUser(@PathParam("userId") long userId) {
+        userService.removeUser(userId);
+        LOGGER.debug("User {} removed", userId);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/{userId}")
+    public Response getUser(@PathParam("userId") long userId) {
+        final Optional<User> opUser = userService.findById(userId);
+
+        if (!opUser.isPresent()) {
+            LOGGER.debug("User {} not found", userId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        final User user = opUser.get();
+        return Response.ok(new GenericEntity<UserDto>(UserDto.fromUser(user, uriInfo)){}).build();
+    }
+
+    @GET
+    @Path("/{userId}/requests")
+    public Response getUserRequests(@PathParam("userId") long userId) {
+
+        final Optional<User> opUser = userService.findById(userId);
+
+        if (!opUser.isPresent()) {
+            LOGGER.debug("User {} not found", userId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+
+        final List<RequestDto> requestList = opUser.get().getRequestList()
+                .stream().map(RequestDto::fromRequest).collect(Collectors.toList());
+        return Response.ok(new GenericEntity<List<RequestDto>> (requestList) {}).build();
+    }
+
+    @GET
+    @Path("/{userId}/interests")
+    public Response getUserInterests(@PathParam("userId") long userId) {
+
+        final Optional<User> opUser = userService.findById(userId);
+
+        if (!opUser.isPresent()) {
+            LOGGER.debug("User {} not found", userId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+
+        final List<RequestDto> interestList = opUser.get().getInterestList()
+                .stream().map(RequestDto::fromRequest).collect(Collectors.toList());
+        return Response.ok(new GenericEntity<List<RequestDto>> (interestList) {}).build();
+    }
+
+    /*
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    * OLD CONTROLLER METHODS * * * * * * * * * * * * * * * * * * * *
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    * */
+
+    //@RequestMapping(value = "/user/{id}")
     public ModelAndView user(@PathVariable("id") long id,
                              @RequestParam(name = "page", required = false) String page,
                              @RequestParam(name = "descriptionTooLong", required = false) String toolong,
@@ -112,7 +227,7 @@ public class UserController extends BaseController {
         return mav;
     }
 
-    @RequestMapping(value = "/user/{id}/reviews")
+    //@RequestMapping(value = "/user/{id}/reviews")
     public @ResponseBody
     Map<String, Object> userReviews(@PathVariable("id") long id,
                                     @RequestParam(name = "owner", required = false) String owner,
@@ -149,7 +264,7 @@ public class UserController extends BaseController {
         return response;
     }
 
-    @RequestMapping(value = "/requests")
+    //@RequestMapping(value = "/requests")
     public ModelAndView getRequests(@RequestParam(name = "status", required = false) String status,
                                     @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                     @RequestParam(name = "searchOrder", required = false) String searchOrder,
@@ -192,7 +307,7 @@ public class UserController extends BaseController {
         return mav;
     }
 
-    @RequestMapping(value = "/requests/{id}/cancel", method = {RequestMethod.POST})
+    //@RequestMapping(value = "/requests/{id}/cancel", method = {RequestMethod.POST})
     public ModelAndView cancelRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
         final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
@@ -203,7 +318,7 @@ public class UserController extends BaseController {
         return new ModelAndView("redirect:/403" );
     }
 
-    @RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
+    //@RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
     public ModelAndView recoverRequest(@PathVariable("id") long id) {
         final User user = loggedUser();
         final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
@@ -214,7 +329,7 @@ public class UserController extends BaseController {
         return new ModelAndView("redirect:/403" );
     }
 
-    @RequestMapping(value = "/interests")
+    //@RequestMapping(value = "/interests")
     public ModelAndView getInterested(@RequestParam(name = "status", required = false) String status,
                                       @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
                                       @RequestParam(name = "searchOrder", required = false) String searchOrder,
@@ -268,7 +383,7 @@ public class UserController extends BaseController {
         return mav;
     }
 
-    @RequestMapping(value = "/interests/{id}/accept", method = {RequestMethod.POST})
+    //@RequestMapping(value = "/interests/{id}/accept", method = {RequestMethod.POST})
     public ModelAndView acceptInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
         final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
@@ -279,7 +394,7 @@ public class UserController extends BaseController {
         return new ModelAndView("redirect:/403" );
     }
 
-    @RequestMapping(value = "/interests/{id}/reject", method = {RequestMethod.POST})
+    //@RequestMapping(value = "/interests/{id}/reject", method = {RequestMethod.POST})
     public ModelAndView rejectInterest(@PathVariable("id") long id) {
         final User user = loggedUser();
         final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
@@ -291,7 +406,7 @@ public class UserController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.GET })
+    //@RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.GET })
     public ModelAndView editUserGet(@ModelAttribute("editUserForm") final EditUserForm editUserForm, @PathVariable("id") long id){
 
         if(loggedUser().getId() != id) {
@@ -318,7 +433,7 @@ public class UserController extends BaseController {
                 .addObject("id", id);
     }
 
-    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-basic-info"})
+    //@RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-basic-info"})
     public ModelAndView editBasicInfo(@Validated({BasicInfoEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
                                 final BindingResult errors, HttpServletRequest request,
                                 @PathVariable("id") long id) {
@@ -345,7 +460,7 @@ public class UserController extends BaseController {
         return new ModelAndView("redirect:/user/" + opUser.get().getId());
     }
 
-    @RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-password"})
+    //@RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-password"})
     public ModelAndView editPassword(@Validated({ChangePasswordEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
                                  final BindingResult errors, HttpServletRequest request,
                                  @PathVariable("id") long id) {
@@ -372,7 +487,7 @@ public class UserController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/user/{id}/remove", method = {RequestMethod.POST})
+    //@RequestMapping(value = "/user/{id}/remove", method = {RequestMethod.POST})
     public ModelAndView userUpdateRemoved(@PathVariable("id") long id) {
         User user = loggedUser();
         if (user != null && id == user.getId()) {
@@ -384,7 +499,7 @@ public class UserController extends BaseController {
         return new ModelAndView("redirect:/403");
     }
 
-    @RequestMapping(value = "/user/{id}/review", method = {RequestMethod.POST})
+    //@RequestMapping(value = "/user/{id}/review", method = {RequestMethod.POST})
     public ModelAndView uploadReview(@PathVariable("id") long id,
                                      @RequestParam(name = "score") String scoreStr,
                                      @RequestParam(name = "description") String description) {
