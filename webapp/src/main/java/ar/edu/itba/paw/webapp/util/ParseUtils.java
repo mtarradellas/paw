@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.util;
 
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,16 +11,12 @@ public class ParseUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParseUtils.class);
 
-    public static int parsePage(String page) {
-        int pageNum = 1;
-        if(page != null) {
-            try {
-                pageNum = Integer.parseInt(page);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid page ({}) parameter", page);
-            }
+    public static int parsePage(int page) {
+        if (page < 1) {
+            LOGGER.warn("Invalid page: Page number must be greater than 0");
+            throw new BadRequestException("Invalid page: Page number must be greater than 0");
         }
-        return pageNum;
+        return page;
     }
 
     public static <E extends Enum<E>> E parseStatus(Class<E> enumClass, String statusStr) {
@@ -30,7 +27,8 @@ public class ParseUtils {
                 int idx = Integer.parseInt(statusStr);
                 status = values[idx];
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-                LOGGER.debug("Invalid status ({}) parameter", statusStr);
+                LOGGER.warn("Invalid status ({}) parameter", statusStr);
+                throw new BadRequestException("Invalid status (" + statusStr + ") parameter");
             }
         }
         return status;
@@ -42,7 +40,8 @@ public class ParseUtils {
             try {
                 species = Long.parseLong(speciesStr);
             } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid species ({}) parameter", speciesStr);
+                LOGGER.warn("Invalid species ({}) parameter", speciesStr);
+                throw new BadRequestException("Invalid species (" + speciesStr + ") parameter");
             }
         }
         return species;
@@ -54,7 +53,8 @@ public class ParseUtils {
             try {
                 breed = Long.parseLong(breedStr);
             } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid breed ({}) parameter", breedStr);
+                LOGGER.warn("Invalid breed ({}) parameter", breedStr);
+                throw new BadRequestException("Invalid breed (" + breedStr + ") parameter");
             }
         }
         return breed;
@@ -66,7 +66,8 @@ public class ParseUtils {
             try {
                 province = Long.parseLong(provinceStr);
             } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid province ({}) parameter", provinceStr);
+                LOGGER.warn("Invalid province ({}) parameter", provinceStr);
+                throw new BadRequestException("Invalid province (" + provinceStr + ") parameter");
             }
         }
         return province;
@@ -78,15 +79,20 @@ public class ParseUtils {
             try {
                 department = Long.parseLong(departmentStr);
             } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid department ({}) parameter", departmentStr);
+                LOGGER.warn("Invalid department ({}) parameter", departmentStr);
+                throw new BadRequestException("Invalid department (" + departmentStr + ") parameter");
             }
         }
         return department;
     }
 
     public static boolean isAllowedFind(String find) {
-        return find == null || find.matches("^[a-zA-Z0-9 \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
-                "\u00F3\u00FA\u00F1\u00FC]*$");
+        if (find != null && !find.matches("^[a-zA-Z0-9 \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
+                "\u00F3\u00FA\u00F1\u00FC]*$")) {
+            LOGGER.warn("Invalid find ({}) characters", find);
+            throw new BadRequestException("Invalid find (" + find + ") characters");
+        }
+        return true;
     }
 
     public static List<String> parseFind(String find) {
@@ -99,7 +105,8 @@ public class ParseUtils {
         if (gender == null) return null;
         if (gender.equalsIgnoreCase("male")) return "male";
         if (gender.equalsIgnoreCase("female")) return "female";
-        return null;
+        LOGGER.warn("Invalid gender ({}) parameter", gender);
+        throw new BadRequestException("Invalid gender (" + gender + ") parameter");
     }
 
     public static String parseCriteria(String criteria) {
@@ -123,7 +130,7 @@ public class ParseUtils {
             case "4" : price = new int[]{15000, 19999}; break;
             case "5" : price = new int[]{20000, 24999}; break;
             case "6" : price = new int[]{25000, -1}; break;
-            default: price = new int[]{0, -1}; break;
+            default: throw new BadRequestException("Invalid price range (" + range + ") parameter");
         }
         return price;
     }
@@ -132,7 +139,7 @@ public class ParseUtils {
         int minPriceNum = parseMinPrice(minPrice);
         int maxPriceNum = parseMaxPrice(maxPrice);
 
-        if (maxPriceNum != -1 && minPriceNum > maxPriceNum) return new int[]{0, -1};
+        if (maxPriceNum != -1 && minPriceNum > maxPriceNum) throw new BadRequestException("Invalid prices, max price must be greater or equal to min price");
         return new int[]{minPriceNum, maxPriceNum};
     }
 
@@ -142,9 +149,10 @@ public class ParseUtils {
         try {
             priceNum = Integer.parseInt(price);
         } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid min price ({}) parameter", price);
+            LOGGER.warn("Invalid min price ({}) parameter", price);
+            throw new BadRequestException("Invalid min price (" + price + ") parameter");
         }
-        if (priceNum < 0) priceNum = 0;
+        if (priceNum < 0) throw new BadRequestException("Invalid min price (" + price + ") parameter");;
         return priceNum;
     }
 
@@ -154,9 +162,10 @@ public class ParseUtils {
         try {
             priceNum = Integer.parseInt(price);
         } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid max price ({}) parameter", price);
+            LOGGER.warn("Invalid max price ({}) parameter", price);
+            throw new BadRequestException("Invalid max price (" + price + ") parameter");
         }
-        if (priceNum < -1) priceNum = -1;
+        if (priceNum < -1) throw new BadRequestException("Invalid max price (" + price + ") parameter");
         return priceNum;
     }
 
@@ -166,9 +175,10 @@ public class ParseUtils {
         try {
             score = Integer.parseInt(scoreStr);
         } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid score ({}) parameter", scoreStr);
+            LOGGER.warn("Invalid score ({}) parameter", scoreStr);
+            throw new BadRequestException("Invalid score (" + scoreStr + ") parameter");
         }
-        if (score < 0 || score > 5) score = -1;
+        if (score < 0 || score > 5) throw new BadRequestException("Invalid score (" + scoreStr + ") parameter");;
         return score;
     }
 
@@ -178,7 +188,8 @@ public class ParseUtils {
             try {
                 userId = Long.parseLong(userStr);
             } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid user id ({}) parameter", userStr);
+                LOGGER.warn("Invalid user id ({}) parameter", userStr);
+                throw new BadRequestException("Invalid userId (" + userStr + ") parameter");
             }
         }
         return userId;
@@ -190,22 +201,10 @@ public class ParseUtils {
             try {
                 petId = Long.parseLong(petStr);
             } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid pet id ({}) parameter", petStr);
+                LOGGER.warn("Invalid pet id ({}) parameter", petStr);
+                throw new BadRequestException("Invalid petId (" + petStr + ") parameter");
             }
         }
         return petId;
     }
-
-    public static int parseScore(String scoreStr, int defaultScore) {
-        if (scoreStr == null) return defaultScore;
-        int score = defaultScore;
-        try {
-            score = Integer.parseInt(scoreStr);
-        } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid score ({}) parameter", scoreStr);
-        }
-        if (score < 1 || score > 5) score = defaultScore;
-        return score;
-    }
-
 }
