@@ -1,48 +1,62 @@
-//package ar.edu.itba.paw.webapp.controller;
-//
-//import ar.edu.itba.paw.interfaces.*;
-//import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
-//import ar.edu.itba.paw.models.Pet;
-//import ar.edu.itba.paw.models.Request;
-//import ar.edu.itba.paw.models.User;
-//import ar.edu.itba.paw.models.*;
-//import ar.edu.itba.paw.models.constants.PetStatus;
-//import ar.edu.itba.paw.models.constants.RequestStatus;
-//import ar.edu.itba.paw.webapp.exception.ImageLoadException;
-//import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
-//import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-//import ar.edu.itba.paw.webapp.form.EditPetForm;
-//import ar.edu.itba.paw.webapp.form.QuestionAnswerForm;
-//import ar.edu.itba.paw.webapp.form.UploadPetForm;
-//import ar.edu.itba.paw.webapp.util.ParseUtils;
-//import com.google.gson.Gson;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.dao.DataIntegrityViolationException;
-//import org.springframework.http.MediaType;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.validation.BindingResult;
-//import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.multipart.MultipartFile;
-//import org.springframework.web.servlet.ModelAndView;
-//import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-//import javax.imageio.ImageIO;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//import javax.validation.Valid;
-//import java.awt.image.BufferedImage;
-//import java.io.ByteArrayInputStream;
-//import java.io.ByteArrayOutputStream;
-//import java.io.IOException;
-//import java.time.LocalDateTime;
-//import java.time.ZoneId;
-//import java.util.*;
-//import java.util.stream.Collectors;
-//
-//
-//@Controller
-//public class PetController extends BaseController {
+package ar.edu.itba.paw.webapp.controller;
+
+import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.webapp.dto.PetDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+@Path("/pets")
+public class PetController extends BaseController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
+    private static final int PAGE_SIZE = 12;
+
+    @Autowired
+    private PetService petService;
+
+    @Context
+    private UriInfo uriInfo;
+
+    @GET
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getPets(@QueryParam("ownerId") long ownerId, @QueryParam("species") long species, @QueryParam("breed") long breed,
+                            @QueryParam("gender") String gender, @QueryParam("searchCriteria") String searchCriteria,
+                            @QueryParam("find") String find, @QueryParam("searchOrder") String searchOrder,
+                            @QueryParam("priceRange") int priceRange, @QueryParam("province") long province,
+                            @QueryParam("department") long department, @QueryParam("page") @DefaultValue("1") int page) {
+
+        final String locale = getLocale();
+        final List<PetDto> petList = petService.filteredList(locale,null, ownerId,null,null,null,
+                null,null,null, 0,-1,null,null, 1, PAGE_SIZE)
+                .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+        return Response.ok(new GenericEntity<List<PetDto>>(petList) {}).build();
+    }
+
+    @GET
+    @Path("/{petId}/questions")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getQuestions() {
+
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/{petId}/images")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getImages() {
+
+        return Response.ok().build();
+    }
+
+}
 //
 //    private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 //
