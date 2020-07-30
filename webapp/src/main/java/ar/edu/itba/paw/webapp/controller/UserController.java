@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.UserDto;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
@@ -71,7 +74,7 @@ public class UserController {
 
         Optional<User> opNewUser;
         try {
-            opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getPath());
+            opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getBaseUri().toString());
         } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("User creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
@@ -93,175 +96,43 @@ public class UserController {
         return Response.noContent().build();
     }
 
-//    @GET
-//    @Path("/{userId}/reviews")
-//    public Response getUserReviews(@PathParam("userId") long userId) {
-//
-//        final Optional<User> opUser = userService.findById(userId);
-//
-//        if (!opUser.isPresent()) {
-//            LOGGER.debug("User {} not found", userId);
-//            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-//        }
-//
-//        final List<ReviewDto> reviewList = opUser.get().getTargetReviews()
-//                .stream().map(RequestDto::fromRequest).collect(Collectors.toList());
-//        return Response.ok(new GenericEntity<List<RequestDto>>(interestList) {
-//        }).build();
-//
-//    }
-
-//    @GET
-//    @Path("/{userId}/reviews/info")
-
-
-    /*
-    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    * OLD CONTROLLER METHODS * * * * * * * * * * * * * * * * * * * *
-    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    * */
-/*
-    //@RequestMapping(value = "/requests/{id}/cancel", method = {RequestMethod.POST})
-    public ModelAndView cancelRequest(@PathVariable("id") long id) {
-        final User user = loggedUser();
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-
-        if (requestService.cancel(id, user, baseUrl)) {
-            return new ModelAndView("redirect:/requests" );
-        }
-        return new ModelAndView("redirect:/403" );
-    }
-
-    //@RequestMapping(value = "/requests/{id}/recover", method = {RequestMethod.POST})
-    public ModelAndView recoverRequest(@PathVariable("id") long id) {
-        final User user = loggedUser();
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-
-        if (requestService.recover(id, user, baseUrl)) {
-            return new ModelAndView("redirect:/requests" );
-        }
-        return new ModelAndView("redirect:/403" );
-    }
-
-    //@RequestMapping(value = "/interests/{id}/accept", method = {RequestMethod.POST})
-    public ModelAndView acceptInterest(@PathVariable("id") long id) {
-        final User user = loggedUser();
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-
-        if (requestService.accept(id, user, baseUrl)) {
-            return new ModelAndView("redirect:/interests" );
-        }
-        return new ModelAndView("redirect:/403" );
-    }
-
-    //@RequestMapping(value = "/interests/{id}/reject", method = {RequestMethod.POST})
-    public ModelAndView rejectInterest(@PathVariable("id") long id) {
-        final User user = loggedUser();
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-
-        if (requestService.reject(id, user, baseUrl)) {
-            return new ModelAndView("redirect:/interests" );
-        }
-        return new ModelAndView("redirect:/403" );
-    }
-
-    //@RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-basic-info"})
-    public ModelAndView editBasicInfo(@Validated({BasicInfoEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
-                                final BindingResult errors, HttpServletRequest request,
-                                @PathVariable("id") long id) {
-
-        if (errors.hasErrors()) {
-            return editUserForm(editUserForm, id);
-        }
-        if(loggedUser().getId() != id) {
-            return new ModelAndView("redirect:/403");
-        }
+    @POST
+    @Path("/{userId}/edit/username")
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response updateUsername(@PathParam("userId") long userId,
+                                   @QueryParam("username") String username) {
         Optional<User> opUser;
         try {
-             opUser = userService.updateUsername(id, editUserForm.getUsername());
+            opUser = userService.updateUsername(userId, username);
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return editUserForm(editUserForm, id)
-                    .addObject("loggedUser", loggedUser())
-                    .addObject("duplicatedUsername", ex.getMessage().contains("users_username_key"));
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         if(!opUser.isPresent()){
-            return new ModelAndView("redirect:/500");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        authenticateUserAndSetSession(opUser.get().getUsername(),request);
-        return new ModelAndView("redirect:/user/" + opUser.get().getId());
+
+        return Response.noContent().build();
     }
 
-    //@RequestMapping(value = "/edit-user/{id}", method = { RequestMethod.POST }, params={"update-password"})
-    public ModelAndView editPassword(@Validated({ChangePasswordEditUser.class}) @ModelAttribute("editUserForm") final EditUserForm editUserForm,
-                                 final BindingResult errors, HttpServletRequest request,
-                                 @PathVariable("id") long id) {
-
-        if (errors.hasErrors()) {
-            populateForm(editUserForm, id);
-            return editUserForm(editUserForm, id);
-        }
-        if(loggedUser().getId() != id) {
-            return new ModelAndView("redirect:/403");
-        }
+    @POST
+    @Path("/{userId}/edit/password")
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response updatePassword(@PathParam("userId") long userId,
+                                   @QueryParam("oldPassword") String oldPassword,
+                                   @QueryParam("newPassword") String newPassword) {
         Optional<User> opUser;
         try {
-            opUser = userService.updatePassword(id, editUserForm.getCurrentPassword(), editUserForm.getNewPassword());
+            opUser = userService.updatePassword(userId, oldPassword, newPassword);
         }
         catch(InvalidPasswordException ex) {
-            return editUserForm(editUserForm, id).addObject("currentPasswordFail", true);
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         if(!opUser.isPresent()){
-            return new ModelAndView("redirect:/500");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        return new ModelAndView("redirect:/user/" + opUser.get().getId());
 
+        return Response.noContent().build();
     }
-
-
-    //@RequestMapping(value = "/user/{id}/remove", method = {RequestMethod.POST})
-    public ModelAndView userUpdateRemoved(@PathVariable("id") long id) {
-        User user = loggedUser();
-        if (user != null && id == user.getId()) {
-            userService.removeUser(id);
-            LOGGER.debug("User {} updated as removed", id);
-            return new ModelAndView("redirect:/logout");
-        }
-        LOGGER.warn("User is not logged user, status not updated");
-        return new ModelAndView("redirect:/403");
-    }
-
-    //@RequestMapping(value = "/user/{id}/review", method = {RequestMethod.POST})
-    public ModelAndView uploadReview(@PathVariable("id") long id,
-                                     @RequestParam(name = "score") String scoreStr,
-                                     @RequestParam(name = "description") String description) {
-
-        if(description.length() > 200){
-            return new ModelAndView("redirect:/user/" + id).addObject("descriptionTooLong",
-                    true);
-
-        }
-        User user = loggedUser();
-        if (user != null) {
-            int score = ParseUtils.parseReviewScore(scoreStr);
-            try {
-                userService.addReview(user, id, score, description);
-            } catch (DataIntegrityViolationException ex) {
-                LOGGER.warn("{}", ex.getMessage());
-                return new ModelAndView("redirect:/user/" + id);
-            }
-            return new ModelAndView("redirect:/user/" + id);
-        }
-        return new ModelAndView("redirect:/403");
-    }
-
-    private Authentication authenticateUserAndSetSession(String username, HttpServletRequest request){
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-        return authentication;
-    }
-
- */
 }
