@@ -17,14 +17,21 @@ public class PetDto {
     private LocalDateTime uploadDate;
     private String description;
     private PetStatus status;
-    private SpeciesDto species;
-    private BreedDto breed;
-    private ProvinceDto province;
-    private DepartmentDto department;
+    private URI species;
+    private URI breed;
+    private URI province;
+    private URI department;
     private URI user;
     private URI newOwner;
     private URI questionList;
     private URI images;
+    /* Check if user has already requested pet */
+    private int lastRequestStatus;
+    private boolean requestExists;
+
+    private URI availableUsers;
+    private int availableAmount;
+
 
     public static PetDto fromPet(Pet pet, UriInfo uriInfo) {
         final PetDto dto = new PetDto();
@@ -38,15 +45,22 @@ public class PetDto {
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus();
-        dto.breed = BreedDto.fromBreed(pet.getBreed());
-        dto.species = SpeciesDto.fromSpecies(pet.getSpecies(), uriInfo);
-        dto.province = ProvinceDto.fromProvince(pet.getProvince());
-        dto.department = DepartmentDto.fromDepartment(pet.getDepartment());
+        dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
+        dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
+        dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
+        dto.department = uriInfo.getAbsolutePathBuilder().path("location").path("departments").path(String.valueOf(pet.getDepartment().getId())).build();
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
         if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
         dto.questionList = uriInfo.getAbsolutePathBuilder().path("questions").build();
         dto.images = uriInfo.getAbsolutePathBuilder().path("images").build();
+// si el usuario es el duenio del pet, darle la lista de los usuarios a los que puede asignarle el pet
+//        if (pet.getUser().getId().equals(user.getId())) {
+//            dto.availableUsers = user.getInterestList().stream()
+//                    .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().getId().equals(pet.getId()))
+//                    .map(Request::getUser).collect(Collectors.toList());
+//            dto.availableAmount = dto.availableUsers.size();
+//        }
 
         return dto;
     }
@@ -63,10 +77,10 @@ public class PetDto {
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus();
-        dto.breed = BreedDto.fromBreed(pet.getBreed());
-        dto.species = SpeciesDto.fromSpecies(pet.getSpecies(),uriInfo);
-        dto.province = ProvinceDto.fromProvince(pet.getProvince());
-        dto.department = DepartmentDto.fromDepartment(pet.getDepartment());
+        dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
+        dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
+        dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
+        dto.department = uriInfo.getAbsolutePathBuilder().path("location").path("departments").path(String.valueOf(pet.getDepartment().getId())).build();
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
         if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
@@ -148,35 +162,35 @@ public class PetDto {
         this.status = status;
     }
 
-    public SpeciesDto getSpecies() {
+    public URI getSpecies() {
         return species;
     }
 
-    public void setSpecies(SpeciesDto species) {
+    public void setSpecies(URI species) {
         this.species = species;
     }
 
-    public BreedDto getBreed() {
+    public URI getBreed() {
         return breed;
     }
 
-    public void setBreed(BreedDto breed) {
+    public void setBreed(URI breed) {
         this.breed = breed;
     }
 
-    public ProvinceDto getProvince() {
+    public URI getProvince() {
         return province;
     }
 
-    public void setProvince(ProvinceDto province) {
+    public void setProvince(URI province) {
         this.province = province;
     }
 
-    public DepartmentDto getDepartment() {
+    public URI getDepartment() {
         return department;
     }
 
-    public void setDepartment(DepartmentDto department) {
+    public void setDepartment(URI department) {
         this.department = department;
     }
 

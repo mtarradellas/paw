@@ -65,6 +65,7 @@ public class PetController extends BaseController {
 //        return Response.created(userUri).build();
 //    }
 
+
     @GET
     @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
@@ -198,100 +199,9 @@ public class PetController extends BaseController {
 //        mav.addObject("find", find);
 //        return mav;
 //    }
+
 //
-//    @RequestMapping(value = "/search", method = RequestMethod.GET, headers="Accept=*/*")
-//    @ResponseBody
-//    public void search(HttpServletRequest request, final HttpServletResponse response) throws IOException {
-//        List<String> searchValues = petService.autocompleteFind(getLocale(),request.getParameter("term"));
-//        response.setContentType("application/json");
-//
-//        final String param = request.getParameter("term");
-//        final List<AutoCompleteData> result = new ArrayList<>();
-//        for (final String country : searchValues) {
-//            if (country.toLowerCase().contains(param.toLowerCase())) {
-//                result.add(new AutoCompleteData(country, country));
-//            }
-//        }
-//        response.getWriter().write(new Gson().toJson(result));
-//    }
-//
-//
-//    @RequestMapping(value = "/pet/{id}")
-//    public ModelAndView getIdPet(@PathVariable("id") long id) {
-//        final ModelAndView mav = new ModelAndView("views/single_pet");
-//        User user = loggedUser();
-//        String locale = getLocale();
-//
-//        RequestStatus lastRequest = null;
-//        boolean requestExists = false;
-//        boolean acquired = false;
-//        List<User> availableUsers = null;
-//        int availableAmount = 0;
-//
-//        Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
-//
-//        if (user != null) {
-//            /* Check if user has already requested pet */
-//            if (!user.getRequestList().isEmpty()) {
-//                Optional<Request> opRequest = user.getRequestList().stream()
-//                        .filter(request -> request.getPet().getId() == id)
-//                        .max(Comparator.comparing(Request::getCreationDate));
-//                if (opRequest.isPresent()) {
-//                    LOGGER.debug("User {} last request status for pet {} is {}", user.getId(), id, opRequest.get().getId());
-//                    lastRequest = opRequest.get().getStatus();
-//                    requestExists = true;
-//                } else {
-//                    LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
-//                }
-//            } else {
-//                LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
-//            }
-//
-//            if (pet.getUser().getId().equals(user.getId())) {
-//                availableUsers = user.getInterestList().stream()
-//                        .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().getId().equals(pet.getId()))
-//                        .map(Request::getUser).collect(Collectors.toList());
-//                availableAmount = availableUsers.size();
-//            }
-//
-//            if (user.getNewPets().contains(pet)) acquired = true;
-//        }
-//
-//        mav.addObject("pet", pet);
-//        mav.addObject("lastRequest", lastRequest);
-//        mav.addObject("requestExists", requestExists);
-//        mav.addObject("availableUsers", availableUsers);
-//        mav.addObject("availableAmount", availableAmount);
-//        mav.addObject("acquired", acquired);
-//        return mav;
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
-//    public ModelAndView requestPet(@PathVariable("id") final long id) {
-//        final ModelAndView mav = new ModelAndView("redirect:/pet/" + id);
-//        final User user = loggedUser();
-//        final String locale = getLocale();
-//
-//        if (user == null) {
-//            LOGGER.warn("User not authenticated, ignoring request");
-//            return new ModelAndView("redirect:/403");
-//        }
-//
-//        Optional<Request> opRequest;
-//        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-//        try {
-//             opRequest = requestService.create(locale, user.getId(), id, baseUrl);
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return mav.addObject("requestError", true);
-//        }
-//
-//        if (!opRequest.isPresent()) {
-//            mav.addObject("requestError", true);
-//        }
-//
-//        return new ModelAndView("redirect:/pet/" + id );
-//    }
+
 //
 //    @RequestMapping(value = "/pet/{id}/sell-adopt", method = {RequestMethod.POST})
 //    public ModelAndView petUpdateSold(@PathVariable("id") long id,
@@ -364,22 +274,7 @@ public class PetController extends BaseController {
 //        return imageInByte;
 //    }
 //
-//    @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
-//    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm petForm) {
-//        ModelAndView mav = new ModelAndView("views/upload_pet");
-//        String locale = getLocale();
-//
-//        List<Species> speciesList = speciesService.speciesList(locale);
-//        List<Breed> breedList = speciesService.breedList(locale);
-//        List<Province> provinceList = locationService.provinceList();
-//        List<Department> departmentList = locationService.departmentList();
-//
-//        mav.addObject("provinceList", provinceList);
-//        mav.addObject("departmentList", departmentList);
-//        mav.addObject("speciesList", speciesList);
-//        mav.addObject("breedList", breedList);
-//        return mav;
-//    }
+
 //
 //    @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
 //    public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,

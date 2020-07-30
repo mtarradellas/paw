@@ -12,7 +12,7 @@ public class AnswerDto {
     private int status;
     private URI question;
     private URI user;
-    private long userId;
+    private Long userId;
     private URI target;
     private URI pet;
 

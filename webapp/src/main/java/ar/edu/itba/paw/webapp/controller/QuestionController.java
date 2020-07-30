@@ -76,7 +76,7 @@ public class QuestionController extends BaseController{
             LOGGER.warn("User {} not found", question.getUserId());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final Optional<Question> opNewQuestion = petService.createQuestion(question.getContent(), opUser.get(), question.getPetId(), uriInfo.getPath());
+        final Optional<Question> opNewQuestion = petService.createQuestion(question.getContent(), opUser.get(), question.getPetId(), uriInfo.getBaseUri().toString());
         if (!opNewQuestion.isPresent()) {
             LOGGER.warn("Question creation failed");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
@@ -129,7 +129,7 @@ public class QuestionController extends BaseController{
             LOGGER.warn("User {} not found", answer.getUserId());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final Optional<Answer> opNewAnswer = petService.createAnswer(questionId,answer.getContent(), opUser.get(), uriInfo.getPath());
+        final Optional<Answer> opNewAnswer = petService.createAnswer(questionId,answer.getContent(), opUser.get(), uriInfo.getBaseUri().toString());
         if (!opNewAnswer.isPresent()) {
             LOGGER.warn("Answer creation failed");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();

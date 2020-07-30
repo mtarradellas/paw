@@ -14,10 +14,10 @@ public class QuestionDto {
     private int status;
     private URI answer;
     private URI user;
-    private long userId;
+    private Long userId;
     private URI target;
     private URI pet;
-    private long petId;
+    private Long petId;
 
     public static QuestionDto fromQuestion(Question question, UriInfo uriInfo) {
         QuestionDto dto = new QuestionDto();
