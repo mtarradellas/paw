@@ -13,84 +13,66 @@ public class ParseUtils {
 
     public static int parsePage(int page) {
         if (page < 1) {
-            LOGGER.warn("Invalid page: Page number must be greater than 0");
-            throw new BadRequestException("Invalid page: Page number must be greater than 0");
+            String hint = "Page number must be greater than 0.";
+            throw new BadRequestException("page", String.valueOf(page), hint);
         }
         return page;
     }
 
-    public static <E extends Enum<E>> E parseStatus(Class<E> enumClass, String statusStr) {
-        E status = null;
+    public static <E extends Enum<E>> E parseStatus(Class<E> enumClass, int statusIdx) {
+        if (statusIdx < 0) return null;
         E[] values = enumClass.getEnumConstants();
-        if(statusStr != null) {
-            try {
-                int idx = Integer.parseInt(statusStr);
-                status = values[idx];
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-                LOGGER.warn("Invalid status ({}) parameter", statusStr);
-                throw new BadRequestException("Invalid status (" + statusStr + ") parameter");
-            }
+        E status;
+        try {
+            status = values[statusIdx];
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            String hint = "For any valid status, use -1.";
+            throw new BadRequestException("status", String.valueOf(statusIdx), hint);
         }
         return status;
     }
 
-    public static Long parseSpecies(String speciesStr) {
-        Long species = null;
-        if (speciesStr != null && !speciesStr.equalsIgnoreCase("any")) {
-            try {
-                species = Long.parseLong(speciesStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Invalid species ({}) parameter", speciesStr);
-                throw new BadRequestException("Invalid species (" + speciesStr + ") parameter");
-            }
+    public static Long parseSpecies(long speciesId) {
+        if (speciesId == 0) return null;
+        if (speciesId < 1) {
+            String hint = "Species ID must be greater than 0, or 0 for any species.";
+            throw new BadRequestException("species ID", String.valueOf(speciesId), hint);
         }
-        return species;
+        return speciesId;
     }
 
-    public static Long parseBreed(String breedStr) {
-        Long breed = null;
-        if (breedStr != null && !breedStr.equalsIgnoreCase("any")) {
-            try {
-                breed = Long.parseLong(breedStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Invalid breed ({}) parameter", breedStr);
-                throw new BadRequestException("Invalid breed (" + breedStr + ") parameter");
-            }
+    public static Long parseBreed(long breedId) {
+        if (breedId == 0) return null;
+        if (breedId < 1) {
+            String hint = "Breed ID must be greater than 0, or 0 for any breed.";
+            throw new BadRequestException("Breed ID", String.valueOf(breedId), hint);
         }
-        return breed;
+        return breedId;
     }
 
-    public static Long parseProvince(String provinceStr) {
-        Long province = null;
-        if (provinceStr != null && !provinceStr.equalsIgnoreCase("any")) {
-            try {
-                province = Long.parseLong(provinceStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Invalid province ({}) parameter", provinceStr);
-                throw new BadRequestException("Invalid province (" + provinceStr + ") parameter");
-            }
+    public static Long parseProvince(long provinceId) {
+        if (provinceId == 0) return null;
+        if (provinceId < 1) {
+            String hint = "Province ID must be greater than 0, or 0 for any province.";
+            throw new BadRequestException("province ID", String.valueOf(provinceId), hint);
         }
-        return province;
+        return provinceId;
     }
 
-    public static Long parseDepartment(String departmentStr) {
-        Long department = null;
-        if (departmentStr != null && !departmentStr.equalsIgnoreCase("any")) {
-            try {
-                department = Long.parseLong(departmentStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Invalid department ({}) parameter", departmentStr);
-                throw new BadRequestException("Invalid department (" + departmentStr + ") parameter");
-            }
+    public static Long parseDepartment(long departmentId) {
+        if (departmentId == 0) return null;
+        if (departmentId < 1) {
+            String hint = "Department ID must be greater than 0, or 0 for any department.";
+            throw new BadRequestException("department ID", String.valueOf(departmentId), hint);
         }
-        return department;
+        return departmentId;
     }
 
     public static boolean isAllowedFind(String find) {
         if (find != null && !find.matches("^[a-zA-Z0-9 \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
                 "\u00F3\u00FA\u00F1\u00FC]*$")) {
-            LOGGER.warn("Invalid find ({}) characters", find);
-            throw new BadRequestException("Invalid find (" + find + ") characters");
+            String hint = "There are some invalid characters in the find text.";
+            throw new BadRequestException("find", find, hint);
         }
         return true;
     }
@@ -105,8 +87,8 @@ public class ParseUtils {
         if (gender == null) return null;
         if (gender.equalsIgnoreCase("male")) return "male";
         if (gender.equalsIgnoreCase("female")) return "female";
-        LOGGER.warn("Invalid gender ({}) parameter", gender);
-        throw new BadRequestException("Invalid gender (" + gender + ") parameter");
+        String hint = "Gender must be 'male' or 'female', or null for both.";
+        throw new BadRequestException("gender", gender, hint);
     }
 
     public static String parseCriteria(String criteria) {
@@ -119,91 +101,45 @@ public class ParseUtils {
         return "asc";
     }
 
-    public static int[] parseRange(String range) {
-        if (range == null) return new int[]{0, -1};
+    public static int[] parseRange(int range) {
         int[] price;
         switch (range) {
-            case "0" : price = new int[]{0, 0}; break;
-            case "1" : price = new int[]{1, 4999}; break;
-            case "2" : price = new int[]{5000, 9999}; break;
-            case "3" : price = new int[]{10000, 14999}; break;
-            case "4" : price = new int[]{15000, 19999}; break;
-            case "5" : price = new int[]{20000, 24999}; break;
-            case "6" : price = new int[]{25000, -1}; break;
-            default: throw new BadRequestException("Invalid price range (" + range + ") parameter");
+            case 0 : price = new int[]{0, -1}; break; // Any price
+            case 1 : price = new int[]{0, 0}; break;
+            case 2 : price = new int[]{1, 4999}; break;
+            case 3 : price = new int[]{5000, 9999}; break;
+            case 4 : price = new int[]{10000, 14999}; break;
+            case 5 : price = new int[]{15000, 19999}; break;
+            case 6 : price = new int[]{20000, 24999}; break;
+            case 7 : price = new int[]{25000, -1}; break;
+            default  : String hint = "Range must be between 1 and 7 inclusive, or 0 for any range.";
+                       throw new BadRequestException("price range", String.valueOf(range), hint);
         }
         return price;
     }
 
-    public static int[] parsePrice(String minPrice, String maxPrice) {
-        int minPriceNum = parseMinPrice(minPrice);
-        int maxPriceNum = parseMaxPrice(maxPrice);
-
-        if (maxPriceNum != -1 && minPriceNum > maxPriceNum) throw new BadRequestException("Invalid prices, max price must be greater or equal to min price");
-        return new int[]{minPriceNum, maxPriceNum};
-    }
-
-    public static int parseMinPrice(String price) {
-        if (price == null) return 0;
-        int priceNum = 0;
-        try {
-            priceNum = Integer.parseInt(price);
-        } catch (NumberFormatException ex) {
-            LOGGER.warn("Invalid min price ({}) parameter", price);
-            throw new BadRequestException("Invalid min price (" + price + ") parameter");
+    public static int parseReviewScore(int score) {
+        if (score < 0 || score > 5) {
+            String hint = "Score must be between 0 and 5 inclusive.";
+            throw new BadRequestException("score", String.valueOf(score), hint);
         }
-        if (priceNum < 0) throw new BadRequestException("Invalid min price (" + price + ") parameter");;
-        return priceNum;
-    }
-
-    public static int parseMaxPrice(String price) {
-        if (price == null) return -1;
-        int priceNum = -1;
-        try {
-            priceNum = Integer.parseInt(price);
-        } catch (NumberFormatException ex) {
-            LOGGER.warn("Invalid max price ({}) parameter", price);
-            throw new BadRequestException("Invalid max price (" + price + ") parameter");
-        }
-        if (priceNum < -1) throw new BadRequestException("Invalid max price (" + price + ") parameter");
-        return priceNum;
-    }
-
-    public static int parseReviewScore(String scoreStr) {
-        if (scoreStr == null) return -1;
-        int score = -1;
-        try {
-            score = Integer.parseInt(scoreStr);
-        } catch (NumberFormatException ex) {
-            LOGGER.warn("Invalid score ({}) parameter", scoreStr);
-            throw new BadRequestException("Invalid score (" + scoreStr + ") parameter");
-        }
-        if (score < 0 || score > 5) throw new BadRequestException("Invalid score (" + scoreStr + ") parameter");;
         return score;
     }
 
-    public static Long parseUser(String userStr) {
-        Long userId = null;
-        if (userStr != null && !userStr.equalsIgnoreCase("any")) {
-            try {
-                userId = Long.parseLong(userStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Invalid user id ({}) parameter", userStr);
-                throw new BadRequestException("Invalid userId (" + userStr + ") parameter");
-            }
+    public static Long parseUser(long userId) {
+        if (userId == 0) return null;
+        if (userId < 1) {
+            String hint = "User ID must be grater than 0, or 0 for any user.";
+            throw new BadRequestException("user ID", String.valueOf(userId), hint);
         }
         return userId;
     }
 
-    public static Long parsePet(String petStr) {
-        Long petId = null;
-        if (petStr != null && !petStr.equalsIgnoreCase("any")) {
-            try {
-                petId = Long.parseLong(petStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Invalid pet id ({}) parameter", petStr);
-                throw new BadRequestException("Invalid petId (" + petStr + ") parameter");
-            }
+    public static Long parsePet(long petId) {
+        if (petId == 0) return null;
+        if (petId < 1) {
+            String hint = "Pet ID must be grater than 0, or 0 for any pet.";
+            throw new BadRequestException("Pet ID", String.valueOf(petId), hint);
         }
         return petId;
     }

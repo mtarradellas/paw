@@ -43,14 +43,15 @@ public class RequestJpaDaoImpl implements RequestDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> ids = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        System.out.println("IDS: " + ids.size());
+        ids.forEach(System.out::println);
         if(ids.size() == 0) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
-        final TypedQuery<Request> query = em.createQuery("from Request where id in :ids", Request.class);
+        final TypedQuery<Request> query = em.createQuery("from Request where id in :filteredIds", Request.class);
         query.setParameter("filteredIds", ids);
         return query.getResultList();
-
     }
 
     @Override
@@ -83,8 +84,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public List<Pet> searchPetListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet, null, null);
         jpaQuery.setProjection("pet.eid");
         @SuppressWarnings("unchecked")

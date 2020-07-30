@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 
 import ar.edu.itba.paw.interfaces.*;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
@@ -36,7 +37,33 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> filteredList(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+    public List<Request> filteredList(Long userId, Long targetId, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+
+        // Requests
+        if (userId != null) {
+            Optional<User> opUser = userService.findById(userId);
+            if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+            User user = opUser.get();
+
+            logRequestsAccess(user);
+            return filteredListByRequestOwner(user, petId, find, status, searchCriteria, searchOrder, page, pageSize);
+        }
+
+        // Interests
+        if (targetId != null) {
+            Optional<User> opUser = userService.findById(targetId);
+            if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+            User user = opUser.get();
+
+            logInterestsAccess(user);
+            return filteredListByPetOwner(user, petId, find, status, searchCriteria, searchOrder, page, pageSize);
+        }
+
+        return list(page, pageSize);
+    }
+
+    @Override
+    public List<Request> filteredListByRequestOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
         LOGGER.debug("Parameters for filteredList <Request>: user {}, pet {}, status {}, searchCriteria {}, searchOrder {}, page {}, pageSize {}",
                 user, petId, status, searchCriteria, searchOrder, page, pageSize);
 
@@ -45,17 +72,23 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<RequestStatus> filteredStatusList(User user, Long petId, List<String> find, RequestStatus status) {
+    public List<RequestStatus> filteredStatusList(Long userId, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
         Set<Integer> results = requestDao.searchStatusList(user, pet, find, status );
         List<RequestStatus> toReturn = new ArrayList<>();
-        results.stream().forEach(r->toReturn.add(RequestStatus.values()[r]));
+        results.forEach(r->toReturn.add(RequestStatus.values()[r]));
         return toReturn;
     }
 
     @Override
-    public List<Pet> filteredPetListByPetOwner(User user, Long petId, List<String> find, RequestStatus status) {
+    public List<Pet> filteredPetListByPetOwner(Long userId, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
         if(pet != null) {
             List<Pet> pets = new ArrayList<>();
             pets.add(pet);
@@ -74,11 +107,14 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<RequestStatus> filteredStatusListByPetOwner(User user, Long petId, List<String> find, RequestStatus status) {
+    public List<RequestStatus> filteredStatusListByPetOwner(Long userId, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
         Set<Integer> results = requestDao.searchStatusListByPetOwner(user, pet, find, status );
         List<RequestStatus> toReturn = new ArrayList<>();
-        results.stream().forEach(r->toReturn.add(RequestStatus.values()[r]));
+        results.forEach(r->toReturn.add(RequestStatus.values()[r]));
         return toReturn;
     }
 
@@ -88,7 +124,30 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public int getFilteredListAmount(User user, Long petId, List<String> find, RequestStatus status) {
+    public int getFilteredListAmount(Long userId, Long targetId, Long petId, List<String> find, RequestStatus status) {
+        // Requests
+        if (userId != null) {
+            Optional<User> opUser = userService.findById(userId);
+            if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+            User user = opUser.get();
+
+            return getFilteredListByRequestOwnerAmount(user, petId, find, status);
+        }
+
+        // Interests
+        if (targetId != null) {
+            Optional<User> opUser = userService.findById(targetId);
+            if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+            User user = opUser.get();
+
+            return getFilteredListByPetOwnerAmount(user, petId, find, status);
+        }
+
+        return getListAmount();
+    }
+
+    @Override
+    public int getFilteredListByRequestOwnerAmount(User user, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
         return requestDao.getSearchListAmount(user, pet, find, status);
     }

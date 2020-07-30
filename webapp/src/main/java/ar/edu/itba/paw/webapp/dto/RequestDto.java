@@ -13,9 +13,13 @@ public class RequestDto {
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private RequestStatus status;
+
     private URI user;
     private URI target;
     private URI pet;
+
+    private Long userId;
+    private Long petId;
 
     public static RequestDto fromRequest(Request request, UriInfo uriInfo) {
         final RequestDto dto = new RequestDto();
@@ -86,5 +90,21 @@ public class RequestDto {
 
     public void setPet(URI pet) {
         this.pet = pet;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getPetId() {
+        return petId;
+    }
+
+    public void setPetId(Long petId) {
+        this.petId = petId;
     }
 }
