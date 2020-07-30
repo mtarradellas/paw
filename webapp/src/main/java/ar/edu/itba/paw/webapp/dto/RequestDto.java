@@ -13,14 +13,21 @@ public class RequestDto {
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
     private RequestStatus status;
+    private URI user;
+    private URI target;
+    private URI pet;
 
-    public static RequestDto fromRequest(Request request) {
+    public static RequestDto fromRequest(Request request, UriInfo uriInfo) {
         final RequestDto dto = new RequestDto();
 
         dto.id = request.getId();
         dto.creationDate = request.getCreationDate();
         dto.updateDate = request.getUpdateDate();
         dto.status = request.getStatus();
+
+        dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(request.getUser().getId())).build();
+        dto.target = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(request.getTarget().getId())).build();
+        dto.pet = uriInfo.getBaseUriBuilder().path("pets").path(String.valueOf(request.getPet().getId())).build();
 
         return dto;
     }
@@ -55,5 +62,29 @@ public class RequestDto {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
+    }
+
+    public URI getUser() {
+        return user;
+    }
+
+    public void setUser(URI user) {
+        this.user = user;
+    }
+
+    public URI getTarget() {
+        return target;
+    }
+
+    public void setTarget(URI target) {
+        this.target = target;
+    }
+
+    public URI getPet() {
+        return pet;
+    }
+
+    public void setPet(URI pet) {
+        this.pet = pet;
     }
 }
