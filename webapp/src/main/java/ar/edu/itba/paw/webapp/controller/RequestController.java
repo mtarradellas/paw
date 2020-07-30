@@ -1,14 +1,11 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.RequestService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.dto.RequestDto;
-import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
@@ -18,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.ModelAndView;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -42,8 +38,6 @@ public class RequestController {
 
     @Autowired
     private RequestService requestService;
-    @Autowired
-    private UserService userService;
 
     @Context
     private UriInfo uriInfo;
