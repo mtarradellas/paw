@@ -26,10 +26,10 @@ public interface RequestService {
     Optional<Request> create(String locale, long user, long pet, String contextURL);
     Optional<Request> update(Request request);
 
-    boolean  cancel(long id, User user, String contextURL);
-    boolean  accept(long id, User user, String contextURL);
-    boolean  reject(long id, User user, String contextURL);
-    boolean recover(long id, User user, String contextURL);
+    boolean  cancel(long id, long userId, String contextURL);
+    boolean  accept(long id, long userId, String contextURL);
+    boolean  reject(long id, long userId, String contextURL);
+    boolean recover(long id, long userId, String contextURL);
     boolean sell(Pet pet, User user);
 
     void adminUpdateStatus(long id, RequestStatus status);

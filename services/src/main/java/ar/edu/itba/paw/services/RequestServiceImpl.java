@@ -226,8 +226,12 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean cancel(long id, User user, String contextURL) {
-        LOGGER.debug("User {} attempting to cancel request {}", user.getId(), id);
+    public boolean cancel(long id, long userId, String contextURL) {
+        LOGGER.debug("User {} attempting to cancel request {}", userId, id);
+
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
         if (!opRequest.isPresent()) {
@@ -268,8 +272,12 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean accept(long id, User user, String contextURL) {
-        LOGGER.debug("User {} attempting to accept request {}", user.getId(), id);
+    public boolean accept(long id, long userId, String contextURL) {
+        LOGGER.debug("User {} attempting to accept request {}", userId, id);
+
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
         if (!opRequest.isPresent()) {
@@ -311,8 +319,12 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean reject(long id, User user, String contextURL) {
-        LOGGER.debug("User {} attempting to reject request {}", user.getId(), id);
+    public boolean reject(long id, long userId, String contextURL) {
+        LOGGER.debug("User {} attempting to reject request {}", userId, id);
+
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
         if (!opRequest.isPresent()) {
@@ -354,8 +366,12 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public boolean recover(long id, User user, String contextURL){
-        LOGGER.debug("User {} attempting to recover request {}", user.getId(), id);
+    public boolean recover(long id, long userId, String contextURL){
+        LOGGER.debug("User {} attempting to recover request {}", userId, id);
+
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
         if (!opRequest.isPresent()) {

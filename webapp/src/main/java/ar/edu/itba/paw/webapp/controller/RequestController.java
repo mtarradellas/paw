@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -104,7 +107,7 @@ public class RequestController {
         final String locale = ApiUtils.getLocale();
         Optional<Request> opRequest;
         try {
-             opRequest = requestService.create(locale, requestDto.getUserId(), requestDto.getPetId(), uriInfo.getBaseUri().getPath());
+             opRequest = requestService.create(locale, requestDto.getUserId(), requestDto.getPetId(), uriInfo.getBaseUri().toString());
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("Request creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
@@ -242,6 +245,62 @@ public class RequestController {
             return Response.ok().entity(new Gson().toJson(filters)).build();
         }
 
+        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+    }
+
+    @POST
+    @Path("/{requestId}/cancel")
+    public Response cancelRequest(@PathParam("requestId") long requestId,
+                                  @QueryParam("userId") long userId) {
+        try {
+            if (requestService.cancel(requestId, userId, uriInfo.getBaseUri().toString())) {
+                return Response.noContent().build();
+            }
+        } catch (NotFoundException ex) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+    }
+
+    @POST
+    @Path("/{requestId}/recover")
+    public Response recoverRequest(@PathParam("requestId") long requestId,
+                                  @QueryParam("userId") long userId) {
+        try {
+            if (requestService.recover(requestId, userId, uriInfo.getBaseUri().toString())) {
+                return Response.noContent().build();
+            }
+        } catch (NotFoundException ex) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+    }
+
+    @POST
+    @Path("/{requestId}/accept")
+    public Response acceptRequest(@PathParam("requestId") long requestId,
+                                  @QueryParam("userId") long userId) {
+        try {
+            if (requestService.accept(requestId, userId, uriInfo.getBaseUri().toString())) {
+                return Response.noContent().build();
+            }
+        } catch (NotFoundException ex) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+    }
+
+    @POST
+    @Path("/{requestId}/reject")
+    public Response rejectRequest(@PathParam("requestId") long requestId,
+                                  @QueryParam("userId") long userId) {
+        try {
+            if (requestService.reject(requestId, userId, uriInfo.getBaseUri().toString())) {
+                return Response.noContent().build();
+            }
+        } catch (NotFoundException ex) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
     }
 }
