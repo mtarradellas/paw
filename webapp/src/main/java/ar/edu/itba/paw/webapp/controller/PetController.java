@@ -8,25 +8,24 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.QuestionDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 @Path("/pets")
-public class PetController extends BaseController {
+public class PetController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private static final int PET_PAGE_SIZE = 12;
-    private static final int QUESTION_PAGE_SIZE = 12;
 
     @Autowired
     private PetService petService;
@@ -45,7 +44,7 @@ public class PetController extends BaseController {
                             @QueryParam("priceRange") int priceRange, @QueryParam("province") long province,
                             @QueryParam("department") long department, @QueryParam("page") @DefaultValue("1") int page) {
 
-        final String locale = getLocale();
+        final String locale = ApiUtils.getLocale();
         final List<PetDto> petList = petService.filteredList(locale,null, ownerId,null,null,null,
                 null,null,null, 0,-1,null,null, 1, PET_PAGE_SIZE)
                 .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
@@ -70,7 +69,7 @@ public class PetController extends BaseController {
     @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getPet(@PathParam("petId") long petId) {
-        String locale = getLocale();
+        String locale = ApiUtils.getLocale();
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -84,7 +83,7 @@ public class PetController extends BaseController {
     @Path("/{petId}/images")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getImages(@PathParam("petId") long petId) {
-        String locale = getLocale();
+        String locale = ApiUtils.getLocale();
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -98,7 +97,7 @@ public class PetController extends BaseController {
     @Path("/{petId}/images/{imageId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getImage(@PathParam("petId") long petId, @PathParam("imageId") long imageId) {
-        String locale = getLocale();
+        String locale = ApiUtils.getLocale();
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);

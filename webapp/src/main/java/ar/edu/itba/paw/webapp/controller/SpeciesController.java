@@ -1,12 +1,11 @@
 package ar.edu.itba.paw.webapp.controller;
 
-
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
-import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.SpeciesDto;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Path("/species")
-public class SpeciesController extends BaseController{
+public class SpeciesController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -32,7 +31,7 @@ public class SpeciesController extends BaseController{
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getSpecies() {
-        String locale = getLocale();
+        String locale = ApiUtils.getLocale();
         List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<SpeciesDto>>(speciesList) {}).build();
     }
@@ -67,7 +66,7 @@ public class SpeciesController extends BaseController{
     @Path("/breeds")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getBreeds() {
-        String locale = getLocale();
+        String locale = ApiUtils.getLocale();
         List<BreedDto> breedList = speciesService.breedList(locale).stream().map(BreedDto::fromBreed).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<BreedDto>>(breedList) {}).build();
     }

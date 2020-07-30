@@ -115,20 +115,20 @@ public class RequestServiceImplTest {
         assertEquals(status, request.getStatus());
     }
 
-    @Test
-    public void testFilteredListRequest() {
-        List<Request> requestList = new ArrayList<>();
-        requestList.add(REQUEST);
-        when(requestDao.searchList(eq(REQUEST.getUser()), any(), any(), any(), any(), any(), anyInt(), anyInt()))
-                .thenReturn(requestList);
-
-
-        List<Request> returnList = requestService.filteredList(REQUEST.getUser(), null, null, null,
-                null,  null, PAGE, PAGE_SIZE);
-
-        assertEquals(1, returnList.size());
-        assertRequest(returnList.get(0), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
-    }
+//    @Test
+//    public void testFilteredListRequest() {
+//        List<Request> requestList = new ArrayList<>();
+//        requestList.add(REQUEST);
+//        when(requestDao.searchList(eq(REQUEST.getUser()), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+//                .thenReturn(requestList);
+//
+//
+//        List<Request> returnList = requestService.filteredList(REQUEST.getUser(), null, null, null,
+//                null,  null, PAGE, PAGE_SIZE);
+//
+//        assertEquals(1, returnList.size());
+//        assertRequest(returnList.get(0), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
+//    }
 
     @Test
     public void testFindById() {

@@ -8,12 +8,12 @@ import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.AnswerDto;
 import ar.edu.itba.paw.webapp.dto.QuestionDto;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Path("/questions")
-public class QuestionController extends BaseController{
+public class QuestionController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -43,7 +43,7 @@ public class QuestionController extends BaseController{
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getQuestions(@QueryParam("petId") long petId, @QueryParam("page") @DefaultValue("1") int page) {
-        String locale = getLocale();
+        String locale = ApiUtils.getLocale();
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -56,7 +56,7 @@ public class QuestionController extends BaseController{
     @Path("/amount")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getQuestionAmount(@QueryParam("petId") long petId) {
-        String locale = getLocale();
+        String locale = ApiUtils.getLocale();
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);

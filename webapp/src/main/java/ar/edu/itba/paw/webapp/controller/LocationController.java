@@ -1,17 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.LocationService;
-import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.Department;
 import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.webapp.dto.DepartmentDto;
 import ar.edu.itba.paw.webapp.dto.ProvinceDto;
-import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -22,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 @Component
 @Path("/location")
-public class LocationController extends BaseController {
+public class LocationController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
