@@ -1,14 +1,22 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.models.ImageDTO;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.PetDto;
+import ar.edu.itba.paw.webapp.dto.QuestionDto;
+import ar.edu.itba.paw.webapp.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -17,10 +25,14 @@ public class PetController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private static final int PAGE_SIZE = 12;
+    private static final int PET_PAGE_SIZE = 12;
+    private static final int QUESTION_PAGE_SIZE = 12;
 
     @Autowired
     private PetService petService;
+
+    @Autowired
+    private ImageService imageService;
 
     @Context
     private UriInfo uriInfo;
@@ -35,24 +47,63 @@ public class PetController extends BaseController {
 
         final String locale = getLocale();
         final List<PetDto> petList = petService.filteredList(locale,null, ownerId,null,null,null,
-                null,null,null, 0,-1,null,null, 1, PAGE_SIZE)
+                null,null,null, 0,-1,null,null, 1, PET_PAGE_SIZE)
                 .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<PetDto>>(petList) {}).build();
     }
+//    @POST
+//    @Consumes(value = { MediaType.APPLICATION_JSON})
+//    public Response create(final PetDto pet) {
+//        final String locale = getLocale();
+//
+//        final Optional<User> opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getPath());
+//        if (!opNewUser.isPresent()) {
+//            LOGGER.warn("User creation failed");
+//            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+//        }
+//        final URI userUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewUser.get().getId())).build();
+//        return Response.created(userUri).build();
+//    }
 
     @GET
-    @Path("/{petId}/questions")
+    @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestions() {
-
-        return Response.ok().build();
+    public Response getPet(@PathParam("petId") long petId) {
+        String locale = getLocale();
+        Optional<Pet> opPet = petService.findById(locale, petId);
+        if(!opPet.isPresent()) {
+            LOGGER.debug("Pet {} not found", petId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        PetDto pet = PetDto.fromPet(opPet.get(), uriInfo);
+        return Response.ok(new GenericEntity<PetDto>(pet) {}).build();
     }
 
     @GET
     @Path("/{petId}/images")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getImages() {
+    public Response getImages(@PathParam("petId") long petId) {
+        String locale = getLocale();
+        Optional<Pet> opPet = petService.findById(locale, petId);
+        if(!opPet.isPresent()) {
+            LOGGER.debug("Pet {} not found", petId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        List<ImageDTO> images = opPet.get().getImages();
+        return Response.ok(new GenericEntity<List<ImageDTO>>(images) {}).build();
+    }
 
+    @GET
+    @Path("/{petId}/images/{imageId}")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getImage(@PathParam("petId") long petId, @PathParam("imageId") long imageId) {
+        String locale = getLocale();
+        Optional<Pet> opPet = petService.findById(locale, petId);
+        if(!opPet.isPresent()) {
+            LOGGER.debug("Pet {} not found", petId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        //get image from service... how to deliver it?
         return Response.ok().build();
     }
 

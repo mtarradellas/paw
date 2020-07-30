@@ -125,6 +125,18 @@ public class Answer {
         this.status = status.ordinal();
     }
 
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public Map<String, Object> toCommentJson() {
         Map<String, Object> answer = new HashMap<>();
         answer.put("content", content);
