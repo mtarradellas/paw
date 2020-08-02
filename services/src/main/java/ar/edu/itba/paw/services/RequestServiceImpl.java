@@ -3,8 +3,6 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
-import ar.edu.itba.paw.interfaces.exceptions.PetException;
-import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.RequestStatus;
@@ -13,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -37,7 +34,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Request> filteredList(Long userId, Long targetId, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
+    public List<Request> filteredList(Long userId, Long targetId, Long petId, List<String> find, RequestStatus status,
+                                      String searchCriteria, String searchOrder, int page, int pageSize) {
 
         // Requests
         if (userId != null) {
@@ -175,17 +173,11 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Optional<Request> create(String locale, long userId, long petId, String contextURL) {
         Optional<User> opUser = userService.findById(userId);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", userId);
-            throw new UserException("Invalid user");
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
         User user = opUser.get();
 
         Optional<Pet> opPet = petService.findById(locale, petId);
-        if (!opPet.isPresent()) {
-            LOGGER.warn("Pet {} not found", petId);
-            throw new PetException("Invalid pet");
-        }
+        if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
 
         if (pet.getUser().getId().equals(user.getId())) {
@@ -234,10 +226,7 @@ public class RequestServiceImpl implements RequestService {
         User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
-        if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found", id);
-            return false;
-        }
+        if (!opRequest.isPresent()) throw new NotFoundException("Request " + id + " not found.");
         Request request = opRequest.get();
 
         if (!request.getUser().getId().equals(user.getId())) {
@@ -280,10 +269,7 @@ public class RequestServiceImpl implements RequestService {
         User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
-        if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found", id);
-            return false;
-        }
+        if (!opRequest.isPresent()) throw new NotFoundException("Request " + id + " not found.");
         Request request = opRequest.get();
 
         if (!request.getPet().getUser().getId().equals(user.getId())) {
@@ -327,10 +313,7 @@ public class RequestServiceImpl implements RequestService {
         User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
-        if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found", id);
-            return false;
-        }
+        if (!opRequest.isPresent()) throw new NotFoundException("Request " + id + " not found.");
         Request request = opRequest.get();
 
         if (!request.getPet().getUser().getId().equals(user.getId())) {
@@ -374,10 +357,7 @@ public class RequestServiceImpl implements RequestService {
         User user = opUser.get();
 
         Optional<Request> opRequest = requestDao.findById(id);
-        if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found", id);
-            return false;
-        }
+        if (!opRequest.isPresent()) throw new NotFoundException("Request " + id + " not found.");
         Request request = opRequest.get();
 
         if (!request.getUser().getId().equals(user.getId())) {
@@ -432,10 +412,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public void adminUpdateStatus(long id, RequestStatus status) {
         Optional<Request> opRequest = requestDao.findById(id);
-        if (!opRequest.isPresent()) {
-            LOGGER.warn("Request {} not found", id);
-            return;
-        }
+        if (!opRequest.isPresent()) throw new NotFoundException("Request " + id + " not found.");
         Request request = opRequest.get();
         request.setStatus(status);
         requestDao.update(request);
@@ -475,10 +452,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public void rejectAllByPetOwner(long petOwnerId) {
         Optional<User> opPetOwner = userService.findById(petOwnerId);
-        if(!opPetOwner.isPresent()) {
-            LOGGER.warn("User {} not found", petOwnerId);
-            return;
-        }
+        if(!opPetOwner.isPresent()) throw new NotFoundException("User " + petOwnerId + " not found.");
         User petOwner = opPetOwner.get();
         requestDao.updateByStatusAndPetOwner(petOwner, RequestStatus.PENDING, RequestStatus.REJECTED);
         requestDao.updateByStatusAndPetOwner(petOwner, RequestStatus.ACCEPTED, RequestStatus.REJECTED);
@@ -488,10 +462,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public void rejectAllByPet(long petId) {
         Optional<Pet> opPet = petService.findById(petId);
-        if (!opPet.isPresent()) {
-            LOGGER.warn("Pet {} not found", petId);
-            return;
-        }
+        if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
         requestDao.updateByStatusAndPet(pet, RequestStatus.PENDING, RequestStatus.REJECTED);
         requestDao.updateByStatusAndPet(pet, RequestStatus.ACCEPTED, RequestStatus.REJECTED);

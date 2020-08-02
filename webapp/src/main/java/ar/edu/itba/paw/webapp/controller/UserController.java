@@ -2,8 +2,11 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.UserStatus;
+import ar.edu.itba.paw.webapp.dto.PasswordDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
@@ -13,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.ModelAndView;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
@@ -27,7 +28,7 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private static final int USR_PAGE_SIZE = 25;
+    private static final int USR_PAGE_SIZE = 24;
 
     @Autowired
     private UserService userService;
@@ -38,16 +39,26 @@ public class UserController {
     /* TODO this method should not be here?. Users are listed only on admin page */
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getUserList(@QueryParam("page") @DefaultValue("1") int page) {
+    public Response getUserList(@QueryParam("page") @DefaultValue("1") int page,
+                                @QueryParam("status") @DefaultValue("-1") int status,
+                                @QueryParam("find") String find,
+                                @QueryParam("searchCriteria") String searchCriteria,
+                                @QueryParam("searchOrder") String searchOrder) {
 
+        UserStatus userStatus;
         try {
             ParseUtils.parsePage(page);
+            userStatus = ParseUtils.parseStatus(UserStatus.class, status);
+            ParseUtils.isAllowedFind(find);
+            searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+            searchOrder = ParseUtils.parseOrder(searchOrder);
         } catch (BadRequestException ex) {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
+        List<String> findList = ParseUtils.parseFind(find);
 
-        final List<UserDto> userList = userService.list(page, USR_PAGE_SIZE).stream()
-                .map(u -> UserDto.fromUserForList(u, uriInfo)).collect(Collectors.toList());
+        final List<UserDto> userList = userService.filteredList(findList, userStatus, searchCriteria, searchOrder, page, USR_PAGE_SIZE)
+                .stream().map(u -> UserDto.fromUserForList(u, uriInfo)).collect(Collectors.toList());
         final int amount = userService.getListAmount();
 
         return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, new GenericEntity<List<UserDto>>(userList) {});
@@ -70,8 +81,14 @@ public class UserController {
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createUser(final UserDto user) {
-        final String locale = ApiUtils.getLocale();
+        try {
+            ParseUtils.parseUser(user);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
 
+        final String locale = ApiUtils.getLocale();
         Optional<User> opNewUser;
         try {
             opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getBaseUri().toString());
@@ -91,7 +108,12 @@ public class UserController {
     @DELETE
     @Path("/{userId}")
     public Response deleteUser(@PathParam("userId") long userId) {
-        userService.removeUser(userId);
+        try{
+            userService.removeUser(userId);
+        } catch (NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
         LOGGER.debug("User {} removed", userId);
         return Response.noContent().build();
     }
@@ -100,14 +122,27 @@ public class UserController {
     @Path("/{userId}/edit/username")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response updateUsername(@PathParam("userId") long userId,
-                                   @QueryParam("username") String username) {
+                                   final UserDto user) {
+        if (user == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+
+        try {
+            ParseUtils.parseUsername(user.getUsername());
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+
         Optional<User> opUser;
         try {
-            opUser = userService.updateUsername(userId, username);
+            opUser = userService.updateUsername(userId, user.getUsername());
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
+
         if(!opUser.isPresent()){
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
@@ -119,16 +154,26 @@ public class UserController {
     @Path("/{userId}/edit/password")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response updatePassword(@PathParam("userId") long userId,
-                                   @QueryParam("oldPassword") String oldPassword,
-                                   @QueryParam("newPassword") String newPassword) {
-        Optional<User> opUser;
+                                   final PasswordDto dto) {
         try {
-            opUser = userService.updatePassword(userId, oldPassword, newPassword);
-        }
-        catch(InvalidPasswordException ex) {
+            ParseUtils.parsePassword(dto.getOldPassword());
+            ParseUtils.parsePassword(dto.getNewPassword());
+        } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
+
+        Optional<User> opUser;
+        try {
+            opUser = userService.updatePassword(userId, dto.getOldPassword(), dto.getNewPassword());
+        } catch(InvalidPasswordException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+
         if(!opUser.isPresent()){
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }

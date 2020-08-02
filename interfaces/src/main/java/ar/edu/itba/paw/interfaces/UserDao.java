@@ -1,13 +1,10 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +36,7 @@ public interface UserDao {
     Optional<Review> findReviewById(long id);
     Review addReview(User owner, User target, int score, String description, ReviewStatus status);
     Optional<Review> updateReview(Review review);
-    double getReviewAverage(long userId);
+    double getReviewAverage(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status);
 
     List<Token> listTokens();
     Optional<Token> findToken(UUID token);

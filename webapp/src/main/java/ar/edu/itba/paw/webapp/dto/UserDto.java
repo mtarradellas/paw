@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.User;
-
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
@@ -11,6 +10,8 @@ public class UserDto {
     private String username;
     private String password;
     private String mail;
+    private int status;
+
     private URI requests;
     private URI interests;
 
@@ -19,6 +20,8 @@ public class UserDto {
 
         dto.id = user.getId();
         dto.username = user.getUsername();
+        dto.status = user.getStatus().getValue();
+
         dto.requests = uriInfo.getAbsolutePathBuilder().path("requests").build();
         dto.interests = uriInfo.getAbsolutePathBuilder().path("interests").build();
 
@@ -32,6 +35,8 @@ public class UserDto {
 
         dto.id = user.getId();
         dto.username = user.getUsername();
+        dto.status = user.getStatus().getValue();
+
         dto.requests = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("requests").build();
         dto.interests = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("interests").build();
 
@@ -86,5 +91,13 @@ public class UserDto {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

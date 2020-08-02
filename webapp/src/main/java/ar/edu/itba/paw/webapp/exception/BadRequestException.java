@@ -10,7 +10,7 @@ public class BadRequestException extends RuntimeException {
     }
 
     public BadRequestException(String parameter, String value, String hint) {
-        super("Bad Request: Invalid " + parameter + " parameter. Invalid value: " + value + ". " + hint);
+        super("Bad Request: Invalid " + parameter + " parameter. Invalid value: " + value + ". " + hint + ".");
     }
 
     public BadRequestException(String message, Throwable cause) {
