@@ -11,7 +11,6 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
-import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Repository;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
@@ -299,10 +298,29 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public double getReviewAverage(long userId) {
-        String qStr = "SELECT AVG(score) FROM reviews WHERE targetid = :target";
+    public double getReviewAverage(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
+        String qStr = "SELECT AVG(score) FROM reviews WHERE score >= :minScore AND score <= :maxScore";
+        if (userId != null) {
+            qStr += " AND ownerId = :userId";
+        }
+        if (targetId != null) {
+            qStr += " AND targetId = :targetId";
+        }
+        if (status != null) {
+            qStr += " AND status = :status";
+        }
         Query query = em.createNativeQuery(qStr);
-        query.setParameter("target", userId);
+        if (userId != null) {
+            query.setParameter("userId", userId);
+        }
+        if (targetId != null) {
+            query.setParameter("targetId", targetId);
+        }
+        if (status != null) {
+            query.setParameter("status", status.getValue());
+        }
+        query.setParameter("minScore", minScore);
+        query.setParameter("maxScore", maxScore);
         Number av = (Number)query.getSingleResult();
         if (av == null) return -1;
         return av.doubleValue();

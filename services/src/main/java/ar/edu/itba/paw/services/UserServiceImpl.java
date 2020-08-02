@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public List<UserStatus> filteredStatusList( List<String> find, UserStatus status) {
         Set<Integer> results = userDao.searchStatusList(find, status);
         List<UserStatus> toReturn = new ArrayList<>();
-        results.stream().forEach(r->toReturn.add(UserStatus.values()[r]));
+        results.forEach(r->toReturn.add(UserStatus.values()[r]));
         return toReturn;
     }
 
@@ -123,10 +124,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Attempting user {} update with username: {}", id, username);
 
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
 
         user.setUsername(username);
@@ -146,10 +144,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Attempting user {} update with status: {}", id, status.getValue());
 
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
 
         user.setStatus(status);
@@ -169,10 +164,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Attempting userID {} update with locale: {}", id, locale);
 
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         return updateLocale(opUser.get(), locale);
     }
 
@@ -196,10 +188,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException {
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
 
         if(oldPassword != null){
@@ -226,10 +215,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Requesting password reset for mail {}", mail);
 
         Optional<User> opUser = userDao.findByMail(mail);
-        if (!opUser.isPresent()) {
-            LOGGER.debug("User with mail {} not found", mail);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User with mail " + mail + " not found.");
         final User user = opUser.get();
 
         UUID token = UUID.randomUUID();
@@ -255,10 +241,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Resetting password for token {}", uuid);
 
         Optional<Token> opToken = getToken(uuid);
-        if (!opToken.isPresent()) {
-            LOGGER.warn("Token {} not found", uuid);
-            return Optional.empty();
-        }
+        if (!opToken.isPresent()) throw new NotFoundException("Token " + uuid + " not found.");
         final Token token = opToken.get();
 
         if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
@@ -301,20 +284,21 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public boolean addReview(User owner, long targetId, int score, String description) {
+    public Optional<Review> addReview(long userId, long targetId, int score, String description) {
         Optional<User> opTarget = userDao.findById(targetId);
-        if (!opTarget.isPresent()) {
-            LOGGER.warn("Review target {} was not found", targetId);
-            return false;
-        }
+        if (!opTarget.isPresent()) throw new NotFoundException("Target " + targetId + " not found.");
         User target = opTarget.get();
 
-        if (owner.getId().equals(target.getId())) {
-            LOGGER.warn("Target of review is the same as the owner, ignoring review {}", owner.getId());
-            return false;
+        Optional<User> opUser = userDao.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
+
+        if (user.getId().equals(target.getId())) {
+            LOGGER.warn("Target of review is the same as the owner ({}), ignoring review.", user.getId());
+            return Optional.empty();
         }
-        userDao.addReview(owner, target, score, description, ReviewStatus.VALID);
-        return true;
+        Review review = userDao.addReview(user, target, score, description, ReviewStatus.VALID);
+        return Optional.of(review);
     }
 
     @Override
@@ -325,27 +309,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<Review> updateReview(long id, long ownerId, long targetId, int score, String description) {
         Optional<User> owner = userDao.findById(ownerId);
-        if (!owner.isPresent()) {
-            LOGGER.warn("Owner {} of review not found", ownerId);
-            return Optional.empty();
-        }
+        if (!owner.isPresent()) throw new NotFoundException("User " + id + " not found.");
         return updateReview(id, owner.get(), targetId, score, description);
     }
 
     @Override
     public Optional<Review> updateReview(long id, User owner, long targetId, int score, String description) {
         Optional<Review> opReview = userDao.findReviewById(id);
-        if (!opReview.isPresent()) {
-            LOGGER.warn("Review {} not found", id);
-            return Optional.empty();
-        }
+        if (!opReview.isPresent()) throw new NotFoundException("Review " + id + " not found.");
         Review review = opReview.get();
 
         Optional<User> opTarget = userDao.findById(targetId);
-        if (!opTarget.isPresent()) {
-            LOGGER.warn("Target {} of review not found", targetId);
-            return Optional.empty();
-        }
+        if (!opTarget.isPresent()) throw new NotFoundException("Target " + targetId + " not found.");
         User target = opTarget.get();
 
         if (owner.getId().equals(target.getId())) {
@@ -362,8 +337,50 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public double getReviewAverage(long userId) {
-        return userDao.getReviewAverage(userId);
+    @Transactional
+    public Optional<Review> updateReviewScore(long id, int score) {
+        Optional<Review> opReview = userDao.findReviewById(id);
+        if (!opReview.isPresent()) throw new NotFoundException("Review " + id + " not found");
+        Review review = opReview.get();
+
+        review.setScore(score);
+        return userDao.updateReview(review);
+    }
+
+    @Override
+    @Transactional
+    public Optional<Review> updateReviewDescription(long id, String description) {
+        Optional<Review> opReview = userDao.findReviewById(id);
+        if (!opReview.isPresent()) throw new NotFoundException("Review " + id + " not found");
+        Review review = opReview.get();
+
+        review.setDescription(description);
+        return userDao.updateReview(review);
+    }
+
+    @Override
+    @Transactional
+    public void removeReview(long id) {
+        Optional<Review> opReview = userDao.findReviewById(id);
+        if (!opReview.isPresent()) throw new NotFoundException("Review " + id + " not found.");
+        Review review = opReview.get();
+        review.setStatus(ReviewStatus.REMOVED);
+        userDao.updateReview(review);
+    }
+
+    @Override
+    @Transactional
+    public void recoverReview(long id) {
+        Optional<Review> opReview = userDao.findReviewById(id);
+        if (!opReview.isPresent()) throw new NotFoundException("Review " + id + " not found.");
+        Review review = opReview.get();
+        review.setStatus(ReviewStatus.VALID);
+        userDao.updateReview(review);
+    }
+
+    @Override
+    public double getReviewAverage(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
+        return userDao.getReviewAverage(userId, targetId, minScore, maxScore, status);
     }
 
     @Transactional
@@ -383,7 +400,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean recoverUser(long id) {
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) return false;
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
         return updateStatus(user.getId(), UserStatus.ACTIVE).isPresent();
     }
@@ -392,7 +409,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean removeUser(long id) {
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) return false;
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
         requestService.rejectAllByPetOwner(user.getId()); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByUser(user);
@@ -423,10 +440,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Activating account token {}", uuid);
 
         Optional<Token> opToken = getToken(uuid);
-        if (!opToken.isPresent()) {
-            LOGGER.warn("Token {} not found", uuid);
-            return Optional.empty();
-        }
+        if (!opToken.isPresent()) throw new NotFoundException("Token " + uuid + " not found.");
         final Token token = opToken.get();
         if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
