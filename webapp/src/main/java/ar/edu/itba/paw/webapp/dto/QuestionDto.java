@@ -12,12 +12,12 @@ public class QuestionDto {
     private String content;
     private LocalDateTime creationDate;
     private int status;
-    private URI answer;
-    private URI user;
     private Long userId;
+    private Long petId;
     private URI target;
     private URI pet;
-    private Long petId;
+    private URI answer;
+    private URI user;
 
     public static QuestionDto fromQuestion(Question question, UriInfo uriInfo) {
         QuestionDto dto = new QuestionDto();
@@ -66,20 +66,20 @@ public class QuestionDto {
         this.status = status;
     }
 
-    public URI getAnswer() {
-        return answer;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAnswer(URI answer) {
-        this.answer = answer;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public URI getUser() {
-        return user;
+    public Long getPetId() {
+        return petId;
     }
 
-    public void setUser(URI user) {
-        this.user = user;
+    public void setPetId(Long petId) {
+        this.petId = petId;
     }
 
     public URI getTarget() {
@@ -98,19 +98,19 @@ public class QuestionDto {
         this.pet = pet;
     }
 
-    public long getUserId() {
-        return userId;
+    public URI getAnswer() {
+        return answer;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setAnswer(URI answer) {
+        this.answer = answer;
     }
 
-    public long getPetId() {
-        return petId;
+    public URI getUser() {
+        return user;
     }
 
-    public void setPetId(long petId) {
-        this.petId = petId;
+    public void setUser(URI user) {
+        this.user = user;
     }
 }

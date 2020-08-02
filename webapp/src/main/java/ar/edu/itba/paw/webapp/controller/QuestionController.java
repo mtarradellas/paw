@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.models.Answer;
-import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Question;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.AnswerDto;
 import ar.edu.itba.paw.webapp.dto.QuestionDto;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,33 +35,55 @@ public class QuestionController {
     @Autowired
     private PetService petService;
 
-    @Autowired
-    private UserService userService;
-
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestions(@QueryParam("petId") long petId, @QueryParam("page") @DefaultValue("1") int page) {
-        String locale = ApiUtils.getLocale();
-        Optional<Pet> opPet = petService.findById(locale, petId);
-        if(!opPet.isPresent()) {
-            LOGGER.debug("Pet {} not found", petId);
+    public Response getQuestions(@QueryParam("petId") Long petId, @QueryParam("page") @DefaultValue("1") int page) {
+        try {
+            petId = ParseUtils.parsePetId(petId);
+            ParseUtils.parsePage(page);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        if(petId == null) {
+            LOGGER.warn("Invalid parameter: petId");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        List<QuestionDto> questions;
+        try {
+            questions = petService.listQuestions(petId, page, QUESTION_PAGE_SIZE)
+                    .stream().map(q -> QuestionDto.fromQuestion(q, uriInfo)).collect(Collectors.toList());
+        } catch (NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        List<QuestionDto> questions = petService.listQuestions(petId, page, QUESTION_PAGE_SIZE).stream().map(q->QuestionDto.fromQuestion(q,uriInfo)).collect(Collectors.toList());
+        System.out.println("WWWW"+questions.size());
         return Response.ok(new GenericEntity<List<QuestionDto>>(questions) {}).build();
     }
+
     @GET
     @Path("/amount")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestionAmount(@QueryParam("petId") long petId) {
-        String locale = ApiUtils.getLocale();
-        Optional<Pet> opPet = petService.findById(locale, petId);
-        if(!opPet.isPresent()) {
-            LOGGER.debug("Pet {} not found", petId);
+    public Response getQuestionAmount(@QueryParam("petId") @DefaultValue("0") Long petId) {
+
+        try {
+            petId = ParseUtils.parsePetId(petId);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        if(petId == null) {
+            LOGGER.warn("Invalid parameter: petId");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        int amount;
+        try {
+            amount = petService.getListQuestionsAmount(petId);
+        } catch (NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        Integer amount = petService.getListQuestionsAmount(petId);
-        Map<String,Integer> response = new HashMap<>();
+        Map<String, Integer> response = new HashMap<>();
         response.put("amount", amount);
         return Response.ok(new Gson().toJson(response)).build();
     }
@@ -71,12 +91,14 @@ public class QuestionController {
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createQuestion(final QuestionDto question) {
-        Optional<User> opUser = userService.findById(question.getUserId());
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", question.getUserId());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        /*TODO check if user is logged*/
+        Optional<Question> opNewQuestion;
+        try {
+            opNewQuestion = petService.createQuestion(question.getContent(), question.getUserId(), question.getPetId(), uriInfo.getBaseUri().toString());
+        } catch(NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        final Optional<Question> opNewQuestion = petService.createQuestion(question.getContent(), opUser.get(), question.getPetId(), uriInfo.getBaseUri().toString());
         if (!opNewQuestion.isPresent()) {
             LOGGER.warn("Question creation failed");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
@@ -118,18 +140,25 @@ public class QuestionController {
     @POST
     @Path("/{questionId}/answer")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createAnswer(@PathParam("questionId") long questionId, final AnswerDto answer) {
-        Optional<Question> opQuestion = petService.findQuestionById(questionId);
-        if(!opQuestion.isPresent()) {
-            LOGGER.debug("Question {} not found", questionId);
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        Optional<User> opUser = userService.findById(answer.getUserId());
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", answer.getUserId());
+    public Response createAnswer(@PathParam("questionId") Long questionId, final AnswerDto answer) {
+        /*TODO check if user is logged*/
+        try {
+            questionId = ParseUtils.parseQuestionId(questionId);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final Optional<Answer> opNewAnswer = petService.createAnswer(questionId,answer.getContent(), opUser.get(), uriInfo.getBaseUri().toString());
+        if(questionId == null) {
+            LOGGER.warn("Invalid parameter: questionId {}", questionId);
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        Optional<Answer> opNewAnswer;
+        try {
+            opNewAnswer = petService.createAnswer(questionId, answer.getContent(), answer.getUserId(), uriInfo.getBaseUri().toString());
+        } catch(NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
         if (!opNewAnswer.isPresent()) {
             LOGGER.warn("Answer creation failed");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();

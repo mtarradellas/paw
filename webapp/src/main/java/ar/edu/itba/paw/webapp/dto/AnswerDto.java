@@ -79,6 +79,14 @@ public class AnswerDto {
         this.user = user;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public URI getTarget() {
         return target;
     }
@@ -93,13 +101,5 @@ public class AnswerDto {
 
     public void setPet(URI pet) {
         this.pet = pet;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 }

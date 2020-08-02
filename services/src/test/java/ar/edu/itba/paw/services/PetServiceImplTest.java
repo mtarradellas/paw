@@ -279,7 +279,7 @@ public class PetServiceImplTest {
 
         Optional<Question> opQuestion = Optional.empty();
         try {
-            opQuestion = petServiceImpl.createQuestion(QUESTION.getContent(), QUESTION.getUser(), QUESTION.getPet().getId(), null);
+            opQuestion = petServiceImpl.createQuestion(QUESTION.getContent(), QUESTION.getUser().getId(), QUESTION.getPet().getId(), null);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("unexpected error during operation create question");
@@ -303,7 +303,7 @@ public class PetServiceImplTest {
 
         Optional<Answer> opAnswer = Optional.empty();
         try {
-            opAnswer = petServiceImpl.createAnswer(QUESTION.getId(), ANSWER.getContent(), ANSWER.getUser(), null);
+            opAnswer = petServiceImpl.createAnswer(QUESTION.getId(), ANSWER.getContent(), ANSWER.getUser().getId(), null);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("unexpected error during operation create answer");
