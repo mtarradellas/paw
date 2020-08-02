@@ -15,9 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -37,7 +34,7 @@ public class RequestController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestController.class);
 
-    private static final int REQ_PAGE_SIZE = 25;
+    private static final int REQ_PAGE_SIZE = 24;
 
     @Autowired
     private RequestService requestService;
@@ -61,9 +58,9 @@ public class RequestController {
         Long pet;
         try {
             ParseUtils.parsePage(page);
-            user = ParseUtils.parseUser(userId);
-            target = ParseUtils.parseUser(targetId);
-            pet = ParseUtils.parsePet(petId);
+            user = ParseUtils.parseUserId(userId);
+            target = ParseUtils.parseUserId(targetId);
+            pet = ParseUtils.parsePetId(petId);
             requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
             searchCriteria = ParseUtils.parseCriteria(searchCriteria);
             searchOrder = ParseUtils.parseOrder(searchOrder);
@@ -108,7 +105,7 @@ public class RequestController {
         Optional<Request> opRequest;
         try {
              opRequest = requestService.create(locale, requestDto.getUserId(), requestDto.getPetId(), uriInfo.getBaseUri().toString());
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException | NotFoundException ex) {
             LOGGER.warn("Request creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
@@ -120,8 +117,8 @@ public class RequestController {
         }
         final Request request = opRequest.get();
 
-        final URI userUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(request.getId())).build();
-        return Response.created(userUri).build();
+        final URI requestUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(request.getId())).build();
+        return Response.created(requestUri).build();
     }
 
     @GET
@@ -137,9 +134,9 @@ public class RequestController {
         Long target;
         Long pet;
         try {
-            user = ParseUtils.parseUser(userId);
-            target = ParseUtils.parseUser(targetId);
-            pet = ParseUtils.parseUser(petId);
+            user = ParseUtils.parseUserId(userId);
+            target = ParseUtils.parseUserId(targetId);
+            pet = ParseUtils.parsePetId(petId);
             requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -173,9 +170,9 @@ public class RequestController {
         Long target;
         Long pet;
         try {
-            user = ParseUtils.parseUser(userId);
-            target = ParseUtils.parseUser(targetId);
-            pet = ParseUtils.parsePet(petId);
+            user = ParseUtils.parseUserId(userId);
+            target = ParseUtils.parseUserId(targetId);
+            pet = ParseUtils.parsePetId(petId);
             requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
@@ -251,9 +248,9 @@ public class RequestController {
     @POST
     @Path("/{requestId}/cancel")
     public Response cancelRequest(@PathParam("requestId") long requestId,
-                                  @QueryParam("userId") long userId) {
+                                  final RequestDto dto) {
         try {
-            if (requestService.cancel(requestId, userId, uriInfo.getBaseUri().toString())) {
+            if (requestService.cancel(requestId, dto.getUserId(), uriInfo.getBaseUri().toString())) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException ex) {
@@ -265,9 +262,9 @@ public class RequestController {
     @POST
     @Path("/{requestId}/recover")
     public Response recoverRequest(@PathParam("requestId") long requestId,
-                                  @QueryParam("userId") long userId) {
+                                   final RequestDto dto) {
         try {
-            if (requestService.recover(requestId, userId, uriInfo.getBaseUri().toString())) {
+            if (requestService.recover(requestId, dto.getUserId(), uriInfo.getBaseUri().toString())) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException ex) {
@@ -279,9 +276,9 @@ public class RequestController {
     @POST
     @Path("/{requestId}/accept")
     public Response acceptRequest(@PathParam("requestId") long requestId,
-                                  @QueryParam("userId") long userId) {
+                                  final RequestDto dto) {
         try {
-            if (requestService.accept(requestId, userId, uriInfo.getBaseUri().toString())) {
+            if (requestService.accept(requestId, dto.getUserId(), uriInfo.getBaseUri().toString())) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException ex) {
@@ -293,9 +290,9 @@ public class RequestController {
     @POST
     @Path("/{requestId}/reject")
     public Response rejectRequest(@PathParam("requestId") long requestId,
-                                  @QueryParam("userId") long userId) {
+                                  final RequestDto dto) {
         try {
-            if (requestService.reject(requestId, userId, uriInfo.getBaseUri().toString())) {
+            if (requestService.reject(requestId, dto.getUserId(), uriInfo.getBaseUri().toString())) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException ex) {
