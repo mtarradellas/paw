@@ -56,5 +56,5 @@ public interface UserService {
     Optional<Token> createToken(UUID token, User user);
     boolean deleteToken(UUID token);
     Optional<User> activateAccountWithToken(UUID token);
-
+    void cleanOldTokens();
 }

@@ -466,6 +466,7 @@ public class UserServiceImpl implements UserService {
         return opUser;
     }
 
+    @Override
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
     public void cleanOldTokens() {

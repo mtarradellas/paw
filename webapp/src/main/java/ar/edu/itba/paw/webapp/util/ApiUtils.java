@@ -1,14 +1,15 @@
 package ar.edu.itba.paw.webapp.util;
 
-import ar.edu.itba.paw.webapp.dto.RequestDto;
 import org.springframework.context.i18n.LocaleContextHolder;
-
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.net.URI;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import org.springframework.core.io.Resource;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 public class ApiUtils {
 
@@ -36,5 +37,16 @@ public class ApiUtils {
                 .link(prev, "prev")
                 .link(next, "next")
                 .build();
+    }
+
+    public static String readToken(Resource token) {
+        StringBuilder contentBuilder = new StringBuilder();
+        try (Stream<String> tokenStream = Files.lines(token.getFile().toPath(), StandardCharsets.UTF_8)) {
+            tokenStream.forEach(contentBuilder::append);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contentBuilder.toString();
     }
 }
