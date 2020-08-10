@@ -19,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.servlet.Filter;
+import java.util.concurrent.TimeUnit;
 
 @EnableWebSecurity
 @Configuration
@@ -31,10 +32,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Value("classpath:jwtSecret.txt")
     private Resource secretPath;
 
-    private final String jwtAudience = "Pet Society";
-    private final String jwtIssuer = "Pet Society Inc.";
-    private final String jwtType = "JWT";
-
     @Autowired
     private PSUserDetailsService userDetailsService;
 
@@ -45,44 +42,33 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        final String jwtAudience = "Pet Society";
+        final String jwtIssuer = "Pet Society Inc.";
+        final String jwtType = "JWT";
+
+        http.sessionManagement().invalidSessionUrl("/")
+            .and().csrf().disable()
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .authorizeRequests()
-//                .antMatchers("/users/**").authenticated()
-                .anyRequest().permitAll()
-            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
-
-//    @Override
-//    protected void configure(final HttpSecurity http) throws Exception {
-//        http.sessionManagement()
-//                .invalidSessionUrl("/")
-//            .and().authorizeRequests()
 //                .antMatchers("/login", "/register").anonymous()
 //                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/user/**").authenticated()
-//                .antMatchers("/upload-pet").authenticated()
-//                .antMatchers("/pet/*/request","/interests/**","/requests/**").authenticated()
-//                .antMatchers("/pet/*/question", "/pet/*/answer").authenticated()
-//                .antMatchers("/**").permitAll()
-//            .and().formLogin()
-//                .loginPage("/login")
-//                .usernameParameter("username")
-//                .passwordParameter("password")
-//                .failureUrl("/login/error")
-//                .defaultSuccessUrl("/", false)
-//            .and().rememberMe()
-//                .rememberMeParameter("rememberme")
-//                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(365))
-//                .key(ApiUtils.readToken(token))
-//            .and().logout()
+//                .antMatchers("/users/**").authenticated()
+//                .antMatchers("/pets/upload").authenticated()
+//                .antMatchers("/pets/*/question", "/pet/*/answer").authenticated()
+//                .antMatchers("/pets/*/request","/interests/**","/requests/**").authenticated()
+                .anyRequest().permitAll()
+            .and().rememberMe()
+                .rememberMeParameter("rememberme")
+                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(365))
+                .key(ApiUtils.readToken(token))
+//            .and().logout() /* TODO uncomment?*/
 //                .logoutUrl("/logout")
 //                .logoutSuccessUrl("/login")
-//            .and().exceptionHandling()
-//                .accessDeniedPage("/403")
-//            .and().csrf().disable();
-//    }
+            .and().exceptionHandling()
+                .accessDeniedPage("/403")
+            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
 
     @Override
     public void configure(final WebSecurity web) throws Exception {
