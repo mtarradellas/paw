@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.util;
 
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.models.User;
 import org.springframework.context.i18n.LocaleContextHolder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
@@ -8,7 +10,12 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ApiUtils {
@@ -18,6 +25,23 @@ public class ApiUtils {
         String lang = locale.getLanguage() + "_" + locale.getCountry();
         if (lang.startsWith("en")) return "en_US";
         else return "es_AR";
+    }
+
+    public User loggedUser(UserService userService, Authentication auth) {
+        if (auth == null) return null;
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
+            return null;
+        }
+        Optional<User> opUser = userService.findByUsername(auth.getName());
+        if (opUser.isPresent()) {
+            User user = opUser.get();
+            String locale = getLocale();
+            if (user.getLocale() == null || !user.getLocale().equalsIgnoreCase(locale)) {
+                userService.updateLocale(user, locale);
+            }
+            return opUser.get();
+        }
+        return null;
     }
 
     public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Object genericEntity) {
