@@ -49,6 +49,7 @@ public interface UserService {
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);
     boolean isAdmin(User user);
+    boolean isAdminUsername(String username);
     boolean recoverUser(long id);
     boolean removeUser(long id);
 
