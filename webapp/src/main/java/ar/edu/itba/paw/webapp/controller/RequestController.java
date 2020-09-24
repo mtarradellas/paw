@@ -178,6 +178,7 @@ public class RequestController {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
+
         /* TODO join request and interest methods into 1 service method for both */
         // Requests
         if (user != null) {
@@ -237,7 +238,7 @@ public class RequestController {
 
             Map<String, Object> filters = new TreeMap<>();
             filters.put("statusList", statusIdList);
-            filters.put("petList", petList);
+            filters.put("petList", petList); // TODO is it okay to send list w/o pagination?
 
             return Response.ok().entity(new Gson().toJson(filters)).build();
         }

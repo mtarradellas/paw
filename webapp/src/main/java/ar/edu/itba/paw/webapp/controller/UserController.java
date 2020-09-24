@@ -28,41 +28,11 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private static final int USR_PAGE_SIZE = 24;
-
     @Autowired
     private UserService userService;
 
     @Context
     private UriInfo uriInfo;
-
-    /* TODO this method should not be here?. Users are listed only on admin page */
-    @GET
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getUserList(@QueryParam("page") @DefaultValue("1") int page,
-                                @QueryParam("status") @DefaultValue("-1") int status,
-                                @QueryParam("find") String find,
-                                @QueryParam("searchCriteria") String searchCriteria,
-                                @QueryParam("searchOrder") String searchOrder) {
-
-        UserStatus userStatus;
-        try {
-            ParseUtils.parsePage(page);
-            userStatus = ParseUtils.parseStatus(UserStatus.class, status);
-            ParseUtils.isAllowedFind(find);
-            searchCriteria = ParseUtils.parseCriteria(searchCriteria);
-            searchOrder = ParseUtils.parseOrder(searchOrder);
-        } catch (BadRequestException ex) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        List<String> findList = ParseUtils.parseFind(find);
-
-        final List<UserDto> userList = userService.filteredList(findList, userStatus, searchCriteria, searchOrder, page, USR_PAGE_SIZE)
-                .stream().map(u -> UserDto.fromUserForList(u, uriInfo)).collect(Collectors.toList());
-        final int amount = userService.getListAmount();
-
-        return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, new GenericEntity<List<UserDto>>(userList) {});
-    }
 
     @GET
     @Path("/{userId}")
