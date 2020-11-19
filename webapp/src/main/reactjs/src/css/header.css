@@ -1,0 +1,32 @@
+header {
+ height: 8rem;
+ width: 100vw;
+ background-color: #222831;
+ display: flex;
+}
+
+.header__title {
+    color: white;
+    font-size: 300%;
+    font-family: verdana, serif;
+
+    margin: 2.2rem 0 0 3rem;
+}
+
+.header__login, .header__register {
+    color: white;
+    padding: 1.5rem;
+}
+
+.header__right {
+    margin: 3rem 1rem 0 auto;
+}
+
+header a {
+    text-decoration: none;
+    text-underline: none;
+}
+
+.header__logo {
+    margin: 1.5rem 0 0 2rem;
+}

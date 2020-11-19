@@ -1,0 +1,27 @@
+footer {
+    height: 20rem;
+    width: 100vw;
+    background-color: #222831;
+
+    position: absolute;
+    bottom: 0;
+}
+
+.footer__content {
+    margin: 3rem auto auto auto;
+    display: flex;
+    flex-direction: row;
+
+    color: white;
+    font-family: verdana, serif;
+}
+
+.footer__about-us {
+    margin-left: auto;
+    margin-right: 4rem;
+}
+
+.footer__find-us {
+    margin-right: auto;
+    margin-left: 4rem;
+}

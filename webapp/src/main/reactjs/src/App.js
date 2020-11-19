@@ -5,23 +5,32 @@ import {
   Route
 } from "react-router-dom";
 
+import './css/html.css';
+
 import Home from "./views/home/Home";
 import BasicLayout from "./components/BasicLayout";
 
+import LoginContext from './constants/loginContext';
+
 import {HOME} from "./constants/routes";
+import useLogin from "./hooks/useLogin";
 
 function App() {
-  return (
-    <Router>
-      <Switch>
-        <Route path={HOME}>
-            <BasicLayout>
-                <Home/>
-            </BasicLayout>
-        </Route>
-      </Switch>
-    </Router>
-  );
+    const login = useLogin();
+
+    return (
+        <LoginContext.Provider value={login}>
+            <Router>
+                <Switch>
+                    <Route path={HOME}>
+                        <BasicLayout>
+                            <Home/>
+                        </BasicLayout>
+                    </Route>
+                </Switch>
+            </Router>
+        </LoginContext.Provider>
+    );
 }
 
 export default App;
