@@ -1,27 +1,32 @@
 footer {
-    height: 20rem;
     width: 100vw;
     background-color: #222831;
-
-    position: absolute;
-    bottom: 0;
 }
 
 .footer__content {
-    margin: 3rem auto auto auto;
+    padding: 3rem 0 4rem 0;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
 
     color: white;
     font-family: verdana, serif;
 }
 
+.footer__content > div {
+    width: 20rem;
+    margin-top: 1rem;
+}
+
+.footer__content h3 {
+    color: white;
+}
+
 .footer__about-us {
-    margin-left: auto;
-    margin-right: 4rem;
+
 }
 
 .footer__find-us {
-    margin-right: auto;
-    margin-left: 4rem;
+
 }

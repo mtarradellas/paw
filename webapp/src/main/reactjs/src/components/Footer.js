@@ -14,7 +14,7 @@ function Footer(){
             </div>
 
             <div className={"footer__find-us"}>
-                <h3>About us</h3>
+                <h3>Find us</h3>
                 <p>ITBA, CABA, ARG</p>
                 <p>petsociety.contact@gmail.com</p>
             </div>

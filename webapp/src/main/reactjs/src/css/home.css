@@ -1,0 +1,61 @@
+.home__container {
+    width: 100vw;
+    display: grid;
+    grid-template-areas: "filter"
+                         "."
+                         "pets";
+    grid-template-rows: auto 2rem auto;
+    padding: 3rem 0 3rem 0;
+}
+
+.home__pets {
+    grid-area: pets;
+}
+
+.home__filter {
+    grid-area: filter;
+}
+
+.home__filter form .form-content {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+.home__filter form .ant-row {
+    width: 10rem;
+    margin: 0 1rem 0 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+.home__filter form .form-buttons {
+    margin: 0.5rem 1rem 0 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+.home__filter button {
+    margin-right: 1rem;
+}
+
+@media only screen and (max-width: 480px) {
+    .home__filter form .ant-row {
+        width: 100%;
+    }
+}
+
+
+@media only screen and (min-width: 1000px) {
+    .home__container {
+        grid-template-areas: "filter . pets"
+                             ".      . pets";
+        grid-template-rows: auto auto;
+        grid-template-columns: 2fr 2rem 6fr;
+
+        padding: 3rem 2rem 3rem 2rem;
+
+    }
+
+    .home__filter form .ant-row {
+        width: 100%;
+    }
+}

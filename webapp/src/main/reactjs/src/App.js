@@ -5,6 +5,7 @@ import {
   Route
 } from "react-router-dom";
 
+import 'antd/dist/antd.css';
 import './css/html.css';
 
 import Home from "./views/home/Home";

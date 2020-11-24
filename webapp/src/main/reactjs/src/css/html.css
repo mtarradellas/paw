@@ -1,3 +1,17 @@
 html {
+    margin: 0;
+    width: 100vw;
+}
+
+body {
+    margin: 0;
+    width: 100vw;
+    overflow-x: hidden;
     background-color: #E0E0E0;
+}
+
+.content-region {
+    background-color: white;
+    border-radius: 5px;
+    padding: 1rem;
 }

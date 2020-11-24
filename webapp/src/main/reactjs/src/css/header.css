@@ -6,11 +6,7 @@ header {
 }
 
 .header__title {
-    color: white;
-    font-size: 300%;
-    font-family: verdana, serif;
-
-    margin: 2.2rem 0 0 3rem;
+    display: none;
 }
 
 .header__login, .header__register {
@@ -29,4 +25,15 @@ header a {
 
 .header__logo {
     margin: 1.5rem 0 0 2rem;
+}
+
+@media only screen and (min-width: 1000px) {
+    .header__title {
+        display: block;
+        color: white;
+        font-size: 300%;
+        font-family: verdana, serif;
+
+        margin: 2.2rem 0 0 3rem;
+    }
 }
