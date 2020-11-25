@@ -4,8 +4,10 @@ import React/*, {useContext}*/ from 'react';
 import '../css/header.css';
 import {Link} from "react-router-dom";
 import {LOGIN, REGISTER} from "../constants/routes";
+import {useTranslation} from "react-i18next";
 
 function Header(){
+    const {t} = useTranslation('header');
     // const {state} = useContext(loginContext);
 
     // const {username} = state;
@@ -19,11 +21,11 @@ function Header(){
 
         <div className={"header__right"}>
             <Link className={"header__register"} to={REGISTER}>
-                Register
+                {t('register')}
             </Link>
 
             <Link className={"header__login"} to={LOGIN}>
-                Login
+                {t('login')}
             </Link>
         </div>
 

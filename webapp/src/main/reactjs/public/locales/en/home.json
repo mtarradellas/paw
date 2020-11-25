@@ -1,0 +1,18 @@
+{
+  "filterForm": {
+    "labels": {
+      "specie": "Specie",
+      "breed": "Breed",
+      "price": "Price",
+      "sex": "Sex",
+      "state": "Province",
+      "department": "Department ¿?",
+      "criteria": "Criteria",
+      "order": "Order"
+    },
+    "filterButtons": {
+      "filter": "Filter",
+      "clear": "Clear"
+    }
+  }
+}
