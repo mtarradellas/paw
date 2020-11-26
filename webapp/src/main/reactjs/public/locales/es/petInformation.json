@@ -1,0 +1,9 @@
+{
+  "name": "Nombre",
+  "specie": "Especie",
+  "breed": "Raza",
+  "price": "Precio",
+  "sex": "Sexo",
+  "owner": "Dueño",
+  "uploadDate": "Fecha de subida"
+}

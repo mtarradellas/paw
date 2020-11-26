@@ -14,5 +14,12 @@
       "filter": "Filtrar",
       "clear": "Limpiar"
     }
+  },
+  "pets": {
+    "title": "¡Estas son las mascotas disponibles!",
+    "results-count": "Resultados totales: {{count}}",
+    "petsCard": {
+      "goToPage": "Ir a la página"
+    }
   }
 }

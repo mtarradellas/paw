@@ -1,0 +1,9 @@
+{
+  "name": "Name",
+  "specie": "Specie",
+  "breed": "Breed",
+  "price": "Price",
+  "sex": "Sex",
+  "owner": "Owner",
+  "uploadDate": "Upload date"
+}

@@ -37,6 +37,14 @@
     margin-right: 1rem;
 }
 
+.pet-card-container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
 @media only screen and (max-width: 480px) {
     .home__filter form .ant-row {
         width: 100%;
@@ -49,7 +57,7 @@
         grid-template-areas: "filter . pets"
                              ".      . pets";
         grid-template-rows: auto auto;
-        grid-template-columns: 2fr 2rem 6fr;
+        grid-template-columns: 2fr 2rem 10fr;
 
         padding: 3rem 2rem 3rem 2rem;
 
