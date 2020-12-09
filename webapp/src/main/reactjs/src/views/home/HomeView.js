@@ -50,7 +50,7 @@ function MainContent({pets, petCount}){
 }
 
 
-function Home(){
+function HomeView(){
     const pets = samplePets;
     const petCount = samplePets.length;
 
@@ -64,4 +64,4 @@ function Home(){
                 />;
 }
 
-export default Home;
+export default HomeView;

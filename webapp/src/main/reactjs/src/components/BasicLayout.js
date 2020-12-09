@@ -2,10 +2,12 @@ import React from 'react';
 import Header from "./Header";
 import Footer from "./Footer";
 
-function BasicLayout({children}){
+function BasicLayout(props){
+    const {children} = props;
+
     return <div className={"basicLayout"}>
         <Header/>
-        {children}
+            {children}
         <Footer/>
     </div>;
 }

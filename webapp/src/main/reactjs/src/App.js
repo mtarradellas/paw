@@ -8,13 +8,14 @@ import {
 import 'antd/dist/antd.css';
 import './css/html.css';
 
-import Home from "./views/home/Home";
+import HomeView from "./views/home/HomeView";
 import BasicLayout from "./components/BasicLayout";
 
 import LoginContext from './constants/loginContext';
 
-import {HOME} from "./constants/routes";
+import {HOME, USER} from "./constants/routes";
 import useLogin from "./hooks/useLogin";
+import UserView from "./views/user/UserView";
 
 function App() {
     const login = useLogin();
@@ -23,11 +24,20 @@ function App() {
         <LoginContext.Provider value={login}>
             <Router>
                 <Switch>
-                    <Route path={HOME}>
+                    <Route exact path={HOME}>
                         <BasicLayout>
-                            <Home/>
+                            <HomeView/>
                         </BasicLayout>
                     </Route>
+                    <Route exact path={USER}
+                        render={
+                            ({id}) => (
+                                <BasicLayout>
+                                    <UserView id={id}/>
+                                </BasicLayout>
+                            )
+                        }
+                    />
                 </Switch>
             </Router>
         </LoginContext.Provider>
