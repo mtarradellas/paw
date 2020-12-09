@@ -1,21 +1,3 @@
-.home__container {
-    width: 100vw;
-    display: grid;
-    grid-template-areas: "filter"
-                         "."
-                         "pets";
-    grid-template-rows: auto 2rem auto;
-    padding: 3rem 0 3rem 0;
-}
-
-.home__pets {
-    grid-area: pets;
-}
-
-.home__filter {
-    grid-area: filter;
-}
-
 .home__filter form .form-content {
     display: flex;
     flex-flow: row;

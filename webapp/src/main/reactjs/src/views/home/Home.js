@@ -5,6 +5,7 @@ import {Divider, Pagination} from 'antd';
 import "../../css/home/home.css";
 import {useTranslation} from "react-i18next";
 import PetCard from "./PetCard";
+import ContentWithSidebar from "../../components/ContentWithSidebar";
 
 const nairobi =  {
     name: "Nairobi",
@@ -21,36 +22,46 @@ for(let i=0; i<50; i++){
     samplePets.push(nairobi)
 }
 
+function SideContent(){
+    return <div className={"home__filter"}>
+        <FilterOptionsForm/>
+    </div>;
+}
 
-function Home(){
+function MainContent({pets, petCount}){
     const {t} = useTranslation("home");
 
+    return <div className={"home__pets"}>
+        <h1><b>{t("pets.title")}</b> ({t("pets.results-count", {count: petCount})})</h1>
+        <Divider orientation={"left"}>
+            <Pagination defaultCurrent={1} total={50}/>
+        </Divider>
+        <div className={"pet-card-container"}>
+            {
+                pets.map(
+                    (pet) => <PetCard {...pet}/>
+                )
+            }
+        </div>
+        <Divider orientation={"left"}>
+            <Pagination defaultCurrent={1} total={50}/>
+        </Divider>
+    </div>
+}
+
+
+function Home(){
+    const pets = samplePets;
     const petCount = samplePets.length;
 
-    console.log(samplePets)
-
-    return <div className={"home__container"}>
-        <div className={"content-region home__filter"}>
-            <FilterOptionsForm/>
-        </div>
-
-        <div className={"content-region home__pets"}>
-            <h1><b>{t("pets.title")}</b> ({t("pets.results-count", {count: petCount})})</h1>
-            <Divider orientation={"left"}>
-                <Pagination defaultCurrent={1} total={50}/>
-            </Divider>
-            <div className={"pet-card-container"}>
-                {
-                    samplePets.map(
-                        (pet) => <PetCard {...pet}/>
-                    )
-                }
-            </div>
-            <Divider orientation={"left"}>
-                <Pagination defaultCurrent={1} total={50}/>
-            </Divider>
-        </div>
-    </div>;
+    return <ContentWithSidebar
+                    sideContent={
+                        <SideContent/>
+                    }
+                    mainContent={
+                        <MainContent petCount={petCount} pets={pets}/>
+                    }
+                />;
 }
 
 export default Home;
