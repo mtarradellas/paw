@@ -1,0 +1,40 @@
+{
+  "title": "Registrarse",
+  "form": {
+    "username": {
+      "label": "Usuario",
+      "placeholder": "Ingrese su nombre de usuario",
+      "errors": {
+        "tooShort": "El nombre de usuario debe tener al menos {{min}} caracteres",
+        "tooLong": "El nombre de usuario no puede tener más de {{max}} caracteres",
+        "required": "El nombre de usuario no puede estar vacío"
+      }
+    },
+    "password": {
+      "label": "Contraseña",
+      "placeholder": "Ingrese su contraseña",
+      "errors": {
+        "tooShort": "La contraseña debe tener al menos {{min}} caracteres",
+        "tooLong": "La contraseña no puede tener más de {{max}} caracteres",
+        "required": "La contraseña no puede estar vacía"
+      }
+    },
+    "repeatPassword": {
+      "label": "Repetir contraseña",
+      "placeholder": "Ingrese su contraseña nuevamente",
+      "errors": {
+        "required": "Repetir contraseña no puede estar vacío",
+        "notEqual": "Las contraseñas no coinciden"
+      }
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Ingrese su email",
+      "errors": {
+        "required": "El email no puede estar vacío",
+        "invalidEmail": "El email debe ser válido"
+      }
+    },
+    "submit": "Registrarse"
+  }
+}

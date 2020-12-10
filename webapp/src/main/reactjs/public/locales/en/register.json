@@ -1,0 +1,40 @@
+{
+  "title": "Register",
+  "form": {
+    "username": {
+      "label": "Username",
+      "placeholder": "Enter username",
+      "errors": {
+        "tooShort": "Username must be at least {{min}} characters long",
+        "tooLong": "Username must be at most {{max}} characters long",
+        "required": "Username cannot be empty"
+      }
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter password",
+      "errors": {
+        "tooShort": "Password must be at least {{min}} characters long",
+        "tooLong": "Password must be at most {{max}} characters long",
+        "required": "Password cannot be empty"
+      }
+    },
+    "repeatPassword": {
+      "label": "Repeat password",
+      "placeholder": "Enter password again",
+      "errors": {
+        "required": "Repeat password cannot be empty",
+        "notEqual": "Passwords do not match"
+      }
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter email",
+      "errors": {
+        "required": "Email cannot be empty",
+        "invalidEmail": "Email must be valid"
+      }
+    },
+    "submit": "Register"
+  }
+}

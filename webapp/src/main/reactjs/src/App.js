@@ -13,9 +13,10 @@ import BasicLayout from "./components/BasicLayout";
 
 import LoginContext from './constants/loginContext';
 
-import {HOME, USER} from "./constants/routes";
+import {HOME, REGISTER, USER} from "./constants/routes";
 import useLogin from "./hooks/useLogin";
 import UserView from "./views/user/UserView";
+import RegisterView from "./views/register/RegisterView";
 
 function App() {
     const login = useLogin();
@@ -27,6 +28,11 @@ function App() {
                     <Route exact path={HOME}>
                         <BasicLayout>
                             <HomeView/>
+                        </BasicLayout>
+                    </Route>
+                    <Route exact path={REGISTER}>
+                        <BasicLayout>
+                            <RegisterView/>
                         </BasicLayout>
                     </Route>
                     <Route exact path={USER}
