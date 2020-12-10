@@ -19,7 +19,7 @@ const nairobi =  {
 
 const samplePets = []
 for(let i=0; i<50; i++){
-    samplePets.push(nairobi)
+    samplePets.push(Object.assign({}, nairobi, {id: i}))
 }
 
 function SideContent(){
@@ -39,7 +39,7 @@ function MainContent({pets, petCount}){
         <div className={"pet-card-container"}>
             {
                 pets.map(
-                    (pet) => <PetCard {...pet}/>
+                    (pet) => <PetCard key={pet.id} {...pet}/>
                 )
             }
         </div>
