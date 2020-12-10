@@ -15,9 +15,10 @@ import RequestsView from "./views/requests/RequestsView";
 
 import LoginContext from './constants/loginContext';
 
-import {HOME, REQUESTS, USER} from "./constants/routes";
+import {HOME, REQUESTS, REGISTER, USER} from "./constants/routes";
 import useLogin from "./hooks/useLogin";
 import UserView from "./views/user/UserView";
+import RegisterView from "./views/register/RegisterView";
 
 function App() {
     const login = useLogin();
@@ -29,6 +30,11 @@ function App() {
                     <Route exact path={HOME}>
                         <BasicLayout>
                             <HomeView/>
+                        </BasicLayout>
+                    </Route>
+                    <Route exact path={REGISTER}>
+                        <BasicLayout>
+                            <RegisterView/>
                         </BasicLayout>
                     </Route>
                     <Route exact path={USER}
