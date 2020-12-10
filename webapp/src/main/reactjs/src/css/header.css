@@ -1,12 +1,19 @@
 header {
  height: 8rem;
  width: 100vw;
+ font-family: verdana;
  background-color: #222831;
  display: flex;
 }
 
 .header__title {
     display: none;
+}
+
+.header__subtitle {
+    color: white;
+    font-size: 20px;
+    margin: 3.5rem 0rem 0rem 2rem;
 }
 
 .header__login, .header__register {

@@ -3,7 +3,7 @@ import React/*, {useContext}*/ from 'react';
 
 import '../css/header.css';
 import {Link} from "react-router-dom";
-import {LOGIN, REGISTER, HOME} from "../constants/routes";
+import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS} from "../constants/routes";
 import {useTranslation} from "react-i18next";
 
 function Header() {
@@ -22,6 +22,15 @@ function Header() {
                 PET SOCIETY
             </span>
         </Link>
+
+        <Link className={"header__subtitle"} to={REQUESTS}>
+            {t('requests')}
+        </Link>
+
+        <Link className={"header__subtitle"} to={INTERESTS}>
+            {t('interests')}
+        </Link>
+
 
         <div className={"header__right"}>
             <Link className={"header__register"} to={REGISTER}>

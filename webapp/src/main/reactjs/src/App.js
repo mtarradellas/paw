@@ -11,9 +11,11 @@ import './css/html.css';
 import HomeView from "./views/home/HomeView";
 import BasicLayout from "./components/BasicLayout";
 
+import RequestsView from "./views/requests/RequestsView";
+
 import LoginContext from './constants/loginContext';
 
-import {HOME, USER} from "./constants/routes";
+import {HOME, REQUESTS, USER} from "./constants/routes";
 import useLogin from "./hooks/useLogin";
 import UserView from "./views/user/UserView";
 
@@ -38,6 +40,11 @@ function App() {
                             )
                         }
                     />
+                    <Route exact path={REQUESTS}>
+                        <BasicLayout>
+                            <RequestsView/>
+                        </BasicLayout>
+                    </Route>
                 </Switch>
             </Router>
         </LoginContext.Provider>
