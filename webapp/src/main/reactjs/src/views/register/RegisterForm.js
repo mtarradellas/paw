@@ -37,7 +37,14 @@ function RegisterForm({onSubmit}){
             })
         }
         onSubmit={_onSubmit}
-        initialValues={{}}
+        initialValues={
+            {
+                username: '',
+                password: '',
+                repeatPassword: '',
+                email: ''
+            }
+        }
     >
         <Form
             layout={"vertical"}
