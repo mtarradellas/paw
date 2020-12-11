@@ -1,0 +1,15 @@
+{
+  "rating": "Calificación del Usuario",
+  "average": "Promedio de {{rating}} basado en {{reviewCount}} reseñas",
+  "averageClarification": "*Solo puede calificar una vez por usuario, y no puede calificarse a usted o a un usuario a quien no le haya comprado/adoptado una mascota",
+  "email": "Email",
+  "petsTitle": "Mascotas que este usuario ofrece",
+  "totalResults": "Resultados totales: {{count}}",
+  "reviewsTitle": "Reseñas hechas a este usuario",
+  "reviews": {
+    "user": "Usuario",
+    "rating": "Calificación",
+    "description": "Descripción"
+  },
+  "backToHome": "< Volver al inicio"
+}

@@ -1,0 +1,15 @@
+{
+  "rating": "User rating",
+  "average": "Average of {{rating}} on {{reviewCount}} reviews",
+  "averageClarification": "*You can only rate once per user, and cannot rate yourself or a user you did not buy/adopt a pet from",
+  "email": "Email",
+  "petsTitle": "Pets this user offers",
+  "totalResults": "Total results: {{count}}",
+  "reviewsTitle": "Reviews made to this user",
+  "reviews": {
+    "user": "User",
+    "rating": "Rating",
+    "description": "Description"
+  },
+  "backToHome": "< Back to home"
+}
