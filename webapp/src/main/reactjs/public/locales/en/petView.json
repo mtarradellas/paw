@@ -1,0 +1,34 @@
+{
+  "title": "Meet {{name}}!",
+  "someInformationAboutHer": "Some information about her",
+  "someInformationAboutHim": "Some information about him",
+  "details": {
+    "name": "Name",
+    "dateOfBirth": "Date of birth",
+    "specie": "Specie",
+    "breed": "Breed",
+    "sex": "Sex",
+    "province": "Province",
+    "department": "Department",
+    "uploadDate": "Upload date",
+    "owner": "Owner"
+  },
+  "status": {
+    "header": "Status",
+    "vaccinated": "Vaccinated",
+    "onAdoption": "On adoption",
+    "onSale": "On sale"
+  },
+  "questions": {
+    "header": "Questions",
+    "askSomething": "Ask something",
+    "noQuestionsYet": "No questions yet",
+    "noAnswerYet": "No answer yet",
+    "askButton": "Ask",
+    "errors": {
+      "required": "Please enter a question"
+    }
+  },
+  "goToOwnersPage": "Go to owner's page",
+  "backToHome": "< Back to home"
+}

@@ -13,11 +13,12 @@ import BasicLayout from "./components/BasicLayout";
 
 import LoginContext from './constants/loginContext';
 
-import {HOME, LOGIN, REGISTER, USER} from "./constants/routes";
+import {HOME, LOGIN, PET, REGISTER, USER} from "./constants/routes";
 import useLogin from "./hooks/useLogin";
 import UserView from "./views/user/UserView";
 import RegisterView from "./views/register/RegisterView";
 import LoginView from "./views/login/LoginView";
+import PetView from "./views/pet/PetView";
 
 function App() {
     const login = useLogin();
@@ -41,7 +42,7 @@ function App() {
                             <LoginView/>
                         </BasicLayout>
                     </Route>
-                    <Route exact path={USER}
+                    <Route exact path={USER + ':id'}
                         render={
                             ({id}) => (
                                 <BasicLayout>
@@ -49,6 +50,15 @@ function App() {
                                 </BasicLayout>
                             )
                         }
+                    />
+                    <Route exact path={PET + ':id'}
+                           render={
+                               ({id}) => (
+                                   <BasicLayout>
+                                       <PetView id={id}/>
+                                   </BasicLayout>
+                               )
+                           }
                     />
                 </Switch>
             </Router>

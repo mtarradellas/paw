@@ -1,0 +1,34 @@
+{
+  "title": "¡Conozca a {{name}}!",
+  "someInformationAboutHer": "Algunos datos de ella",
+  "someInformationAboutHim": "Algunos datos de él",
+  "details": {
+    "name": "Nombre",
+    "dateOfBirth": "Fecha de nacimiento",
+    "specie": "Especie",
+    "breed": "Raza",
+    "sex": "Género",
+    "province": "Provincia",
+    "department": "Departamento",
+    "uploadDate": "Fecha de subida",
+    "owner": "Dueño"
+  },
+  "status": {
+    "header": "Estado",
+    "vaccinated": "Vacunado",
+    "onAdoption": "En adopción",
+    "onSale": "En venta"
+  },
+  "questions": {
+    "header": "Preguntas",
+    "askSomething": "Pregunta algo",
+    "noQuestionsYet": "No hay preguntas todavía",
+    "noAnswerYet": "No hay respuesta todavía",
+    "askButton": "Preguntar",
+    "errors": {
+      "required": "Por favor ingrese una pregunta"
+    }
+  },
+  "goToOwnersPage": "Ir a la página del dueño",
+  "backToHome": "< Volver al inicio"
+}

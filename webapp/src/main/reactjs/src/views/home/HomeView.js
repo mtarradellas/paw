@@ -39,7 +39,7 @@ function MainContent({pets, petCount}){
         <div className={"pet-card-container"}>
             {
                 pets.map(
-                    (pet) => <PetCard key={pet.id} {...pet}/>
+                    (pet) => <PetCard key={pet.id} pet={pet}/>
                 )
             }
         </div>
