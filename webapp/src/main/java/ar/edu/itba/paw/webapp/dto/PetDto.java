@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.constants.PetStatus;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PetDto {
 
@@ -25,6 +26,14 @@ public class PetDto {
     private URI newOwner;
     private URI questionList;
     private URI images;
+
+    private List<byte[]> photos;
+    private Long userId;
+    private Long speciesId;
+    private Long breedId;
+    private Long provinceId;
+    private Long departmentId;
+
     /* Check if user has already requested pet */
     private int lastRequestStatus;
     private boolean requestExists;
@@ -54,6 +63,13 @@ public class PetDto {
         if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
         dto.questionList = uriInfo.getAbsolutePathBuilder().path("questions").build();
         dto.images = uriInfo.getAbsolutePathBuilder().path("images").build();
+
+        dto.userId = pet.getUser().getId();
+        dto.speciesId = pet.getSpecies().getId();
+        dto.breedId = pet.getBreed().getId();               //van aca??
+        dto.provinceId = pet.getProvince().getId();
+        dto.departmentId = pet.getDepartment().getId();
+
 // si el usuario es el duenio del pet, darle la lista de los usuarios a los que puede asignarle el pet
 //        if (pet.getUser().getId().equals(user.getId())) {
 //            dto.availableUsers = user.getInterestList().stream()
@@ -86,6 +102,12 @@ public class PetDto {
         if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
         dto.questionList = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("questions").build();
         dto.images = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("images").build();
+
+        dto.userId = pet.getUser().getId();
+        dto.speciesId = pet.getSpecies().getId();
+        dto.breedId = pet.getBreed().getId();
+        dto.provinceId = pet.getProvince().getId();
+        dto.departmentId = pet.getDepartment().getId();
 
         return dto;
     }
@@ -224,5 +246,53 @@ public class PetDto {
 
     public void setImages(URI images) {
         this.images = images;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getSpeciesId() {
+        return speciesId;
+    }
+
+    public void setSpeciesId(Long speciesId) {
+        this.speciesId = speciesId;
+    }
+
+    public Long getBreedId() {
+        return breedId;
+    }
+
+    public void setBreedId(Long breedId) {
+        this.breedId = breedId;
+    }
+
+    public Long getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Long provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public List<byte[]> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<byte[]> photos) {
+        this.photos = photos;
     }
 }

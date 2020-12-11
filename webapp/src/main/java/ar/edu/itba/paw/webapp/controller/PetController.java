@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.dto.*;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
@@ -12,8 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.imageio.ImageIO;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -147,20 +155,27 @@ public class PetController{
         return Response.ok().entity(new Gson().toJson(filters)).build();
 
     }
-//    @POST
-//    @Consumes(value = { MediaType.APPLICATION_JSON})
-//    public Response create(final PetDto pet) {
-//        final String locale = getLocale();
-//
-//        final Optional<User> opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getPath());
-//        if (!opNewUser.isPresent()) {
-//            LOGGER.warn("User creation failed");
-//            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-//        }
-//        final URI userUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewUser.get().getId())).build();
-//        return Response.created(userUri).build();
-//    }
-
+    @POST
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response create(final PetDto pet) {
+        String locale = ApiUtils.getLocale();
+        /*TODO check if user is logged*/
+        Optional<Pet> opNewPet;
+        try {
+            opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
+                    pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getUserId(), pet.getSpeciesId(), pet.getBreedId(),
+                    pet.getProvinceId(), pet.getDepartmentId(),null);
+        } catch(NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        if (!opNewPet.isPresent()) {
+            LOGGER.warn("Pet creation failed");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
+        return Response.created(petUri).build();
+    }
 
     @GET
     @Path("/{petId}")
@@ -191,17 +206,32 @@ public class PetController{
     }
 
     @GET
-    @Path("/{petId}/images/{imageId}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getImage(@PathParam("petId") long petId, @PathParam("imageId") long imageId) {
-        String locale = ApiUtils.getLocale();
-        Optional<Pet> opPet = petService.findById(locale, petId);
-        if(!opPet.isPresent()) {
-            LOGGER.debug("Pet {} not found", petId);
+    @Path("/images/{imageId}")
+    @Produces("image/jpg")
+    public Response getImage(@PathParam("imageId") long imageId) throws IOException {
+        byte[] byteImage = imageService.getDataById(imageId).orElse(null);
+        if(byteImage == null) {
+            LOGGER.debug("Image {} not found", imageId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        //get image from service... how to deliver it?
-        return Response.ok().build();
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
+        BufferedImage bufferedImage = ImageIO.read(bis);
+        int height = bufferedImage.getHeight(), width = bufferedImage.getWidth();
+
+        BufferedImage cropped = bufferedImage;
+        int diff = Math.abs(height-width);
+        if(width>height){
+            cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
+        }else{ if(width<height)
+            cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(cropped, "jpg", baos );
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+        return Response.ok(imageInByte).build();
     }
 
     @POST
@@ -297,7 +327,11 @@ public class PetController{
         }
         return Response.ok().build();
     }
+
+
 }
+
+
 
 //
 //    @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
