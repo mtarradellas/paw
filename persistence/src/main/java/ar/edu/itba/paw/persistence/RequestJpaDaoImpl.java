@@ -1,28 +1,42 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.RequestDao;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.RequestStatus;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
-import org.springframework.stereotype.Repository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
+
+import ar.edu.itba.paw.interfaces.RequestDao;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 
 @Repository
 public class RequestJpaDaoImpl implements RequestDao {
@@ -43,14 +57,15 @@ public class RequestJpaDaoImpl implements RequestDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> ids = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        System.out.println("IDS: " + ids.size());
+        ids.forEach(System.out::println);
         if(ids.size() == 0) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
-        final TypedQuery<Request> query = em.createQuery("from Request where id in :ids", Request.class);
+        final TypedQuery<Request> query = em.createQuery("from Request where id in :filteredIds", Request.class);
         query.setParameter("filteredIds", ids);
         return query.getResultList();
-
     }
 
     @Override
@@ -66,8 +81,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public Set<Integer> searchStatusList(User user, Pet pet, List<String> find, RequestStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet, null ,null);
         jpaQuery.setProjection("status");
         @SuppressWarnings("unchecked")
@@ -83,8 +96,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public List<Pet> searchPetListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet, null, null);
         jpaQuery.setProjection("pet.eid");
         @SuppressWarnings("unchecked")
@@ -206,8 +217,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public Set<Integer> searchStatusListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet, null, null);
         jpaQuery.setProjection("status");
         @SuppressWarnings("unchecked")
@@ -273,13 +282,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         jpaQuery.setSort(sort.createSort());
 
         return jpaQuery;
-    }
-
-    private void indexRequests() {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        try {
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {}
     }
 
     @Override

@@ -1,23 +1,42 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.UserDao;
-import ar.edu.itba.paw.interfaces.exceptions.UserException;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.ReviewStatus;
-import ar.edu.itba.paw.models.constants.UserStatus;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
-import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Repository;
-import javax.persistence.*;
-import javax.persistence.criteria.*;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import ar.edu.itba.paw.interfaces.UserDao;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
+import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.Token;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.ReviewStatus;
+import ar.edu.itba.paw.models.constants.UserStatus;
 
 @Repository
 public class UserJpaDaoImpl implements UserDao {
@@ -134,13 +153,6 @@ public class UserJpaDaoImpl implements UserDao {
             cr.orderBy(order);
         }
         return em.createQuery(cr).getResultList();
-    }
-
-    private void indexUsers() {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        try {
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {}
     }
 
     @Override
@@ -299,10 +311,29 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
-    public double getReviewAverage(long userId) {
-        String qStr = "SELECT AVG(score) FROM reviews WHERE targetid = :target";
+    public double getReviewAverage(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
+        String qStr = "SELECT AVG(score) FROM reviews WHERE score >= :minScore AND score <= :maxScore";
+        if (userId != null) {
+            qStr += " AND ownerId = :userId";
+        }
+        if (targetId != null) {
+            qStr += " AND targetId = :targetId";
+        }
+        if (status != null) {
+            qStr += " AND status = :status";
+        }
         Query query = em.createNativeQuery(qStr);
-        query.setParameter("target", userId);
+        if (userId != null) {
+            query.setParameter("userId", userId);
+        }
+        if (targetId != null) {
+            query.setParameter("targetId", targetId);
+        }
+        if (status != null) {
+            query.setParameter("status", status.getValue());
+        }
+        query.setParameter("minScore", minScore);
+        query.setParameter("maxScore", maxScore);
         Number av = (Number)query.getSingleResult();
         if (av == null) return -1;
         return av.doubleValue();

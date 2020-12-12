@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.interfaces.exceptions;
 
 public class InvalidImageQuantityException extends RuntimeException {
+    private static final long serialVersionUID = 5443958084118708369L;
+
     public InvalidImageQuantityException() {
         super();
     }

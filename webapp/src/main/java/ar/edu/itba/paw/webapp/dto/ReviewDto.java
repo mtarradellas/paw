@@ -1,0 +1,107 @@
+package ar.edu.itba.paw.webapp.dto;
+
+import ar.edu.itba.paw.models.Review;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.time.LocalDateTime;
+
+public class ReviewDto {
+
+    private Long id;
+    private Integer score;
+    private String description;
+    private LocalDateTime creationDate;
+    private int status;
+
+    private URI user;
+    private URI target;
+
+    private Long userId;
+    private Long targetId;
+
+    public static ReviewDto fromReview(Review review, UriInfo uriInfo) {
+        final ReviewDto dto = new ReviewDto();
+
+        dto.id = review.getId();
+        dto.score = review.getScore();
+        dto.description = review.getDescription();
+        dto.status = review.getStatus().getValue();
+
+        dto.user = uriInfo.getAbsolutePathBuilder().path("users").path(String.valueOf(review.getOwner().getId())).build();
+        dto.target = uriInfo.getAbsolutePathBuilder().path("users").path(String.valueOf(review.getTarget().getId())).build();
+
+        return dto;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public URI getUser() {
+        return user;
+    }
+
+    public void setUser(URI user) {
+        this.user = user;
+    }
+
+    public URI getTarget() {
+        return target;
+    }
+
+    public void setTarget(URI target) {
+        this.target = target;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getTargetId() {
+        return targetId;
+    }
+
+    public void setTargetId(Long targetId) {
+        this.targetId = targetId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+}

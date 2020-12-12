@@ -64,7 +64,6 @@ public class RequestServiceImplTest {
 
     /* PET */
     private static final Long PET_ID = 1L;
-    private static final List<byte[]> PHOTOS = new ArrayList<>();
     private static final Pet PET = new Pet("petname", LocalDateTime.now(), "gender", true, 0, LocalDateTime.now(),
             "description", PetStatus.AVAILABLE, USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
 
@@ -115,20 +114,20 @@ public class RequestServiceImplTest {
         assertEquals(status, request.getStatus());
     }
 
-    @Test
-    public void testFilteredListRequest() {
-        List<Request> requestList = new ArrayList<>();
-        requestList.add(REQUEST);
-        when(requestDao.searchList(eq(REQUEST.getUser()), any(), any(), any(), any(), any(), anyInt(), anyInt()))
-                .thenReturn(requestList);
-
-
-        List<Request> returnList = requestService.filteredList(REQUEST.getUser(), null, null, null,
-                null,  null, PAGE, PAGE_SIZE);
-
-        assertEquals(1, returnList.size());
-        assertRequest(returnList.get(0), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
-    }
+//    @Test
+//    public void testFilteredListRequest() {
+//        List<Request> requestList = new ArrayList<>();
+//        requestList.add(REQUEST);
+//        when(requestDao.searchList(eq(REQUEST.getUser()), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+//                .thenReturn(requestList);
+//
+//
+//        List<Request> returnList = requestService.filteredList(REQUEST.getUser(), null, null, null,
+//                null,  null, PAGE, PAGE_SIZE);
+//
+//        assertEquals(1, returnList.size());
+//        assertRequest(returnList.get(0), REQUEST.getId(), REQUEST.getCreationDate(), REQUEST.getStatus());
+//    }
 
     @Test
     public void testFindById() {

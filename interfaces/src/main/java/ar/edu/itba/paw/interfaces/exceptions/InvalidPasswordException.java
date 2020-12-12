@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.interfaces.exceptions;
 
 public class InvalidPasswordException extends RuntimeException {
+    private static final long serialVersionUID = 24784554738245570L;
+
     public InvalidPasswordException() {
         super();
     }
