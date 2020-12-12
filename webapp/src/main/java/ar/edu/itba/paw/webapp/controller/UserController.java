@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import java.net.URI;
 import java.util.Optional;
 
 import javax.ws.rs.Consumes;
@@ -25,12 +24,10 @@ import org.springframework.stereotype.Component;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
-import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.PasswordDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 
 @Component
@@ -57,33 +54,6 @@ public class UserController {
         }
         final User user = opUser.get();
         return Response.ok(new GenericEntity<UserDto>(UserDto.fromUser(user, uriInfo)){}).build();
-    }
-
-    @POST
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createUser(final UserDto user) {
-        try {
-            ParseUtils.parseUser(user);
-        } catch (BadRequestException ex) {
-            LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-
-        final String locale = ApiUtils.getLocale();
-        Optional<User> opNewUser;
-        try {
-            opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getBaseUri().toString());
-        } catch (DataIntegrityViolationException | UserException ex) {
-            LOGGER.warn("User creation failed with exception");
-            LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        if (!opNewUser.isPresent()) {
-            LOGGER.warn("User creation failed, service returned empty user");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        final URI userUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewUser.get().getId())).build();
-        return Response.created(userUri).build();
     }
 
     @DELETE

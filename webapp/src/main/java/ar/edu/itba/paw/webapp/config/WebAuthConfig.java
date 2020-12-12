@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.config;
 
-import ar.edu.itba.paw.webapp.auth.JwtAuthenticationFilter;
-import ar.edu.itba.paw.webapp.auth.JwtAuthorizationFilter;
-import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.Filter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,8 +18,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import javax.servlet.Filter;
-import java.util.concurrent.TimeUnit;
+
+import ar.edu.itba.paw.webapp.auth.JwtAuthenticationFilter;
+import ar.edu.itba.paw.webapp.auth.JwtAuthorizationFilter;
+import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 
 @EnableWebSecurity
 @Configuration
