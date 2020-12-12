@@ -1,22 +1,23 @@
 package ar.edu.itba.paw.webapp.util;
 
-import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.models.User;
-import org.springframework.context.i18n.LocaleContextHolder;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import org.springframework.core.io.Resource;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.io.Resource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.models.User;
 
 public class ApiUtils {
 

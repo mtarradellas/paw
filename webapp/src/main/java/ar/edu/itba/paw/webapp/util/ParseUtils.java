@@ -1,16 +1,13 @@
 package ar.edu.itba.paw.webapp.util;
 
-import ar.edu.itba.paw.webapp.dto.ReviewDto;
-import ar.edu.itba.paw.webapp.dto.UserDto;
-import ar.edu.itba.paw.webapp.exception.BadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 
-public class ParseUtils {
+import ar.edu.itba.paw.webapp.dto.ReviewDto;
+import ar.edu.itba.paw.webapp.dto.UserDto;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParseUtils.class);
+public class ParseUtils {
 
     public static int parsePage(int page) {
         if (page < 1) {

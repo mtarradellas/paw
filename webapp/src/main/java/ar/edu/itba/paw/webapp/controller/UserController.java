@@ -1,26 +1,37 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
-import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
-import ar.edu.itba.paw.interfaces.exceptions.UserException;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.UserStatus;
-import ar.edu.itba.paw.webapp.dto.PasswordDto;
-import ar.edu.itba.paw.webapp.dto.UserDto;
-import ar.edu.itba.paw.webapp.exception.BadRequestException;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
-import ar.edu.itba.paw.webapp.util.ParseUtils;
+import java.net.URI;
+import java.util.Optional;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.dto.PasswordDto;
+import ar.edu.itba.paw.webapp.dto.UserDto;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 
 @Component
 @Path("/users")

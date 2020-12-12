@@ -28,19 +28,19 @@ import java.util.HashSet;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
     private final String jwtSecret;
-    private final String jwtIssuer;
-    private final String jwtType;
-    private final String jwtAudience;
+    // private final String jwtIssuer;
+    // private final String jwtType;
+    // private final String jwtAudience;
 
     private UserService userService;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, String jwtAudience, String jwtIssuer,
                                   String jwtSecret, String jwtType) {
         super(authenticationManager);
-        this.jwtAudience = jwtAudience;
-        this.jwtIssuer = jwtIssuer;
         this.jwtSecret = jwtSecret;
-        this.jwtType = jwtType;
+        // this.jwtType = jwtType;
+        // this.jwtAudience = jwtAudience;
+        // this.jwtIssuer = jwtIssuer;
     }
 
     private UsernamePasswordAuthenticationToken parseToken(HttpServletRequest request) {

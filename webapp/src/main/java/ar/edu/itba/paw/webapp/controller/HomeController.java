@@ -1,12 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Species;
-import ar.edu.itba.paw.webapp.dto.SpeciesDto;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,9 +9,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import ar.edu.itba.paw.interfaces.SpeciesService;
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 
 @Component
 @Path("/")

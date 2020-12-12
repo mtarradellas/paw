@@ -1,14 +1,18 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.models.constants.QuestionStatus;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.models.Answer;
+import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Department;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Question;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
 
 public interface PetService {
 

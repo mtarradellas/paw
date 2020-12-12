@@ -1,13 +1,10 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.UserDao;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
