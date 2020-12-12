@@ -44,7 +44,6 @@ const FilterRequestsForm = () => {
 
         <div className={"form-buttons"}>
             <Button type={"primary"} htmlType={"submit"}>{t('filterForm.filterButtons.filter')}</Button>
-
             <Button type={"secondary"}>{t('filterForm.filterButtons.clear')}</Button>
         </div>
     </Form>

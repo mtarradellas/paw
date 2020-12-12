@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 import {Button, Modal, List, Row, Col, Divider, Pagination} from 'antd';
 
-import {useTranslation, Trans} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import ContentWithSidebar from "../../components/ContentWithSidebar";
 import FilterRequestsForm from "./FilterRequestsForm";
 
-import RequestNotification from "./RequestNotification";
+import RequestContainer from "./RequestContainer";
 
 import "../../css/requests/requests.css"
 
@@ -15,6 +15,7 @@ import "../../css/requests/requests.css"
 * */
 
 const request = {
+    id:0,
     creationDate: "02-03-2020",
     updateDate: "05-05-2020",
     status: "PENDING",
@@ -29,18 +30,20 @@ const request = {
 }
 
 const sampleRequests = []
-for (let i = 0; i < 14; i++) {
-    sampleRequests.push(request)
+for (let i = 0; i < 15; i++) {
+    const aux = request;
+    aux.id = i+1;
+    sampleRequests.push(aux)
 }
 
 function SideContent() {
-    return <div>
+    return (<div>
         <FilterRequestsForm/>
-    </div>
+    </div>)
 }
 
 function MainContent({requests, requestsCount}) {
-    const {t} = useTranslation("requests");
+    const {t} = useTranslation('requests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -56,17 +59,17 @@ function MainContent({requests, requestsCount}) {
         setIsModalVisible(false);
     };
 
-    return <div>
+    return (<div>
         <Row style={{margin: 0, padding: 0}}>
             <Col span={23}>
-                <h1>{t("requests.title", {count: requestsCount})}</h1>
+                <h1><b>{t("requests.title", {count: requestsCount})}</b></h1>
             </Col>
             <Col>
                 <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
             </Col>
         </Row>
         <Row style={{margin: 0, padding: 0}}>
-            <Col span={14}>
+            <Col span={12}>
                 <h3><b>{t("requests.request")}</b></h3>
             </Col>
             <Col span={7}>
@@ -77,25 +80,10 @@ function MainContent({requests, requestsCount}) {
             </Col>
         </Row>
         <Divider style={{margin: 0, padding: 0}}/>
-        <div className={"requests-container"}>
-            <List split={false}>
-                {
-                    requests
-                        .map(
-                        (request) => (
-                            <List.Item>
-                                <RequestNotification {...request}/>
-                            </List.Item>
-                        )
-                    )
-                }
-            </List>
-
-        </div>
+        <RequestContainer requests={requests} />
         <Divider orientation={"left"}>
             <Pagination defaultCurrent={1} total={50}/>
         </Divider>
-
         <Modal
             title="Help"
             visible={isModalVisible}
@@ -113,7 +101,7 @@ function MainContent({requests, requestsCount}) {
                 <p>{t("modal.secondDesc")}</p>
             </div>
         </Modal>
-    </div>
+    </div>)
 }
 
 

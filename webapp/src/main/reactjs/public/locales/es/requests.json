@@ -36,11 +36,14 @@
   "buttons": {
     "close": "Cerrar"
   },
-  ,
   "modal": {
     "firstTitle": "Página de Solicitudes",
     "firstDesc": "Bienvenido a la página de solicitudes, aquí puede ver estado de todas las mascotas que ha solicitado. Hay cuatro estados: pendiente (significa que el dueño no ha decidido todavía), aceptado o rechazado (dueño ha decidido si desea o no darle el animal, no puede recuperar esta solicitud) y cancelado (puede cancelar una solicitud haciendo click en 'cancelar', y recupetarlo haciendo click en 'recuperar'). ",
     "secondTitle": "Herramientas de Filtrado",
     "secondDesc": "Para asistirlo en la organización de sus solicitudes, utilize el menú de filtrado encontrado a la izquierda."
+  },
+  "messages": {
+    "error": "Un error fue detectado",
+    "pending": "Mostraste interés en {{petName}}"
   }
 }
