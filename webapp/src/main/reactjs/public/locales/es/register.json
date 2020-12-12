@@ -7,7 +7,9 @@
       "errors": {
         "tooShort": "El nombre de usuario debe tener al menos {{min}} caracteres",
         "tooLong": "El nombre de usuario no puede tener más de {{max}} caracteres",
-        "required": "El nombre de usuario no puede estar vacío"
+        "validCharacters": "El nombre de usuario puede contener solo letras y números",
+        "required": "El nombre de usuario no puede estar vacío",
+        "duplicated": "El nombre de usuario no esta disponible"
       }
     },
     "password": {
@@ -32,7 +34,8 @@
       "placeholder": "Ingrese su email",
       "errors": {
         "required": "El email no puede estar vacío",
-        "invalidEmail": "El email debe ser válido"
+        "invalidEmail": "El email debe ser válido",
+        "duplicated": "El email no esta disponible"
       }
     },
     "submit": "Registrarse"

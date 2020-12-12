@@ -9,24 +9,23 @@ import {LOGIN} from "../../constants/routes";
 
 const FormItem = Form.Item;
 
-//TODO: ver las validaciones para que coincidan con las del backend
-function RegisterForm({onSubmit}){
-    const {t} = useTranslation("register");
+const VALID_CHARACTERS = "^[a-zA-Z0-9\u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
+                        "\u00F3\u00FA\u00F1\u00FC]*$";
 
-    const _onSubmit = (values) => {
-        onSubmit(values);
-    }
+function RegisterForm({onSubmit, submitting}){
+    const {t} = useTranslation("register");
 
     return <Formik
         validationSchema={
             Yup.object().shape({
                 username: Yup.string()
-                    .min(2, ({min}) => (t('form.username.errors.tooShort', {min})))
-                    .max(50, ({max}) => (t('form.username.errors.tooLong', {max})))
+                    .min(4, ({min}) => (t('form.username.errors.tooShort', {min})))
+                    .max(255, ({max}) => (t('form.username.errors.tooLong', {max})))
+                    .matches(VALID_CHARACTERS, t('form.username.errors.validCharacters'))
                     .required(t('form.username.errors.required')),
                 password: Yup.string()
-                    .min(2, ({min}) => (t('form.password.errors.tooShort', {min})))
-                    .max(50, ({max}) => (t('form.password.errors.tooLong', {max})))
+                    .min(4, ({min}) => (t('form.password.errors.tooShort', {min})))
+                    .max(254, ({max}) => (t('form.password.errors.tooLong', {max})))
                     .required(t('form.password.errors.required')),
                 repeatPassword: Yup.string()
                     .oneOf([Yup.ref('password'), null], t('form.repeatPassword.errors.notEqual'))
@@ -36,7 +35,7 @@ function RegisterForm({onSubmit}){
                     .required(t('form.email.errors.required'))
             })
         }
-        onSubmit={_onSubmit}
+        onSubmit={onSubmit}
         initialValues={
             {
                 username: '',
@@ -45,7 +44,7 @@ function RegisterForm({onSubmit}){
                 email: ''
             }
         }
-    >
+        >
         <Form
             layout={"vertical"}
         >
@@ -66,7 +65,7 @@ function RegisterForm({onSubmit}){
             </FormItem>
 
             <FormItem name>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" loading={submitting}>
                     {t('form.submit')}
                 </Button>
             </FormItem>
