@@ -13,6 +13,26 @@ export async function register({username, password, email}){
         await axios.post(SERVER_URL + REGISTER_ENDPOINT, {username, password, email});
     }catch (e) {
         //TODO: error handling
-        throw REGISTER_ERRORS.DUPLICATE_EMAIL;
+        throw REGISTER_ERRORS.CONN_ERROR;
+    }
+}
+
+const LOGIN_ENDPOINT = '/login';
+export const LOGIN_ERRORS = {
+    INVALID_USERNAME_OR_PASSWORD: 0,
+    CONN_ERROR: 1
+};
+export async function login({username, password}){
+    const config = {
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+        }
+    };
+
+    try {
+        await axios.post(SERVER_URL + LOGIN_ENDPOINT, {username, password}, config);
+    }catch (e) {
+        //TODO: error handling
+        throw LOGIN_ERRORS.CONN_ERROR;
     }
 }

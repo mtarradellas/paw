@@ -38,6 +38,7 @@
         "duplicated": "Email is not available"
       }
     },
-    "submit": "Register"
+    "submit": "Register",
+    "conError": "Connection lost"
   }
 }

@@ -3,6 +3,7 @@ import SmallCenteredContent from "../../components/SmallCenteredContent";
 import RegisterForm from "./RegisterForm";
 import {useTranslation} from "react-i18next";
 import {register, REGISTER_ERRORS} from "../api/authentication";
+import {message} from 'antd';
 
 function RegisterView(){
     const {t} = useTranslation("register");
@@ -23,7 +24,7 @@ function RegisterView(){
                     setErrors({email: t('form.email.errors.duplicated')});
                     break;
                 case REGISTER_ERRORS.CONN_ERROR:
-
+                    message.error(t('form.conError'));
                     break;
             }
         }finally {

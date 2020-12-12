@@ -18,6 +18,8 @@
     "submit": "Login",
     "dontHaveAnAccount": "¿Don't have an account?",
     "registerButton": "Register",
-    "forgotPassword": "¿Forgot password?"
+    "forgotPassword": "¿Forgot password?",
+    "conError": "Connection lost",
+    "invalidUsernameOrPassword": "Invalid username or password"
   }
 }
