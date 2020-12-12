@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.interfaces.exceptions;
 
 public class PetException extends RuntimeException{
+    private static final long serialVersionUID = -235865344109373586L;
+
     public PetException() {
     }
 

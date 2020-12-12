@@ -37,14 +37,19 @@ public interface UserService {
                             String criteria, String order, int page, int pageSize);
     int getReviewListAmount(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status);
     Optional<Review> findReviewById(long id);
-    boolean addReview(User owner, long targetId, int score, String description);
+    Optional<Review> addReview(long userId, long targetId, int score, String description);
     Optional<Review> updateReview(Review review);
     Optional<Review> updateReview(long id, long ownerId, long targetId, int score, String description);
     Optional<Review> updateReview(long id, User owner, long targetId, int score, String description);
-    double getReviewAverage(long userId);
+    Optional<Review> updateReviewScore(long id, int score);
+    Optional<Review> updateReviewDescription(long id, String description);
+    void removeReview(long id);
+    void recoverReview(long id);
+    double getReviewAverage(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status);
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);
     boolean isAdmin(User user);
+    boolean isAdminUsername(String username);
     boolean recoverUser(long id);
     boolean removeUser(long id);
 
@@ -52,5 +57,5 @@ public interface UserService {
     Optional<Token> createToken(UUID token, User user);
     boolean deleteToken(UUID token);
     Optional<User> activateAccountWithToken(UUID token);
-
+    void cleanOldTokens();
 }

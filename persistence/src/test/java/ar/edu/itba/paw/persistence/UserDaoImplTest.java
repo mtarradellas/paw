@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
@@ -55,7 +54,6 @@ public class UserDaoImplTest {
     private static final String O_LOCALE = "en_US";
 
     /* REVIEW */
-    private static Long REVIEW_ID;
     private static final int SCORE = 5;
     private static final String DESC = "GREATEST_USER_OF_ALL_TIME";
     private static final ReviewStatus REVIEW_STATUS = ReviewStatus.VALID;

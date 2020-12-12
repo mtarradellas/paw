@@ -1,9 +1,20 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.models.constants.RequestStatus;
-import ar.edu.itba.paw.models.constants.UserStatus;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
+
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.junit.Assert;
@@ -11,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.support.PersistenceExceptionTranslationInterceptor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,14 +29,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.sql.DataSource;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.Assert.*;
+import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Department;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Province;
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.RequestStatus;
+import ar.edu.itba.paw.models.constants.UserStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -130,7 +142,6 @@ public class RequestDaoImplTest {
     private SimpleJdbcInsert jdbcInsertDepartment;
     private SimpleJdbcInsert jdbcInsertSpecies;
     private SimpleJdbcInsert jdbcInsertBreed;
-    private SimpleJdbcInsert jdbcInsertImage;
 
     @Before
     public void setUp() {
@@ -152,9 +163,6 @@ public class RequestDaoImplTest {
         /* BREED */
         jdbcInsertBreed = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(BREEDS_TABLE);
-        /* IMAGE */
-        jdbcInsertImage = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(IMAGES_TABLE);
         /* PROVINCE */
         jdbcInsertProvince = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(PROVINCES_TABLE);

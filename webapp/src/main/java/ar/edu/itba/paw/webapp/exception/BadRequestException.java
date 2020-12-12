@@ -1,12 +1,18 @@
 package ar.edu.itba.paw.webapp.exception;
 
 public class BadRequestException extends RuntimeException {
+    private static final long serialVersionUID = -7198391919943545993L;
+
     public BadRequestException() {
         super();
     }
 
     public BadRequestException(String message) {
         super(message);
+    }
+
+    public BadRequestException(String parameter, String value, String hint) {
+        super("Bad Request: Invalid " + parameter + " parameter. Invalid value: " + value + ". " + hint + ".");
     }
 
     public BadRequestException(String message, Throwable cause) {
