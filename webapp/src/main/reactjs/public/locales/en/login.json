@@ -1,0 +1,23 @@
+{
+  "title": "Login",
+  "form": {
+    "username": {
+      "label": "Username",
+      "placeholder": "Enter username",
+      "errors": {
+        "required": "Enter your username"
+      }
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter password",
+      "errors": {
+        "required": "Enter your password"
+      }
+    },
+    "submit": "Login",
+    "dontHaveAnAccount": "¿Don't have an account?",
+    "registerButton": "Register",
+    "forgotPassword": "¿Forgot password?"
+  }
+}

@@ -22,7 +22,8 @@
     "rejected": "Rechazada",
     "pending": "Pendiente",
     "canceled": "Cancelada",
-    "sold": "Vendida",
+    "notSold": "Aceptada (No vendida)",
+    "sold": "Vendida a {{ownerName}}",
     "removed": "Removida",
     "unavailable": "No Disponible",
     "available": "Disponible"
@@ -34,16 +35,30 @@
     "actions": "Acciones"
   },
   "buttons": {
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "imSure": "Estoy seguro",
+    "visitPet": "Visitar Mascota",
+    "visitOwner": "Visitar Dueño",
+    "recover": "Recueprar"
   },
-  "modal": {
+  "helpModal": {
+    "title": "Ayuda",
     "firstTitle": "Página de Solicitudes",
     "firstDesc": "Bienvenido a la página de solicitudes, aquí puede ver estado de todas las mascotas que ha solicitado. Hay cuatro estados: pendiente (significa que el dueño no ha decidido todavía), aceptado o rechazado (dueño ha decidido si desea o no darle el animal, no puede recuperar esta solicitud) y cancelado (puede cancelar una solicitud haciendo click en 'cancelar', y recupetarlo haciendo click en 'recuperar'). ",
     "secondTitle": "Herramientas de Filtrado",
     "secondDesc": "Para asistirlo en la organización de sus solicitudes, utilize el menú de filtrado encontrado a la izquierda."
   },
+  "cancelModal": {
+    "title": "Por favor confirme su acción",
+    "subtitle": "¿Está seguro que desea cancelar esta solicitud?"
+  },
   "messages": {
     "error": "Un error fue detectado",
-    "pending": "Mostraste interés en {{petName}}"
+    "pending": "Mostraste interés en {{petName}}",
+    "accepted": "¡Tu solicitud de {{petName}} fue aceptada!",
+    "rejected": "Tu solicitud de {{petName}} fue rechazada",
+    "canceled": "Cancelaste tu solicitud de {{petName}}",
+    "sold": "La mascota {{petName}} ha sido vendida"
   }
 }

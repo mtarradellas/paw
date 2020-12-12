@@ -15,10 +15,13 @@ import RequestsView from "./views/requests/RequestsView";
 
 import LoginContext from './constants/loginContext';
 
-import {HOME, REQUESTS, REGISTER, USER} from "./constants/routes";
+
+import {HOME, LOGIN, PET, REGISTER, USER, REQUESTS} from "./constants/routes";
 import useLogin from "./hooks/useLogin";
 import UserView from "./views/user/UserView";
 import RegisterView from "./views/register/RegisterView";
+import LoginView from "./views/login/LoginView";
+import PetView from "./views/pet/PetView";
 
 function App() {
     const login = useLogin();
@@ -37,7 +40,12 @@ function App() {
                             <RegisterView/>
                         </BasicLayout>
                     </Route>
-                    <Route exact path={USER}
+                    <Route exact path={LOGIN}>
+                        <BasicLayout>
+                            <LoginView/>
+                        </BasicLayout>
+                    </Route>
+                    <Route exact path={USER + ':id'}
                         render={
                             ({id}) => (
                                 <BasicLayout>
@@ -51,6 +59,15 @@ function App() {
                             <RequestsView/>
                         </BasicLayout>
                     </Route>
+                    <Route exact path={PET + ':id'}
+                           render={
+                               ({id}) => (
+                                   <BasicLayout>
+                                       <PetView id={id}/>
+                                   </BasicLayout>
+                               )
+                           }
+                    />
                 </Switch>
             </Router>
         </LoginContext.Provider>

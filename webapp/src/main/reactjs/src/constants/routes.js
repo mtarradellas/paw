@@ -8,6 +8,8 @@ export const INTERESTS = "/interests";
 
 export const LOGIN = "/login";
 
-export const USER = "/user/:id";
+export const USER = '/user/';
 
-export const PET = "/pet/:id";
+export const FORGOT_PASSWORD = '/forgot-password';
+
+export const PET = '/pet/';

@@ -1,17 +1,23 @@
 import React from 'react';
-
 import {List, Card, Button} from 'antd';
 import {useTranslation} from "react-i18next";
 
 import "../../css/home/petCard.css";
+import {Link} from "react-router-dom";
+import {PET} from "../../constants/routes";
 
-function PetCard({name, specie, breed, price, sex, owner, uploadDate}){
+function PetCard({pet}){
+    const {name, specie, breed, price, sex, owner, uploadDate, id} = pet;
+
     const {t} = useTranslation(["petInformation", "home"]);
 
     return <Card
             className={"pet-card"}
-            hoverable
-            cover={<img alt="example" src="http://pawserver.it.itba.edu.ar/paw-2020a-7/img/1" />}
+            cover={
+                <Link to={PET + id}>
+                    <img className={"pet-card--img"} alt="example" src="http://pawserver.it.itba.edu.ar/paw-2020a-7/img/1" />
+                </Link>
+            }
         >
             <List
                 size={"small"}
@@ -23,7 +29,11 @@ function PetCard({name, specie, breed, price, sex, owner, uploadDate}){
                 <List.Item>{t("sex")}: {sex}</List.Item>
                 <List.Item>{t("owner")}: {owner}</List.Item>
                 <List.Item>{t("uploadDate")}: {uploadDate}</List.Item>
-                <List.Item><Button type={"primary"}>{t("home:pets.petsCard.goToPage")}</Button></List.Item>
+                <List.Item>
+                    <Link to={PET + id}>
+                        <Button type={"primary"}>{t("home:pets.petsCard.goToPage")}</Button>
+                    </Link>
+                </List.Item>
             </List>
         </Card>
 }

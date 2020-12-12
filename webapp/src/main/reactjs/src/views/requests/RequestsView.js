@@ -18,14 +18,14 @@ const request = {
     id:0,
     creationDate: "02-03-2020",
     updateDate: "05-05-2020",
-    status: "PENDING",
+    status: "SOLD",
     user: "pedro",
     userId: 4,
     pet: "nairobi",
     petId: 41,
     petStatus: "AVAILABLE",
-    newPetOwner: "",
-    newPetOwnerId: 0
+    newPetOwner: "JORGE",
+    newPetOwnerId: 1
 
 }
 
@@ -85,20 +85,20 @@ function MainContent({requests, requestsCount}) {
             <Pagination defaultCurrent={1} total={50}/>
         </Divider>
         <Modal
-            title="Help"
+            title={t("helpModal.title")}
             visible={isModalVisible}
             onCancel={handleCancel}
             footer={[
                 <Button key="submit" type="primary" onClick={handleOk}>
-                    Close
+                    {t("buttons.close")}
                 </Button>
             ]}
         >
             <div>
-                <h2>{t("modal.firstTitle")} </h2>
-                <p>{t("modal.firstDesc")}</p>
-                <h2>{t("modal.secondTitle")}</h2>
-                <p>{t("modal.secondDesc")}</p>
+                <h2>{t("helpModal.firstTitle")} </h2>
+                <p>{t("helpModal.firstDesc")}</p>
+                <h2>{t("helpModal.secondTitle")}</h2>
+                <p>{t("helpModal.secondDesc")}</p>
             </div>
         </Modal>
     </div>)

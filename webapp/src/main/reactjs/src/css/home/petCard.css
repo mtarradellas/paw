@@ -2,3 +2,7 @@
     max-width: 18rem;
     margin: 1rem 1rem 1rem 1rem;
 }
+
+.pet-card--img{
+    width: 100%;
+}
