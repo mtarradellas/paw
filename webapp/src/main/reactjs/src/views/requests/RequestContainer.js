@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
-import {useTranslation} from "react-i18next";
+import {useTranslation, Trans} from "react-i18next";
 import {List, Button, Modal} from 'antd';
 import {PET, USER} from '../../constants/routes';
+import {Link} from "react-router-dom";
+
 
 import GenericNotification from '../other/GenericNotification'
 
@@ -15,6 +17,7 @@ function RequestNotification(
     let reqTarget = null;
     let reqStatus = null;
     let reqButtons = null;
+    let shaded = false;
 
     if (status === "ACCEPTED") {
         reqTarget = (
@@ -29,6 +32,7 @@ function RequestNotification(
             </div>
         )
     } else if (status === "REJECTED") {
+        shaded = true;
         reqTarget = (
             <p>{t("messages.rejected", {petName: pet})}
                 <small className={"date-text"}> {updateDate.toLocaleString()}</small>
@@ -62,6 +66,7 @@ function RequestNotification(
         )
 
     } else if (status === "CANCELED") {
+        shaded = true;
         const onConfirm = () => {
             alert("recovered" + id)
         }
@@ -83,6 +88,7 @@ function RequestNotification(
         )
 
     } else if (status === "SOLD") {
+        shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: pet})}
                 <small className={"date-text"}> {updateDate.toLocaleString()}</small>
@@ -99,7 +105,7 @@ function RequestNotification(
     }
 
     return (
-        <GenericNotification target={reqTarget} status={reqStatus} buttons={reqButtons}/>
+        <GenericNotification target={reqTarget} status={reqStatus} buttons={reqButtons} shaded={shaded} />
 
     )
 }
