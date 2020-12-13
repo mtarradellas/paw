@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {SERVER_URL} from '../../config';
+const qs = require('querystring')
 
 
 const REGISTER_ENDPOINT = '/register';
@@ -10,7 +11,7 @@ export const REGISTER_ERRORS = {
 };
 export async function register({username, password, email}){
     try {
-        await axios.post(SERVER_URL + REGISTER_ENDPOINT, {username, password, email});
+        await axios.post(SERVER_URL + REGISTER_ENDPOINT, {username, password, mail: email});
     }catch (e) {
         //TODO: error handling
         throw REGISTER_ERRORS.CONN_ERROR;
@@ -30,7 +31,8 @@ export async function login({username, password}){
     };
 
     try {
-        await axios.post(SERVER_URL + LOGIN_ENDPOINT, {username, password}, config);
+        const response = await axios.post(SERVER_URL + LOGIN_ENDPOINT, qs.stringify({username, password}), config);
+        console.log(response);
     }catch (e) {
         //TODO: error handling
         throw LOGIN_ERRORS.CONN_ERROR;
