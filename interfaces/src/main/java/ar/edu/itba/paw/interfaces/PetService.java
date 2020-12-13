@@ -45,9 +45,9 @@ public interface PetService {
                          throws InvalidImageQuantityException;
 
 
-    boolean    sellPet(long petId, User owner, long newOwnerId, String contextURL);
-    boolean  removePet(long petId, User user);
-    boolean recoverPet(long petId, User user);
+    boolean    sellPet(long petId, long ownerId, long newOwnerId, String contextURL);
+    boolean  removePet(long petId, long userId);
+    boolean recoverPet(long petId, long userId);
 
     boolean    adminSellPet(long petId,  long newOwnerId);
     boolean  adminRemovePet(long petId);
@@ -61,9 +61,9 @@ public interface PetService {
     void setLocale(String locale, List<Pet> pet);
 
     List<Question> listQuestions(long petId, int page, int pageSize);
-    int getListQuestionsAmount(long petId);
+    int getListQuestionsAmount(Long petId);
     Optional<Question> findQuestionById(long id);
     Optional<Answer> findAnswerById(long id);
-    Optional<Question> createQuestion(String content, User user, long petId, String contextUrl);
-    Optional<Answer> createAnswer(long questionId, String content, User user, String contextUrl);
+    Optional<Question> createQuestion(String content, Long userId, long petId, String contextUrl);
+    Optional<Answer> createAnswer(Long questionId, String content, Long userId, String contextUrl);
 }
