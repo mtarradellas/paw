@@ -26,6 +26,7 @@ import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.dto.ErrorDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
@@ -61,7 +62,8 @@ public class HomeController {
             ParseUtils.parseUser(user);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
         final String locale = ApiUtils.getLocale();
@@ -70,14 +72,18 @@ public class HomeController {
             opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getBaseUri().toString());
         } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("User creation failed with exception");
-            LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            String msg = ex.getMessage();
+            LOGGER.warn("{}", msg);
+            final int code = msg.contains("username")? 2 : 3;
+            msg = msg.contains("username")? "Username " : "Mail "; 
+            final ErrorDto body = new ErrorDto(code, msg + "already exists.");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if (!opNewUser.isPresent()) {
             LOGGER.warn("User creation failed, service returned empty user");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final URI userUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewUser.get().getId())).build();
+        final URI userUri = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(opNewUser.get().getId())).build();
         return Response.created(userUri).build();
     }
 

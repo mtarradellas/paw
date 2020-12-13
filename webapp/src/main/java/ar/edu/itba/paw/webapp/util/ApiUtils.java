@@ -47,7 +47,8 @@ public class ApiUtils {
 
     public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Object genericEntity) {
         final int firstPage = 1;
-        final int lastPage  = (int) Math.ceil((double) amount / pageSize);
+        int lastPage  = (int) Math.ceil((double) amount / (double) pageSize);
+        if (lastPage == 0) lastPage = 1;
         final int prevPage  = (page == 1) ? lastPage : page - 1;
         final int nextPage  = (page == lastPage) ? firstPage : page + 1;
 

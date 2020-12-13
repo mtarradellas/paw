@@ -1,8 +1,10 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.User;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+
+import javax.ws.rs.core.UriInfo;
+
+import ar.edu.itba.paw.models.User;
 
 public class UserDto {
 
@@ -10,7 +12,7 @@ public class UserDto {
     private String username;
     private String password;
     private String mail;
-    private int status;
+    private Integer status;
 
     private URI requests;
     private URI interests;
@@ -109,11 +111,11 @@ public class UserDto {
         this.mail = mail;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 }
