@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.dto.*;
@@ -12,6 +14,8 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import javax.imageio.ImageIO;
 import javax.ws.rs.*;
@@ -38,6 +42,9 @@ public class PetController{
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private UserService userService;
+
     @Context
     private UriInfo uriInfo;
 
@@ -55,7 +62,6 @@ public class PetController{
                             @QueryParam("priceRange") int priceRange,
                             @QueryParam("page") @DefaultValue("1") int page) {
 
-        /*TODO status? desde donde se va a usar esta funcion?*/
         final String locale = ApiUtils.getLocale();
         int[] range;
         try {
@@ -71,19 +77,25 @@ public class PetController{
             gender = ParseUtils.parseGender(gender);
             range = ParseUtils.parseRange(priceRange);
         } catch (BadRequestException ex) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+
         int minPrice = range[0];
         int maxPrice = range[1];
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
         try {
-            petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, null,
+            petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE,
                     searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
                     .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         final int amount = petService.getListAmount();
         return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new GenericEntity<List<PetDto>>(petList) {});
@@ -113,8 +125,10 @@ public class PetController{
             gender = ParseUtils.parseGender(gender);
             range = ParseUtils.parseRange(priceRange);
         } catch (BadRequestException ex) {
-            LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         int minPrice = range[0];
         int maxPrice = range[1];
@@ -124,17 +138,19 @@ public class PetController{
         List<Department> departments;
         List<Breed> breeds;
         try {
-            breeds = petService.filteredBreedList(locale, findList, null, species, breed, gender, null,
+            breeds = petService.filteredBreedList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
                  minPrice, maxPrice, province, department);
-            departments = petService.filteredDepartmentList(locale, findList, null, species, breed, gender, null,
+            departments = petService.filteredDepartmentList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
                     minPrice, maxPrice, province, department);
-            rangeList = petService.filteredRangesList(locale, findList, null, species, breed, gender, null,
+            rangeList = petService.filteredRangesList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
                     minPrice, maxPrice, province, department);
-            genderList = petService.filteredGenderList(locale, findList, null, species, breed, gender, null,
+            genderList = petService.filteredGenderList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
                     minPrice, maxPrice, province, department);
-        } catch(NotFoundException ex) {
+        } catch(NotFoundException | PetException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         List<SpeciesDto> speciesList = breeds.stream().map(Breed::getSpecies).distinct().sorted(Species::compareTo)
                 .map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
@@ -158,17 +174,20 @@ public class PetController{
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response create(final PetDto pet) {
         String locale = ApiUtils.getLocale();
-        /*TODO check if user is logged*/
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
         Optional<Pet> opNewPet;
 
         /* TODO como recibir las fotos ?*/
         try {
             opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
-                    pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getUserId(), pet.getSpeciesId(), pet.getBreedId(),
+                    pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
                     pet.getProvinceId(), pet.getDepartmentId(),null);
         } catch(NotFoundException ex) {
-            LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if (!opNewPet.isPresent()) {
             LOGGER.warn("Pet creation failed");
@@ -188,8 +207,12 @@ public class PetController{
             LOGGER.debug("Pet {} not found", petId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        PetDto pet = PetDto.fromPet(opPet.get(), uriInfo);
-        return Response.ok(new GenericEntity<PetDto>(pet) {}).build();
+        Pet pet = opPet.get();
+        if(pet.getStatus() == PetStatus.REMOVED || pet.getStatus() == PetStatus.UNAVAILABLE) {
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        PetDto petDto = PetDto.fromPet(pet, uriInfo);
+        return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
     }
 
     @GET
@@ -223,7 +246,8 @@ public class PetController{
         int diff = Math.abs(height-width);
         if(width>height){
             cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
-        }else{ if(width<height)
+        }
+        else{ if(width<height)
             cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
         }
 
@@ -239,24 +263,28 @@ public class PetController{
     @Path("/{petId}/sell-adopt")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response petUpdateSold(@PathParam("petId") Long petId,
-                                  @QueryParam("loggedUser") @DefaultValue("0") Long loggedUser,
                                   final UserDto newOwner) {
         Long newOwnerId;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
         try {
             newOwnerId = ParseUtils.parseUserId(newOwner.getId());
-            loggedUser = ParseUtils.parseUserId(loggedUser);
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if(newOwnerId == null || loggedUser == null || petId == null) {
             LOGGER.warn("Invalid parameters. New owner {}, logged user {}, pet {}", newOwnerId, loggedUser, petId);
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, "Invalid parameters");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         boolean sold;
         try {
-            sold = petService.sellPet(petId, loggedUser, newOwnerId, uriInfo.getBaseUri().toString());
+            sold = petService.sellPet(petId, loggedUser.getId(), newOwnerId, uriInfo.getBaseUri().toString());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -270,16 +298,16 @@ public class PetController{
 
     @POST
     @Path("/{petId}/remove")
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response petUpdateRemove(@PathParam("petId") Long petId,
-                                  @QueryParam("loggedUser") @DefaultValue("0") Long loggedUser) {
-
+    public Response petUpdateRemove(@PathParam("petId") Long petId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
         try {
-            loggedUser = ParseUtils.parseUserId(loggedUser);
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if(loggedUser == null || petId == null) {
             LOGGER.warn("Invalid parameters. Logged user {}, pet {}", loggedUser, petId);
@@ -287,7 +315,7 @@ public class PetController{
         }
         boolean removed;
         try {
-            removed = petService.removePet(petId, loggedUser);
+            removed = petService.removePet(petId, loggedUser.getId());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -301,11 +329,10 @@ public class PetController{
 
     @POST
     @Path("/{petId}/recover")
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response petUpdateRecover(@PathParam("petId") Long petId,
-                                    @QueryParam("loggedUser") @DefaultValue("0") Long loggedUser) {
+    public Response petUpdateRecover(@PathParam("petId") Long petId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
         try {
-            loggedUser = ParseUtils.parseUserId(loggedUser);
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
@@ -317,7 +344,7 @@ public class PetController{
         }
         boolean recovered;
         try {
-            recovered = petService.recoverPet(petId, loggedUser);
+            recovered = petService.recoverPet(petId, loggedUser.getId());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -328,55 +355,9 @@ public class PetController{
         }
         return Response.ok().build();
     }
-
-
 }
 
 
-
-//
-//    @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
-//    public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,
-//                                  final BindingResult errors, HttpServletRequest request) {
-//        if (errors.hasErrors()) {
-//            return uploadPetForm(petForm);
-//        }
-//        User user = loggedUser();
-//        if (user == null) throw new UserNotFoundException();
-//
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : petForm.getPhotos()) {
-//                try {
-//                    photos.add(photo.getBytes());
-//                } catch (IOException ex) {
-//                    ex.printStackTrace();
-//                    throw new ImageLoadException(ex);
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return uploadPetForm(petForm).addObject("imageError", true);
-//        }
-//
-//        Optional<Pet> opPet;
-//        try{
-//            LocalDateTime birthDate = petForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//            opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
-//                    petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, user.getId(),
-//                    petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return uploadPetForm(petForm).addObject("petError", true);
-//        }
-//
-//        if (!opPet.isPresent()) {
-//            LOGGER.warn("Pet could not be created");
-//            return uploadPetForm(petForm).addObject("petError", true);
-//        }
-//
-//        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
-//    }
 //
 //
 //    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })

@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
@@ -90,12 +91,14 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
-        if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
-
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+        System.out.println("WWWWWWWWWWW"+breed+breedId);
 
         department = validateDepartment(departmentId, provinceId);
         province = (department != null)? department.getProvince() : validateProvince(provinceId);
@@ -114,8 +117,10 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
-        if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
@@ -135,8 +140,10 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
-        if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
@@ -155,8 +162,10 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
-        if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
@@ -209,14 +218,16 @@ public class PetServiceImpl implements PetService {
     }
 
     private Breed validateBreed(Long breedId, Long speciesId) {
-        if (breedId == null || speciesId == null) return null;
+        if (breedId == null) return null;
         Optional<Breed> opBreed = speciesService.findBreedById(breedId);
         if (!opBreed.isPresent()) return null;
         Breed breed = opBreed.get();
-        Optional<Species> opSpecies = speciesService.findSpeciesById(speciesId);
-        if (!opSpecies.isPresent()) return null;
-        Species species = opSpecies.get();
-        if (!breed.getSpecies().getId().equals(species.getId())) return null;
+        if(speciesId != null) {
+            Optional<Species> opSpecies = speciesService.findSpeciesById(speciesId);
+            if (!opSpecies.isPresent()) return null;
+            Species species = opSpecies.get();
+            if (!breed.getSpecies().getId().equals(species.getId())) throw new PetException("Species and breed don't match");
+        }
         return breed;
     }
 
@@ -316,6 +327,8 @@ public class PetServiceImpl implements PetService {
         if (!user.getStatus().equals(UserStatus.ACTIVE)) {
             LOGGER.warn("User {} is not active, pet creation failed", userId);
         }
+
+        System.out.println("EEEEEEEEEEEEEEE"+status);
 
         Pet pet = petDao.create(petName, birthDate, gender, vaccinated, price, LocalDateTime.now(), description, status, user,
                 species, breed, province, department);

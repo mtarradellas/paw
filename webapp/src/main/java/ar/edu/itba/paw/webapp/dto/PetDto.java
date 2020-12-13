@@ -14,10 +14,10 @@ public class PetDto {
     private LocalDateTime birthDate;
     private String gender;
     private boolean vaccinated;
-    private int price;
+    private Integer price;
     private LocalDateTime uploadDate;
     private String description;
-    private PetStatus status;
+    private Integer status;
     private URI species;
     private URI breed;
     private URI province;
@@ -53,7 +53,7 @@ public class PetDto {
         dto.price = pet.getPrice();
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
-        dto.status = pet.getStatus();
+        dto.status = pet.getStatus().getValue();
         dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
         dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
         dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
@@ -92,7 +92,7 @@ public class PetDto {
         dto.price = pet.getPrice();
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
-        dto.status = pet.getStatus();
+        dto.status = pet.getStatus().getValue();
         dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
         dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
         dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
@@ -152,11 +152,11 @@ public class PetDto {
         this.vaccinated = vaccinated;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
@@ -176,11 +176,11 @@ public class PetDto {
         this.description = description;
     }
 
-    public PetStatus getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(PetStatus status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
