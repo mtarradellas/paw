@@ -1,13 +1,13 @@
 import React, {useState} from "react";
-import {Button, Modal, Row, Col, Divider, Pagination} from 'antd';
+import ContentWithSidebar from "../../components/ContentWithSidebar";
 
 import {useTranslation} from "react-i18next";
-import ContentWithSidebar from "../../components/ContentWithSidebar";
-import FilterRequestsForm from "./FilterRequestsForm";
-
-import RequestContainer from "./RequestContainer";
 
 import "../../css/requests&interests/requests.css"
+import FilterInterestsForm from "./FilterInterestsForm";
+import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
+import InterestContainer from "./InterestContainer";
+
 
 /*
 *  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
@@ -89,21 +89,21 @@ const request4 = {
 
 }
 
-const sampleRequests = []
-sampleRequests.push(request)
-sampleRequests.push(request1)
-sampleRequests.push(request2)
-sampleRequests.push(request3)
-sampleRequests.push(request4)
+const sampleInterests = []
+sampleInterests.push(request)
+sampleInterests.push(request1)
+sampleInterests.push(request2)
+sampleInterests.push(request3)
+sampleInterests.push(request4)
 
 function SideContent() {
     return (<div>
-        <FilterRequestsForm/>
+        <FilterInterestsForm/>
     </div>)
 }
 
-function MainContent({requests, requestsCount}) {
-    const {t} = useTranslation('requests');
+function MainContent({interests, interestsCount}) {
+    const {t} = useTranslation('interests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -122,7 +122,7 @@ function MainContent({requests, requestsCount}) {
     return (<div>
         <Row style={{margin: 0, padding: 0}}>
             <Col span={23}>
-                <h1><b>{t("requests.title", {count: requestsCount})}</b></h1>
+                <h1><b>{t("interests.title", {count: interestsCount})}</b></h1>
             </Col>
             <Col>
                 <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
@@ -130,20 +130,20 @@ function MainContent({requests, requestsCount}) {
         </Row>
         <Row style={{margin: 0, padding: 0}}>
             <Col span={12}>
-                <h3><b>{t("requests.request")}</b></h3>
+                <h3><b>{t("interests.interest")}</b></h3>
             </Col>
             <Col span={4}>
-                <h3><b>{t("requests.requestStatus")}</b></h3>
+                <h3><b>{t("interests.status")}</b></h3>
             </Col>
             <Col span={8}>
                 <div className={"centered"}>
 
-                    <h3><b>{t("requests.actions")}</b></h3>
+                    <h3><b>{t("interests.actions")}</b></h3>
                 </div>
             </Col>
         </Row>
         <Divider style={{margin: 0, padding: 0}}/>
-        <RequestContainer requests={requests}/>
+        <InterestContainer interests={interests}/>
         <Divider orientation={"left"}>
             <Pagination defaultCurrent={1} total={50}/>
         </Divider>
@@ -167,19 +167,18 @@ function MainContent({requests, requestsCount}) {
     </div>)
 }
 
-
-function RequestsView() {
-    const requests = sampleRequests;
-    const requestsCount = sampleRequests.length;
+function InterestsView() {
+    const interests = sampleInterests;
+    const interestsCount = sampleInterests.length;
 
     return <ContentWithSidebar
         sideContent={
             <SideContent/>
         }
         mainContent={
-            <MainContent requestsCount={requestsCount} requests={requests}/>
+            <MainContent interestsCount={interestsCount} interests={interests}/>
         }
     />;
 }
 
-export default RequestsView;
+export default InterestsView;

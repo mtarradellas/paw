@@ -16,10 +16,10 @@ function GenericNotification({target, status, buttons, shaded}) {
                 <Col span={12}>
                     <h3>{target}</h3>
                 </Col>
-                <Col span={6}>
+                <Col span={4}>
                     <h3>{status}</h3>
                 </Col>
-                <Col span={6}>
+                <Col span={8}>
                     <div className={"centered"}>
                         <h3>{buttons}</h3>
                     </div>
