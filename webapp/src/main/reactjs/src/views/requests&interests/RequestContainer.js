@@ -5,7 +5,7 @@ import {PET, USER} from '../../constants/routes';
 import {Link} from "react-router-dom";
 
 
-import GenericNotification from '../other/GenericNotification'
+import GenericNotification from './GenericNotification'
 
 //TODO: ver el tema de formateo de fechas
 //TODO: manejo de formularios para botones y links y eso

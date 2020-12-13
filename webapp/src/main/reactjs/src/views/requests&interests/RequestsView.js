@@ -7,7 +7,7 @@ import FilterRequestsForm from "./FilterRequestsForm";
 
 import RequestContainer from "./RequestContainer";
 
-import "../../css/requests/requests.css"
+import "../../css/requests&interests/requests.css"
 
 /*
 *  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD

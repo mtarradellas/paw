@@ -11,7 +11,7 @@ import './css/html.css';
 import HomeView from "./views/home/HomeView";
 import BasicLayout from "./components/BasicLayout";
 
-import RequestsView from "./views/requests/RequestsView";
+import RequestsView from "./views/requests&interests/RequestsView";
 
 import LoginContext from './constants/loginContext';
 
