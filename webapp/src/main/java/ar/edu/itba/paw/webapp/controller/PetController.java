@@ -161,6 +161,8 @@ public class PetController{
         String locale = ApiUtils.getLocale();
         /*TODO check if user is logged*/
         Optional<Pet> opNewPet;
+
+        /* TODO como recibir las fotos ?*/
         try {
             opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
                     pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getUserId(), pet.getSpeciesId(), pet.getBreedId(),
@@ -332,37 +334,6 @@ public class PetController{
 }
 
 
-
-//
-//    @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-//    public @ResponseBody
-//    byte[] getImageWithMediaType(@PathVariable("id") long id) throws IOException {
-//
-//        byte[] byteImage = imageService.getDataById(id).orElse(null);
-//        if(byteImage == null){
-//            return null;
-//        }
-//
-//        ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
-//        BufferedImage bufferedImage = ImageIO.read(bis);
-//        int height = bufferedImage.getHeight(), width = bufferedImage.getWidth();
-//
-//        BufferedImage cropped = bufferedImage;
-//        int diff = Math.abs(height-width);
-//        if(width>height){
-//            cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
-//        }else{ if(width<height)
-//            cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
-//        }
-//
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        ImageIO.write(cropped, "jpg", baos );
-//        baos.flush();
-//        byte[] imageInByte = baos.toByteArray();
-//        baos.close();
-//        return imageInByte;
-//    }
-//
 
 //
 //    @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })

@@ -1,52 +1,89 @@
-//package ar.edu.itba.paw.webapp.controller.admin;
-//
-//import ar.edu.itba.paw.interfaces.LocationService;
-//import ar.edu.itba.paw.interfaces.PetService;
-//import ar.edu.itba.paw.interfaces.SpeciesService;
-//import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
-//import ar.edu.itba.paw.interfaces.exceptions.UserException;
-//import ar.edu.itba.paw.models.*;
-//import ar.edu.itba.paw.models.constants.PetStatus;
-//import ar.edu.itba.paw.webapp.controller.BaseController;
-//import ar.edu.itba.paw.webapp.exception.ImageLoadException;
-//import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
-//import ar.edu.itba.paw.webapp.form.AdminUploadPetForm;
-//import ar.edu.itba.paw.webapp.form.EditPetForm;
-//import ar.edu.itba.paw.webapp.util.ParseUtils;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.dao.DataIntegrityViolationException;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.validation.BindingResult;
-//import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.multipart.MultipartFile;
-//import org.springframework.web.servlet.ModelAndView;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.validation.Valid;
-//import java.io.IOException;
-//import java.time.LocalDateTime;
-//import java.time.ZoneId;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Optional;
-//
-//@Controller
-//public class AdminPetController extends BaseController {
-//
-//    private static final Logger LOGGER = LoggerFactory.getLogger(AdminPetController.class);
-//
-//    @Autowired
-//    private PetService petService;
-//
-//    @Autowired
-//    private SpeciesService speciesService;
-//
-//    @Autowired
-//    private LocationService locationService;
-//
-//    private static final int PET_PAGE_SIZE = 25;
-//
+package ar.edu.itba.paw.webapp.controller.admin;
+
+import ar.edu.itba.paw.interfaces.LocationService;
+import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.SpeciesService;
+import ar.edu.itba.paw.webapp.dto.PetDto;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+@Path("/admin/pets")
+public class AdminPetController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminPetController.class);
+
+    @Autowired
+    private PetService petService;
+
+    @Autowired
+    private SpeciesService speciesService;
+
+    @Autowired
+    private LocationService locationService;
+
+    private static final int PET_PAGE_SIZE = 25;
+
+    @GET
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+                            @QueryParam("species") @DefaultValue("0") Long species,
+                            @QueryParam("breed") @DefaultValue("0") Long breed,
+                            @QueryParam("province") @DefaultValue("0") Long province,
+                            @QueryParam("department") @DefaultValue("0") Long department,
+                            @QueryParam("gender") String gender,
+                            @QueryParam("searchCriteria") String searchCriteria,
+                            @QueryParam("find") String find,
+                            @QueryParam("searchOrder") String searchOrder,
+                            @QueryParam("priceRange") int priceRange,
+                            @QueryParam("page") @DefaultValue("1") int page) {
+
+        final String locale = ApiUtils.getLocale();
+        int[] range;
+        try {
+            ownerId = ParseUtils.parseUserId(ownerId);
+            ParseUtils.parsePage(page);
+            ParseUtils.isAllowedFind(find);
+            searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+            searchOrder = ParseUtils.parseOrder(searchOrder);
+            species = ParseUtils.parseSpecies(species);
+            breed = ParseUtils.parseBreed(breed);
+            province = ParseUtils.parseProvince(province);
+            department = ParseUtils.parseDepartment(department);
+            gender = ParseUtils.parseGender(gender);
+            range = ParseUtils.parseRange(priceRange);
+        } catch (BadRequestException ex) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        int minPrice = range[0];
+        int maxPrice = range[1];
+        List<String> findList = ParseUtils.parseFind(find);
+        List<PetDto> petList;
+        try {
+            petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, null,
+                    searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
+                    .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+        } catch(NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final int amount = petService.getListAmount();
+        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new GenericEntity<List<PetDto>>(petList) {});
+    }
+
+}
 //    @RequestMapping(value = "/admin/pets")
 //    public ModelAndView getPetsAdmin(@RequestParam(name = "species", required = false) String species,
 //                                     @RequestParam(name = "breed", required = false) String breed,
