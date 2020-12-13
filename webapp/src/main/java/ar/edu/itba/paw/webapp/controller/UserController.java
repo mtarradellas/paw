@@ -19,15 +19,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.dto.ErrorDto;
 import ar.edu.itba.paw.webapp.dto.PasswordDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 
 @Component
@@ -59,6 +63,14 @@ public class UserController {
     @DELETE
     @Path("/{userId}")
     public Response deleteUser(@PathParam("userId") long userId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = ApiUtils.loggedUser(userService, auth);
+        if (user == null || user.getId() != userId) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try{
             userService.removeUser(userId);
         } catch (NotFoundException ex) {
@@ -74,13 +86,23 @@ public class UserController {
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response updateUsername(@PathParam("userId") long userId,
                                    final UserDto user) {
-        if (user == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = ApiUtils.loggedUser(userService, auth);
+        if (currentUser == null || currentUser.getId() != userId) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
 
+        if (user == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         try {
             ParseUtils.parseUsername(user.getUsername());
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, ex.getMessage()); 
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
         Optional<User> opUser;
@@ -88,7 +110,8 @@ public class UserController {
             opUser = userService.updateUsername(userId, user.getUsername());
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(3, "Username already taken.");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -106,12 +129,25 @@ public class UserController {
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response updatePassword(@PathParam("userId") long userId,
                                    final PasswordDto dto) {
+        
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = ApiUtils.loggedUser(userService, auth);
+        if (currentUser == null || currentUser.getId() != userId) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
         try {
             ParseUtils.parsePassword(dto.getOldPassword());
             ParseUtils.parsePassword(dto.getNewPassword());
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
         Optional<User> opUser;
@@ -119,7 +155,9 @@ public class UserController {
             opUser = userService.updatePassword(userId, dto.getOldPassword(), dto.getNewPassword());
         } catch(InvalidPasswordException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();

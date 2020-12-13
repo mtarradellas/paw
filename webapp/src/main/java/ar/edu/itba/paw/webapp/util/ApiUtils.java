@@ -28,7 +28,7 @@ public class ApiUtils {
         else return "es_AR";
     }
 
-    public User loggedUser(UserService userService, Authentication auth) {
+    public static User loggedUser(UserService userService, Authentication auth) {
         if (auth == null) return null;
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
             return null;
