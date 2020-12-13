@@ -32,7 +32,8 @@ export async function login({username, password}){
 
     try {
         const response = await axios.post(SERVER_URL + LOGIN_ENDPOINT, qs.stringify({username, password}), config);
-        console.log(response);
+
+        return response.data.split(" ")[1];
     }catch (e) {
         //TODO: error handling
         throw LOGIN_ERRORS.CONN_ERROR;
