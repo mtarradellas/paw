@@ -1,4 +1,6 @@
 {
   "register": "Register",
-  "login": "Login"
+  "login": "Login",
+  "requests": "Requests",
+  "interests": "Interests"
 }

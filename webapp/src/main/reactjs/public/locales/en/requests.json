@@ -1,0 +1,65 @@
+{
+  "filterForm": {
+    "labels": {
+      "status": "Request Status",
+      "criteria": "Criteria",
+      "order": "Order"
+    },
+    "values": {
+      "any": "Any",
+      "date": "Date",
+      "petName": "Pet Name",
+      "asc": "Ascending",
+      "desc": "Descending"
+    },
+    "filterButtons": {
+      "filter": "Filter",
+      "clear": "Clear"
+    }
+  },
+  "status": {
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "pending": "Pending",
+    "canceled": "Canceled",
+    "notSold": "Accepted (Not Sold)",
+    "sold": "Sold to {{ownerName}}",
+    "removed": "Removed",
+    "unavailable": "Unavailable",
+    "available": "Available"
+  },
+  "requests": {
+    "title": "Pets you requested (Total results: {{count}})",
+    "request": "Request",
+    "requestStatus": "Request Status",
+    "actions": "Actions"
+  },
+  "buttons": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "imSure": "I'm sure",
+    "visitPet": "Visit Pet",
+    "visitOwner": "Visit Owner",
+    "recover": "Recover"
+  },
+  "modals": {
+    "helpModal": {
+      "title": "Help",
+      "firstTitle": "Requests Page",
+      "firstDesc": "Welcome to the requests page, here you can see the status of all the pets you have showed interest in. There are four states: pending (it means the owner has not decided yet), accepted or rejected (owner has chosen if he wishes you to adopt an animal, you cannot recover this request) and canceled (you can cancel pending requests by clicking 'cancel', and recover it by clicking 'recover').",
+      "secondTitle": "Filter Tools",
+      "secondDesc": "To aid you in organizing your requests, fell free to use the filter tools on the left side."
+    },
+    "pleaseConfirm": "Please confirm your action",
+    "cancel":"Are you sure you want to cancel this request?",
+    "recover": "Are you sure you want to recover this request?"
+  },
+  "messages": {
+    "error": "An error was detected",
+    "pending": "You showed interest in {{petName}}",
+    "accepted": "Your request for {{petName}} was accepted!",
+    "rejected": "Your request for {{petName}} was rejected",
+    "canceled": "You canceled your request for {{petName}}",
+    "sold": "The pet {{petName}} was already sold"
+  }
+}
