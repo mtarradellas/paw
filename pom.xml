@@ -53,10 +53,29 @@
     <hibernate-search>5.6.1.Final</hibernate-search>
     <velocity.version>1.7</velocity.version>
     <jersey.version>3.0-SNAPSHOT</jersey.version>
+    <jwt.version>0.10.7</jwt.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>${jwt.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>${jwt.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>${jwt.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.glassfish.jersey.containers</groupId>

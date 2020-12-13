@@ -64,7 +64,6 @@ public class RequestServiceImplTest {
 
     /* PET */
     private static final Long PET_ID = 1L;
-    private static final List<byte[]> PHOTOS = new ArrayList<>();
     private static final Pet PET = new Pet("petname", LocalDateTime.now(), "gender", true, 0, LocalDateTime.now(),
             "description", PetStatus.AVAILABLE, USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
 

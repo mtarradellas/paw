@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.webapp.config;
 
-import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.Filter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +15,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
+
+import ar.edu.itba.paw.webapp.auth.JwtAuthenticationFilter;
+import ar.edu.itba.paw.webapp.auth.JwtAuthorizationFilter;
+import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 
 @EnableWebSecurity
 @Configuration
@@ -27,6 +31,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Value("classpath:rememberMeToken.txt")
     private Resource token;
+
+    @Value("classpath:jwtSecret.txt")
+    private Resource secretPath;
 
     @Autowired
     private PSUserDetailsService userDetailsService;
@@ -37,33 +44,33 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(final HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception {
+        final String jwtAudience = "Pet Society";
+        final String jwtIssuer = "Pet Society Inc.";
+        final String jwtType = "JWT";
+
         http.sessionManagement()
-                .invalidSessionUrl("/")
-            .and().authorizeRequests()
-//                .antMatchers("/login", "/register").anonymous()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/user/**").authenticated()
-//                .antMatchers("/upload-pet").authenticated()
-//                .antMatchers("/pet/*/request","/interests/**","/requests/**").authenticated()
-//                .antMatchers("/pet/*/question", "/pet/*/answer").authenticated()
-                .antMatchers("/**").permitAll()
-            .and().formLogin()
-                .loginPage("/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .failureUrl("/login/error")
-                .defaultSuccessUrl("/", false)
+            .and().csrf().disable()
+            .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
+            .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
+            .authorizeRequests()
+                .antMatchers("/login", "/register").anonymous()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/users/**").authenticated()
+                .antMatchers("/pets/upload").authenticated()
+                .antMatchers("/pets/*/question", "/pet/*/answer").authenticated()
+                .antMatchers("/pets/*/request","/interests/**","/requests/**").authenticated()
+                .anyRequest().permitAll()
             .and().rememberMe()
                 .rememberMeParameter("rememberme")
                 .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(365))
-                .key(readToken())
-            .and().logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .key(ApiUtils.readToken(token))
+//            .and().logout() /* TODO uncomment?*/
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/login")
             .and().exceptionHandling()
                 .accessDeniedPage("/403")
-            .and().csrf().disable();
+            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     @Override
@@ -75,16 +82,5 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    private String readToken() {
-        StringBuilder contentBuilder = new StringBuilder();
-        try (Stream<String> tokenStream = Files.lines(token.getFile().toPath(), StandardCharsets.UTF_8)) {
-            tokenStream.forEach(contentBuilder::append);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contentBuilder.toString();
     }
 }

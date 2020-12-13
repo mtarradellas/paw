@@ -1,12 +1,30 @@
 package ar.edu.itba.paw.models;
 
-import ar.edu.itba.paw.models.constants.UserStatus;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.bridge.builtin.LongBridge;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.NumericField;
+import org.hibernate.search.annotations.SortableField;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.bridge.builtin.LongBridge;
+
+import ar.edu.itba.paw.models.constants.UserStatus;
 
 @Entity
 @Table(name = "Users")
@@ -83,8 +101,6 @@ public class User {
         this.mail = mail;
         this.status = status.getValue();
         this.locale = locale;
-        Object o;
-
     }
 
     @Override

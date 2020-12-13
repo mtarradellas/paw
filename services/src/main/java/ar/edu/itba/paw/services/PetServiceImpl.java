@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.*;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
-import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 

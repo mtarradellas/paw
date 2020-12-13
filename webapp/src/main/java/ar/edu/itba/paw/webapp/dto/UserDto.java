@@ -22,10 +22,26 @@ public class UserDto {
         dto.username = user.getUsername();
         dto.status = user.getStatus().getValue();
 
-        dto.requests = uriInfo.getAbsolutePathBuilder().path("requests").build();
+        dto.requests = uriInfo.getAbsolutePathBuilder().path("requests").build(); // TODO wrong paths
         dto.interests = uriInfo.getAbsolutePathBuilder().path("interests").build();
 
         // Not including password and mail for security
+
+        return dto;
+    }
+
+    public static UserDto fromUserAdmin(User user, UriInfo uriInfo) {
+        final UserDto dto = new UserDto();
+
+        dto.id = user.getId();
+        dto.username = user.getUsername();
+        dto.status = user.getStatus().getValue();
+        dto.mail = user.getMail();
+
+        dto.requests = uriInfo.getAbsolutePathBuilder().path("requests").build(); // TODO wrong paths
+        dto.interests = uriInfo.getAbsolutePathBuilder().path("interests").build();
+
+        // Not including password for security
 
         return dto;
     }

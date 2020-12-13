@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.exception;
 
 public class ImageLoadException extends RuntimeException{
+    private static final long serialVersionUID = 1672035312149108826L;
+
     public ImageLoadException() {
         super();
     }

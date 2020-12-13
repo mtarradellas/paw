@@ -49,6 +49,7 @@ public interface UserService {
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);
     boolean isAdmin(User user);
+    boolean isAdminUsername(String username);
     boolean recoverUser(long id);
     boolean removeUser(long id);
 
@@ -56,5 +57,5 @@ public interface UserService {
     Optional<Token> createToken(UUID token, User user);
     boolean deleteToken(UUID token);
     Optional<User> activateAccountWithToken(UUID token);
-
+    void cleanOldTokens();
 }

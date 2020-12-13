@@ -396,6 +396,12 @@ public class UserServiceImpl implements UserService {
         return userDao.isAdmin(user);
     }
 
+    @Override
+    public boolean isAdminUsername(String username) {
+        User user = userDao.findByUsername(username).orElseThrow(NotFoundException::new);
+        return userDao.isAdmin(user);
+    }
+
     @Transactional
     @Override
     public boolean recoverUser(long id) {
@@ -466,6 +472,7 @@ public class UserServiceImpl implements UserService {
         return opUser;
     }
 
+    @Override
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
     public void cleanOldTokens() {
