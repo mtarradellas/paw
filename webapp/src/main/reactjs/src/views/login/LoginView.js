@@ -19,6 +19,7 @@ function LoginView(){
                     setErrors({globalError: t('form.invalidUsernameOrPassword')});
                     break;
                 case LOGIN_ERRORS.CONN_ERROR:
+                default:
                     message.error(t('form.conError'));
                     break;
             }

@@ -24,6 +24,7 @@ function RegisterView(){
                     setErrors({email: t('form.email.errors.duplicated')});
                     break;
                 case REGISTER_ERRORS.CONN_ERROR:
+                default:
                     message.error(t('form.conError'));
                     break;
             }
