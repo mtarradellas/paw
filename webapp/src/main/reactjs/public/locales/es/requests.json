@@ -1,0 +1,68 @@
+{
+  "filterForm": {
+    "labels": {
+      "status": "Estado de Solicitud",
+      "criteria": "Criterio",
+      "order": "Orden"
+    },
+    "values": {
+      "any": "Cualquiera",
+      "date": "Fecha",
+      "petName": "Nombre de Mascota",
+      "asc": "Ascendiente",
+      "desc": "Descendiente"
+    },
+    "filterButtons": {
+      "filter": "Filter",
+      "clear": "Clear"
+    }
+  },
+  "status": {
+    "accepted": "Aceptada",
+    "rejected": "Rechazada",
+    "pending": "Pendiente",
+    "canceled": "Cancelada",
+    "notSold": "Aceptada (No vendida)",
+    "sold": "Vendida a {{ownerName}}",
+    "removed": "Removida",
+    "unavailable": "No Disponible",
+    "available": "Disponible"
+  },
+  "requests": {
+    "title": "Mascotas solicitadas (Resultados Totales: {{count}})",
+    "request": "Solicitud",
+    "requestStatus": "Estado de Solicitud",
+    "actions": "Acciones"
+  },
+  "buttons": {
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "imSure": "Estoy seguro",
+    "visitPet": "Visitar Mascota",
+    "visitOwner": "Visitar Dueño",
+    "recover": "Recueprar"
+  },
+  "helpModal": {
+    "title": "Ayuda",
+    "firstTitle": "Página de Solicitudes",
+    "firstDesc": "Bienvenido a la página de solicitudes, aquí puede ver estado de todas las mascotas que ha solicitado. Hay cuatro estados: pendiente (significa que el dueño no ha decidido todavía), aceptado o rechazado (dueño ha decidido si desea o no darle el animal, no puede recuperar esta solicitud) y cancelado (puede cancelar una solicitud haciendo click en 'cancelar', y recupetarlo haciendo click en 'recuperar'). ",
+    "secondTitle": "Herramientas de Filtrado",
+    "secondDesc": "Para asistirlo en la organización de sus solicitudes, utilize el menú de filtrado encontrado a la izquierda."
+  },
+  "cancelModal": {
+    "title": "Por favor confirme su acción",
+    "subtitle": "¿Está seguro que desea cancelar esta solicitud?"
+  },
+  "recoverModal": {
+    "title": "Por favor confirme su acción",
+    "subtitle": "¿Está seguro que desea recuperar esta solicitud?"
+  },
+  "messages": {
+    "error": "Un error fue detectado",
+    "pending": "Mostraste interés en {{petName}}",
+    "accepted": "¡Tu solicitud de {{petName}} fue aceptada!",
+    "rejected": "Tu solicitud de {{petName}} fue rechazada",
+    "canceled": "Cancelaste tu solicitud de {{petName}}",
+    "sold": "La mascota {{petName}} ha sido vendida"
+  }
+}
