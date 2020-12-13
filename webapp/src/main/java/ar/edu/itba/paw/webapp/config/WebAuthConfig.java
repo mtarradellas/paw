@@ -23,6 +23,7 @@ import ar.edu.itba.paw.webapp.auth.JwtAuthenticationFilter;
 import ar.edu.itba.paw.webapp.auth.JwtAuthorizationFilter;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -43,6 +44,11 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
+    @Bean
+    CORSFilter getCorsFilter(){
+        return new CORSFilter();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         final String jwtAudience = "Pet Society";
@@ -51,6 +57,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
         http.sessionManagement()
             .and().csrf().disable()
+            .addFilterBefore(new CORSFilter(), (Class<? extends Filter>) ChannelProcessingFilter.class)
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .authorizeRequests()
