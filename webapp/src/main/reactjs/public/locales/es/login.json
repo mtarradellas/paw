@@ -18,6 +18,8 @@
     "submit": "Iniciar sesión",
     "dontHaveAnAccount": "¿No tiene una cuenta?",
     "registerButton": "Regístrese",
-    "forgotPassword": "¿Olvidó su contraseña?"
+    "forgotPassword": "¿Olvidó su contraseña?",
+    "conError": "Se perdió la conexión",
+    "invalidUsernameOrPassword": "Usuario o contraseña incorrectos"
   }
 }

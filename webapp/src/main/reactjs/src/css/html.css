@@ -15,3 +15,7 @@ body {
     border-radius: 5px;
     padding: 1rem;
 }
+
+.error-message {
+    color: #ff4d4f;
+}

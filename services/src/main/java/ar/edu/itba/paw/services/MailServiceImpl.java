@@ -61,6 +61,7 @@ public class MailServiceImpl implements MailService {
         mailSender.send(preparator);
     }
 
+    /** TODO methond not used */
     private String getMailTemplateName(MailType mailType){
         return mailType.getName() + ".ftl";
     }

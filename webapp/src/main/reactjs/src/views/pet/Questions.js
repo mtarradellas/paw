@@ -91,7 +91,7 @@ function Questions(){
 
     const _onSubmit = values => {
         console.log(values);
-    }
+    };
 
     return <>
         <QuestionsForm onSubmit={_onSubmit}/>
@@ -99,7 +99,7 @@ function Questions(){
         <List bordered={true}>
             {
                 questions.length > 0 ?
-                    questions.map(question => (<QARow QA={question}/>))
+                    questions.map((question, index) => (<QARow key={index} QA={question}/>))
                     :
                     <p>{t('questions.noQuestionsYet')}</p>
             }

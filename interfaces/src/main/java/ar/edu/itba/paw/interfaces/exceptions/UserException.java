@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.interfaces.exceptions;
 
 public class UserException extends RuntimeException {
+    private static final long serialVersionUID = 1796505672129481066L;
+
     public UserException() {
     }
 

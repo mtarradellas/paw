@@ -121,11 +121,7 @@ public class PetDaoImplTest {
 
     /* OTHER PET */
     private static final Long O_PET_ID = 2L;
-    private static final String O_PET_NAME = "petname";
-    private static final Boolean O_VACCINATED = false;
     private static final String O_GENDER = "another";
-    private static final String O_DESCRIPTION = "other_description";
-    private static final LocalDateTime O_BIRTH_DATE = LocalDateTime.now().minusMonths(2);
     private static final int O_PRICE = 100;
     private static final PetStatus O_STATUS = PetStatus.UNAVAILABLE;
 
@@ -509,7 +505,7 @@ public class PetDaoImplTest {
     public void testFilteredListProvince() {
         Pet pet = insertPet(PET_ID, PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
-        Pet tep = insertPet(O_PET_ID, PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+        insertPet(O_PET_ID, PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
                 USER, SPECIES, BREED, O_PROVINCE, O_DEPARTMENT);
         indexTables();
 

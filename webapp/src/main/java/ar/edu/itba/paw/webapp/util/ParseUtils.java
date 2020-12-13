@@ -1,92 +1,78 @@
 package ar.edu.itba.paw.webapp.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.List;
 
+import ar.edu.itba.paw.webapp.dto.ReviewDto;
+import ar.edu.itba.paw.webapp.dto.UserDto;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
+
 public class ParseUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParseUtils.class);
-
-    public static int parsePage(String page) {
-        int pageNum = 1;
-        if(page != null) {
-            try {
-                pageNum = Integer.parseInt(page);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid page ({}) parameter", page);
-            }
+    public static int parsePage(int page) {
+        if (page < 1) {
+            String hint = "Page number must be greater than 0";
+            throw new BadRequestException("page", String.valueOf(page), hint);
         }
-        return pageNum;
+        return page;
     }
 
-    public static <E extends Enum<E>> E parseStatus(Class<E> enumClass, String statusStr) {
-        E status = null;
+    public static <E extends Enum<E>> E parseStatus(Class<E> enumClass, int statusIdx) {
+        if (statusIdx < 0) return null;
         E[] values = enumClass.getEnumConstants();
-        if(statusStr != null) {
-            try {
-                int idx = Integer.parseInt(statusStr);
-                status = values[idx];
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-                LOGGER.debug("Invalid status ({}) parameter", statusStr);
-            }
+        E status;
+        try {
+            status = values[statusIdx];
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            String hint = "For any valid status, use -1";
+            throw new BadRequestException("status", String.valueOf(statusIdx), hint);
         }
         return status;
     }
 
-    public static Long parseSpecies(String speciesStr) {
-        Long species = null;
-        if (speciesStr != null && !speciesStr.equalsIgnoreCase("any")) {
-            try {
-                species = Long.parseLong(speciesStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid species ({}) parameter", speciesStr);
-            }
+    public static Long parseSpecies(long speciesId) {
+        if (speciesId == 0) return null;
+        if (speciesId < 1) {
+            String hint = "Species ID must be greater than 0, or 0 for any species";
+            throw new BadRequestException("species ID", String.valueOf(speciesId), hint);
         }
-        return species;
+        return speciesId;
     }
 
-    public static Long parseBreed(String breedStr) {
-        Long breed = null;
-        if (breedStr != null && !breedStr.equalsIgnoreCase("any")) {
-            try {
-                breed = Long.parseLong(breedStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid breed ({}) parameter", breedStr);
-            }
+    public static Long parseBreed(long breedId) {
+        if (breedId == 0) return null;
+        if (breedId < 1) {
+            String hint = "Breed ID must be greater than 0, or 0 for any breed";
+            throw new BadRequestException("Breed ID", String.valueOf(breedId), hint);
         }
-        return breed;
+        return breedId;
     }
 
-    public static Long parseProvince(String provinceStr) {
-        Long province = null;
-        if (provinceStr != null && !provinceStr.equalsIgnoreCase("any")) {
-            try {
-                province = Long.parseLong(provinceStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid province ({}) parameter", provinceStr);
-            }
+    public static Long parseProvince(long provinceId) {
+        if (provinceId == 0) return null;
+        if (provinceId < 1) {
+            String hint = "Province ID must be greater than 0, or 0 for any province";
+            throw new BadRequestException("province ID", String.valueOf(provinceId), hint);
         }
-        return province;
+        return provinceId;
     }
 
-    public static Long parseDepartment(String departmentStr) {
-        Long department = null;
-        if (departmentStr != null && !departmentStr.equalsIgnoreCase("any")) {
-            try {
-                department = Long.parseLong(departmentStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid department ({}) parameter", departmentStr);
-            }
+    public static Long parseDepartment(long departmentId) {
+        if (departmentId == 0) return null;
+        if (departmentId < 1) {
+            String hint = "Department ID must be greater than 0, or 0 for any department";
+            throw new BadRequestException("department ID", String.valueOf(departmentId), hint);
         }
-        return department;
+        return departmentId;
     }
 
     public static boolean isAllowedFind(String find) {
-        return find == null || find.matches("^[a-zA-Z0-9 \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
-                "\u00F3\u00FA\u00F1\u00FC]*$");
+        if (find != null && !find.matches("^[a-zA-Z0-9 \u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
+                "\u00F3\u00FA\u00F1\u00FC]*$")) {
+            String hint = "There are some invalid characters in the find text";
+            throw new BadRequestException("find", find, hint);
+        }
+        return true;
     }
 
     public static List<String> parseFind(String find) {
@@ -99,7 +85,8 @@ public class ParseUtils {
         if (gender == null) return null;
         if (gender.equalsIgnoreCase("male")) return "male";
         if (gender.equalsIgnoreCase("female")) return "female";
-        return null;
+        String hint = "Gender must be 'male' or 'female', or null for both";
+        throw new BadRequestException("gender", gender, hint);
     }
 
     public static String parseCriteria(String criteria) {
@@ -112,100 +99,106 @@ public class ParseUtils {
         return "asc";
     }
 
-    public static int[] parseRange(String range) {
-        if (range == null) return new int[]{0, -1};
+    public static int[] parseRange(int range) {
         int[] price;
         switch (range) {
-            case "0" : price = new int[]{0, 0}; break;
-            case "1" : price = new int[]{1, 4999}; break;
-            case "2" : price = new int[]{5000, 9999}; break;
-            case "3" : price = new int[]{10000, 14999}; break;
-            case "4" : price = new int[]{15000, 19999}; break;
-            case "5" : price = new int[]{20000, 24999}; break;
-            case "6" : price = new int[]{25000, -1}; break;
-            default: price = new int[]{0, -1}; break;
+            case 0 : price = new int[]{0, -1}; break; // Any price
+            case 1 : price = new int[]{0, 0}; break;
+            case 2 : price = new int[]{1, 4999}; break;
+            case 3 : price = new int[]{5000, 9999}; break;
+            case 4 : price = new int[]{10000, 14999}; break;
+            case 5 : price = new int[]{15000, 19999}; break;
+            case 6 : price = new int[]{20000, 24999}; break;
+            case 7 : price = new int[]{25000, -1}; break;
+            default  : String hint = "Range must be between 1 and 7 inclusive, or 0 for any range";
+                       throw new BadRequestException("price range", String.valueOf(range), hint);
         }
         return price;
     }
 
-    public static int[] parsePrice(String minPrice, String maxPrice) {
-        int minPriceNum = parseMinPrice(minPrice);
-        int maxPriceNum = parseMaxPrice(maxPrice);
-
-        if (maxPriceNum != -1 && minPriceNum > maxPriceNum) return new int[]{0, -1};
-        return new int[]{minPriceNum, maxPriceNum};
-    }
-
-    public static int parseMinPrice(String price) {
-        if (price == null) return 0;
-        int priceNum = 0;
-        try {
-            priceNum = Integer.parseInt(price);
-        } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid min price ({}) parameter", price);
+    public static void parseReviewScore(int score) {
+        if (score < 1 || score > 5) {
+            String hint = "Score must be between 1 and 5 inclusive";
+            throw new BadRequestException("score", String.valueOf(score), hint);
         }
-        if (priceNum < 0) priceNum = 0;
-        return priceNum;
     }
 
-    public static int parseMaxPrice(String price) {
-        if (price == null) return -1;
-        int priceNum = -1;
-        try {
-            priceNum = Integer.parseInt(price);
-        } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid max price ({}) parameter", price);
+    public static void parseReviewScore(int minScore, int maxScore) {
+        parseReviewScore(minScore);
+        parseReviewScore(maxScore);
+        if (minScore > maxScore) {
+            String hint = "Max score must be greater or equal than min score";
+            throw new BadRequestException("score", "[" + minScore + ", " + maxScore + "]", hint);
         }
-        if (priceNum < -1) priceNum = -1;
-        return priceNum;
     }
 
-    public static int parseReviewScore(String scoreStr) {
-        if (scoreStr == null) return -1;
-        int score = -1;
-        try {
-            score = Integer.parseInt(scoreStr);
-        } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid score ({}) parameter", scoreStr);
+    public static void parseReviewDescription(String description) {
+        if (description != null && description.length() > 2048) {
+            String hint = "Description must contain less than 2048 characters";
+            throw new BadRequestException("description", description, hint);
         }
-        if (score < 0 || score > 5) score = -1;
-        return score;
     }
 
-    public static Long parseUser(String userStr) {
-        Long userId = null;
-        if (userStr != null && !userStr.equalsIgnoreCase("any")) {
-            try {
-                userId = Long.parseLong(userStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid user id ({}) parameter", userStr);
-            }
+    public static Long parseUserId(long userId) {
+        if (userId == 0) return null;
+        if (userId < 1) {
+            String hint = "User ID must be grater than 0, or 0 for any user";
+            throw new BadRequestException("user ID", String.valueOf(userId), hint);
         }
         return userId;
     }
 
-    public static Long parsePet(String petStr) {
-        Long petId = null;
-        if (petStr != null && !petStr.equalsIgnoreCase("any")) {
-            try {
-                petId = Long.parseLong(petStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.debug("Invalid pet id ({}) parameter", petStr);
-            }
+    public static void parseUsername(String  username) {
+        if (username == null || username.length() > 255 || username.length() < 4 ||
+                !username.matches("^[a-zA-Z0-9\u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
+                        "\u00F3\u00FA\u00F1\u00FC]*$")) {
+            String hint = "Username must be between 4 and 255 valid characters";
+            throw new BadRequestException("username", username, hint);
+        }
+    }
+
+    public static void parseMail(String  mail) {
+        if (mail == null || mail.length() > 254 || mail.length() < 3 || !mail.matches("^.+@.+$")) {
+            String hint = "Mail must be between 3 and 254 characters, including @";
+            throw new BadRequestException("mail", mail, hint);
+        }
+    }
+
+    public static void parsePassword(String  password) {
+        if (password == null || password.length() > 255 || password.length() < 4) {
+            String hint = "Password must be between 4 and 255 characters";
+            throw new BadRequestException("password", "***", hint);
+        }
+    }
+
+    public static Long parsePetId(long petId) {
+        if (petId == 0) return null;
+        if (petId < 1) {
+            String hint = "Pet ID must be grater than 0, or 0 for any pet";
+            throw new BadRequestException("Pet ID", String.valueOf(petId), hint);
         }
         return petId;
     }
 
-    public static int parseScore(String scoreStr, int defaultScore) {
-        if (scoreStr == null) return defaultScore;
-        int score = defaultScore;
-        try {
-            score = Integer.parseInt(scoreStr);
-        } catch (NumberFormatException ex) {
-            LOGGER.debug("Invalid score ({}) parameter", scoreStr);
+    public static void parseReview(ReviewDto review) {
+        if (review == null || review.getUserId() == null || review.getTargetId() == null || review.getScore() == null) {
+            String hint = "Review is missing a required attribute";
+            throw new BadRequestException("review", "user, target or score", hint);
         }
-        if (score < 1 || score > 5) score = defaultScore;
-        return score;
+        parseUserId(review.getUserId());
+        parseUserId(review.getTargetId());
+        parseReviewScore(review.getScore());
+        parseReviewDescription(review.getDescription());
     }
 
+    public static void parseUser(UserDto user) {
+        if (user == null || user.getMail() == null || user.getPassword() == null || user.getUsername() == null) {
+            String hint = "User is missing a required attribute";
+            throw new BadRequestException("user", "username, password or mail", hint);
+        }
+
+        parseUsername(user.getUsername());
+        parseMail(user.getMail());
+        parsePassword(user.getPassword());
+    }
 }

@@ -7,7 +7,9 @@
       "errors": {
         "tooShort": "Username must be at least {{min}} characters long",
         "tooLong": "Username must be at most {{max}} characters long",
-        "required": "Username cannot be empty"
+        "validCharacters": "Username must only contain letters and numbers",
+        "required": "Username cannot be empty",
+        "duplicated": "Username is not available"
       }
     },
     "password": {
@@ -32,9 +34,11 @@
       "placeholder": "Enter email",
       "errors": {
         "required": "Email cannot be empty",
-        "invalidEmail": "Email must be valid"
+        "invalidEmail": "Email must be valid",
+        "duplicated": "Email is not available"
       }
     },
-    "submit": "Register"
+    "submit": "Register",
+    "conError": "Connection lost"
   }
 }

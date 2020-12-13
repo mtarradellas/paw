@@ -38,3 +38,7 @@ target/
 
 # VScode
 .vscode/
+
+# Local Tomcat Scripts
+launch-tomcat.sh
+stop-tomcat.sh

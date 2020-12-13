@@ -1,20 +1,16 @@
 import React from 'react';
 import {Form, Input} from "formik-antd";
-import {Formik} from "formik";
+import {ErrorMessage, Formik} from "formik";
 import {Button} from "antd";
 import {useTranslation} from "react-i18next";
 import * as Yup from 'yup';
 import {Link} from "react-router-dom";
-import {FORGOT_PASSWORD, LOGIN, REGISTER} from "../../constants/routes";
+import {FORGOT_PASSWORD, REGISTER} from "../../constants/routes";
 
 const FormItem = Form.Item;
 
-function RegisterForm({onSubmit}){
+function RegisterForm({onSubmit, submitting}){
     const {t} = useTranslation("login");
-
-    const _onSubmit = (values) => {
-        onSubmit(values);
-    }
 
     return <Formik
         validationSchema={
@@ -25,11 +21,12 @@ function RegisterForm({onSubmit}){
                     .required(t('form.password.errors.required')),
             })
         }
-        onSubmit={_onSubmit}
+        onSubmit={onSubmit}
         initialValues={
             {
                 username: '',
                 password: '',
+                globalError: ''
             }
         }
     >
@@ -44,8 +41,10 @@ function RegisterForm({onSubmit}){
                 <Input.Password name={"password"} placeholder={t('form.password.placeholder')}/>
             </FormItem>
 
+            <p className={"error-message"}><ErrorMessage name={"globalError"}/></p>
+
             <FormItem name>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" loading={submitting}>
                     {t('form.submit')}
                 </Button>
             </FormItem>
