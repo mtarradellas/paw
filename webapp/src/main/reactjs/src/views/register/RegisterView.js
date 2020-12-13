@@ -4,9 +4,12 @@ import RegisterForm from "./RegisterForm";
 import {useTranslation} from "react-i18next";
 import {register, REGISTER_ERRORS} from "../api/authentication";
 import {message} from 'antd';
+import {useHistory} from 'react-router-dom';
+import {VERIFY_EMAIL} from "../../constants/routes";
 
 function RegisterView(){
     const {t} = useTranslation("register");
+    const history = useHistory();
 
     const [submitting, setSubmitting] = useState(false);
 
@@ -15,6 +18,9 @@ function RegisterView(){
 
         try{
             await register(values);
+
+            history.push(VERIFY_EMAIL);
+
         }catch (e) {
             switch (e) {
                 case REGISTER_ERRORS.DUPLICATE_USERNAME:
@@ -28,9 +34,10 @@ function RegisterView(){
                     message.error(t('form.conError'));
                     break;
             }
-        }finally {
+
             setSubmitting(false);
         }
+
     };
 
     return <SmallCenteredContent>

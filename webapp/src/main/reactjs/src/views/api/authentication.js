@@ -1,20 +1,20 @@
 import axios from 'axios';
 import {SERVER_URL} from '../../config';
-const qs = require('querystring')
+import _ from 'lodash';
+const qs = require('querystring');
 
 
 const REGISTER_ENDPOINT = '/register';
 export const REGISTER_ERRORS = {
-    DUPLICATE_USERNAME: 0,
-    DUPLICATE_EMAIL: 1,
-    CONN_ERROR: 2
+    DUPLICATE_USERNAME: 2,
+    DUPLICATE_EMAIL: 3,
+    CONN_ERROR: 1
 };
 export async function register({username, password, email}){
     try {
         await axios.post(SERVER_URL + REGISTER_ENDPOINT, {username, password, mail: email});
     }catch (e) {
-        //TODO: error handling
-        throw REGISTER_ERRORS.CONN_ERROR;
+        throw _.get(e, 'response.data.code', REGISTER_ERRORS.CONN_ERROR);
     }
 }
 
@@ -35,7 +35,6 @@ export async function login({username, password}){
 
         return response.data.split(" ")[1];
     }catch (e) {
-        //TODO: error handling
-        throw LOGIN_ERRORS.CONN_ERROR;
+        throw e.response.status === 401 ? LOGIN_ERRORS.INVALID_USERNAME_OR_PASSWORD : LOGIN_ERRORS.CONN_ERROR;
     }
 }

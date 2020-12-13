@@ -9,3 +9,5 @@ export const USER = '/user/';
 export const FORGOT_PASSWORD = '/forgot-password';
 
 export const PET = '/pet/';
+
+export const VERIFY_EMAIL = '/verify-email';
