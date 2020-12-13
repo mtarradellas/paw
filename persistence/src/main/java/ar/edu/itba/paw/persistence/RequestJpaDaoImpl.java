@@ -405,4 +405,17 @@ public class RequestJpaDaoImpl implements RequestDao {
         Number n = (Number) query.getSingleResult();
         return n.intValue();
     }
+
+    @Override
+    public boolean hasRequest(User user, User target) {
+        String qStr = "SELECT count(*) " +
+                      "FROM requests " +
+                      "WHERE ownerId = :user AND targetId = :target AND status = 1";
+
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("user", user.getId());
+        query.setParameter("target", target.getId());
+        Number n = (Number) query.getSingleResult();
+        return n.intValue() > 0;
+    }
 }
