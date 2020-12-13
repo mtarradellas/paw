@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {useTranslation} from "react-i18next";
 import SmallCenteredContent from "../../components/SmallCenteredContent";
 import LoginForm from "./LoginForm";
-import {login, LOGIN_ERRORS} from "../api/authentication";
+import {login, LOGIN_ERRORS} from "../../api/authentication";
 import {message} from "antd";
 import LoginContext from '../../constants/loginContext';
 import { useHistory } from 'react-router-dom'

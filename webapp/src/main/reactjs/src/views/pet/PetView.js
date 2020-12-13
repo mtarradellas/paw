@@ -106,7 +106,7 @@ function PetView({id}){
         }
         actionComponents={
             [
-                <Button>Mascota Ya Solicitada</Button>
+                <Button key={0}>Mascota Ya Solicitada</Button>
             ]
         }
         title={t('title', {name})}

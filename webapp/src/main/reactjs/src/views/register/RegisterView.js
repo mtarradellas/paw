@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import SmallCenteredContent from "../../components/SmallCenteredContent";
 import RegisterForm from "./RegisterForm";
 import {useTranslation} from "react-i18next";
-import {register, REGISTER_ERRORS} from "../api/authentication";
+import {register, REGISTER_ERRORS} from "../../api/authentication";
 import {message} from 'antd';
 import {useHistory} from 'react-router-dom';
 import {VERIFY_EMAIL} from "../../constants/routes";

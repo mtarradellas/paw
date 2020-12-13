@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {SERVER_URL} from '../../config';
+import {SERVER_URL} from '../config';
 import _ from 'lodash';
 const qs = require('querystring');
 
