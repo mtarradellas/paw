@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {useTranslation, Trans} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import {List, Button, Modal} from 'antd';
 import {PET, USER} from '../../constants/routes';
 
@@ -139,8 +139,8 @@ function RequestContainer({requests}) {
                 visible={modalState.show}
                 onCancel={onCancel}
                 footer={[
-                    <div>
-                    <Button key="submit" onClick={onCancel}>
+                    <div key={"confirmation-modal-key"}>
+                    <Button key="cancel" onClick={onCancel}>
                         {t("buttons.cancel")}
                     </Button>
                     <Button key="submit" type="primary" onClick={onOk}>

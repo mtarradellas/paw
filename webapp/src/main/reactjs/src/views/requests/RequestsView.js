@@ -18,6 +18,21 @@ const request = {
     id: 0,
     creationDate: "02-03-2020",
     updateDate: "05-05-2020",
+    status: "ACCEPTED",
+    user: "pedro",
+    userId: 4,
+    pet: "Cato",
+    petId: 41,
+    petStatus: "AVAILABLE",
+    newPetOwner: "JORGE",
+    newPetOwnerId: 1
+
+}
+
+const request1 = {
+    id: 42,
+    creationDate: "02-03-2020",
+    updateDate: "05-05-2020",
     status: "CANCELED",
     user: "pedro",
     userId: 4,
@@ -29,12 +44,57 @@ const request = {
 
 }
 
-const sampleRequests = []
-for (let i = 0; i < 15; i++) {
-    let aux = {...request}
-    aux.id = i
-    sampleRequests.push(aux)
+const request2 = {
+    id: 12,
+    creationDate: "02-03-2020",
+    updateDate: "05-05-2020",
+    status: "REJECTED",
+    user: "pedro",
+    userId: 4,
+    pet: "nairobi",
+    petId: 41,
+    petStatus: "AVAILABLE",
+    newPetOwner: "JORGE",
+    newPetOwnerId: 1
+
 }
+
+const request3 = {
+    id: 414,
+    creationDate: "02-03-2020",
+    updateDate: "05-05-2020",
+    status: "PENDING",
+    user: "pedro",
+    userId: 4,
+    pet: "nairobi",
+    petId: 41,
+    petStatus: "AVAILABLE",
+    newPetOwner: "JORGE",
+    newPetOwnerId: 1
+
+}
+
+const request4 = {
+    id: 20,
+    creationDate: "02-03-2020",
+    updateDate: "05-05-2020",
+    status: "SOLD",
+    user: "pedro",
+    userId: 4,
+    pet: "nairobi",
+    petId: 41,
+    petStatus: "AVAILABLE",
+    newPetOwner: "JORGE",
+    newPetOwnerId: 1
+
+}
+
+const sampleRequests = []
+sampleRequests.push(request)
+sampleRequests.push(request1)
+sampleRequests.push(request2)
+sampleRequests.push(request3)
+sampleRequests.push(request4)
 
 function SideContent() {
     return (<div>

@@ -1,6 +1,5 @@
 import React from 'react';
-import {useTranslation} from "react-i18next";
-import {Row, Col, Divider} from 'antd';
+import {Row, Col} from 'antd';
 
 function GenericNotification({target, status, buttons}) {
     return (
