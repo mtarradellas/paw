@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useTranslation, Trans} from "react-i18next";
-import {Row, Col, Divider, List, Button, Modal} from 'antd';
+import {List, Button, Modal} from 'antd';
 import {PET, USER} from '../../constants/routes';
 
 import GenericNotification from '../other/GenericNotification'
@@ -9,12 +9,12 @@ import GenericNotification from '../other/GenericNotification'
 //TODO: manejo de formularios para botones y links y eso
 
 function RequestNotification(
-    {id,creationDate, updateDate, status, user, userId, pet, petId, petStatus, newPetOwner, newPetOwnerId}) {
+    {id,creationDate, updateDate, status, user, userId, pet, petId, petStatus, newPetOwner, newPetOwnerId, modal}) {
     const {t} = useTranslation("requests");
 
-    let reqTarget = <p>{t("messages.error")}</p>
-    let reqStatus = <p>{t("messages.error")}</p>
-    let reqButtons = <p>{t("messages.error")}</p>
+    let reqTarget = null;
+    let reqStatus = null;
+    let reqButtons = null;
 
     if (status === "ACCEPTED") {
         reqTarget = (
@@ -41,6 +41,12 @@ function RequestNotification(
             </div>
         )
     } else if (status === "PENDING") {
+        const onConfirm = () => {
+            alert("canceled" + id)
+        }
+
+        const modalMessage = t("modals.cancel")
+
         reqTarget = (
             <p>{t("messages.pending", {petName: pet})}
                 <small className={"date-text"}> {creationDate.toLocaleString()}</small>
@@ -51,11 +57,17 @@ function RequestNotification(
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger /*onClick={showModal}*/>{t("buttons.cancel")}</Button>
+                <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.cancel")}</Button>
             </div>
         )
 
     } else if (status === "CANCELED") {
+        const onConfirm = () => {
+            alert("recovered" + id)
+        }
+
+        const modalMessage = t("modals.recover")
+
         reqTarget = (
             <p>{t("messages.canceled", {petName: pet})}
                 <small className={"date-text"}> {updateDate.toLocaleString()}</small>
@@ -66,7 +78,7 @@ function RequestNotification(
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger /*onClick={showModal}*/>{t("buttons.recover")}</Button>
+                <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )
 
@@ -95,6 +107,18 @@ function RequestNotification(
 function RequestContainer({requests}) {
     const {t} = useTranslation("requests");
 
+    const [modalState, setModalState] = useState({show: false, callbackMethod: null, modalMessage: ""});
+    const showModal = (callback, message) => {
+        setModalState({show: true, callbackMethod: callback, modalMessage:message});
+    };
+    const onOk = () => {
+        modalState.callbackMethod()
+        setModalState(false);
+    };
+    const onCancel = () => {
+        setModalState(false);
+    };
+
     return (
         <div className={"requests-container"}>
 
@@ -104,12 +128,31 @@ function RequestContainer({requests}) {
                         .map(
                             (request) => (
                                 <List.Item key={request.id}>
-                                    <RequestNotification {...request} />
+                                    <RequestNotification modal={showModal} {...request} />
                                 </List.Item>
                             )
                         )
                 }
             </List>
+            <Modal
+                title={t("modals.pleaseConfirm")}
+                visible={modalState.show}
+                onCancel={onCancel}
+                footer={[
+                    <div>
+                    <Button key="submit" onClick={onCancel}>
+                        {t("buttons.cancel")}
+                    </Button>
+                    <Button key="submit" type="primary" onClick={onOk}>
+                        {t("buttons.imSure")}
+                    </Button>
+                    </div>
+                ]}
+            >
+                <div>
+                    {modalState.modalMessage}
+                </div>
+            </Modal>
         </div>
     )
 }

@@ -53,6 +53,10 @@
     "title": "Por favor confirme su acción",
     "subtitle": "¿Está seguro que desea cancelar esta solicitud?"
   },
+  "recoverModal": {
+    "title": "Por favor confirme su acción",
+    "subtitle": "¿Está seguro que desea recuperar esta solicitud?"
+  },
   "messages": {
     "error": "Un error fue detectado",
     "pending": "Mostraste interés en {{petName}}",

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Modal, List, Row, Col, Divider, Pagination} from 'antd';
+import {Button, Modal, Row, Col, Divider, Pagination} from 'antd';
 
 import {useTranslation} from "react-i18next";
 import ContentWithSidebar from "../../components/ContentWithSidebar";
@@ -15,10 +15,10 @@ import "../../css/requests/requests.css"
 * */
 
 const request = {
-    id:0,
+    id: 0,
     creationDate: "02-03-2020",
     updateDate: "05-05-2020",
-    status: "SOLD",
+    status: "CANCELED",
     user: "pedro",
     userId: 4,
     pet: "nairobi",
@@ -31,8 +31,8 @@ const request = {
 
 const sampleRequests = []
 for (let i = 0; i < 15; i++) {
-    const aux = request;
-    aux.id = i+1;
+    let aux = {...request}
+    aux.id = i
     sampleRequests.push(aux)
 }
 
@@ -80,12 +80,12 @@ function MainContent({requests, requestsCount}) {
             </Col>
         </Row>
         <Divider style={{margin: 0, padding: 0}}/>
-        <RequestContainer requests={requests} />
+        <RequestContainer requests={requests}/>
         <Divider orientation={"left"}>
             <Pagination defaultCurrent={1} total={50}/>
         </Divider>
         <Modal
-            title={t("helpModal.title")}
+            title={t("modals.helpModal.title")}
             visible={isModalVisible}
             onCancel={handleCancel}
             footer={[
@@ -95,17 +95,18 @@ function MainContent({requests, requestsCount}) {
             ]}
         >
             <div>
-                <h2>{t("helpModal.firstTitle")} </h2>
-                <p>{t("helpModal.firstDesc")}</p>
-                <h2>{t("helpModal.secondTitle")}</h2>
-                <p>{t("helpModal.secondDesc")}</p>
+                <h2>{t("modals.helpModal.firstTitle")} </h2>
+                <p>{t("modals.helpModal.firstDesc")}</p>
+                <h2>{t("modals.helpModal.secondTitle")}</h2>
+                <p>{t("modals.helpModal.secondDesc")}</p>
             </div>
         </Modal>
     </div>)
 }
 
 
-function RequestsView() {
+function RequestsView()
+{
     const requests = sampleRequests;
     const requestsCount = sampleRequests.length;
 
