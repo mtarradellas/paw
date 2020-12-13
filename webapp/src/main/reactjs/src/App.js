@@ -46,15 +46,13 @@ function App() {
                             <LoginView/>
                         </BasicLayout>
                     </Route>
-                    <Route exact path={USER + ':id'}
-                        render={
-                            ({id}) => (
-                                <BasicLayout>
-                                    <UserView id={id}/>
-                                </BasicLayout>
-                            )
-                        }
-                    />
+
+                    <Route path={USER + ':id'}>
+                        <BasicLayout>
+                            <UserView/>
+                        </BasicLayout>
+                    </Route>
+
                     <Route exact path={REQUESTS}>
                         <BasicLayout>
                             <RequestsView/>

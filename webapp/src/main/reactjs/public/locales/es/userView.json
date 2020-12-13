@@ -11,5 +11,7 @@
     "rating": "Calificación",
     "description": "Descripción"
   },
-  "backToHome": "< Volver al inicio"
+  "backToHome": "< Volver al inicio",
+  "noReviews": "Este usuario aún no ha recibido reseñas",
+  "sensibleInformation": "Información sensible sobre otros usuarios no es mostrada, para contactar a este usuario, él debe aceptar una solicitud suya a uno de sus animales"
 }

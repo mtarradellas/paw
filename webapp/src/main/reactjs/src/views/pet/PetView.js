@@ -23,7 +23,7 @@ const nairobi =  {
     vaccinated: true,
     onAdoption: false,
     onSale: true,
-    ownerId: 1
+    ownerId: 16
 };
 
 function isMale(sex){
