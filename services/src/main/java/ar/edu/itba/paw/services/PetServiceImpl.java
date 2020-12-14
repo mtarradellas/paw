@@ -561,34 +561,33 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
         pet.setNewOwner(opNewOwner.get());
         pet.setStatus(PetStatus.SOLD);
         petDao.update(pet).orElseThrow(PetException::new);
-        return;
     }
 
     @Transactional
     @Override
-    public boolean adminRemovePet(long petId) {
+    public void adminRemovePet(long petId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
-            return false;
+            throw new NotFoundException("Pet " + petId + " not found.");
         }
         Pet pet = opPet.get();
         requestService.rejectAllByPet(petId);
         pet.setStatus(PetStatus.REMOVED);
-        return petDao.update(pet).isPresent();
+        petDao.update(pet).orElseThrow(PetException::new);
     }
 
     @Transactional
     @Override
-    public boolean adminRecoverPet(long petId) {
+    public void adminRecoverPet(long petId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
-            return false;
+            throw new NotFoundException("Pet " + petId + " not found.");
         }
         Pet pet = opPet.get();
         pet.setStatus(PetStatus.AVAILABLE);
-        return petDao.update(pet).isPresent();
+        petDao.update(pet).orElseThrow(PetException::new);
     }
 
     @Transactional
