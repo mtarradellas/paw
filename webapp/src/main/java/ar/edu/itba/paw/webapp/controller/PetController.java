@@ -280,6 +280,12 @@ public class PetController{
         Long newOwnerId;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try {
             newOwnerId = ParseUtils.parseUserId(newOwner.getId());
             petId = ParseUtils.parsePetId(petId);
@@ -289,9 +295,9 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        if(newOwnerId == null || loggedUser == null || petId == null) {
-            LOGGER.warn("Invalid parameters. New owner {}, logged user {}, pet {}", newOwnerId, loggedUser, petId);
-            final ErrorDto body = new ErrorDto(1, "Invalid parameters");
+        if(newOwnerId == null || petId == null) {
+            LOGGER.warn("Invalid parameters. New owner {}, pet {}", newOwnerId, petId);
+            final ErrorDto body = new ErrorDto(2, "Invalid parameters");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -302,7 +308,7 @@ public class PetController{
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         } catch(PetException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -314,16 +320,22 @@ public class PetController{
     public Response petUpdateRemove(@PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try {
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        if(loggedUser == null || petId == null) {
-            LOGGER.warn("Invalid parameters. Logged user {}, pet {}", loggedUser, petId);
+        if(petId == null) {
+            LOGGER.warn("Invalid pet {}", petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         try {
@@ -333,7 +345,7 @@ public class PetController{
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         } catch(PetException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -345,14 +357,20 @@ public class PetController{
     public Response petUpdateRecover(@PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try {
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        if(loggedUser == null || petId == null) {
-            LOGGER.warn("Invalid parameters. Logged user {}, pet {}", loggedUser, petId);
+        if( petId == null) {
+            LOGGER.warn("Invalid pet {}", petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         try {
@@ -370,107 +388,3 @@ public class PetController{
     }
 }
 
-
-//
-//
-//    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })
-//    public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id) {
-//
-//        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
-//
-//        if(pet.getUser().getId().equals(loggedUser().getId())) {
-//
-//            List<Department> departmentList = locationService.departmentList();
-//            List<Province> provinceList = locationService.provinceList();
-//
-//            petForm.setBirthDate(java.util.Date.from(pet.getBirthDate().atZone(ZoneId.systemDefault()).toInstant()));
-//            petForm.setBreedId(pet.getBreed().getId());
-//            petForm.setDescription(pet.getDescription());
-//            petForm.setGender(pet.getGender());
-//            petForm.setProvince(pet.getProvince().getId());
-//            petForm.setDepartment(pet.getDepartment().getId());
-//            petForm.setPrice(pet.getPrice());
-//            petForm.setPetName(pet.getPetName());
-//            petForm.setSpeciesId(pet.getSpecies().getId());
-//            petForm.setVaccinated(pet.isVaccinated());
-//
-//            return editPetForm(petForm, id)
-//                    .addObject("provinceList", provinceList)
-//                    .addObject("departmentList", departmentList);
-//        }
-//        return new ModelAndView("redirect:/403" );
-//
-//    }
-//
-//    private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
-//        String locale = getLocale();
-//
-//        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
-//        List<Species> speciesList = speciesService.speciesList(locale);
-//        List<Breed> breedList = speciesService.breedList(locale);
-//        List<Department> departmentList = locationService.departmentList();
-//        List<Province> provinceList = locationService.provinceList();
-//
-//        return new ModelAndView("views/pet_edit")
-//                .addObject("speciesList", speciesList)
-//                .addObject("breedList", breedList)
-//                .addObject("provinceList", provinceList)
-//                .addObject("departmentList", departmentList)
-//                .addObject("pet", pet)
-//                .addObject("id", id);
-//    }
-//
-//    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.POST })
-//    public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
-//                                  final BindingResult errors, HttpServletRequest request,
-//                                @PathVariable("id") long id) {
-//        User user = loggedUser();
-//        if (user == null) throw new UserNotFoundException();
-//        String locale = getLocale();
-//
-//        if (errors.hasErrors()) {
-//            return editPetForm(editPetForm, id);
-//        }
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : editPetForm.getPhotos()) {
-//                if(!photo.isEmpty()) {
-//                    try {
-//                        photos.add(photo.getBytes());
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                        throw new ImageLoadException(ex);
-//                    }
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return editPetForm(editPetForm, id).addObject("imageError", true);
-//        }
-//
-//        Optional<Pet> opPet;
-//        try {
-//            LocalDateTime birthDate = editPetForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), birthDate,
-//                     editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
-//                     null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
-//                     editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
-//
-//        } catch (InvalidImageQuantityException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
-//
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//
-//        if(!opPet.isPresent()){
-//            LOGGER.warn("Pet could not be updated");
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
-//    }
-
-//
-//}
