@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
@@ -14,6 +15,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -176,6 +178,12 @@ public class PetController{
         String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         Optional<Pet> opNewPet;
 
         /* TODO como recibir las fotos ?*/
@@ -197,19 +205,92 @@ public class PetController{
         return Response.created(petUri).build();
     }
 
+    @POST
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response edit(final PetDto pet) {
+        String locale = ApiUtils.getLocale();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+
+        Optional<Pet> opPet;
+        Optional<User> opOwner;
+        try {
+            opOwner = userService.findById(pet.getUserId());
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        if (!opOwner.isPresent()) {
+            LOGGER.warn("Owner invalid");
+            final ErrorDto body = new ErrorDto(2, "Owner invalid");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if(!loggedUser.getId().equals(opOwner.get().getId())) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(3, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        /* TODO como recibir las fotos ?*/
+//        List<byte[]> photos = new ArrayList<>();
+//        try {
+//            for (MultipartFile photo : editPetForm.getPhotos()) {
+//                if(!photo.isEmpty()) {
+//                    try {
+//                        photos.add(photo.getBytes());
+//                    } catch (IOException ex) {
+//                        ex.printStackTrace();
+//                        throw new ImageLoadException(ex);
+//                    }
+//                }
+//            }
+//        } catch (ImageLoadException ex) {
+//            LOGGER.warn("Image bytes load from pet form failed");
+//            return editPetForm(editPetForm, id).addObject("imageError", true);
+//        }
+
+        try {
+            opPet = petService.update(locale, pet.getId(), loggedUser.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
+                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
+                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
+        } catch(NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(4, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet update failed");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
+        return Response.created(petUri).build();
+    }
+
     @GET
     @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getPet(@PathParam("petId") Long petId) {
         String locale = ApiUtils.getLocale();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
         Pet pet = opPet.get();
-        if(pet.getStatus() == PetStatus.REMOVED || pet.getStatus() == PetStatus.UNAVAILABLE) {
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+
+        //pets are only visible to the public if they are available, only the owners can see them with a different status
+        if(pet.getStatus() != PetStatus.AVAILABLE) {
+            if(loggedUser == null || !loggedUser.getId().equals(pet.getUser().getId()) ||
+                    (pet.getNewOwner() != null && loggedUser.getId().equals(pet.getNewOwner().getId()))) {
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            }
         }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
@@ -267,6 +348,12 @@ public class PetController{
         Long newOwnerId;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try {
             newOwnerId = ParseUtils.parseUserId(newOwner.getId());
             petId = ParseUtils.parsePetId(petId);
@@ -276,22 +363,22 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        if(newOwnerId == null || loggedUser == null || petId == null) {
-            LOGGER.warn("Invalid parameters. New owner {}, logged user {}, pet {}", newOwnerId, loggedUser, petId);
+        if(newOwnerId == null || petId == null) {
+            LOGGER.warn("Invalid parameters. New owner {}, pet {}", newOwnerId, petId);
             final ErrorDto body = new ErrorDto(2, "Invalid parameters");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        boolean sold;
         try {
-            sold = petService.sellPet(petId, loggedUser.getId(), newOwnerId, uriInfo.getBaseUri().toString());
+            petService.sellPet(petId, loggedUser.getId(), newOwnerId, uriInfo.getBaseUri().toString());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!sold) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
@@ -301,28 +388,34 @@ public class PetController{
     public Response petUpdateRemove(@PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try {
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        if(loggedUser == null || petId == null) {
-            LOGGER.warn("Invalid parameters. Logged user {}, pet {}", loggedUser, petId);
+        if(petId == null) {
+            LOGGER.warn("Invalid pet {}", petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        boolean removed;
         try {
-            removed = petService.removePet(petId, loggedUser.getId());
+            petService.removePet(petId, loggedUser.getId());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!removed) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
@@ -332,132 +425,34 @@ public class PetController{
     public Response petUpdateRecover(@PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try {
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        if(loggedUser == null || petId == null) {
-            LOGGER.warn("Invalid parameters. Logged user {}, pet {}", loggedUser, petId);
+        if( petId == null) {
+            LOGGER.warn("Invalid pet {}", petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        boolean recovered;
         try {
-            recovered = petService.recoverPet(petId, loggedUser.getId());
+            petService.recoverPet(petId, loggedUser.getId());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!recovered) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
 }
 
-
-//
-//
-//    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })
-//    public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id) {
-//
-//        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
-//
-//        if(pet.getUser().getId().equals(loggedUser().getId())) {
-//
-//            List<Department> departmentList = locationService.departmentList();
-//            List<Province> provinceList = locationService.provinceList();
-//
-//            petForm.setBirthDate(java.util.Date.from(pet.getBirthDate().atZone(ZoneId.systemDefault()).toInstant()));
-//            petForm.setBreedId(pet.getBreed().getId());
-//            petForm.setDescription(pet.getDescription());
-//            petForm.setGender(pet.getGender());
-//            petForm.setProvince(pet.getProvince().getId());
-//            petForm.setDepartment(pet.getDepartment().getId());
-//            petForm.setPrice(pet.getPrice());
-//            petForm.setPetName(pet.getPetName());
-//            petForm.setSpeciesId(pet.getSpecies().getId());
-//            petForm.setVaccinated(pet.isVaccinated());
-//
-//            return editPetForm(petForm, id)
-//                    .addObject("provinceList", provinceList)
-//                    .addObject("departmentList", departmentList);
-//        }
-//        return new ModelAndView("redirect:/403" );
-//
-//    }
-//
-//    private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
-//        String locale = getLocale();
-//
-//        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
-//        List<Species> speciesList = speciesService.speciesList(locale);
-//        List<Breed> breedList = speciesService.breedList(locale);
-//        List<Department> departmentList = locationService.departmentList();
-//        List<Province> provinceList = locationService.provinceList();
-//
-//        return new ModelAndView("views/pet_edit")
-//                .addObject("speciesList", speciesList)
-//                .addObject("breedList", breedList)
-//                .addObject("provinceList", provinceList)
-//                .addObject("departmentList", departmentList)
-//                .addObject("pet", pet)
-//                .addObject("id", id);
-//    }
-//
-//    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.POST })
-//    public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
-//                                  final BindingResult errors, HttpServletRequest request,
-//                                @PathVariable("id") long id) {
-//        User user = loggedUser();
-//        if (user == null) throw new UserNotFoundException();
-//        String locale = getLocale();
-//
-//        if (errors.hasErrors()) {
-//            return editPetForm(editPetForm, id);
-//        }
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : editPetForm.getPhotos()) {
-//                if(!photo.isEmpty()) {
-//                    try {
-//                        photos.add(photo.getBytes());
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                        throw new ImageLoadException(ex);
-//                    }
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return editPetForm(editPetForm, id).addObject("imageError", true);
-//        }
-//
-//        Optional<Pet> opPet;
-//        try {
-//            LocalDateTime birthDate = editPetForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), birthDate,
-//                     editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
-//                     null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
-//                     editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
-//
-//        } catch (InvalidImageQuantityException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
-//
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//
-//        if(!opPet.isPresent()){
-//            LOGGER.warn("Pet could not be updated");
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
-//    }
-
-//
-//}
