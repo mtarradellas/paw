@@ -1,11 +1,10 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.Species;
+import java.net.URI;
 
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import ar.edu.itba.paw.models.Species;
 
 public class SpeciesDto {
 

@@ -1,17 +1,35 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.ImageService;
-import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.UserService;
-import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
-import ar.edu.itba.paw.interfaces.exceptions.PetException;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.webapp.dto.*;
-import ar.edu.itba.paw.webapp.exception.BadRequestException;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
-import ar.edu.itba.paw.webapp.util.ParseUtils;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import com.google.gson.Gson;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +37,30 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import javax.imageio.ImageIO;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import ar.edu.itba.paw.interfaces.ImageService;
+import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
+import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Department;
+import ar.edu.itba.paw.models.ImageDTO;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Province;
+import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.webapp.dto.BreedDto;
+import ar.edu.itba.paw.webapp.dto.DepartmentDto;
+import ar.edu.itba.paw.webapp.dto.ErrorDto;
+import ar.edu.itba.paw.webapp.dto.PetDto;
+import ar.edu.itba.paw.webapp.dto.ProvinceDto;
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
+import ar.edu.itba.paw.webapp.dto.UserDto;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
 
 @Component
 @Path("/pets")
@@ -106,7 +138,7 @@ public class PetController{
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") long ownerId,
+    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
@@ -206,6 +238,7 @@ public class PetController{
     }
 
     @POST
+    @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response edit(final PetDto pet) {
         String locale = ApiUtils.getLocale();

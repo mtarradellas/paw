@@ -1,11 +1,12 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.ws.rs.core.UriInfo;
+
+import ar.edu.itba.paw.models.Pet;
 
 public class PetDto {
 
@@ -35,11 +36,11 @@ public class PetDto {
     private Long departmentId;
 
     /* Check if user has already requested pet */
-    private int lastRequestStatus;
-    private boolean requestExists;
+    // private int lastRequestStatus;
+    // private boolean requestExists;
 
-    private URI availableUsers;
-    private int availableAmount;
+    // private URI availableUsers;
+    // private int availableAmount;
 
 
     public static PetDto fromPet(Pet pet, UriInfo uriInfo) {
