@@ -1,10 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
+
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -15,22 +19,16 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Component;
-
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
-import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 
 @Component
@@ -50,8 +48,9 @@ public class HomeController {
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getAvailable() {
+
         final String locale = ApiUtils.getLocale();
-        final List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(SpeciesDto::fromSpecies).collect(Collectors.toList());
+        final List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<SpeciesDto>>(speciesList) {}).build();
     }
 
@@ -84,7 +83,7 @@ public class HomeController {
             LOGGER.warn("User creation failed, service returned empty user");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final URI userUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewUser.get().getId())).build();
+        final URI userUri = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(opNewUser.get().getId())).build();
         return Response.created(userUri).build();
     }
 

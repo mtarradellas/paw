@@ -31,6 +31,7 @@ public interface UserService {
     Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException;
     Optional<User> requestPasswordReset(String mail, String contextURL);
     Optional<User> resetPassword(UUID token, String password);
+    String getMail(User user, long userId);
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);
     boolean isAdmin(User user);

@@ -215,7 +215,8 @@ public class ReviewController {
         Map<String, Object> json = new HashMap<>();
         json.put("amount", amount);
         json.put("average", average);
-
+        json.put("pagesize", REV_PAGE_SIZE);
+        
         return Response.ok().entity(new Gson().toJson(json)).build();
     }
 

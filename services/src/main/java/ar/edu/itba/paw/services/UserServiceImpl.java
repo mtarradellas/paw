@@ -24,6 +24,7 @@ import ar.edu.itba.paw.interfaces.UserDao;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.MailType;
@@ -274,6 +275,19 @@ public class UserServiceImpl implements UserService {
         deleteToken(uuid);
 
         return updatedUser;
+    }
+
+    @Override
+    public String getMail(User user, long userId) {
+        final Optional<User> opTarget = userDao.findById(userId);
+        if (!opTarget.isPresent()) throw new NotFoundException("User not found.");
+        final User target = opTarget.get();
+
+        if (user.getId() == userId || requestService.hasRequest(user, target)) {
+            return target.getMail();
+        }
+
+        throw new UserException("User has no permissions to view mail.");
     }
 
     @Transactional
