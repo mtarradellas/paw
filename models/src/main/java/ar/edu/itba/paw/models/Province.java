@@ -111,4 +111,8 @@ public class Province implements Comparable<Province>, Serializable {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
+    public List<Department> getDepartmentList() {
+        return departmentList;
+    }
 }

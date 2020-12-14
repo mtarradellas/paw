@@ -180,6 +180,15 @@ public class ParseUtils {
         return petId;
     }
 
+    public static Long parseQuestionId(long questionId) {
+        if (questionId == 0) return null;
+        if (questionId < 1) {
+            String hint = "Question ID must be grater than 0, or 0 for any user";
+            throw new BadRequestException("user ID", String.valueOf(questionId), hint);
+        }
+        return questionId;
+    }
+
     public static void parseReview(ReviewDto review) {
         if (review == null || review.getUserId() == null || review.getTargetId() == null || review.getScore() == null) {
             String hint = "Review is missing a required attribute";
