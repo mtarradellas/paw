@@ -3,9 +3,7 @@ package ar.edu.itba.paw.webapp.dto;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import javax.ws.rs.core.UriInfo;
-
 import ar.edu.itba.paw.models.Pet;
 
 public class PetDto {
@@ -26,9 +24,9 @@ public class PetDto {
     private URI user;
     private URI newOwner;
     private URI questionList;
-    private URI images;
+    private List<Long> images;
 
-    private List<byte[]> photos;
+    //private List<byte[]> photos;
     private Long userId;
     private Long speciesId;
     private Long breedId;
@@ -55,6 +53,7 @@ public class PetDto {
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
+        dto.images = pet.getImages();
         dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
         dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
         dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
@@ -63,11 +62,10 @@ public class PetDto {
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
         if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
         dto.questionList = uriInfo.getAbsolutePathBuilder().path("questions").build();
-        dto.images = uriInfo.getAbsolutePathBuilder().path("images").build();
 
         dto.userId = pet.getUser().getId();
         dto.speciesId = pet.getSpecies().getId();
-        dto.breedId = pet.getBreed().getId();               //van aca??
+        dto.breedId = pet.getBreed().getId();
         dto.provinceId = pet.getProvince().getId();
         dto.departmentId = pet.getDepartment().getId();
 
@@ -78,7 +76,6 @@ public class PetDto {
 //                    .map(Request::getUser).collect(Collectors.toList());
 //            dto.availableAmount = dto.availableUsers.size();
 //        }
-
         return dto;
     }
 
@@ -94,6 +91,7 @@ public class PetDto {
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
+        dto.images = pet.getImages();
         dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
         dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
         dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
@@ -102,7 +100,6 @@ public class PetDto {
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
         if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
         dto.questionList = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("questions").build();
-        dto.images = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("images").build();
 
         dto.userId = pet.getUser().getId();
         dto.speciesId = pet.getSpecies().getId();
@@ -241,11 +238,11 @@ public class PetDto {
         this.questionList = questionList;
     }
 
-    public URI getImages() {
+    public List<Long> getImages() {
         return images;
     }
 
-    public void setImages(URI images) {
+    public void setImages(List<Long> images) {
         this.images = images;
     }
 
@@ -289,11 +286,11 @@ public class PetDto {
         this.departmentId = departmentId;
     }
 
-    public List<byte[]> getPhotos() {
-        return photos;
-    }
-
-    public void setPhotos(List<byte[]> photos) {
-        this.photos = photos;
-    }
+//    public List<byte[]> getPhotos() {
+//        return photos;
+//    }
+//
+//    public void setPhotos(List<byte[]> photos) {
+//        this.photos = photos;
+//    }
 }
