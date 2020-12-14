@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.dto;
 public class PasswordDto {
 
     private String oldPassword;
+    private String token;
     private String newPassword;
 
     public String getOldPassword() {
@@ -19,5 +20,13 @@ public class PasswordDto {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
