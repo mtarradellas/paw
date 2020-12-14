@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.dto.*;
@@ -14,6 +15,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -214,7 +216,73 @@ public class AdminPetController {
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
         return Response.created(petUri).build();
     }
-    //////////////////////////////////////////////////////////////
+
+    @POST
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response edit(final PetDto pet) {
+        String locale = ApiUtils.getLocale();
+        Optional<Pet> opPet;
+        Optional<User> opOwner;
+        PetStatus petStatus;
+        try {
+            opOwner = userService.findById(pet.getUserId());
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        if (!opOwner.isPresent()) {
+            LOGGER.warn("Owner invalid");
+            final ErrorDto body = new ErrorDto(1, "Owner invalid");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        try {
+            petStatus = ParseUtils.parseStatus(PetStatus.class, pet.getStatus());
+        } catch (BadRequestException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body) {
+                    }).build();
+        }
+        /* TODO como recibir las fotos ?*/
+//        List<byte[]> photos = new ArrayList<>();
+//        try {
+//            for (MultipartFile photo : editPetForm.getPhotos()) {
+//                if(!photo.isEmpty()) {
+//                    try {
+//                        photos.add(photo.getBytes());
+//                    } catch (IOException ex) {
+//                        ex.printStackTrace();
+//                        throw new ImageLoadException(ex);
+//                    }
+//                }
+//            }
+//        } catch (ImageLoadException ex) {
+//            LOGGER.warn("Image bytes load from pet form failed");
+//            return editPetForm(editPetForm, id).addObject("imageError", true);
+//        }
+
+        try {
+            opPet = petService.update(locale, pet.getId(), opOwner.get().getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
+                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
+                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
+        } catch(NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet update failed");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
+        return Response.created(petUri).build();
+    }
 
     @POST
     @Path("/{petId}/sell-adopt")
@@ -308,90 +376,3 @@ public class AdminPetController {
     }
 }
 
-
-//
-//    @RequestMapping(value = "/admin/pet/{id}/edit-pet", method = { RequestMethod.GET })
-//    public ModelAndView editPet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id){
-//        Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
-//
-//        petForm.setBirthDate(java.util.Date.from(pet.getBirthDate().atZone(ZoneId.systemDefault()).toInstant()));
-//        petForm.setBreedId(pet.getBreed().getId());
-//        petForm.setDescription(pet.getDescription());
-//        petForm.setGender(pet.getGender());
-//        petForm.setProvince(pet.getProvince().getId());
-//        petForm.setDepartment(pet.getDepartment().getId());
-//        petForm.setPrice(pet.getPrice());
-//        petForm.setPetName(pet.getPetName());
-//        petForm.setSpeciesId(pet.getSpecies().getId());
-//        petForm.setVaccinated(pet.isVaccinated());
-//
-//        return editPetForm(petForm, id);
-//    }
-//
-//    private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
-//        String locale = getLocale();
-//
-//        List<Species> speciesList = speciesService.speciesList(locale);
-//        List<Breed> breedList = speciesService.breedList(locale);
-//        List<Province> provinceList = locationService.provinceList();
-//        List<Department> departmentList = locationService.departmentList();
-//        Pet pet = petService.findById(getLocale(),id).orElseThrow(PetNotFoundException::new);
-//
-//        return new ModelAndView("admin/admin_edit_pet")
-//                .addObject("speciesList", speciesList)
-//                .addObject("breedList", breedList)
-//                .addObject("pet", pet)
-//                .addObject("id", id)
-//                .addObject("provinceList", provinceList)
-//                .addObject("departmentList", departmentList);
-//    }
-//
-//    @RequestMapping(value = "/admin/pet/{id}/edit", method = { RequestMethod.POST })
-//    public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
-//                                final BindingResult errors, HttpServletRequest request,
-//                                @PathVariable("id") long id) {
-//
-//        if (errors.hasErrors()) {
-//            return editPetForm(editPetForm, id);
-//        }
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : editPetForm.getPhotos()) {
-//                if(!photo.isEmpty()) {
-//                    try {
-//                        photos.add(photo.getBytes());
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                        throw new ImageLoadException(ex);
-//                    }
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return editPetForm(editPetForm, id).addObject("imageError", true);
-//        }
-//
-//        Optional<Pet> opPet;
-//        try {
-//            LocalDateTime birthDate = editPetForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//            opPet = petService.update(getLocale(), id, null, editPetForm.getPetName(), birthDate, editPetForm.getGender(),
-//                    editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(), null, editPetForm.getSpeciesId(),
-//                    editPetForm.getBreedId(), editPetForm.getProvince(), editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
-//
-//        } catch(InvalidImageQuantityException ex) {
-//            LOGGER.warn(ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
-//
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//
-//        if(!opPet.isPresent()){
-//            LOGGER.warn("Pet could not be updated");
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//        return new ModelAndView("redirect:/admin/pet/" + opPet.get().getId());
-//    }
-//
-//}
