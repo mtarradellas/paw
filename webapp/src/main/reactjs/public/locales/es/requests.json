@@ -23,7 +23,8 @@
     "pending": "Pendiente",
     "canceled": "Cancelada",
     "notSold": "Aceptada (No vendida)",
-    "sold": "Vendida a {{ownerName}}",
+    "sold": "Vendida",
+    "soldTo": "Vendida a {{ownerName}}",
     "removed": "Removida",
     "unavailable": "No Disponible",
     "available": "Disponible"
@@ -40,22 +41,20 @@
     "imSure": "Estoy seguro",
     "visitPet": "Visitar Mascota",
     "visitOwner": "Visitar Dueño",
-    "recover": "Recueprar"
+    "recover": "Recuperar"
   },
-  "helpModal": {
-    "title": "Ayuda",
-    "firstTitle": "Página de Solicitudes",
-    "firstDesc": "Bienvenido a la página de solicitudes, aquí puede ver estado de todas las mascotas que ha solicitado. Hay cuatro estados: pendiente (significa que el dueño no ha decidido todavía), aceptado o rechazado (dueño ha decidido si desea o no darle el animal, no puede recuperar esta solicitud) y cancelado (puede cancelar una solicitud haciendo click en 'cancelar', y recupetarlo haciendo click en 'recuperar'). ",
-    "secondTitle": "Herramientas de Filtrado",
-    "secondDesc": "Para asistirlo en la organización de sus solicitudes, utilize el menú de filtrado encontrado a la izquierda."
-  },
-  "cancelModal": {
-    "title": "Por favor confirme su acción",
-    "subtitle": "¿Está seguro que desea cancelar esta solicitud?"
-  },
-  "recoverModal": {
-    "title": "Por favor confirme su acción",
-    "subtitle": "¿Está seguro que desea recuperar esta solicitud?"
+  "modals": {
+    "helpModal": {
+      "title": "Ayuda",
+      "firstTitle": "Página de Solicitudes",
+      "firstDesc": "Bienvenido a la página de solicitudes, aquí puede ver estado de todas las mascotas que ha solicitado. Hay cuatro estados: pendiente (significa que el dueño no ha decidido todavía), aceptado o rechazado (dueño ha decidido si desea o no darle el animal, no puede recuperar esta solicitud) y cancelado (puede cancelar una solicitud haciendo click en 'cancelar', y recupetarlo haciendo click en 'recuperar'). ",
+      "secondTitle": "Herramientas de Filtrado",
+      "secondDesc": "Para asistirlo en la organización de sus solicitudes, utilize el menú de filtrado encontrado a la izquierda."
+    },
+    "pleaseConfirm": "Por favor confirme su acción",
+    "cancel":"¿Estás seguro que deseas cancelar esta solicitud?",
+    "recover": "¿Estás seguro que deseas recuperar esta solicitud?"
+
   },
   "messages": {
     "error": "Un error fue detectado",
