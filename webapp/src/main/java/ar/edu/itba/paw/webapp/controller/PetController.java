@@ -206,6 +206,7 @@ public class PetController{
     }
 
     @POST
+    @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response edit(final PetDto pet) {
         String locale = ApiUtils.getLocale();
