@@ -23,7 +23,8 @@
     "pending": "Pending",
     "canceled": "Canceled",
     "notSold": "Accepted (Not Sold)",
-    "sold": "Sold to {{ownerName}}",
+    "sold": "Sold",
+    "soldTo": "Sold to {{ownerName}}",
     "removed": "Removed",
     "unavailable": "Unavailable",
     "available": "Available"

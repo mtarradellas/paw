@@ -11,12 +11,13 @@ import './css/html.css';
 import HomeView from "./views/home/HomeView";
 import BasicLayout from "./components/BasicLayout";
 
-import RequestsView from "./views/requests/RequestsView";
+import RequestsView from "./views/requests&interests/RequestsView";
+import InterestsView from "./views/requests&interests/InterestsView";
 
 import LoginContext from './constants/loginContext';
 
 
-import {HOME, LOGIN, PET, REGISTER, USER, REQUESTS} from "./constants/routes";
+import {HOME, LOGIN, PET, REGISTER, USER, REQUESTS, INTERESTS} from "./constants/routes";
 import useLogin from "./hooks/useLogin";
 import UserView from "./views/user/UserView";
 import RegisterView from "./views/register/RegisterView";
@@ -57,7 +58,11 @@ function App() {
                             <RequestsView/>
                         </BasicLayout>
                     </Route>
-
+                    <Route exact path={INTERESTS}>
+                        <BasicLayout>
+                            <InterestsView/>
+                        </BasicLayout>
+                    </Route>
                     <Route exact path={PET + ':id'}
                            render={
                                ({id}) => (

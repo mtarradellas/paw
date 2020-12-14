@@ -7,7 +7,7 @@ import FilterRequestsForm from "./FilterRequestsForm";
 
 import RequestContainer from "./RequestContainer";
 
-import "../../css/requests/requests.css"
+import "../../css/requests&interests/requests.css"
 
 /*
 *  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
@@ -132,11 +132,14 @@ function MainContent({requests, requestsCount}) {
             <Col span={12}>
                 <h3><b>{t("requests.request")}</b></h3>
             </Col>
-            <Col span={7}>
+            <Col span={4}>
                 <h3><b>{t("requests.requestStatus")}</b></h3>
             </Col>
-            <Col>
-                <h3><b>{t("requests.actions")}</b></h3>
+            <Col span={8}>
+                <div className={"centered"}>
+
+                    <h3><b>{t("requests.actions")}</b></h3>
+                </div>
             </Col>
         </Row>
         <Divider style={{margin: 0, padding: 0}}/>
@@ -165,8 +168,7 @@ function MainContent({requests, requestsCount}) {
 }
 
 
-function RequestsView()
-{
+function RequestsView() {
     const requests = sampleRequests;
     const requestsCount = sampleRequests.length;
 

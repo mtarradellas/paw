@@ -1,24 +1,29 @@
 import React, {useState} from 'react';
 import {useTranslation} from "react-i18next";
-import {List, Button, Modal} from 'antd';
+import {Button, List, Modal} from "antd";
 import {PET, USER} from '../../constants/routes';
 
-import GenericNotification from '../other/GenericNotification'
+import GenericNotification from './GenericNotification'
 
 //TODO: ver el tema de formateo de fechas
 //TODO: manejo de formularios para botones y links y eso
 
-function RequestNotification(
+function InterestNotification(
     {id,creationDate, updateDate, status, user, userId, pet, petId, petStatus, newPetOwner, newPetOwnerId, modal}) {
-    const {t} = useTranslation("requests");
+    const {t} = useTranslation("interests");
 
     let reqTarget = null;
     let reqStatus = null;
     let reqButtons = null;
+    let shaded = false;
 
     if (status === "ACCEPTED") {
+        const onConfirm = () => {
+            alert("recovered" + id)
+        }
+        const modalMessage = t("modals.reserve")
         reqTarget = (
-            <p>{t("messages.accepted", {petName: pet})}
+            <p>{t("messages.accepted", {petName: pet, username: user})}
                 <small className={"date-text"}> {updateDate.toLocaleString()}</small>
             </p>
         )
@@ -26,11 +31,16 @@ function RequestNotification(
         reqButtons = (
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                &nbsp;&nbsp;
+                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
+                &nbsp;&nbsp;
+                <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.reserve")}</Button>
             </div>
         )
     } else if (status === "REJECTED") {
+        shaded = true;
         reqTarget = (
-            <p>{t("messages.rejected", {petName: pet})}
+            <p>{t("messages.rejected", {petName: pet, username: user})}
                 <small className={"date-text"}> {updateDate.toLocaleString()}</small>
             </p>
         )
@@ -38,17 +48,23 @@ function RequestNotification(
         reqButtons = (
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                &nbsp;&nbsp;
+                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
             </div>
         )
     } else if (status === "PENDING") {
-        const onConfirm = () => {
+        const onConfirmAccept = () => {
             alert("canceled" + id)
         }
+        const modalMessageAccept = t("modals.acceptRequest")
 
-        const modalMessage = t("modals.cancel")
+        const onConfirmReject = () => {
+            alert("canceled" + id)
+        }
+        const modalMessageReject = t("modals.rejectRequest")
 
         reqTarget = (
-            <p>{t("messages.pending", {petName: pet})}
+            <p>{t("messages.pending", {petName: pet, username: user})}
                 <small className={"date-text"}> {creationDate.toLocaleString()}</small>
             </p>
         )
@@ -57,19 +73,18 @@ function RequestNotification(
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.cancel")}</Button>
+                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
+                &nbsp;&nbsp;
+                <Button type={"primary"} danger onClick={() => modal(onConfirmAccept, modalMessageAccept)}>{t("buttons.accept")}</Button>
+                &nbsp;&nbsp;
+                <Button type={"primary"} danger onClick={() => modal(onConfirmReject, modalMessageReject)}>{t("buttons.reject")}</Button>
             </div>
         )
 
     } else if (status === "CANCELED") {
-        const onConfirm = () => {
-            alert("recovered" + id)
-        }
-
-        const modalMessage = t("modals.recover")
-
+        shaded = true;
         reqTarget = (
-            <p>{t("messages.canceled", {petName: pet})}
+            <p>{t("messages.canceled", {petName: pet, username: user})}
                 <small className={"date-text"}> {updateDate.toLocaleString()}</small>
             </p>
         )
@@ -78,17 +93,18 @@ function RequestNotification(
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
+                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
             </div>
         )
 
     } else if (status === "SOLD") {
+        shaded = true;
         reqTarget = (
-            <p>{t("messages.sold", {petName: pet})}
+            <p>{t("messages.sold", {petName: pet, username: user})}
                 <small className={"date-text"}> {updateDate.toLocaleString()}</small>
             </p>
         )
-        reqStatus = <p>{t("status.sold", {ownerName: newPetOwner})}</p>
+        reqStatus = <p>{t("status.soldTo", {ownerName: newPetOwner, username: user})}</p>
         reqButtons = (
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
@@ -99,13 +115,13 @@ function RequestNotification(
     }
 
     return (
-        <GenericNotification target={reqTarget} status={reqStatus} buttons={reqButtons}/>
+        <GenericNotification target={reqTarget} status={reqStatus} buttons={reqButtons} shaded={shaded} />
 
     )
 }
 
-function RequestContainer({requests}) {
-    const {t} = useTranslation("requests");
+function InterestContainer({interests}) {
+    const {t} = useTranslation("interests");
 
     const [modalState, setModalState] = useState({show: false, callbackMethod: null, modalMessage: ""});
     const showModal = (callback, message) => {
@@ -124,11 +140,11 @@ function RequestContainer({requests}) {
 
             <List split={false}>
                 {
-                    requests
+                    interests
                         .map(
                             (request) => (
                                 <List.Item key={request.id}>
-                                    <RequestNotification modal={showModal} {...request} />
+                                    <InterestNotification modal={showModal} {...request} />
                                 </List.Item>
                             )
                         )
@@ -140,12 +156,12 @@ function RequestContainer({requests}) {
                 onCancel={onCancel}
                 footer={[
                     <div key={"confirmation-modal-key"}>
-                    <Button key="cancel" onClick={onCancel}>
-                        {t("buttons.cancel")}
-                    </Button>
-                    <Button key="submit" type="primary" onClick={onOk}>
-                        {t("buttons.imSure")}
-                    </Button>
+                        <Button key="cancel" onClick={onCancel}>
+                            {t("buttons.cancel")}
+                        </Button>
+                        <Button key="submit" type="primary" onClick={onOk}>
+                            {t("buttons.imSure")}
+                        </Button>
                     </div>
                 ]}
             >
@@ -157,4 +173,4 @@ function RequestContainer({requests}) {
     )
 }
 
-export default RequestContainer;
+export default InterestContainer;

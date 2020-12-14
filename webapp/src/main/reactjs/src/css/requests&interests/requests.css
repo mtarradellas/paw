@@ -41,6 +41,15 @@ form .ant-row {
     color: black;
 }
 
+.shaded-div {
+    opacity: 40%;
+}
+
+.centered {
+    text-align: center;
+
+}
+
 @media only screen and (max-width: 480px) {
     form .ant-row {
         width: 100%;
