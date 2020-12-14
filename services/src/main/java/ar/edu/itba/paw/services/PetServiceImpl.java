@@ -468,14 +468,14 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
     @Transactional
     @Override
-    public boolean sellPet(long petId, long ownerId, long newOwnerId, String contextURL) {
+    public void sellPet(long petId, long ownerId, long newOwnerId, String contextURL) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
 
         if (pet.getNewOwner() != null) {
             LOGGER.warn("Pet {} is already sold to user {}", petId, pet.getNewOwner().getId());
-            return false;
+            throw new PetException("Pet already sold");
         }
 
         Optional<User> opOwner = userService.findById(ownerId);
@@ -505,15 +505,15 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
             if (updated) {
                 requestService.rejectAllByPet(pet.getId());
             }
-            return updated;
+            return;
         }
         LOGGER.warn("Owner and logged user are not the same");
-        return false;
+        throw new PetException("Owner and logged user are not the same");
     }
 
     @Transactional
     @Override
-    public boolean removePet(long petId, long userId) {
+    public void removePet(long petId, long userId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
@@ -521,44 +521,47 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
         if (pet.getUser().getId().equals(userId)) {
             requestService.rejectAllByPet(petId);
             pet.setStatus(PetStatus.REMOVED);
-            return petDao.update(pet).isPresent();
+            petDao.update(pet).orElseThrow(PetException::new);
+            return;
         }
         LOGGER.warn("Owner and logged user are not the same");
-        return false;
+        throw new PetException("Owner and logged user are not the same");
     }
 
     @Transactional
     @Override
-    public boolean recoverPet(long petId, long userId) {
+    public void recoverPet(long petId, long userId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
 
         if (pet.getUser().getId().equals(userId) && pet.getNewOwner() == null) {
             pet.setStatus(PetStatus.AVAILABLE);
-            return petDao.update(pet).isPresent();
+            petDao.update(pet).orElseThrow(PetException::new);
+            return;
         }
         LOGGER.warn("Owner and logged user are not the same");
-        return false;
+        throw new PetException("Owner and logged user are not the same");
     }
 
     @Transactional
     @Override
-    public boolean adminSellPet(long petId, long newOwnerId) {
+    public void adminSellPet(long petId, long newOwnerId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
-            return false;
+            throw new NotFoundException("Pet " + petId + " not found.");
         }
         Pet pet = opPet.get();
         Optional<User> opNewOwner = userService.findById(newOwnerId);
         if (!opNewOwner.isPresent()) {
             LOGGER.warn("New owner {} not found", newOwnerId);
-            return false;
+            throw new NotFoundException("New Owner " + newOwnerId + " not found.");
         }
         pet.setNewOwner(opNewOwner.get());
         pet.setStatus(PetStatus.SOLD);
-        return petDao.update(pet).isPresent();
+        petDao.update(pet).orElseThrow(PetException::new);
+        return;
     }
 
     @Transactional
