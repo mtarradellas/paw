@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
@@ -14,6 +15,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -200,6 +202,72 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
+        return Response.created(petUri).build();
+    }
+
+    @POST
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response edit(final PetDto pet) {
+        String locale = ApiUtils.getLocale();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+
+        Optional<Pet> opPet;
+        Optional<User> opOwner;
+        try {
+            opOwner = userService.findById(pet.getUserId());
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        if (!opOwner.isPresent()) {
+            LOGGER.warn("Owner invalid");
+            final ErrorDto body = new ErrorDto(2, "Owner invalid");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if(!loggedUser.getId().equals(opOwner.get().getId())) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(3, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        /* TODO como recibir las fotos ?*/
+//        List<byte[]> photos = new ArrayList<>();
+//        try {
+//            for (MultipartFile photo : editPetForm.getPhotos()) {
+//                if(!photo.isEmpty()) {
+//                    try {
+//                        photos.add(photo.getBytes());
+//                    } catch (IOException ex) {
+//                        ex.printStackTrace();
+//                        throw new ImageLoadException(ex);
+//                    }
+//                }
+//            }
+//        } catch (ImageLoadException ex) {
+//            LOGGER.warn("Image bytes load from pet form failed");
+//            return editPetForm(editPetForm, id).addObject("imageError", true);
+//        }
+
+        try {
+            opPet = petService.update(locale, pet.getId(), loggedUser.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
+                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
+                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
+        } catch(NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(4, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet update failed");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
         return Response.created(petUri).build();
     }
 
