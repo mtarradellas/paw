@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,8 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import ar.edu.itba.paw.interfaces.UserDao;
@@ -40,6 +43,7 @@ import ar.edu.itba.paw.models.constants.UserStatus;
 
 @Repository
 public class UserJpaDaoImpl implements UserDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserJpaDaoImpl.class);
 
     private static final int MAX_STATUS = 3;
     private static final int MAX_QUANTITY_OF_STATUS = 4;
@@ -237,12 +241,14 @@ public class UserJpaDaoImpl implements UserDao {
         } catch (PersistenceException ex) {
             throw new UserException(ex.getCause().getCause().getMessage());
         }
+        indexUsers();
         return user;
     }
 
     @Override
     public Optional<User> update(User user) {
         em.persist(user);
+        indexUsers();
         return Optional.of(user);
     }
 
@@ -381,5 +387,15 @@ public class UserJpaDaoImpl implements UserDao {
         String qStr = "delete Token where expirationDate < current_date ";
         Query query = em.createQuery(qStr);
         query.executeUpdate();
+    }
+
+    private void indexUsers() {
+        final LocalDateTime time = LocalDateTime.now();
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        try {
+            fullTextEntityManager.createIndexer().startAndWait();
+        } catch(InterruptedException ignored) {}
+        final long diff = time.until(LocalDateTime.now(), ChronoUnit.SECONDS);
+        LOGGER.debug("\n\nTime Indexing: {}\n\n", diff);
     }
 }
