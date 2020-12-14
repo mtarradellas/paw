@@ -176,6 +176,12 @@ public class PetController{
         String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         Optional<Pet> opNewPet;
 
         /* TODO como recibir las fotos ?*/
@@ -202,14 +208,21 @@ public class PetController{
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getPet(@PathParam("petId") Long petId) {
         String locale = ApiUtils.getLocale();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
         Pet pet = opPet.get();
-        if(pet.getStatus() == PetStatus.REMOVED || pet.getStatus() == PetStatus.UNAVAILABLE) {
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+
+        //pets are only visible to the public if they are available, only the owners can see them with a different status
+        if(pet.getStatus() != PetStatus.AVAILABLE) {
+            if(loggedUser == null || !loggedUser.getId().equals(pet.getUser().getId()) ||
+                    (pet.getNewOwner() != null && loggedUser.getId().equals(pet.getNewOwner().getId()))) {
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            }
         }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
@@ -278,20 +291,20 @@ public class PetController{
         }
         if(newOwnerId == null || loggedUser == null || petId == null) {
             LOGGER.warn("Invalid parameters. New owner {}, logged user {}, pet {}", newOwnerId, loggedUser, petId);
-            final ErrorDto body = new ErrorDto(2, "Invalid parameters");
+            final ErrorDto body = new ErrorDto(1, "Invalid parameters");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        boolean sold;
         try {
-            sold = petService.sellPet(petId, loggedUser.getId(), newOwnerId, uriInfo.getBaseUri().toString());
+            petService.sellPet(petId, loggedUser.getId(), newOwnerId, uriInfo.getBaseUri().toString());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!sold) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
@@ -313,16 +326,16 @@ public class PetController{
             LOGGER.warn("Invalid parameters. Logged user {}, pet {}", loggedUser, petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        boolean removed;
         try {
-            removed = petService.removePet(petId, loggedUser.getId());
+            petService.removePet(petId, loggedUser.getId());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!removed) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
@@ -342,16 +355,16 @@ public class PetController{
             LOGGER.warn("Invalid parameters. Logged user {}, pet {}", loggedUser, petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        boolean recovered;
         try {
-            recovered = petService.recoverPet(petId, loggedUser.getId());
+            petService.recoverPet(petId, loggedUser.getId());
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!recovered) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }

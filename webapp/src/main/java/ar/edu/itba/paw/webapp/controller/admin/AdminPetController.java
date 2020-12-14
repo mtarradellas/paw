@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.dto.*;
@@ -214,7 +215,6 @@ public class AdminPetController {
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
         return Response.created(petUri).build();
     }
-    //////////////////////////////////////////////////////////////
 
     @POST
     @Path("/{petId}/sell-adopt")
@@ -237,16 +237,16 @@ public class AdminPetController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        boolean sold;
         try {
-            sold = petService.adminSellPet(petId, newOwnerId);
+            petService.adminSellPet(petId, newOwnerId);
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!sold) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
@@ -258,24 +258,22 @@ public class AdminPetController {
             petId = ParseUtils.parsePetId(petId);
         } catch(BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         if(petId == null) {
             LOGGER.warn("Invalid parameter: Pet {}", petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        boolean removed;
         try {
-            removed = petService.adminRemovePet(petId);
+            petService.adminRemovePet(petId);
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!removed) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
@@ -293,16 +291,16 @@ public class AdminPetController {
             LOGGER.warn("Invalid parameter: Pet {}", petId);
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        boolean recovered;
         try {
-            recovered = petService.adminRecoverPet(petId);
+            petService.adminRecoverPet(petId);
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if(!recovered) {
-            LOGGER.warn("Pet status not updated");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.ok().build();
     }
