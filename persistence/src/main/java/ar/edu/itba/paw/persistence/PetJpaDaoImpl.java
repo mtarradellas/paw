@@ -1,9 +1,25 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.PetDao;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.models.constants.QuestionStatus;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -11,14 +27,18 @@ import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
 import org.springframework.stereotype.Repository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import ar.edu.itba.paw.interfaces.PetDao;
+import ar.edu.itba.paw.models.Answer;
+import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Department;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Province;
+import ar.edu.itba.paw.models.Question;
+import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
 
 @Repository
 public class PetJpaDaoImpl implements PetDao {

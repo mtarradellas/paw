@@ -66,13 +66,13 @@ public class UserServiceImplTest {
         assertEquals(locale, user.getLocale());
     }
 
-    private void assertReview(Review review, long owner, long target, int score, String description, ReviewStatus status) {
-        assertEquals(review.getOwner().getId().longValue(), owner);
-        assertEquals(review.getTarget().getId().longValue(), target);
-        assertEquals(review.getScore(), score);
-        assertEquals(review.getDescription(), description);
-        assertEquals(review.getStatus(), status);
-    }
+    // private void assertReview(Review review, long owner, long target, int score, String description, ReviewStatus status) {
+    //     assertEquals(review.getOwner().getId().longValue(), owner);
+    //     assertEquals(review.getTarget().getId().longValue(), target);
+    //     assertEquals(review.getScore(), score);
+    //     assertEquals(review.getDescription(), description);
+    //     assertEquals(review.getStatus(), status);
+    // }
 
     @Test
     public void testFilteredListStatus() {

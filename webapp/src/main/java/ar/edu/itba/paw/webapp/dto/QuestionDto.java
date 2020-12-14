@@ -1,10 +1,11 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.Answer;
-import ar.edu.itba.paw.models.Question;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDateTime;
+
+import javax.ws.rs.core.UriInfo;
+
+import ar.edu.itba.paw.models.Question;
 
 public class QuestionDto {
 
