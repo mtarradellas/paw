@@ -1,22 +1,19 @@
-package ar.edu.itba.paw.webapp.controller;
+package ar.edu.itba.paw.webapp.controller.admin;
 
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.QuestionException;
 import ar.edu.itba.paw.models.Answer;
 import ar.edu.itba.paw.models.Question;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.controller.UserController;
 import ar.edu.itba.paw.webapp.dto.AnswerDto;
 import ar.edu.itba.paw.webapp.dto.QuestionDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -28,8 +25,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-@Path("/questions")
-public class QuestionController {
+@Path("/admin/questions")
+public class AdminQuestionController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -50,7 +47,7 @@ public class QuestionController {
         try {
             petId = ParseUtils.parsePetId(petId);
             ParseUtils.parsePage(page);
-        } catch (BadRequestException ex) {
+        } catch (ar.edu.itba.paw.webapp.exception.BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
@@ -75,7 +72,7 @@ public class QuestionController {
     public Response getQuestionAmount(@QueryParam("petId") @DefaultValue("0") Long petId) {
         try {
             petId = ParseUtils.parsePetId(petId);
-        } catch (BadRequestException ex) {
+        } catch (ar.edu.itba.paw.webapp.exception.BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
@@ -98,11 +95,10 @@ public class QuestionController {
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createQuestion(final QuestionDto question) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
         Optional<Question> opNewQuestion;
         try {
-            opNewQuestion = petService.createQuestion(question.getContent(), loggedUser.getId(), question.getPetId(), uriInfo.getBaseUri().toString());
+            opNewQuestion = petService.createQuestion(question.getContent(), question.getUserId(), question.getPetId(),
+                    uriInfo.getBaseUri().toString());
         } catch(NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -152,8 +148,6 @@ public class QuestionController {
     @Path("/{questionId}/answer")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createAnswer(@PathParam("questionId") Long questionId, final AnswerDto answer) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
         try {
             questionId = ParseUtils.parseQuestionId(questionId);
         } catch (BadRequestException ex) {
@@ -166,7 +160,7 @@ public class QuestionController {
         }
         Optional<Answer> opNewAnswer;
         try {
-            opNewAnswer = petService.createAnswer(questionId, answer.getContent(), loggedUser.getId(), uriInfo.getBaseUri().toString());
+            opNewAnswer = petService.createAnswer(questionId, answer.getContent(), answer.getUserId(), uriInfo.getBaseUri().toString());
         } catch(NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();

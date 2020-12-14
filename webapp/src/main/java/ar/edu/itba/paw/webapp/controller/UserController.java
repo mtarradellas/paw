@@ -52,7 +52,6 @@ public class UserController {
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getUser(@PathParam("userId") long userId) {
         final Optional<User> opUser = userService.findById(userId);
-
         if (!opUser.isPresent()) {
             LOGGER.debug("User {} not found", userId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
