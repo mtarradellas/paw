@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
-import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
-import ar.edu.itba.paw.interfaces.exceptions.PetException;
-import ar.edu.itba.paw.interfaces.exceptions.UserException;
+import ar.edu.itba.paw.interfaces.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
@@ -654,7 +651,7 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
         if (user.getId().equals(pet.getUser().getId())) {
             LOGGER.warn("User {} cannot ask question to himself", pet.getUser().getId());
-            return Optional.empty();
+            throw new QuestionException("User cannot ask question to himself");
         }
 
         Question question = petDao.createQuestion(content, user, pet.getUser(), pet, QuestionStatus.VALID);
@@ -686,8 +683,8 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
         Question question = opQuestion.get();
 
         if (user.getId().equals(question.getUser().getId())) {
-            LOGGER.warn("User {} cannot answer his own question", question.getTarget());
-            return Optional.empty();
+            LOGGER.warn("User {} cannot answer his own question", userId);
+            throw new QuestionException("User cannot answer his own question");
         }
 
         Pet pet = question.getPet();
