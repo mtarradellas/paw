@@ -321,6 +321,8 @@ public class PetController{
             }
         }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
+        if(petDto.getImages().isEmpty()) System.out.println("WWWWWWWWW");
+        //petDto.getImages().forEach(System.out::println);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
     }
 

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.dto;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.core.UriInfo;
 import ar.edu.itba.paw.models.Pet;
@@ -25,6 +26,7 @@ public class PetDto {
     private URI newOwner;
     private URI questionList;
     private List<Long> images;
+    private String username;
 
     //private List<byte[]> photos;
     private Long userId;
@@ -53,7 +55,9 @@ public class PetDto {
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
-        dto.images = pet.getImages();
+        dto.images = new ArrayList<>();
+        pet.getImages().forEach(i -> dto.images.add(i.getId()));
+        dto.username = pet.getUser().getUsername();
         dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
         dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
         dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
@@ -91,7 +95,9 @@ public class PetDto {
         dto.uploadDate = pet.getUploadDate();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
-        dto.images = pet.getImages();
+        dto.images = new ArrayList<>();
+        pet.getImages().forEach(i -> dto.images.add(i.getId()));
+        dto.username = pet.getUser().getUsername();
         dto.breed = uriInfo.getBaseUriBuilder().path("species").path("breeds").path(String.valueOf(pet.getBreed().getId())).build();
         dto.species = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(pet.getSpecies().getId())).build();
         dto.province = uriInfo.getAbsolutePathBuilder().path("location").path("provinces").path(String.valueOf(pet.getProvince().getId())).build();
@@ -286,7 +292,15 @@ public class PetDto {
         this.departmentId = departmentId;
     }
 
-//    public List<byte[]> getPhotos() {
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    //    public List<byte[]> getPhotos() {
 //        return photos;
 //    }
 //
