@@ -14,7 +14,9 @@ export const FORGOT_PASSWORD = '/forgot-password';
 
 export const PET = '/pet/';
 
-export const VERIFY_EMAIL = '/verify-email'
+export const ADD_PET = '/add-pet';
+
+export const VERIFY_EMAIL = '/verify-email';
 
 export const ERROR_404 = '/404';
 
