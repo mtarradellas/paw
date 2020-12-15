@@ -34,7 +34,8 @@ const nairobi =  {
     vaccinated: true,
     onAdoption: false,
     onSale: true,
-    ownerId: 1
+    ownerId: 1,
+    images: [1]
 };
 
 const sampleReviews = [

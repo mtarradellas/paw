@@ -1,13 +1,13 @@
 import React from 'react';
 import {List, Card, Button} from 'antd';
 import {useTranslation} from "react-i18next";
-
 import "../../css/home/petCard.css";
 import {Link} from "react-router-dom";
-import {PET} from "../../constants/routes";
+import {PET, USER} from "../../constants/routes";
+import {petImageSrc} from "../../api/images";
 
 function PetCard({pet}){
-    const {petName, specie, breed, price, gender, owner, uploadDate, id} = pet;
+    const {petName, specie, breed, price, gender, username, uploadDate, id, images, userId} = pet;
 
     const {t} = useTranslation(["petInformation", "home"]);
 
@@ -15,7 +15,7 @@ function PetCard({pet}){
             className={"pet-card"}
             cover={
                 <Link to={PET + id}>
-                    <img className={"pet-card--img"} alt="example" src="http://pawserver.it.itba.edu.ar/paw-2020a-7/img/1" />
+                    <img className={"pet-card--img"} alt="example" src={petImageSrc(images[0])}/>
                 </Link>
             }
         >
@@ -27,7 +27,7 @@ function PetCard({pet}){
                 <List.Item>{t("breed")}: {breed}</List.Item>
                 <List.Item>{t("price")}: ${price}</List.Item>
                 <List.Item>{t("sex")}: {gender}</List.Item>
-                <List.Item>{t("owner")}: {owner}</List.Item>
+                <List.Item>{t("owner")}: <Link to={USER + userId}>{username}</Link></List.Item>
                 <List.Item>{t("uploadDate")}: {uploadDate}</List.Item>
                 <List.Item>
                     <Link to={PET + id}>

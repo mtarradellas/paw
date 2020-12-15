@@ -25,7 +25,7 @@ export async function getPets(
         return response.data.map(pet => {
             return  _.pick(pet, [
                 'breedId', 'departmentId', 'description', 'id', 'petName', 'price', 'provinceId', 'speciesId',
-                'status', 'uploadDate', 'userId'
+                'status', 'uploadDate', 'userId', 'images', 'username', 'gender'
             ]);
         });
     }catch (e) {
