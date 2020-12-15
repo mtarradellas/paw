@@ -2,7 +2,6 @@ package ar.edu.itba.paw.webapp.controller.admin;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,13 +83,7 @@ public class AdminUserController {
                 .stream().map(u -> UserDto.fromUserForList(u, uriInfo)).collect(Collectors.toList());
         final int amount = userService.getFilteredAmount(findList, userStatus);
 
-        Map<String, Object> json = new HashMap<>();
-        json.put("amount", amount);
-        json.put("pagesize", USR_PAGE_SIZE);
-        json.put("pages", (int) Math.ceil((double) amount / (double) USR_PAGE_SIZE));
-        json.put("userList", userList);
-
-        return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, new Gson().toJson(json));
+        return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, userList, null);
     }
 
     @GET

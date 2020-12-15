@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -114,13 +113,7 @@ public class RequestController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        Map<String, Object> json = new HashMap<>();
-        json.put("amount", amount);
-        json.put("pagesize", REQ_PAGE_SIZE);
-        json.put("pages", (int) Math.ceil((double) amount / (double) REQ_PAGE_SIZE));
-        json.put("requestList", requestList);
-
-        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, new Gson().toJson(json));
+        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, requestList, null);
     }
 
     @GET

@@ -22,8 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.google.gson.Gson;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,13 +104,9 @@ public class ReviewController {
         }
 
         Map<String, Object> json = new HashMap<>();
-        json.put("amount", amount);
         json.put("average", average);
-        json.put("pagesize", REV_PAGE_SIZE);
-        json.put("pages", (int) Math.ceil((double) amount / (double) REV_PAGE_SIZE));
-        json.put("reviewList", reviewList);
 
-        return ApiUtils.paginatedListResponse(amount, REV_PAGE_SIZE, page, uriInfo, new Gson().toJson(json));
+        return ApiUtils.paginatedListResponse(amount, REV_PAGE_SIZE, page, uriInfo, reviewList, json);
     }
 
     @GET

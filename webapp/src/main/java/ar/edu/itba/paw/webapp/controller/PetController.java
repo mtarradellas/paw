@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -122,24 +121,21 @@ public class PetController{
         int maxPrice = range[1];
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
+        int amount;
         try {
             petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE,
-                    searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
-                    .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+                                        searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
+                                        .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE, minPrice, 
+                                        maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        final int amount = petService.getListAmount();
-        Map<String, Object> json = new HashMap<>();
-        json.put("amount", amount);
-        json.put("pagesize", PET_PAGE_SIZE);
-        json.put("pages", (int) Math.ceil((double) amount / (double) PET_PAGE_SIZE));
-        json.put("petList", petList);
 
-        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new Gson().toJson(json));
+        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, petList, null);
     }
 
     @GET

@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import com.google.gson.Gson;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.Resource;
@@ -45,10 +50,18 @@ public class ApiUtils {
         return null;
     }
 
-    public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Object genericEntity) {
-        final int firstPage = 1;
-        int lastPage  = (int) Math.ceil((double) amount / (double) pageSize);
+    public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Collection<?> list, Map<String, Object> data) {
+        int lastPage = (int) Math.ceil((double) amount / (double) pageSize);
         if (lastPage == 0) lastPage = 1;
+
+        Map<String, Object> json = new HashMap<>();
+        json.put("amount", amount);
+        json.put("pagesize", pageSize);
+        json.put("pages", lastPage);
+        json.put("list", list);
+        if (data != null) json.putAll(data);
+
+        final int firstPage = 1;
         final int prevPage  = (page == 1) ? lastPage : page - 1;
         final int nextPage  = (page == lastPage) ? firstPage : page + 1;
 
@@ -57,7 +70,7 @@ public class ApiUtils {
         final URI prev  = uriInfo.getAbsolutePathBuilder().queryParam("page", prevPage).build();
         final URI next  = uriInfo.getAbsolutePathBuilder().queryParam("page", nextPage).build();
 
-        return javax.ws.rs.core.Response.ok(genericEntity)
+        return javax.ws.rs.core.Response.ok(new Gson().toJson(json))
                 .link(first, "first")
                 .link(last, "last")
                 .link(prev, "prev")
