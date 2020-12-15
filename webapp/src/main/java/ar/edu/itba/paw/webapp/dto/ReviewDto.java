@@ -20,6 +20,7 @@ public class ReviewDto {
 
     private Long userId;
     private Long targetId;
+    private String username;
 
     public static ReviewDto fromReview(Review review, UriInfo uriInfo) {
         final ReviewDto dto = new ReviewDto();
@@ -31,6 +32,7 @@ public class ReviewDto {
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(review.getOwner().getId())).build();
         dto.target = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(review.getTarget().getId())).build();
+        dto.username = review.getOwner().getUsername();
 
         return dto;
     }
@@ -105,5 +107,13 @@ public class ReviewDto {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
