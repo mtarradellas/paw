@@ -11,8 +11,7 @@ import "../../css/requests&interests/requests-interests.css"
 
 import {getRequests} from "../../api/requests";
 
-import {useLogin} from "../../hooks/useLogin";
-
+import useLogin from "../../hooks/useLogin";
 
 /*
 *  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
@@ -101,8 +100,6 @@ sampleRequests.push(request2)
 sampleRequests.push(request3)
 sampleRequests.push(request4)
 
-// getRequests({page:1});
-
 function SideContent() {
     return (<div>
         <FilterRequestsForm/>
@@ -176,6 +173,12 @@ function MainContent({requests, requestsCount}) {
 
 
 function RequestsView() {
+    const {jwt,id} = useLogin().state;
+
+    const list = getRequests({userId: id, jwt});
+
+    console.log(list)
+
     const requests = sampleRequests;
     const requestsCount = sampleRequests.length;
 

@@ -9,18 +9,16 @@ export const GET_REQUESTS_ERRORS = {
 };
 
 export async function getRequests(
-    {page, userId, petId, status, searchCriteria, searchOrder}
+    {page, userId, petId, status, searchCriteria, searchOrder, jwt}
 ){
     try {
-        const response = await axios.get(SERVER_URL + GET_REQUESTS_ENDPOINT,
-            {
-                params: {
-                    page, userId, petId, status, searchCriteria, searchOrder
-                }
-            }
-        );
+        const config = Object.assign(getAuthConfig(jwt), {
+        params:{
+            page, userId, petId, status, searchCriteria, searchOrder
+        }
+    }) ;
+        const response = await axios.get(SERVER_URL + GET_REQUESTS_ENDPOINT, config);
         const {list, pages, amount, pagesize} = response.data;
-
         console.log(list)
 
         return {
@@ -28,9 +26,9 @@ export async function getRequests(
             amount,
             pageSize: pagesize,
             list: list.map(request => {
-                return _.pick(request, [])
-            })
-        }
+                return _.pick(request,
+                    ['creationDate', 'id', 'pet', 'status', 'target', 'updateDate', 'user']
+                )})}
     }catch (e){
         throw GET_REQUESTS_ERRORS.CONN_ERROR;
     }
