@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
-import {Table, Button, Divider, List, Rate, Spin} from "antd";
+import {Table, Button, Divider, List, Rate, Spin, Pagination} from "antd";
 import {useTranslation} from "react-i18next";
 import PetCard from "../home/PetCard";
 import {useParams, useHistory} from 'react-router-dom';
@@ -9,111 +9,39 @@ import {Link} from "react-router-dom";
 import {HOME, ERROR_404_USER} from "../../constants/routes";
 import {GET_USER_ERRORS, getUser} from "../../api/users";
 import useLogin from "../../hooks/useLogin";
+import usePets from "../../hooks/usePets";
+import _ from 'lodash';
+import useReviewsPagination from "../../hooks/useReviewsPagination";
+import Reviews from "./Reviews";
+import PaginatedPetSection from "./PaginatedPetSection";
 
-const sleep = (time) => {
-    return new Promise(accept => {
-        setTimeout(accept, time);
-    });
-};
 
 const ListItem = List.Item;
 
-const nairobi =  {
-    id: 1,
-    name: "Nairobi",
-    specie: "Perro",
-    breed: "Border Collie",
-    price: 3000,
-    sex: "Female",
-    owner: "lenny",
-    uploadDate: {
-        date: {
-            year: 2000
-        }
-    },
-    description: "Es muy gentil con los chicos, muy pacifica.",
-    dateOfBirth: "05-05-2019",
-    province: 'Buenos Aires',
-    department: 'Departamento',
-    vaccinated: true,
-    onAdoption: false,
-    onSale: true,
-    ownerId: 1,
-    images: [1]
-};
 
-const sampleReviews = [
-    {username: 'jason', rating: 5, description: 'Excelente!', userId: 1},
-    {username: 'juan', rating: 3.3, description: 'No tan excelente!', userId: 1}
-];
+function Content({user, id}){
+    const {email} = user;
 
-function Content({user}){
-    const {id, email} = user;
-
-    const [avgRating, setAvgRating] = useState(null);
-    const [reviewCount, setReviewsCount] = useState(null);
-    const [pets, setPets] = useState(null);
-    const [reviews, setReviews] = useState(null);
+    const reviewsPagination = useReviewsPagination({userId: id});
 
     const {t} = useTranslation('userView');
 
-    const fetchRatingAndTotalReviews = useCallback(async ()=>{
-        await sleep(5000);
-        setAvgRating(5);
-        setReviewsCount(1);
-    }, [id]);
-
-    const fetchPets = useCallback(async ()=> {
-        await sleep(5000);
-        setPets([nairobi, Object.assign({}, nairobi, {id: 2})]);
-    }, [id]);
-
-    const fetchReviews = useCallback(async ()=> {
-        await sleep(5000);
-        sampleReviews.forEach((review, index) => (Object.assign(review, {key: index})))
-        setReviews(sampleReviews);
-    }, [id]);
-
-    useEffect(()=>{
-        fetchRatingAndTotalReviews();
-        fetchPets();
-        fetchReviews();
-    }, [fetchRatingAndTotalReviews, fetchPets, fetchReviews]);
-
-    const reviewColumns = [
-        {
-            title: t('reviews.user'),
-            dataIndex: 'username'
-        },
-        {
-            title: t('reviews.rating'),
-            dataIndex: 'rating',
-            render: rating => (
-                <Rate allowHalf disabled defaultValue={rating}/>
-            )
-        },
-        {
-            title: t('reviews.description'),
-            dataIndex: 'description'
-        }
-    ];
-
     return <>
         <h1><b>
-            {t('rating')}:</b>  {avgRating === null ?
+            {t('rating')}:</b>  {reviewsPagination.average === null ?
                 <Spin/>
                 :
-                reviewCount === 0 ?
+            reviewsPagination.amount === 0 ?
                     t('noReviews')
                     :
-                    <Rate allowHalf disabled defaultValue={avgRating}/>
+                    <Rate allowHalf disabled defaultValue={reviewsPagination.average}/>
             }
         </h1>
 
         <p>
             {
-                reviewCount !== 0 && reviewCount !== null &&
-                    '(' + t('average', {avgRating, reviewCount}) + ') '
+                reviewsPagination.amount !== 0 && reviewsPagination.amount !== null &&
+                    '(' + t('average', {averageReview: reviewsPagination.average, amountReview: reviewsPagination.amount}) + ') '
             }
             {t('averageClarification')}
         </p>
@@ -134,42 +62,13 @@ function Content({user}){
                     t('sensibleInformation')
         }
 
+        <Divider/>
+
+        {/*<PaginatedPetSection userId={id}/>*/}
 
         <Divider/>
 
-        <h1><b>{t('petsTitle')}</b> {
-            pets === null ?
-                <Spin/>
-                :
-                '(' + t('totalResults', {count: pets.length}) + ')'
-        }</h1>
-
-        <div className={"user-view--pets-container"}>
-            {
-                pets === null ?
-                    <Spin/>
-                    :
-                    pets.length > 0 ?
-                        pets.map(pet => (<PetCard key={pet.id} pet={pet}/>))
-                        :
-                        <p>No tiene pets</p>
-            }
-        </div>
-
-        {
-            reviews !== null && reviews.length > 0 &&
-                <>
-                    <Divider/>
-
-                    <h1><b>{t('reviewsTitle')}:</b></h1>
-
-                    <Table
-                        bordered={false}
-                        columns={reviewColumns}
-                        dataSource={reviews} size="small"
-                    />
-                </>
-        }
+        <Reviews userId={id} reviewsPagination={reviewsPagination}/>
 
         <Divider/>
 
@@ -183,12 +82,12 @@ function Content({user}){
 }
 
 function UserView(){
-    const {id} = useParams();
+    const id = parseInt(useParams().id);
     const [user, setUser] = useState({username: null, email: null, id});
     const {state, promptLogin} = useLogin();
     const history = useHistory();
 
-    const {jwt} = state;
+    const {jwt, id: loggedUserId} = state;
 
     const fetchUser = useCallback(async ()=>{
         try{
@@ -219,11 +118,16 @@ function UserView(){
 
     return <ContentWithHeader
             title={username ? username : <Spin/>}
-            actionComponents={[
-                <Button>Remover</Button>,
-                <Button>Editar perfil</Button>
-            ]}
-            content={<Content user={user}/>}
+            actionComponents={
+                loggedUserId === id ?
+                    [
+                        <Button key={"remove"}>Remover</Button>,
+                        <Button key={"edit"}>Editar perfil</Button>
+                    ]
+                    :
+                    []
+            }
+            content={<Content user={user} id={id}/>}
         />
 }
 

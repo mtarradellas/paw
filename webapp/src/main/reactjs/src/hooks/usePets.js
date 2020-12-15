@@ -2,7 +2,7 @@ import React, {useEffect, useState, useContext} from 'react';
 import {getPets} from "../api/pets";
 import ConstantsContext from '../constants/constantsContext';
 
-const usePets = () => {
+const usePets = ({initialFilters}) => {
     const [pets, setPets] = useState(null);
 
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null});
@@ -36,7 +36,7 @@ const usePets = () => {
     };
 
     useEffect(()=>{
-        fetchPets({page: 1});
+        fetchPets(Object.assign({page: 1}, initialFilters));
     }, []);
 
     const {amount, pages, pageSize} = paginationInfo;
