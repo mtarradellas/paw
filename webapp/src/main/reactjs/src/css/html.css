@@ -24,3 +24,7 @@ body {
     text-align: center;
 
 }
+
+.ant-card-bordered,.ant-divider {
+    border-color: #dcdcdc;
+}
