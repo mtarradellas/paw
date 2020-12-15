@@ -22,8 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.google.gson.Gson;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,18 +90,23 @@ public class ReviewController {
 
         List<ReviewDto> reviewList;
         int amount;
+        double average;
         try {
             reviewList = reviewService.reviewList(user, target, minScore, maxScore, reviewStatus,
                     searchCriteria, searchOrder, page, REV_PAGE_SIZE)
                     .stream().map(r -> ReviewDto.fromReview(r, uriInfo)).collect(Collectors.toList());
             amount = reviewService.getReviewListAmount(user, target, minScore, maxScore, reviewStatus);
+            average = reviewService.getReviewAverage(user, target, minScore, maxScore, reviewStatus);
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        return ApiUtils.paginatedListResponse(amount, REV_PAGE_SIZE, page, uriInfo, new GenericEntity<List<ReviewDto>>(reviewList) {});
+        Map<String, Object> json = new HashMap<>();
+        json.put("average", average);
+
+        return ApiUtils.paginatedListResponse(amount, REV_PAGE_SIZE, page, uriInfo, reviewList, json);
     }
 
     @GET
@@ -176,48 +179,6 @@ public class ReviewController {
         }
         LOGGER.debug("Review {} removed", reviewId);
         return Response.noContent().build();
-    }
-
-    @GET
-    @Path("/info")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getReviewsInfo(@QueryParam("userId") @DefaultValue("0") long userId,
-                                   @QueryParam("targetId") @DefaultValue("0") long targetId,
-                                   @QueryParam("minScore") @DefaultValue("1") int minScore,
-                                   @QueryParam("maxScore") @DefaultValue("5") int maxScore,
-                                   @QueryParam("status") @DefaultValue("-1") int status) {
-
-        ReviewStatus reviewStatus;
-        Long user;
-        Long target;
-        try {
-            user = ParseUtils.parseUserId(userId);
-            target = ParseUtils.parseUserId(targetId);
-            ParseUtils.parseReviewScore(minScore, maxScore);
-            reviewStatus = ParseUtils.parseStatus(ReviewStatus.class, status);
-        } catch (BadRequestException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-
-        int amount;
-        double average;
-        try {
-            amount = reviewService.getReviewListAmount(user, target, minScore, maxScore, reviewStatus);
-            average = reviewService.getReviewAverage(user, target, minScore, maxScore, reviewStatus);
-        } catch (NotFoundException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-
-        Map<String, Object> json = new HashMap<>();
-        json.put("amount", amount);
-        json.put("average", average);
-        json.put("pagesize", REV_PAGE_SIZE);
-        
-        return Response.ok().entity(new Gson().toJson(json)).build();
     }
 
     @POST

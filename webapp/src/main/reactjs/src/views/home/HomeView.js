@@ -15,12 +15,10 @@ function SideContent(){
     </div>;
 }
 
-function MainContent({petCount, pets, fetching, fetchPage}){
+function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize}){
     const [currentPage, setCurrentPage] = useState(1);
 
     const {t} = useTranslation("home");
-
-    const totalPages = 50;
 
     const _onChangePagination = newValue => {
         setCurrentPage(newValue);
@@ -31,13 +29,16 @@ function MainContent({petCount, pets, fetching, fetchPage}){
     return <div className={"home__pets"}>
         <h1><b>{t("pets.title")}</b>
             {
-                !_.isNil(pets) && " (" + t("pets.results-count", {count: petCount}) + ")"
+                !_.isNil(petCount) && " (" + t("pets.results-count", {count: petCount}) + ")"
             }
         </h1>
 
 
         <Divider orientation={"left"}>
-            <Pagination current={currentPage} total={totalPages} onChange={_onChangePagination}/>
+            {
+                pageSize && petCount &&
+                    <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
+            }
         </Divider>
         <div className={"pet-card-container"}>
             {
@@ -51,7 +52,7 @@ function MainContent({petCount, pets, fetching, fetchPage}){
                             )
                         }
                         <Divider orientation={"left"}>
-                            <Pagination current={currentPage} total={totalPages} onChange={_onChangePagination}/>
+                            <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
                         </Divider>
                     </>
             }
@@ -62,9 +63,7 @@ function MainContent({petCount, pets, fetching, fetchPage}){
 
 
 function HomeView(){
-    const {pets, fetching, fetchPets} = usePets();
-
-    const petCount = 50;
+    const {pets, fetching, fetchPets, pages, amount, pageSize} = usePets();
 
     const fetchPage = page => {
         fetchPets({page})
@@ -75,7 +74,14 @@ function HomeView(){
                         <SideContent/>
                     }
                     mainContent={
-                        <MainContent petCount={petCount} pets={pets} fetching={fetching} fetchPage={fetchPage}/>
+                        <MainContent
+                            petCount={amount}
+                            pets={pets}
+                            fetching={fetching}
+                            pages={pages}
+                            fetchPage={fetchPage}
+                            pageSize={pageSize}
+                        />
                     }
                 />;
 }

@@ -119,18 +119,21 @@ public class AdminPetController {
         int maxPrice = range[1];
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
+        int amount;
         try {
             petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, petStatus,
                     searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
                     .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, species, breed, gender, petStatus, 
+                    minPrice, maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        final int amount = petService.getListAmount();
-        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new GenericEntity<List<PetDto>>(petList) {});
+
+        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, petList, null);
     }
 
     @GET

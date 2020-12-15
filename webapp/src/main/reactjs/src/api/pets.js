@@ -23,12 +23,19 @@ export async function getPets(
             }
             );
 
-        return response.data.map(pet => {
-            return  _.pick(pet, [
-                'breedId', 'departmentId', 'description', 'id', 'petName', 'price', 'provinceId', 'speciesId',
-                'status', 'uploadDate', 'userId', 'images', 'username', 'gender'
-            ]);
-        });
+        const {list, pages, amount, pagesize} = response.data;
+
+        return {
+            pages,
+            amount,
+            pageSize: pagesize,
+            list: list.map(pet => {
+                return  _.pick(pet, [
+                    'breedId', 'departmentId', 'description', 'id', 'petName', 'price', 'provinceId', 'speciesId',
+                    'status', 'uploadDate', 'userId', 'images', 'username', 'gender'
+                ])})
+        };
+
     }catch (e) {
         throw GET_PETS_ERRORS.CONN_ERROR;
     }

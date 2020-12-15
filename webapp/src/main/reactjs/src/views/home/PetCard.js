@@ -29,7 +29,7 @@ function PetCard({pet}){
                 <List.Item>{t("price")}: ${price}</List.Item>
                 <List.Item>{t("sex")}: {t(_.toLower(gender))}</List.Item>
                 <List.Item>{t("owner")}: <Link to={USER + userId}>{username}</Link></List.Item>
-                <List.Item>{t("uploadDate")}: {uploadDate}</List.Item>
+                <List.Item>{t("uploadDate")}: {uploadDate.date.year}</List.Item>
                 <List.Item>
                     <Link to={PET + id}>
                         <Button type={"primary"}>{t("home:pets.petsCard.goToPage")}</Button>
