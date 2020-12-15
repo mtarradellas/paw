@@ -5,6 +5,7 @@ import "../../css/home/petCard.css";
 import {Link} from "react-router-dom";
 import {PET, USER} from "../../constants/routes";
 import {petImageSrc} from "../../api/images";
+import _ from 'lodash';
 
 function PetCard({pet}){
     const {petName, specie, breed, price, gender, username, uploadDate, id, images, userId} = pet;
@@ -26,7 +27,7 @@ function PetCard({pet}){
                 <List.Item>{t("specie")}: {specie}</List.Item>
                 <List.Item>{t("breed")}: {breed}</List.Item>
                 <List.Item>{t("price")}: ${price}</List.Item>
-                <List.Item>{t("sex")}: {gender}</List.Item>
+                <List.Item>{t("sex")}: {t(_.toLower(gender))}</List.Item>
                 <List.Item>{t("owner")}: <Link to={USER + userId}>{username}</Link></List.Item>
                 <List.Item>{t("uploadDate")}: {uploadDate}</List.Item>
                 <List.Item>

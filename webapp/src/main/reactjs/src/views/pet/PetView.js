@@ -5,6 +5,7 @@ import {Button, Divider, List} from "antd";
 import Questions from "./Questions";
 import {Link} from "react-router-dom";
 import {HOME, USER} from "../../constants/routes";
+import _ from 'lodash';
 
 
 const ListItem = List.Item;
@@ -14,7 +15,7 @@ const nairobi =  {
     specie: "Perro",
     breed: "Border Collie",
     price: 3000,
-    sex: "Female",
+    gender: "Female",
     owner: "lenny",
     uploadDate: "05-05-2019",
     description: "Es muy gentil con los chicos, muy pacifica.",
@@ -28,7 +29,7 @@ const nairobi =  {
 };
 
 function isMale(sex){
-    return sex === 'Male';
+    return _.toLower(sex) === 'male';
 }
 
 function ListItemRow({name, value}){
@@ -37,7 +38,7 @@ function ListItemRow({name, value}){
     </ListItem>;
 }
 
-function Content({name, specie, breed, price, sex, owner, uploadDate, img, onAdoption, onSale,
+function Content({name, specie, breed, price, gender, owner, uploadDate, img, onAdoption, onSale,
                      description, dateOfBirth, province, department, vaccinated, ownerId}){
     const {t} = useTranslation('petView');
 
@@ -49,7 +50,7 @@ function Content({name, specie, breed, price, sex, owner, uploadDate, img, onAdo
             <Divider/>
 
             <h2>
-                { isMale(sex) ? t('someInformationAboutHim') : t('someInformationAboutHer') }:
+                { isMale(gender) ? t('someInformationAboutHim') : t('someInformationAboutHer') }:
             </h2>
 
             <List bordered={true}>
@@ -57,7 +58,7 @@ function Content({name, specie, breed, price, sex, owner, uploadDate, img, onAdo
                 <ListItemRow name={t('details.dateOfBirth')} value={dateOfBirth}/>
                 <ListItemRow name={t('details.specie')} value={specie}/>
                 <ListItemRow name={t('details.breed')} value={breed}/>
-                <ListItemRow name={t('details.sex')} value={sex}/>
+                <ListItemRow name={t('details.sex')} value={t('details.' + _.toLower(gender))}/>
                 <ListItemRow name={t('details.province')} value={province}/>
                 <ListItemRow name={t('details.department')} value={department}/>
                 <ListItemRow name={t('details.uploadDate')} value={uploadDate}/>

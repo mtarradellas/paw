@@ -3,7 +3,9 @@
   "specie": "Especie",
   "breed": "Raza",
   "price": "Precio",
-  "sex": "Sexo",
+  "sex": "Género",
   "owner": "Dueño",
-  "uploadDate": "Fecha de subida"
+  "uploadDate": "Fecha de subida",
+  "female": "Hembra",
+  "male": "Macho"
 }
