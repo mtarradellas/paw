@@ -26,7 +26,11 @@ const nairobi =  {
     price: 3000,
     sex: "Female",
     owner: "lenny",
-    uploadDate: "05-05-2019",
+    uploadDate: {
+        date: {
+            year: 2000
+        }
+    },
     description: "Es muy gentil con los chicos, muy pacifica.",
     dateOfBirth: "05-05-2019",
     province: 'Buenos Aires',

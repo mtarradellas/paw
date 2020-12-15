@@ -4,14 +4,6 @@ import _ from 'lodash';
 import {getAuthConfig} from "./utils";
 
 
-/**
- *
- * @type {object}
- *
- * {
- *     id, status, username
- * }
- */
 const GET_USER_ENDPOINT = "/users/";
 export const GET_USER_ERRORS = {
     CONN_ERROR: 0,
@@ -29,5 +21,24 @@ export async function getUser(userId, jwt) {
         if(e.response.status === 403) throw GET_USER_ERRORS.FORBIDDEN;
 
         throw GET_USER_ERRORS.CONN_ERROR;
+    }
+}
+
+const GET_LOGGED_USER_ENDPOINT = "/users/logged-user";
+export const GET_LOGGED_USER_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 2
+};
+export async function getLoggedUser(jwt){
+    const config = getAuthConfig(jwt);
+
+    try{
+        const response = await axios.get(SERVER_URL + GET_LOGGED_USER_ENDPOINT, config);
+
+        return _.pick(response.data, ['id', 'mail', 'status', 'isAdmin']);
+    }catch (e) {
+        if(e.response.status === 403) throw GET_LOGGED_USER_ERRORS.FORBIDDEN;
+
+        throw GET_LOGGED_USER_ERRORS.CONN_ERROR;
     }
 }
