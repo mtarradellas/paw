@@ -22,7 +22,6 @@ export const retryFetch = async (fetchFn, initialDuration) => {
 };
 
 export const repeatedFetch = async (fetchFn, time) => {
-    console.log("a")
     await fetchFn();
 
     setTimeout(() => repeatedFetch(time, fetchFn), time);

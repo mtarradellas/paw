@@ -183,10 +183,7 @@ function UserView(){
     const {state} = useContext(LoginContext);
     const history = useHistory();
 
-    const {jwt, isLoggedIn} = state;
-
-    if(!isLoggedIn)
-        history.push(LOGIN);
+    const {jwt} = state;
 
     const fetchUser = useCallback(async ()=>{
         try{
@@ -207,7 +204,7 @@ function UserView(){
     }, [setUser, id]);
 
     useEffect(() => {
-        if(isLoggedIn) fetchUser();
+        fetchUser();
     }, []);
 
     const {username} = user;

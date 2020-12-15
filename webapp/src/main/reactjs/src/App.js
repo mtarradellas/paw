@@ -46,6 +46,7 @@ import LoginView from "./views/login/LoginView";
 import PetView from "./views/pet/PetView";
 import useConstants from "./hooks/useConstants";
 import {Spin} from "antd";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
     const login = useLogin();
@@ -73,17 +74,20 @@ function App() {
                                         <RegisterView/>
                                     </BasicLayout>
                                 </Route>
+
                                 <Route exact path={LOGIN}>
                                     <BasicLayout>
                                         <LoginView/>
                                     </BasicLayout>
                                 </Route>
 
-                                <Route path={USER + ':id'}>
-                                    <BasicLayout>
-                                        <UserView/>
-                                    </BasicLayout>
-                                </Route>
+                                <PrivateRoute path={USER + ':id'}
+                                    component={
+                                        <BasicLayout>
+                                            <UserView/>
+                                        </BasicLayout>
+                                    }
+                                />
 
                                 <Route exact path={REQUESTS}>
                                     <BasicLayout>
