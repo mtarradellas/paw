@@ -114,7 +114,13 @@ public class RequestController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, new GenericEntity<List<RequestDto>>(requestList) {});
+        Map<String, Object> json = new HashMap<>();
+        json.put("amount", amount);
+        json.put("pagesize", REQ_PAGE_SIZE);
+        json.put("pages", (int) Math.ceil((double) amount / (double) REQ_PAGE_SIZE));
+        json.put("requestList", requestList);
+
+        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, new Gson().toJson(json));
     }
 
     @GET
@@ -164,52 +170,6 @@ public class RequestController {
 
         final URI requestUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(request.getId())).build();
         return Response.created(requestUri).build();
-    }
-
-    @GET
-    @Path("/info")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getUserRequestsInfo(@QueryParam("userId") @DefaultValue("0") long userId,
-                                          @QueryParam("targetId") @DefaultValue("0") long targetId,
-                                          @QueryParam("petId") @DefaultValue("0") long petId,
-                                          @QueryParam("status") @DefaultValue("-1") int status) {
-
-        RequestStatus requestStatus;
-        Long user;
-        Long target;
-        Long pet;
-        try {
-            user = ParseUtils.parseUserId(userId);
-            target = ParseUtils.parseUserId(targetId);
-            pet = ParseUtils.parsePetId(petId);
-            requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
-        } catch (BadRequestException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
-        if (currentUser.getId() != user && currentUser.getId() != target) {
-            LOGGER.warn("User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode()).build();
-        }
-
-        int amount;
-        try {
-            amount = requestService.getFilteredListAmount(user, target, pet, Collections.emptyList(), requestStatus);
-        } catch (NotFoundException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-
-        Map<String, Integer> json = new HashMap<>();
-        json.put("amount", amount);
-        json.put("pagesize", REQ_PAGE_SIZE);
-
-        return Response.ok().entity(new Gson().toJson(json)).build();
     }
 
     @GET
