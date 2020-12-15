@@ -5,7 +5,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -130,7 +136,7 @@ public class PetController{
         Map<String, Object> json = new HashMap<>();
         json.put("amount", amount);
         json.put("pagesize", PET_PAGE_SIZE);
-        json.put("pages", amount/PET_PAGE_SIZE);
+        json.put("pages", (int) Math.ceil((double) amount / (double) PET_PAGE_SIZE));
         json.put("petList", petList);
 
         return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new Gson().toJson(json));
