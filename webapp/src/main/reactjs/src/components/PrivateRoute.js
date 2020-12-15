@@ -4,18 +4,18 @@ import {LOGIN} from "../constants/routes";
 import LoginContext from "../constants/loginContext";
 
 
-const PrivateRoute = ({component: Component, ...rest}) => {
+const PrivateRoute = ({children, ...rest}) => {
     const {state} = useContext(LoginContext);
     const {isLoggedIn} = state;
 
-    return <Route {...rest} render={
-        props => (
+    return <Route {...rest}>
+        {
             isLoggedIn ?
-                <Component {...props}/>
+                {children}
                 :
                 <Redirect to={LOGIN}/>
-        )
-    }/>
+        }
+    </Route>;
 
 };
 
