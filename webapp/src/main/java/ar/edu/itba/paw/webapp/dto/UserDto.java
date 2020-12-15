@@ -13,6 +13,7 @@ public class UserDto {
     private String password;
     private String mail;
     private Integer status;
+    private Boolean isAdmin;
 
     private URI requests;
     private URI interests;
@@ -117,5 +118,13 @@ public class UserDto {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }
