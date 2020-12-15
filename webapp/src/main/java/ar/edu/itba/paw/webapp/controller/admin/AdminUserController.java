@@ -2,7 +2,6 @@ package ar.edu.itba.paw.webapp.controller.admin;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,31 +83,7 @@ public class AdminUserController {
                 .stream().map(u -> UserDto.fromUserForList(u, uriInfo)).collect(Collectors.toList());
         final int amount = userService.getFilteredAmount(findList, userStatus);
 
-        return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, new GenericEntity<List<UserDto>>(userList) {});
-    }
-
-    @GET
-    @Path("/info")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getUserListAmount(@QueryParam("status") @DefaultValue("-1") int status,
-                                      @QueryParam("find") String find) {
-
-        UserStatus userStatus;
-        try {
-            userStatus = ParseUtils.parseStatus(UserStatus.class, status);
-            ParseUtils.isAllowedFind(find);
-        } catch (BadRequestException ex) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        List<String> findList = ParseUtils.parseFind(find);
-
-        int amount = userService.getFilteredAmount(findList, userStatus);
-
-        Map<String, Integer> json = new HashMap<>();
-        json.put("amount", amount);
-        json.put("pagesize", USR_PAGE_SIZE);
-
-        return Response.ok().entity(new Gson().toJson(json)).build();
+        return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, userList, null);
     }
 
     @GET

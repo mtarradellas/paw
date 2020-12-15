@@ -5,7 +5,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -116,18 +121,21 @@ public class PetController{
         int maxPrice = range[1];
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
+        int amount;
         try {
             petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE,
-                    searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
-                    .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+                                        searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
+                                        .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE, minPrice, 
+                                        maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        final int amount = petService.getListAmount();
-        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new GenericEntity<List<PetDto>>(petList) {});
+
+        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, petList, null);
     }
 
     @GET
@@ -321,8 +329,6 @@ public class PetController{
             }
         }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
-        if(petDto.getImages().isEmpty()) System.out.println("WWWWWWWWW");
-        //petDto.getImages().forEach(System.out::println);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
     }
 

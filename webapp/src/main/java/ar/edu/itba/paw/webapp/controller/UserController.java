@@ -49,6 +49,21 @@ public class UserController {
     private UriInfo uriInfo;
 
     @GET
+    @Path("/logged-user")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getLoggedUser() {
+
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final User user = ApiUtils.loggedUser(userService, auth);
+
+        final boolean isAdmin = userService.isAdmin(user);
+        UserDto userDto = UserDto.fromUser(user, uriInfo);
+        userDto.setIsAdmin(isAdmin);
+
+        return Response.ok(new GenericEntity<UserDto>(userDto){}).build();
+    }
+
+    @GET
     @Path("/{userId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getUser(@PathParam("userId") long userId) {
@@ -69,8 +84,8 @@ public class UserController {
     @Path("/{userId}/mail")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getUserMail(@PathParam("userId") long userId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = ApiUtils.loggedUser(userService, auth);
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final User user = ApiUtils.loggedUser(userService, auth);
 
         String mail;
         try {
