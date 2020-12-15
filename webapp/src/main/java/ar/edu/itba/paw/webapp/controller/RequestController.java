@@ -168,15 +168,12 @@ public class RequestController {
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequestFilters(@QueryParam("userId") @DefaultValue("0") long userId,
-                                      @QueryParam("petId") @DefaultValue("0") long petId,
+    public Response getRequestFilters(@QueryParam("petId") @DefaultValue("0") long petId,
                                       @QueryParam("status") @DefaultValue("-1") int status) {
 
         RequestStatus requestStatus;
-        Long user;
         Long pet;
         try {
-            user = ParseUtils.parseUserId(userId);
             pet = ParseUtils.parsePetId(petId);
             requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
         } catch (BadRequestException ex) {
@@ -187,10 +184,6 @@ public class RequestController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ApiUtils.loggedUser(userService, auth);
-        if (currentUser == null || currentUser.getId() != user) {
-            LOGGER.warn("User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode()).build();
-        }
 
         List<RequestStatus> statusList;
         if(requestStatus != null)  {
@@ -199,7 +192,7 @@ public class RequestController {
         }
         else {
             try {
-                statusList = requestService.filteredStatusList(user, pet, Collections.emptyList(), null);
+                statusList = requestService.filteredStatusList(currentUser.getId(), pet, Collections.emptyList(), null);
             } catch (NotFoundException ex) {
                 LOGGER.warn("{}", ex.getMessage());
                 final ErrorDto body = new ErrorDto(2, ex.getMessage());
@@ -218,15 +211,12 @@ public class RequestController {
     @GET
     @Path("/interests/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getInterestFilters(@QueryParam("targetId") @DefaultValue("0") long targetId,
-                                      @QueryParam("petId") @DefaultValue("0") long petId,
+    public Response getInterestFilters(@QueryParam("petId") @DefaultValue("0") long petId,
                                       @QueryParam("status") @DefaultValue("-1") int status) {
 
         RequestStatus requestStatus;
-        Long target;
         Long pet;
         try {
-            target = ParseUtils.parseUserId(targetId);
             pet = ParseUtils.parsePetId(petId);
             requestStatus = ParseUtils.parseStatus(RequestStatus.class, status);
         } catch (BadRequestException ex) {
@@ -237,10 +227,6 @@ public class RequestController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ApiUtils.loggedUser(userService, auth);
-        if (currentUser == null || currentUser.getId() != target) {
-            LOGGER.warn("User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode()).build();
-        }
 
         /** Status Filter */
         List<RequestStatus> statusList;
@@ -250,7 +236,7 @@ public class RequestController {
         }
         else {
             try {
-                statusList = requestService.filteredStatusListByPetOwner(target, pet, Collections.emptyList(), null);
+                statusList = requestService.filteredStatusListByPetOwner(currentUser.getId(), pet, Collections.emptyList(), null);
             } catch (NotFoundException ex) {
                 LOGGER.warn("{}", ex.getMessage());
                 final ErrorDto body = new ErrorDto(2, ex.getMessage());
@@ -267,7 +253,7 @@ public class RequestController {
         }
         else {
             try {
-                petList = requestService.filteredPetListByPetOwner(target, pet, Collections.emptyList(), requestStatus)
+                petList = requestService.filteredPetListByPetOwner(currentUser.getId(), pet, Collections.emptyList(), requestStatus)
                         .stream().map(Pet::getId).collect(Collectors.toList());
             } catch (NotFoundException ex) {
                 LOGGER.warn("{}", ex.getMessage());

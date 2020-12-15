@@ -59,6 +59,7 @@ public class UserController {
         final boolean isAdmin = userService.isAdmin(user);
         UserDto userDto = UserDto.fromUser(user, uriInfo);
         userDto.setIsAdmin(isAdmin);
+        userDto.setMail(user.getMail());
 
         return Response.ok(new GenericEntity<UserDto>(userDto){}).build();
     }
