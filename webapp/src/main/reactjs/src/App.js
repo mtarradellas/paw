@@ -101,26 +101,26 @@ function App() {
                                               }
                                 />
 
-                                <Route exact path={ADMIN_HOME}>
-                                    <AdminLayout>
-                                        <AdminHome/>
-                                    </AdminLayout>
-                                </Route>
-                                <Route exact path={ADMIN_REQUESTS}>
-                                    <AdminLayout>
-                                        <AdminRequests/>
-                                    </AdminLayout>
-                                </Route>
-                                <Route exact path={ADMIN_USERS}>
-                                    <AdminLayout>
-                                        <AdminUsers/>
-                                    </AdminLayout>
-                                </Route>
-                                <Route exact path={ADMIN_PETS}>
-                                    <AdminLayout>
-                                        <AdminPets/>
-                                    </AdminLayout>
-                                </Route>
+                                {/*<Route exact path={ADMIN_HOME}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminHome/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
+                                {/*<Route exact path={ADMIN_REQUESTS}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminRequests/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
+                                {/*<Route exact path={ADMIN_USERS}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminUsers/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
+                                {/*<Route exact path={ADMIN_PETS}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminPets/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
 
                                 <PrivateRoute path={ADD_PET}
                                               component={
@@ -129,16 +129,25 @@ function App() {
                                                   </BasicLayout>)
                                               }
                                 />
-                                <Route exact path={REQUESTS}>
-                                    <BasicLayout>
-                                        <RequestsView/>
-                                    </BasicLayout>
-                                </Route>
-                                <Route exact path={INTERESTS}>
-                                    <BasicLayout>
-                                        <InterestsView/>
-                                    </BasicLayout>
-                                </Route>
+                                <PrivateRoute path={REQUESTS}
+                                              component={
+                                                  () => (
+                                                      <BasicLayout>
+                                                          <RequestsView/>
+                                                      </BasicLayout>
+                                                  )
+
+                                              }
+                                />
+                                <PrivateRoute path={INTERESTS}
+                                              component={
+                                                  () => (
+                                                      <BasicLayout>
+                                                          <InterestsView/>
+                                                      </BasicLayout>
+                                                  )
+                                              }
+                                />
                                 <Route exact path={PET + ':id'}
                                        render={
                                            ({id}) => (

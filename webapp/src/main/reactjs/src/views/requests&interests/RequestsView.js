@@ -9,6 +9,11 @@ import RequestContainer from "./RequestContainer";
 
 import "../../css/requests&interests/requests-interests.css"
 
+import {getRequests} from "../../api/requests";
+
+import {useLogin} from "../../hooks/useLogin";
+
+
 /*
 *  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
 *  PET STATUSES: AVAILABLE, REMOVED, SOLD, UNAVAILABLE
@@ -95,6 +100,8 @@ sampleRequests.push(request1)
 sampleRequests.push(request2)
 sampleRequests.push(request3)
 sampleRequests.push(request4)
+
+// getRequests({page:1});
 
 function SideContent() {
     return (<div>
