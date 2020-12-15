@@ -33,6 +33,7 @@ public class ReviewDto {
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(review.getOwner().getId())).build();
         dto.target = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(review.getTarget().getId())).build();
         dto.username = review.getOwner().getUsername();
+        dto.userId = review.getOwner().getId();
 
         return dto;
     }
