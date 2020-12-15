@@ -3,7 +3,7 @@ import ContentWithSidebar from "../../components/ContentWithSidebar";
 
 import {useTranslation} from "react-i18next";
 
-import "../../css/requests&interests/requests.css"
+import "../../css/requests&interests/requests-interests.css"
 import FilterInterestsForm from "./FilterInterestsForm";
 import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
 import InterestContainer from "./InterestContainer";

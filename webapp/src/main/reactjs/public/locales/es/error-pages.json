@@ -1,0 +1,14 @@
+{
+  "error400": "400 Mala Solicitud Detectada",
+  "error404": "404 No Encontrado",
+  "error403": "403 Acceso Denegado",
+  "error500": "500 Error Interno del Servidor",
+  "backToHome": "< Ir al Inicio",
+  "pageNotFound": "La página que estabas buscando no existe",
+  "petNotFound": "La mascota que estabas buscando no existe",
+  "userNotFound": "El usuario que estabas buscando no existe",
+  "accessDenied": "Lo sentimos, no tenes permiso para ver esta página",
+  "wrongMethod": "Lo sentimos, el metodo que estas intentando usar no esta permitido",
+  "badRequest": "La solicitud que mandaste no existe, por favor intente con otra",
+  "serverError": "Lo sentimos, algo salió mal de nuestro lado, por favor intente nuevamente en un rato"
+}

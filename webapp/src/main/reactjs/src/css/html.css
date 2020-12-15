@@ -19,3 +19,8 @@ body {
 .error-message {
     color: #ff4d4f;
 }
+
+.centered {
+    text-align: center;
+
+}

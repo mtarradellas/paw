@@ -6,7 +6,7 @@ import PetCard from "../home/PetCard";
 import {useParams, useHistory} from 'react-router-dom';
 import '../../css/user/userView.css';
 import {Link} from "react-router-dom";
-import {HOME, LOGIN} from "../../constants/routes";
+import {HOME, LOGIN, ERROR_404_USER} from "../../constants/routes";
 import {GET_USER_ERRORS, getUser} from "../../api/users";
 import LoginContext from '../../constants/loginContext';
 
@@ -196,7 +196,7 @@ function UserView(){
         }catch (e) {
             switch (e) {
                 case GET_USER_ERRORS.NOT_FOUND:
-                    //TODO: redirect to not found
+                    history.push(ERROR_404_USER);
                     break;
                 case GET_USER_ERRORS.CONN_ERROR:
                 default:
