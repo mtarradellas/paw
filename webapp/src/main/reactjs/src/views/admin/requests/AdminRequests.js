@@ -6,7 +6,7 @@ import AdminFilterRequestsForm from "./AdminFilterRequestsForm";
 import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
 import AdminRequestsContainer from "./AdminRequestsContainer";
 
-import {ADD_REQUEST} from "../../../constants/routes";
+import {ADMIN_ADD_REQUEST} from "../../../constants/routes";
 
 const request = {
     id: 0,
@@ -119,7 +119,7 @@ function MainContent({requests, requestsCount}) {
                 <Col span={23}>
                     <Row>
                         <h1><b>{t('requestsList.title', {count: requestsCount})}</b></h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"} href={ADD_REQUEST}>{t('addRequest')}</Button>
+                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"} href={ADMIN_ADD_REQUEST}>{t('addRequest')}</Button>
                     </Row>
                 </Col>
                 <Col>

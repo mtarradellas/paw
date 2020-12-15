@@ -14,7 +14,9 @@ export const FORGOT_PASSWORD = '/forgot-password';
 
 export const PET = '/pet/';
 
-export const VERIFY_EMAIL = '/verify-email'
+export const ADD_PET = '/add-pet';
+
+export const VERIFY_EMAIL = '/verify-email';
 
 //ADMIN
 
@@ -26,11 +28,11 @@ export const ADMIN_USERS = '/admin/users';
 
 export const ADMIN_PETS = '/admin/pets';
 
-export const ADD_REQUEST = '/admin/add-request';
+export const ADMIN_ADD_REQUEST = '/admin/add-request';
 
-export const ADD_PET = '/admin/add-pet';
+export const ADMIN_ADD_PET = '/admin/add-pet';
 
-export const ADD_USER = '/admin/add-user';
+export const ADMIN_ADD_USER = '/admin/add-user';
 
 export const ADMIN_EDIT_REQUEST = '/admin/edit-request/';
 

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {SERVER_URL} from "../config";
 import _ from 'lodash';
+import {getAuthConfig} from "./utils";
 
 const GET_PETS_ENDPOINT = "/pets";
 export const GET_PETS_ERRORS = {
@@ -30,5 +31,28 @@ export async function getPets(
         });
     }catch (e) {
         throw GET_PETS_ERRORS.CONN_ERROR;
+    }
+}
+
+const CREATE_PET_ENDPOINT = "/pets";
+export const CREATE_PET_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1
+};
+export async function createPet(
+    {
+
+    }, jwt
+    ){
+    const config = getAuthConfig(jwt);
+
+    try{
+        const response = await axios.post(CREATE_PET_ENDPOINT, {
+
+        }, config);
+    }catch (e) {
+        if(e.response.status === 403) throw CREATE_PET_ERRORS.FORBIDDEN;
+
+        throw CREATE_PET_ERRORS.CONN_ERROR;
     }
 }

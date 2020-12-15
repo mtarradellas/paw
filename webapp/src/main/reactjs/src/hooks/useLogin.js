@@ -1,7 +1,8 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import LoginContext from "../constants/loginContext";
 import { useHistory } from 'react-router-dom'
 import {HOME, LOGIN} from "../constants/routes";
+import _ from 'lodash';
 
 
 function useLogin(){
@@ -12,13 +13,9 @@ function useLogin(){
         cLogin({username, jwt});
 
         const {promptLogin} = state;
-        const {path, index} = promptLogin;
+        const {path} = promptLogin;
 
-        console.log(path, index);
-
-        console.log(history);
-
-        if(index === history.length - 1){
+        if(!_.isNil(path)){
             history.push(path);
         }else{
             history.push(HOME);
@@ -32,13 +29,22 @@ function useLogin(){
     };
 
     const promptLogin = () => {
-        const index = history.length;
         const path = history.location.pathname;
 
-        cPromptLogin({index, path});
+        cPromptLogin({path});
 
         history.push(LOGIN);
     };
+
+    useEffect(()=>{
+        return history.listen((location, action) => {
+            console.log(location, action);
+            if(location.pathname === LOGIN || action !== 'PUSH')
+                return;
+
+            cPromptLogin({path: null});
+        });
+    }, [history.listen, history.unlisten]);
 
     return {state, login, logout, promptLogin}
 }

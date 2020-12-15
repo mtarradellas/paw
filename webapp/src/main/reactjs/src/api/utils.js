@@ -26,3 +26,11 @@ export const repeatedFetch = async (fetchFn, time) => {
 
     setTimeout(() => repeatedFetch(time, fetchFn), time);
 };
+
+export const getAuthConfig = jwt => {
+    return {
+        headers: {
+            authorization: "Bearer " + jwt
+        }
+    };
+};

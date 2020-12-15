@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 
 import ContentWithSidebar from "../../../components/ContentWithSidebar";
 import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
-import {ADD_PET} from "../../../constants/routes";
+import {ADMIN_ADD_PET} from "../../../constants/routes";
 
 import AdminFilterPetsForm from "./AdminFilterPetsForm";
 import AdminPetsContainer from "./AdminPetsContainer";
@@ -94,7 +94,7 @@ function MainContent({pets, petsCount}) {
                     <Row>
                         <h1><b>{t('petsList.title', {count: petsCount})}</b></h1>
                         <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
-                                href={ADD_PET}>{t('addPet')}</Button>
+                                href={ADMIN_ADD_PET}>{t('addPet')}</Button>
                     </Row>
                 </Col>
                 <Col>

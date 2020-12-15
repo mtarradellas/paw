@@ -6,7 +6,7 @@ import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
 
 import AdminFilterUsersForm from "./AdminFilterUsersForm";
 
-import {ADD_USER} from "../../../constants/routes";
+import {ADMIN_ADD_USER} from "../../../constants/routes";
 import AdminUsersContainer from "./AdminUsersContainer";
 
 const user = {
@@ -70,7 +70,7 @@ function MainContent({users, userCount}){
                 <Col span={23}>
                     <Row>
                         <h1><b>{t('usersList.title', {count: userCount})}</b></h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"} href={ADD_USER}>{t('addUser')}</Button>
+                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"} href={ADMIN_ADD_USER}>{t('addUser')}</Button>
                     </Row>
                 </Col>
                 <Col>

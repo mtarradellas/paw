@@ -181,7 +181,7 @@ function Content({user}){
 function UserView(){
     const {id} = useParams();
     const [user, setUser] = useState({username: null, email: null, id});
-    const {state} = useLogin();
+    const {state, promptLogin} = useLogin();
     const history = useHistory();
 
     const {jwt} = state;
@@ -195,6 +195,9 @@ function UserView(){
             switch (e) {
                 case GET_USER_ERRORS.NOT_FOUND:
                     history.push(ERROR_404_USER);
+                    break;
+                case GET_USER_ERRORS.FORBIDDEN:
+                    promptLogin();
                     break;
                 case GET_USER_ERRORS.CONN_ERROR:
                 default:

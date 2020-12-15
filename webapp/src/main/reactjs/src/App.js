@@ -47,7 +47,8 @@ import {
     ADMIN_HOME,
     ADMIN_PETS,
     ADMIN_USERS,
-    ADMIN_REQUESTS
+    ADMIN_REQUESTS,
+    ADD_PET
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -57,6 +58,7 @@ import PetView from "./views/pet/PetView";
 import useConstants from "./hooks/useConstants";
 import {Spin} from "antd";
 import PrivateRoute from "./components/PrivateRoute";
+import AddPetView from "./views/addPet/AddPetView";
 
 function App() {
     const login = useLoginState();
@@ -120,7 +122,13 @@ function App() {
                                     </AdminLayout>
                                 </Route>
 
-
+                                <PrivateRoute path={ADD_PET}
+                                              component={
+                                                  () => (<BasicLayout>
+                                                      <AddPetView/>
+                                                  </BasicLayout>)
+                                              }
+                                />
                                 <Route exact path={REQUESTS}>
                                     <BasicLayout>
                                         <RequestsView/>
@@ -188,7 +196,6 @@ function App() {
                     }
                 </Router>
             </ConstantsContext.Provider>
-            >>>>>>> d42972e049e09999c4fea133e55a77e89fb1bbbb
         </LoginContext.Provider>
     );
 }

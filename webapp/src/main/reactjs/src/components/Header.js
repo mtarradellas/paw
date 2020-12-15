@@ -1,7 +1,7 @@
 import React from 'react';
 import '../css/header.css';
 import {Link} from "react-router-dom";
-import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS} from "../constants/routes";
+import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS, ADD_PET} from "../constants/routes";
 import {useTranslation} from "react-i18next";
 import {Button} from "antd";
 import useLogin from "../hooks/useLogin";
@@ -18,7 +18,7 @@ function LoggedIn(){
     };
 
     return <>
-            <Link className={"header__subtitle"} to={REQUESTS}>
+            <Link className={"header__subtitle"} to={ADD_PET}>
                 {t('addPet')}
             </Link>
 
@@ -47,7 +47,7 @@ function NotLoggedIn(){
     const {t} = useTranslation('header');
 
     return <>
-            <Link className={"header__subtitle"} to={REQUESTS}>
+            <Link className={"header__subtitle"} to={ADD_PET}>
                 {t('addPet')}
             </Link>
 
