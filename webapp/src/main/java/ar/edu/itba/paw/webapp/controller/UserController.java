@@ -28,6 +28,7 @@ import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.UserStatus;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
 import ar.edu.itba.paw.webapp.dto.PasswordDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
@@ -57,6 +58,10 @@ public class UserController {
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
         final User user = opUser.get();
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } 
+
         return Response.ok(new GenericEntity<UserDto>(UserDto.fromUser(user, uriInfo)){}).build();
     }
 

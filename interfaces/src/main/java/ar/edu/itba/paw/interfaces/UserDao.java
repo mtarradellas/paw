@@ -1,15 +1,16 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.Token;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.ReviewStatus;
-import ar.edu.itba.paw.models.constants.UserStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import ar.edu.itba.paw.models.Review;
+import ar.edu.itba.paw.models.Token;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.ReviewStatus;
+import ar.edu.itba.paw.models.constants.UserStatus;
 
 public interface UserDao {
 
