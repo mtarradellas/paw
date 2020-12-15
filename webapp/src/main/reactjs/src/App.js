@@ -83,9 +83,9 @@ function App() {
 
                                 <PrivateRoute path={USER + ':id'}
                                     component={
-                                        <BasicLayout>
+                                        () => (<BasicLayout>
                                             <UserView/>
-                                        </BasicLayout>
+                                        </BasicLayout>)
                                     }
                                 />
 

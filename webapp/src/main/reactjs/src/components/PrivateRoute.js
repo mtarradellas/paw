@@ -4,14 +4,14 @@ import {LOGIN} from "../constants/routes";
 import LoginContext from "../constants/loginContext";
 
 
-const PrivateRoute = ({children, ...rest}) => {
+const PrivateRoute = ({component: Component, ...rest}) => {
     const {state} = useContext(LoginContext);
     const {isLoggedIn} = state;
 
     return <Route {...rest}>
         {
             isLoggedIn ?
-                {children}
+                <Component/>
                 :
                 <Redirect to={LOGIN}/>
         }
