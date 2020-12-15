@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.webapp.dto.SpeciesDto;
-import ar.edu.itba.paw.webapp.util.ApiUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,17 +16,27 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
+import ar.edu.itba.paw.webapp.dto.PasswordDto;
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 
 @Component
@@ -85,6 +93,66 @@ public class HomeController {
         }
         final URI userUri = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(opNewUser.get().getId())).build();
         return Response.created(userUri).build();
+    }
+
+    @POST
+    @Path("/activate-account")
+    public Response activateAccount(final PasswordDto dto) {
+        
+        if (dto == null || dto.getToken() == null) {
+            LOGGER.warn("Token parameter null.");
+            return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final UUID uuid = UUID.fromString(dto.getToken());
+
+        try {
+            userService.activateAccountWithToken(uuid);
+        } catch (NotFoundException | UserException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
+        return Response.noContent().build();
+    }
+
+    @POST
+    @Path("/request-password-reset")
+    public Response requestPasswordReset(final UserDto dto) {
+        if (dto == null || dto.getMail() == null) {
+            LOGGER.warn("Mail parameter null.");
+            return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
+        }
+
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        try {
+            userService.requestPasswordReset(dto.getMail(), baseUrl);
+        } catch (NotFoundException ex) {
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
+        return Response.noContent().build();
+    }
+    
+    @POST
+    @Path("/password-reset")
+    public Response passwordReset(final PasswordDto dto) {
+        if (dto == null || dto.getNewPassword() == null || dto.getToken() == null) {
+            return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        
+        UUID uuid = UUID.fromString(dto.getToken());
+        String password = dto.getNewPassword();
+        
+        try {
+            userService.resetPassword(uuid, password);
+        } catch (NotFoundException | UserException ex) {
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
+        return Response.noContent().build();
     }
 
 //    public ModelAndView getAdminHome() {
