@@ -4,6 +4,9 @@ import ConstantsContext from '../constants/constantsContext';
 
 const usePets = () => {
     const [pets, setPets] = useState(null);
+
+    const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null});
+
     const [fetching, setFetching] = useState(false);
 
     const {breeds, species} = useContext(ConstantsContext);
@@ -12,9 +15,9 @@ const usePets = () => {
         setFetching(true);
 
         try{
-            const result = await getPets(filters);
+            const {amount, list, pages, pageSize} = await getPets(filters);
 
-            const mappedPets = result.map(
+            const mappedPets = list.map(
                 pet => {
                     const {breedId, speciesId} = pet;
 
@@ -23,6 +26,8 @@ const usePets = () => {
             );
 
             setPets(mappedPets);
+
+            setPaginationInfo({amount, pages, pageSize});
         }catch (e) {
             console.error(e);
         }
@@ -31,10 +36,12 @@ const usePets = () => {
     };
 
     useEffect(()=>{
-        fetchPets({});
+        fetchPets({page: 1});
     }, []);
 
-    return {pets, fetchPets, fetching}
+    const {amount, pages, pageSize} = paginationInfo;
+
+    return {pets, fetchPets, fetching, pages, amount, pageSize}
 };
 
 export default usePets;
