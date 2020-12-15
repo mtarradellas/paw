@@ -1,9 +1,10 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.Species;
-
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import javax.ws.rs.core.UriInfo;
+import ar.edu.itba.paw.models.Species;
 
 public class SpeciesDto {
 
@@ -11,16 +12,19 @@ public class SpeciesDto {
     private String en_us;
     private String es_ar;
     private String name;
-    private List<BreedDto> breedList;
+    private List<Long> breedIds;
+    private URI breedList;
 
-    public static SpeciesDto fromSpecies(Species species) {
+    public static SpeciesDto fromSpecies(Species species, UriInfo uriInfo) {
         final SpeciesDto dto = new SpeciesDto();
 
         dto.id = species.getId();
         dto.en_us = species.getEn_us();
         dto.es_ar = species.getEs_ar();
         dto.name = species.getName();
-        dto.breedList = species.getBreedList().stream().map(BreedDto::fromBreed).collect(Collectors.toList());
+        dto.breedIds = new ArrayList<>();
+        species.getBreedList().forEach(b -> dto.breedIds.add(b.getId()));
+        dto.breedList = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(dto.id)).path("breeds").build();
 
         return dto;
     }
@@ -57,11 +61,19 @@ public class SpeciesDto {
         this.name = name;
     }
 
-    public List<BreedDto> getBreedList() {
+    public URI getBreedList() {
         return breedList;
     }
 
-    public void setBreedList(List<BreedDto> breedList) {
+    public void setBreedList(URI breedList) {
         this.breedList = breedList;
+    }
+
+    public List<Long> getBreedIds() {
+        return breedIds;
+    }
+
+    public void setBreedIds(List<Long> breedIds) {
+        this.breedIds = breedIds;
     }
 }

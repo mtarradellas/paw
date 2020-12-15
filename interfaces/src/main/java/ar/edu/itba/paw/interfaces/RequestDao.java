@@ -39,5 +39,7 @@ public interface RequestDao {
 
     int interestNotifs(User user);
     int requestNotifs(User user);
+
+    boolean hasRequest(User user, User target);
 }
 

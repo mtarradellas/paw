@@ -1,423 +1,266 @@
-//package ar.edu.itba.paw.webapp.controller;
-//
-//import ar.edu.itba.paw.interfaces.*;
-//import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
-//import ar.edu.itba.paw.models.Pet;
-//import ar.edu.itba.paw.models.Request;
-//import ar.edu.itba.paw.models.User;
-//import ar.edu.itba.paw.models.*;
-//import ar.edu.itba.paw.models.constants.PetStatus;
-//import ar.edu.itba.paw.models.constants.RequestStatus;
-//import ar.edu.itba.paw.webapp.exception.ImageLoadException;
-//import ar.edu.itba.paw.webapp.exception.PetNotFoundException;
-//import ar.edu.itba.paw.webapp.exception.UserNotFoundException;
-//import ar.edu.itba.paw.webapp.form.EditPetForm;
-//import ar.edu.itba.paw.webapp.form.QuestionAnswerForm;
-//import ar.edu.itba.paw.webapp.form.UploadPetForm;
-//import ar.edu.itba.paw.webapp.util.ParseUtils;
-//import com.google.gson.Gson;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.dao.DataIntegrityViolationException;
-//import org.springframework.http.MediaType;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.validation.BindingResult;
-//import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.multipart.MultipartFile;
-//import org.springframework.web.servlet.ModelAndView;
-//import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-//import javax.imageio.ImageIO;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//import javax.validation.Valid;
-//import java.awt.image.BufferedImage;
-//import java.io.ByteArrayInputStream;
-//import java.io.ByteArrayOutputStream;
-//import java.io.IOException;
-//import java.time.LocalDateTime;
-//import java.time.ZoneId;
-//import java.util.*;
-//import java.util.stream.Collectors;
-//
-//
-//@Controller
-//public class PetController extends BaseController {
-//
-//    private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
-//
-//    @Autowired
-//    private PetService petService;
-//
-//    @Autowired
-//    private SpeciesService speciesService;
-//
-//    @Autowired
-//    private ImageService imageService;
-//
-//    @Autowired
-//    private LocationService locationService;
-//
-//    @Autowired
-//    private RequestService requestService;
-//
-//    private static final int PET_PAGE_SIZE = 12;
-//    private static final int COMMENTS_PAGE_SIZE = 5;
-//
-//    @RequestMapping(value = "/", method = { RequestMethod.GET})
-//    public ModelAndView getHome(@RequestParam(name = "species", required = false) String species,
-//                                @RequestParam(name = "breed", required = false) String breed,
-//                                @RequestParam(name = "gender", required = false) String gender,
-//                                @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
-//                                @RequestParam(name = "searchOrder", required = false) String searchOrder,
-//                                @RequestParam(name = "find", required = false) String find,
-//                                @RequestParam(name = "page", required = false) String page,
-//                                @RequestParam(name = "priceRange", required = false) String priceRange,
-//                                @RequestParam(name = "province", required = false) String province,
-//                                @RequestParam(name = "department", required = false) String department) {
-//
-//        final ModelAndView mav = new ModelAndView("index");
-//        final String locale = getLocale();
-//
-//        int pageNum = ParseUtils.parsePage(page);
-//        Long speciesId = ParseUtils.parseSpecies(species);
-//        Long breedId = ParseUtils.parseSpecies(breed);
-//        gender = ParseUtils.parseGender(gender);
-//        searchCriteria = ParseUtils.parseCriteria(searchCriteria);
-//        searchOrder = ParseUtils.parseOrder(searchOrder);
-//        int[] price = ParseUtils.parseRange(priceRange);
-//        int minPriceNum = price[0];
-//        int maxPriceNum = price[1];
-//        Long provinceId = ParseUtils.parseProvince(province);
-//        Long departmentId = ParseUtils.parseDepartment(department);
-//
-//        if (!ParseUtils.isAllowedFind(find)) {
-//            mav.addObject("wrongSearch", true);
-//            find = null;
-//        } else {
-//            mav.addObject("wrongSearch", false);
-//        }
-//        if(find != null && (find.equals("") || find.trim().length() == 0)){
-//            find = null;
-//        }
-//        List<String> findList = ParseUtils.parseFind(find);
-//
-//        List<Pet> petList = petService.filteredList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
-//                searchCriteria, searchOrder, minPriceNum, maxPriceNum, provinceId, departmentId, pageNum, PET_PAGE_SIZE);
-//        int amount = petService.getFilteredListAmount(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE, minPriceNum,
-//                maxPriceNum, provinceId, departmentId);
-//
-//        List<Breed> breedList = petService.filteredBreedList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
-//                 minPriceNum, maxPriceNum, provinceId, departmentId);
-//        Object[] speciesList = breedList.stream().map(Breed::getSpecies).distinct().sorted(Species::compareTo).toArray();
-//        List<Department> departmentList = petService.filteredDepartmentList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
-//                minPriceNum, maxPriceNum, provinceId, departmentId);
-//        Object[] provinceList = departmentList.stream().map(Department::getProvince).distinct().sorted(Province::compareTo).toArray();
-//        Object[] ranges = petService.filteredRangesList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
-//                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
-//        Object[] genders = petService.filteredGenderList(locale, findList, null, speciesId, breedId, gender, PetStatus.AVAILABLE,
-//                minPriceNum, maxPriceNum, provinceId, departmentId).toArray();
-//
-//        mav.addObject("currentPage", pageNum);
-//        mav.addObject("maxPage", (int) Math.ceil((double) amount / PET_PAGE_SIZE));
-//        mav.addObject("homePetList", petList.toArray());
-//        mav.addObject("amount", amount);
-//
-//        mav.addObject("speciesList", speciesList);
-//        mav.addObject("breedList", breedList.toArray());
-//        mav.addObject("provinceList", provinceList);
-//        mav.addObject("departmentList", departmentList.toArray());
-//        mav.addObject("ranges", ranges);
-//        mav.addObject("genders", genders);
-//
-//        mav.addObject("find", find);
-//        return mav;
-//    }
-//
-//    @RequestMapping(value = "/search", method = RequestMethod.GET, headers="Accept=*/*")
-//    @ResponseBody
-//    public void search(HttpServletRequest request, final HttpServletResponse response) throws IOException {
-//        List<String> searchValues = petService.autocompleteFind(getLocale(),request.getParameter("term"));
-//        response.setContentType("application/json");
-//
-//        final String param = request.getParameter("term");
-//        final List<AutoCompleteData> result = new ArrayList<>();
-//        for (final String country : searchValues) {
-//            if (country.toLowerCase().contains(param.toLowerCase())) {
-//                result.add(new AutoCompleteData(country, country));
-//            }
-//        }
-//        response.getWriter().write(new Gson().toJson(result));
-//    }
-//
-//
-//    @RequestMapping(value = "/pet/{id}")
-//    public ModelAndView getIdPet(@PathVariable("id") long id) {
-//        final ModelAndView mav = new ModelAndView("views/single_pet");
-//        User user = loggedUser();
-//        String locale = getLocale();
-//
-//        RequestStatus lastRequest = null;
-//        boolean requestExists = false;
-//        boolean acquired = false;
-//        List<User> availableUsers = null;
-//        int availableAmount = 0;
-//
-//        Pet pet = petService.findById(locale, id).orElseThrow(PetNotFoundException::new);
-//
-//        if (user != null) {
-//            /* Check if user has already requested pet */
-//            if (!user.getRequestList().isEmpty()) {
-//                Optional<Request> opRequest = user.getRequestList().stream()
-//                        .filter(request -> request.getPet().getId() == id)
-//                        .max(Comparator.comparing(Request::getCreationDate));
-//                if (opRequest.isPresent()) {
-//                    LOGGER.debug("User {} last request status for pet {} is {}", user.getId(), id, opRequest.get().getId());
-//                    lastRequest = opRequest.get().getStatus();
-//                    requestExists = true;
-//                } else {
-//                    LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
-//                }
-//            } else {
-//                LOGGER.debug("User {} has no request for pet {}", user.getId(), id);
-//            }
-//
-//            if (pet.getUser().getId().equals(user.getId())) {
-//                availableUsers = user.getInterestList().stream()
-//                        .filter(r -> (r.getStatus() == RequestStatus.ACCEPTED) && r.getPet().getId().equals(pet.getId()))
-//                        .map(Request::getUser).collect(Collectors.toList());
-//                availableAmount = availableUsers.size();
-//            }
-//
-//            if (user.getNewPets().contains(pet)) acquired = true;
-//        }
-//
-//        mav.addObject("pet", pet);
-//        mav.addObject("lastRequest", lastRequest);
-//        mav.addObject("requestExists", requestExists);
-//        mav.addObject("availableUsers", availableUsers);
-//        mav.addObject("availableAmount", availableAmount);
-//        mav.addObject("acquired", acquired);
-//        return mav;
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/request", method = {RequestMethod.POST})
-//    public ModelAndView requestPet(@PathVariable("id") final long id) {
-//        final ModelAndView mav = new ModelAndView("redirect:/pet/" + id);
-//        final User user = loggedUser();
-//        final String locale = getLocale();
-//
-//        if (user == null) {
-//            LOGGER.warn("User not authenticated, ignoring request");
-//            return new ModelAndView("redirect:/403");
-//        }
-//
-//        Optional<Request> opRequest;
-//        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-//        try {
-//             opRequest = requestService.create(locale, user.getId(), id, baseUrl);
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return mav.addObject("requestError", true);
-//        }
-//
-//        if (!opRequest.isPresent()) {
-//            mav.addObject("requestError", true);
-//        }
-//
-//        return new ModelAndView("redirect:/pet/" + id );
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/sell-adopt", method = {RequestMethod.POST})
-//    public ModelAndView petUpdateSold(@PathVariable("id") long id,
-//                                      @RequestParam(name = "newowner", required = false) String newOwner) {
-//        User user = loggedUser();
-//        Long newOwnerId = ParseUtils.parseUser(newOwner);
-//        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-//
-//        if (user != null && newOwner != null && petService.sellPet(id, user, newOwnerId, baseUrl)) {
-//            LOGGER.debug("Pet {} updated as sold", id);
-//            return new ModelAndView("redirect:/interests");
-//        }
-//        LOGGER.warn("User is not pet owner, pet status not updated");
-//        return new ModelAndView("redirect:/403");
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/remove", method = {RequestMethod.POST})
-//    public ModelAndView petUpdateRemoved(@PathVariable("id") long id) {
-//        User user = loggedUser();
-//        if (user != null && petService.removePet(id, user)) {
-//            LOGGER.debug("Pet {} updated as removed", id);
-//            return new ModelAndView("redirect:/user/" + user.getId());
-//        }
-//        LOGGER.warn("User is not pet owner, pet status not updated");
-//        return new ModelAndView("redirect:/403");
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/recover", method = {RequestMethod.POST})
-//    public ModelAndView petUpdateRecover(@PathVariable("id") long id) {
-//        User user = loggedUser();
-//        Optional<Pet> pet = petService.findById(id);
-//        if(!pet.isPresent()){
-//            return new ModelAndView("redirect:/403");
-//        }
-//
-//        if (user != null && pet.get().getNewOwner() == null  && petService.recoverPet(id, user)) {
-//            LOGGER.debug("Pet {} updated as recovered", id);
-//            return new ModelAndView("redirect:/pet/{id}");
-//        }
-//        LOGGER.warn("User is not pet owner, pet status not updated");
-//        return new ModelAndView("redirect:/403");
-//    }
-//
-//    @RequestMapping(value = "/img/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-//    public @ResponseBody
-//    byte[] getImageWithMediaType(@PathVariable("id") long id) throws IOException {
-//
-//        byte[] byteImage = imageService.getDataById(id).orElse(null);
-//        if(byteImage == null){
-//            return null;
-//        }
-//
-//        ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
-//        BufferedImage bufferedImage = ImageIO.read(bis);
-//        int height = bufferedImage.getHeight(), width = bufferedImage.getWidth();
-//
-//        BufferedImage cropped = bufferedImage;
-//        int diff = Math.abs(height-width);
-//        if(width>height){
-//            cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
-//        }else{ if(width<height)
-//            cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
-//        }
-//
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        ImageIO.write(cropped, "jpg", baos );
-//        baos.flush();
-//        byte[] imageInByte = baos.toByteArray();
-//        baos.close();
-//        return imageInByte;
-//    }
-//
-//    @RequestMapping(value ="/upload-pet", method = { RequestMethod.GET })
-//    public ModelAndView uploadPetForm(@ModelAttribute ("uploadPetForm") final UploadPetForm petForm) {
-//        ModelAndView mav = new ModelAndView("views/upload_pet");
-//        String locale = getLocale();
-//
-//        List<Species> speciesList = speciesService.speciesList(locale);
-//        List<Breed> breedList = speciesService.breedList(locale);
-//        List<Province> provinceList = locationService.provinceList();
-//        List<Department> departmentList = locationService.departmentList();
-//
-//        mav.addObject("provinceList", provinceList);
-//        mav.addObject("departmentList", departmentList);
-//        mav.addObject("speciesList", speciesList);
-//        mav.addObject("breedList", breedList);
-//        return mav;
-//    }
-//
-//    @RequestMapping(value = "/upload-pet", method = { RequestMethod.POST })
-//    public ModelAndView uploadPet(@Valid @ModelAttribute("uploadPetForm") final UploadPetForm petForm,
-//                                  final BindingResult errors, HttpServletRequest request) {
-//        if (errors.hasErrors()) {
-//            return uploadPetForm(petForm);
-//        }
-//        User user = loggedUser();
-//        if (user == null) throw new UserNotFoundException();
-//
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : petForm.getPhotos()) {
-//                try {
-//                    photos.add(photo.getBytes());
-//                } catch (IOException ex) {
-//                    ex.printStackTrace();
-//                    throw new ImageLoadException(ex);
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return uploadPetForm(petForm).addObject("imageError", true);
-//        }
-//
-//        Optional<Pet> opPet;
-//        try{
-//            LocalDateTime birthDate = petForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//            opPet = petService.create(getLocale(), petForm.getPetName(), birthDate, petForm.getGender(),
-//                    petForm.getVaccinated(), petForm.getPrice(), petForm.getDescription(), PetStatus.AVAILABLE, user.getId(),
-//                    petForm.getSpeciesId(), petForm.getBreedId(), petForm.getProvince(), petForm.getDepartment(), photos);
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return uploadPetForm(petForm).addObject("petError", true);
-//        }
-//
-//        if (!opPet.isPresent()) {
-//            LOGGER.warn("Pet could not be created");
-//            return uploadPetForm(petForm).addObject("petError", true);
-//        }
-//
-//        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
-//    }
-//
-//
-//    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.GET })
-//    public ModelAndView editPetGet(@ModelAttribute("editPetForm") final EditPetForm petForm, @PathVariable("id") long id) {
-//
-//        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
-//
-//        if(pet.getUser().getId().equals(loggedUser().getId())) {
-//
-//            List<Department> departmentList = locationService.departmentList();
-//            List<Province> provinceList = locationService.provinceList();
-//
-//            petForm.setBirthDate(java.util.Date.from(pet.getBirthDate().atZone(ZoneId.systemDefault()).toInstant()));
-//            petForm.setBreedId(pet.getBreed().getId());
-//            petForm.setDescription(pet.getDescription());
-//            petForm.setGender(pet.getGender());
-//            petForm.setProvince(pet.getProvince().getId());
-//            petForm.setDepartment(pet.getDepartment().getId());
-//            petForm.setPrice(pet.getPrice());
-//            petForm.setPetName(pet.getPetName());
-//            petForm.setSpeciesId(pet.getSpecies().getId());
-//            petForm.setVaccinated(pet.isVaccinated());
-//
-//            return editPetForm(petForm, id)
-//                    .addObject("provinceList", provinceList)
-//                    .addObject("departmentList", departmentList);
-//        }
-//        return new ModelAndView("redirect:/403" );
-//
-//    }
-//
-//    private ModelAndView editPetForm(@ModelAttribute("editPetForm") final EditPetForm editPetForm, long id) {
-//        String locale = getLocale();
-//
-//        Pet pet = petService.findById(getLocale(), id).orElseThrow(PetNotFoundException::new);
-//        List<Species> speciesList = speciesService.speciesList(locale);
-//        List<Breed> breedList = speciesService.breedList(locale);
-//        List<Department> departmentList = locationService.departmentList();
-//        List<Province> provinceList = locationService.provinceList();
-//
-//        return new ModelAndView("views/pet_edit")
-//                .addObject("speciesList", speciesList)
-//                .addObject("breedList", breedList)
-//                .addObject("provinceList", provinceList)
-//                .addObject("departmentList", departmentList)
-//                .addObject("pet", pet)
-//                .addObject("id", id);
-//    }
-//
-//    @RequestMapping(value = "/edit-pet/{id}", method = { RequestMethod.POST })
-//    public ModelAndView editPet(@Valid @ModelAttribute("editPetForm") final EditPetForm editPetForm,
-//                                  final BindingResult errors, HttpServletRequest request,
-//                                @PathVariable("id") long id) {
-//        User user = loggedUser();
-//        if (user == null) throw new UserNotFoundException();
-//        String locale = getLocale();
-//
-//        if (errors.hasErrors()) {
-//            return editPetForm(editPetForm, id);
-//        }
+package ar.edu.itba.paw.webapp.controller;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import com.google.gson.Gson;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import ar.edu.itba.paw.interfaces.ImageService;
+import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.PetException;
+import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Department;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Province;
+import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.webapp.dto.BreedDto;
+import ar.edu.itba.paw.webapp.dto.DepartmentDto;
+import ar.edu.itba.paw.webapp.dto.ErrorDto;
+import ar.edu.itba.paw.webapp.dto.PetDto;
+import ar.edu.itba.paw.webapp.dto.ProvinceDto;
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
+import ar.edu.itba.paw.webapp.dto.UserDto;
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
+import ar.edu.itba.paw.webapp.util.ParseUtils;
+
+@Component
+@Path("/pets")
+public class PetController{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
+    private static final int PET_PAGE_SIZE = 12;
+
+    @Autowired
+    private PetService petService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private UserService userService;
+
+    @Context
+    private UriInfo uriInfo;
+
+    @GET
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+                            @QueryParam("species") @DefaultValue("0") Long species,
+                            @QueryParam("breed") @DefaultValue("0") Long breed,
+                            @QueryParam("province") @DefaultValue("0") Long province,
+                            @QueryParam("department") @DefaultValue("0") Long department,
+                            @QueryParam("gender") String gender,
+                            @QueryParam("searchCriteria") String searchCriteria,
+                            @QueryParam("find") String find,
+                            @QueryParam("searchOrder") String searchOrder,
+                            @QueryParam("priceRange") int priceRange,
+                            @QueryParam("page") @DefaultValue("1") int page) {
+
+        final String locale = ApiUtils.getLocale();
+        int[] range;
+        try {
+            ownerId = ParseUtils.parseUserId(ownerId);
+            ParseUtils.parsePage(page);
+            ParseUtils.isAllowedFind(find);
+            searchCriteria = ParseUtils.parseCriteria(searchCriteria);
+            searchOrder = ParseUtils.parseOrder(searchOrder);
+            species = ParseUtils.parseSpecies(species);
+            breed = ParseUtils.parseBreed(breed);
+            province = ParseUtils.parseProvince(province);
+            department = ParseUtils.parseDepartment(department);
+            gender = ParseUtils.parseGender(gender);
+            range = ParseUtils.parseRange(priceRange);
+        } catch (BadRequestException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
+        int minPrice = range[0];
+        int maxPrice = range[1];
+        List<String> findList = ParseUtils.parseFind(find);
+        List<PetDto> petList;
+        try {
+            petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE,
+                    searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
+                    .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+        } catch(NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        final int amount = petService.getListAmount();
+        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new GenericEntity<List<PetDto>>(petList) {});
+    }
+
+    @GET
+    @Path("/filters")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+                            @QueryParam("species") @DefaultValue("0") Long species,
+                            @QueryParam("breed") @DefaultValue("0") Long breed,
+                            @QueryParam("province") @DefaultValue("0") Long province,
+                            @QueryParam("department") @DefaultValue("0") Long department,
+                            @QueryParam("gender") String gender,
+                            @QueryParam("find") String find,
+                            @QueryParam("priceRange") int priceRange) {
+
+        final String locale = ApiUtils.getLocale();
+        int[] range;
+        Long owner;
+        try {
+            owner = ParseUtils.parseUserId(ownerId);
+            species = ParseUtils.parseSpecies(species);
+            breed = ParseUtils.parseBreed(breed);
+            province = ParseUtils.parseProvince(province);
+            department = ParseUtils.parseDepartment(department);
+            gender = ParseUtils.parseGender(gender);
+            range = ParseUtils.parseRange(priceRange);
+        } catch (BadRequestException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        int minPrice = range[0];
+        int maxPrice = range[1];
+        List<String> findList = ParseUtils.parseFind(find);
+        Set<String> genderList;
+        Set<Integer> rangeList;
+        List<Department> departments;
+        List<Breed> breeds;
+        try {
+            breeds = petService.filteredBreedList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+                 minPrice, maxPrice, province, department);
+            departments = petService.filteredDepartmentList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+                    minPrice, maxPrice, province, department);
+            rangeList = petService.filteredRangesList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+                    minPrice, maxPrice, province, department);
+            genderList = petService.filteredGenderList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+                    minPrice, maxPrice, province, department);
+        } catch(NotFoundException | PetException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        List<SpeciesDto> speciesList = breeds.stream().map(Breed::getSpecies).distinct().sorted(Species::compareTo)
+                .map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
+        List<ProvinceDto> provinceList = departments.stream().map(Department::getProvince).distinct().sorted(Province::compareTo)
+                .map(ProvinceDto::fromProvince).collect(Collectors.toList());
+        List<DepartmentDto> departmentList = departments.stream().map(d -> DepartmentDto.fromDepartment(d,uriInfo)).collect(Collectors.toList());
+        List<BreedDto> breedList = breeds.stream().map(BreedDto::fromBreed).collect(Collectors.toList());
+
+        Map<String, Object> filters = new TreeMap<>();
+        filters.put("speciesList", speciesList);
+        filters.put("breedList", breedList);
+        filters.put("departmentList", departmentList);
+        filters.put("provinceList", provinceList);
+        filters.put("genderList", genderList);
+        filters.put("rangeList", rangeList);
+
+        return Response.ok().entity(new Gson().toJson(filters)).build();
+
+    }
+    @POST
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response create(final PetDto pet) {
+        String locale = ApiUtils.getLocale();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        Optional<Pet> opNewPet;
+
+        /* TODO como recibir las fotos ?*/
+        try {
+            opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
+                    pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
+                    pet.getProvinceId(), pet.getDepartmentId(),null);
+        } catch(NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if (!opNewPet.isPresent()) {
+            LOGGER.warn("Pet creation failed");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
+        return Response.created(petUri).build();
+    }
+
+    @POST
+    @Path("/{petId}/edit")
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response edit(final PetDto pet) {
+        String locale = ApiUtils.getLocale();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+
+        Optional<Pet> opPet;
+        Optional<User> opOwner;
+        try {
+            opOwner = userService.findById(pet.getUserId());
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        if (!opOwner.isPresent()) {
+            LOGGER.warn("Owner invalid");
+            final ErrorDto body = new ErrorDto(2, "Owner invalid");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if(!loggedUser.getId().equals(opOwner.get().getId())) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(3, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        /* TODO como recibir las fotos ?*/
 //        List<byte[]> photos = new ArrayList<>();
 //        try {
 //            for (MultipartFile photo : editPetForm.getPhotos()) {
@@ -434,95 +277,213 @@
 //            LOGGER.warn("Image bytes load from pet form failed");
 //            return editPetForm(editPetForm, id).addObject("imageError", true);
 //        }
-//
-//        Optional<Pet> opPet;
-//        try {
-//            LocalDateTime birthDate = editPetForm.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//             opPet = petService.update(locale, id, user.getId(), editPetForm.getPetName(), birthDate,
-//                     editPetForm.getGender(), editPetForm.getVaccinated(), editPetForm.getPrice(), editPetForm.getDescription(),
-//                     null, editPetForm.getSpeciesId(), editPetForm.getBreedId(), editPetForm.getProvince(),
-//                     editPetForm.getDepartment(), photos, editPetForm.getImagesIdToDelete());
-//
-//        } catch (InvalidImageQuantityException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("imageQuantityError", true);
-//
-//        } catch (DataIntegrityViolationException ex) {
-//            LOGGER.warn("{}", ex.getMessage());
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//
-//        if(!opPet.isPresent()){
-//            LOGGER.warn("Pet could not be updated");
-//            return editPetForm(editPetForm, id).addObject("petError", true);
-//        }
-//        return new ModelAndView("redirect:/pet/" + opPet.get().getId());
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/comments")
-//    public @ResponseBody
-//    Map<String, Object> petComments(@PathVariable("id") long id,
-//                                    @RequestParam(name = "page", required = false) String page) {
-//
-//        int pageNum = ParseUtils.parsePage(page);
-//
-//        List<Question> questionList = petService.listQuestions(id, pageNum, COMMENTS_PAGE_SIZE);
-//        int amount = petService.getListQuestionsAmount(id);
-//
-//        Map<String, Object> response = new HashMap<>();
-//        List<Map<String, Object>> comments = questionList.stream().map(question -> {
-//            Map<String, Object> comm = new HashMap<>();
-//            comm.put("question", question.toCommentJson());
-//            if (question.getAnswer() != null) comm.put("answer", question.getAnswer().toCommentJson());
-//            return comm;
-//        }).collect(Collectors.toList());
-//
-//        response.put("currentPage", pageNum);
-//        response.put("maxPage", (int) Math.ceil((double) amount / COMMENTS_PAGE_SIZE));
-//        response.put("commentList", comments);
-//        response.put("amount", amount);
-//
-//        return response;
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/question", method = RequestMethod.POST)
-//    public ModelAndView petQuestion(@PathVariable("id") long id,
-//                                    @Valid QuestionAnswerForm questionAnswerForm,
-//                                    final BindingResult errors) {
-//        if (errors.hasErrors()) {
-//            return getIdPet(id);
-//        }
-//
-//        User user = loggedUser();
-//        if (user == null) {
-//            LOGGER.warn("User not logged int");
-//            return new ModelAndView("redirect:/403");
-//        }
-//        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-//        boolean success = petService.createQuestion(questionAnswerForm.getContent(), user, id, baseUrl).isPresent();
-//        return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
-//    }
-//
-//    @RequestMapping(value = "/pet/{id}/answer", method = RequestMethod.POST)
-//    public ModelAndView petAnswer(@PathVariable("id") long id,
-//                                  @Valid final QuestionAnswerForm questionAnswerForm,
-//                                  final BindingResult errors) {
-//        if (errors.hasErrors()) {
-//            return getIdPet(id);
-//        }
-//
-//        User user = loggedUser();
-//        if (user == null) {
-//            LOGGER.warn("User not logged int");
-//            return new ModelAndView("redirect:/403");
-//        }
-//
-//        boolean success = false;
-//        if (questionAnswerForm.getAnswerId() > 0) {
-//            final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-//            success = petService.createAnswer(questionAnswerForm.getAnswerId(), questionAnswerForm.getContent(), user, baseUrl).isPresent();
-//        }
-//        return new ModelAndView("redirect:/pet/" + id).addObject("error", !success);
-//    }
-//
-//}
+
+        try {
+            opPet = petService.update(locale, pet.getId(), loggedUser.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
+                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
+                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
+        } catch(NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(4, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if (!opPet.isPresent()) {
+            LOGGER.warn("Pet update failed");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
+        return Response.created(petUri).build();
+    }
+
+    @GET
+    @Path("/{petId}")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getPet(@PathParam("petId") Long petId) {
+        String locale = ApiUtils.getLocale();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        Optional<Pet> opPet = petService.findById(locale, petId);
+        if(!opPet.isPresent()) {
+            LOGGER.debug("Pet {} not found", petId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        Pet pet = opPet.get();
+
+        //pets are only visible to the public if they are available, only the owners can see them with a different status
+        if(pet.getStatus() != PetStatus.AVAILABLE) {
+            if(loggedUser == null || !loggedUser.getId().equals(pet.getUser().getId()) ||
+                    (pet.getNewOwner() != null && loggedUser.getId().equals(pet.getNewOwner().getId()))) {
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+            }
+        }
+        PetDto petDto = PetDto.fromPet(pet, uriInfo);
+        if(petDto.getImages().isEmpty()) System.out.println("WWWWWWWWW");
+        //petDto.getImages().forEach(System.out::println);
+        return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
+    }
+
+    @GET
+    @Path("/{petId}/images")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getImages(@PathParam("petId") long petId) {
+        String locale = ApiUtils.getLocale();
+        Optional<Pet> opPet = petService.findById(locale, petId);
+        if(!opPet.isPresent()) {
+            LOGGER.debug("Pet {} not found", petId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        List<Long> images = new ArrayList<>();
+        opPet.get().getImages().stream().map(img -> images.add(img.getId()));
+        return Response.ok(new GenericEntity<List<Long>>(images) {}).build();
+    }
+
+    @GET
+    @Path("/images/{imageId}")
+    @Produces("image/jpg")
+    public Response getImage(@PathParam("imageId") long imageId) throws IOException {
+        byte[] byteImage = imageService.getDataById(imageId).orElse(null);
+        if(byteImage == null) {
+            LOGGER.debug("Image {} not found", imageId);
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteImage);
+        BufferedImage bufferedImage = ImageIO.read(bis);
+        int height = bufferedImage.getHeight(), width = bufferedImage.getWidth();
+
+        BufferedImage cropped = bufferedImage;
+        int diff = Math.abs(height-width);
+        if(width>height){
+            cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
+        }
+        else{ if(width<height)
+            cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(cropped, "jpg", baos );
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+        return Response.ok(imageInByte).build();
+    }
+
+    @POST
+    @Path("/{petId}/sell-adopt")
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response petUpdateSold(@PathParam("petId") Long petId,
+                                  final UserDto newOwner) {
+        Long newOwnerId;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        try {
+            newOwnerId = ParseUtils.parseUserId(newOwner.getId());
+            petId = ParseUtils.parsePetId(petId);
+        } catch(BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if(newOwnerId == null || petId == null) {
+            LOGGER.warn("Invalid parameters. New owner {}, pet {}", newOwnerId, petId);
+            final ErrorDto body = new ErrorDto(2, "Invalid parameters");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        try {
+            petService.sellPet(petId, loggedUser.getId(), newOwnerId, uriInfo.getBaseUri().toString());
+        } catch (NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{petId}/remove")
+    public Response petUpdateRemove(@PathParam("petId") Long petId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        try {
+            petId = ParseUtils.parsePetId(petId);
+        } catch(BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        if(petId == null) {
+            LOGGER.warn("Invalid pet {}", petId);
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        try {
+            petService.removePet(petId, loggedUser.getId());
+        } catch (NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{petId}/recover")
+    public Response petUpdateRecover(@PathParam("petId") Long petId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        try {
+            petId = ParseUtils.parsePetId(petId);
+        } catch(BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        if( petId == null) {
+            LOGGER.warn("Invalid pet {}", petId);
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        try {
+            petService.recoverPet(petId, loggedUser.getId());
+        } catch (NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch(PetException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        return Response.ok().build();
+    }
+}
+

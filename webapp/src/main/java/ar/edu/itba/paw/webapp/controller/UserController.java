@@ -26,7 +26,9 @@ import org.springframework.stereotype.Component;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.UserStatus;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
 import ar.edu.itba.paw.webapp.dto.PasswordDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
@@ -51,13 +53,41 @@ public class UserController {
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getUser(@PathParam("userId") long userId) {
         final Optional<User> opUser = userService.findById(userId);
-
         if (!opUser.isPresent()) {
             LOGGER.debug("User {} not found", userId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
         final User user = opUser.get();
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } 
+
         return Response.ok(new GenericEntity<UserDto>(UserDto.fromUser(user, uriInfo)){}).build();
+    }
+
+    @GET
+    @Path("/{userId}/mail")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getUserMail(@PathParam("userId") long userId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = ApiUtils.loggedUser(userService, auth);
+
+        String mail;
+        try {
+            mail = userService.getMail(user, userId);
+        } catch (NotFoundException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        } catch (UserException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
+        UserDto userMail = new UserDto();
+        userMail.setMail(mail);
+        return Response.ok(new GenericEntity<UserDto>(userMail){}).build();        
     }
 
     @DELETE

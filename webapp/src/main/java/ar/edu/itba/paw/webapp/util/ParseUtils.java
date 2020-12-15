@@ -116,8 +116,8 @@ public class ParseUtils {
         return price;
     }
 
-    public static void parseReviewScore(int score) {
-        if (score < 1 || score > 5) {
+    public static void parseReviewScore(Integer score) {
+        if (score == null || score < 1 || score > 5) {
             String hint = "Score must be between 1 and 5 inclusive";
             throw new BadRequestException("score", String.valueOf(score), hint);
         }
@@ -133,7 +133,7 @@ public class ParseUtils {
     }
 
     public static void parseReviewDescription(String description) {
-        if (description != null && description.length() > 2048) {
+        if (description == null || description.length() > 2048) {
             String hint = "Description must contain less than 2048 characters";
             throw new BadRequestException("description", description, hint);
         }
@@ -178,6 +178,15 @@ public class ParseUtils {
             throw new BadRequestException("Pet ID", String.valueOf(petId), hint);
         }
         return petId;
+    }
+
+    public static Long parseQuestionId(long questionId) {
+        if (questionId == 0) return null;
+        if (questionId < 1) {
+            String hint = "Question ID must be grater than 0, or 0 for any user";
+            throw new BadRequestException("user ID", String.valueOf(questionId), hint);
+        }
+        return questionId;
     }
 
     public static void parseReview(ReviewDto review) {

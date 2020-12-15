@@ -1,18 +1,32 @@
 package ar.edu.itba.paw.services;
 
 
-import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.MailType;
-import ar.edu.itba.paw.models.constants.RequestStatus;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.*;
+
+import ar.edu.itba.paw.interfaces.MailService;
+import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.RequestDao;
+import ar.edu.itba.paw.interfaces.RequestService;
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
+import ar.edu.itba.paw.interfaces.exceptions.RequestException;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -37,6 +51,7 @@ public class RequestServiceImpl implements RequestService {
     public List<Request> filteredList(Long userId, Long targetId, Long petId, List<String> find, RequestStatus status,
                                       String searchCriteria, String searchOrder, int page, int pageSize) {
 
+        LOGGER.debug("Filtered Request List of user: {}, target: {}", userId, targetId);
         // Requests
         if (userId != null) {
             Optional<User> opUser = userService.findById(userId);
@@ -49,6 +64,7 @@ public class RequestServiceImpl implements RequestService {
 
         // Interests
         if (targetId != null) {
+            System.out.println("\nTARGET\n");
             Optional<User> opUser = userService.findById(targetId);
             if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
             User user = opUser.get();
@@ -182,14 +198,14 @@ public class RequestServiceImpl implements RequestService {
 
         if (pet.getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is pet {} owner, ignoring request", userId, petId);
-            return Optional.empty();
+            throw new RequestException("User is pet owner.");
         }
 
         List<Request> requestList = user.getRequestList();
         for (Request req: requestList) {
             if(req.getPet().getId().equals(pet.getId()) && !req.getStatus().equals(RequestStatus.CANCELED)) {
                 LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
-                return Optional.empty();
+                throw new RequestException("Request already exists.");
             }
         }
 
@@ -231,7 +247,7 @@ public class RequestServiceImpl implements RequestService {
 
         if (!request.getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not Request {} owner, Request not canceled", user.getId(), request.getId());
-            return false;
+            throw new RequestException("User is not request owner.");
         }
 
         request.setStatus(RequestStatus.CANCELED);
@@ -274,14 +290,16 @@ public class RequestServiceImpl implements RequestService {
 
         if (!request.getPet().getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not Request {} target, Request not accepted", user.getId(), request.getId());
-            return false;
+            throw new RequestException("User is not request target.");
         }
 
-        request.setStatus(RequestStatus.ACCEPTED);
+        request.setStatus(RequestStatus.SOLD);
         if(!requestDao.update(request).isPresent()) {
             LOGGER.warn("Request {} accept by user {} failed", request.getId(), user.getId());
             return false;
         }
+
+        rejectAllByPet(request.getPet().getId());
 
         final User recipient = request.getUser();
         Pet pet = request.getPet();
@@ -318,7 +336,7 @@ public class RequestServiceImpl implements RequestService {
 
         if (!request.getPet().getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not Request {} target, Request not rejected", user.getId(), request.getId());
-            return false;
+            throw new RequestException("User is not request target.");
         }
 
         request.setStatus(RequestStatus.REJECTED);
@@ -361,8 +379,8 @@ public class RequestServiceImpl implements RequestService {
         Request request = opRequest.get();
 
         if (!request.getUser().getId().equals(user.getId())) {
-            LOGGER.warn("User {} is not Request {} target, Request not recovered", user.getId(), request.getId());
-            return false;
+            LOGGER.warn("User {} is not Request {} owner, Request not recovered", user.getId(), request.getId());
+            throw new RequestException("User is not request owner.");
         }
 
         request.setStatus(RequestStatus.PENDING);
@@ -488,6 +506,11 @@ public class RequestServiceImpl implements RequestService {
     public void logInterestsAccess(User user) {
         user.setInterestsDate(LocalDateTime.now());
         userService.update(user);
+    }
+
+    @Override
+    public boolean hasRequest(User user, User target) {
+        return requestDao.hasRequest(user, target);
     }
 
 }

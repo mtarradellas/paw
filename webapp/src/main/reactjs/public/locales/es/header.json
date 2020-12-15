@@ -2,5 +2,7 @@
   "register": "Registrarse",
   "login": "Iniciar sesión",
   "requests": "Solicitudes",
-  "Interests": "Intereses"
+  "interests": "Intereses",
+  "addPet": "¡Añadir mascota!",
+  "logout": "Cerrar sesión"
 }

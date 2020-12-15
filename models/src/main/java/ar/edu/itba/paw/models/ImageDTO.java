@@ -1,6 +1,12 @@
 package ar.edu.itba.paw.models;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "Images")
@@ -17,7 +23,6 @@ public class ImageDTO {
     public ImageDTO() {
         //Hibernate
     }
-
     public ImageDTO(long imageId, long petId) {
         this.id = imageId;
         this.petId = petId;

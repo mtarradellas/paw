@@ -38,6 +38,7 @@ import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.UserStatus;
+import ar.edu.itba.paw.webapp.dto.ErrorDto;
 import ar.edu.itba.paw.webapp.dto.PasswordDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
@@ -74,7 +75,8 @@ public class AdminUserController {
             searchCriteria = ParseUtils.parseCriteria(searchCriteria);
             searchOrder = ParseUtils.parseOrder(searchOrder);
         } catch (BadRequestException ex) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage()); 
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         List<String> findList = ParseUtils.parseFind(find);
 
@@ -86,7 +88,7 @@ public class AdminUserController {
     }
 
     @GET
-    @Path("/amount")
+    @Path("/info")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getUserListAmount(@QueryParam("status") @DefaultValue("-1") int status,
                                       @QueryParam("find") String find) {
@@ -104,6 +106,7 @@ public class AdminUserController {
 
         Map<String, Integer> json = new HashMap<>();
         json.put("amount", amount);
+        json.put("pagesize", USR_PAGE_SIZE);
 
         return Response.ok().entity(new Gson().toJson(json)).build();
     }
@@ -119,7 +122,9 @@ public class AdminUserController {
             userStatus = ParseUtils.parseStatus(UserStatus.class, status);
             ParseUtils.isAllowedFind(find);
         } catch (BadRequestException ex) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         List<String> findList = ParseUtils.parseFind(find);
 
@@ -160,7 +165,8 @@ public class AdminUserController {
             ParseUtils.parseUser(user);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
         final String locale = ApiUtils.getLocale();
@@ -170,7 +176,8 @@ public class AdminUserController {
         } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("User creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if (!opNewUser.isPresent()) {
             LOGGER.warn("User creation failed, service returned empty user");
@@ -217,7 +224,8 @@ public class AdminUserController {
             ParseUtils.parseUsername(user.getUsername());
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
         Optional<User> opUser;
@@ -225,7 +233,8 @@ public class AdminUserController {
             opUser = userService.updateUsername(userId, user.getUsername());
         } catch (DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, "Username already taken.");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -248,7 +257,9 @@ public class AdminUserController {
             ParseUtils.parsePassword(dto.getNewPassword());
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
         Optional<User> opUser;
@@ -256,7 +267,9 @@ public class AdminUserController {
             opUser = userService.updatePassword(userId, dto.getOldPassword(), dto.getNewPassword());
         } catch(InvalidPasswordException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();

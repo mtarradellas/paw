@@ -3,7 +3,9 @@
   "specie": "Specie",
   "breed": "Breed",
   "price": "Price",
-  "sex": "Sex",
+  "sex": "Gender",
   "owner": "Owner",
-  "uploadDate": "Upload date"
+  "uploadDate": "Upload date",
+  "female": "Female",
+  "male": "Male"
 }

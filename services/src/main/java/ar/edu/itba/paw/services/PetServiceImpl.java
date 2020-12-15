@@ -1,8 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
-import ar.edu.itba.paw.interfaces.exceptions.UserException;
+import ar.edu.itba.paw.interfaces.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -58,8 +56,10 @@ public class PetServiceImpl implements PetService {
         Species species = null;
         Department department = null;
         Province province = null;
-
-        if (userId != null) user = userService.findById(userId).orElse(null);
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
@@ -88,11 +88,14 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
-
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
+        System.out.println("WWWWWWWWWWW"+breed+breedId);
 
         department = validateDepartment(departmentId, provinceId);
         province = (department != null)? department.getProvince() : validateProvince(provinceId);
@@ -111,7 +114,10 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
@@ -131,7 +137,10 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
@@ -150,7 +159,10 @@ public class PetServiceImpl implements PetService {
         Department department = null;
         Province province = null;
 
-        if (userId != null) user = userService.findById(userId).orElse(null);
+        if (userId != null) {
+            user = userService.findById(userId).orElse(null);
+            if (user == null) throw new NotFoundException("User " + userId + " not found.");
+        }
 
         breed = validateBreed(breedId, speciesId);
         species = (breed != null)? breed.getSpecies() : validateSpecies(speciesId);
@@ -203,14 +215,16 @@ public class PetServiceImpl implements PetService {
     }
 
     private Breed validateBreed(Long breedId, Long speciesId) {
-        if (breedId == null || speciesId == null) return null;
+        if (breedId == null) return null;
         Optional<Breed> opBreed = speciesService.findBreedById(breedId);
         if (!opBreed.isPresent()) return null;
         Breed breed = opBreed.get();
-        Optional<Species> opSpecies = speciesService.findSpeciesById(speciesId);
-        if (!opSpecies.isPresent()) return null;
-        Species species = opSpecies.get();
-        if (!breed.getSpecies().getId().equals(species.getId())) return null;
+        if(speciesId != null) {
+            Optional<Species> opSpecies = speciesService.findSpeciesById(speciesId);
+            if (!opSpecies.isPresent()) return null;
+            Species species = opSpecies.get();
+            if (!breed.getSpecies().getId().equals(species.getId())) throw new PetException("Species and breed don't match");
+        }
         return breed;
     }
 
@@ -311,14 +325,17 @@ public class PetServiceImpl implements PetService {
             LOGGER.warn("User {} is not active, pet creation failed", userId);
         }
 
+        System.out.println("EEEEEEEEEEEEEEE"+status);
+
         Pet pet = petDao.create(petName, birthDate, gender, vaccinated, price, LocalDateTime.now(), description, status, user,
                 species, breed, province, department);
 
         LOGGER.debug("Pet id: {} successfully created", pet);
-
-        for (byte[] photo : photos) {
-            imageService.create(pet.getId(), photo, user.getId());
-        }
+if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
+    for (byte[] photo : photos) {
+        imageService.create(pet.getId(), photo, user.getId());
+    }
+}
 
         return Optional.of(pet);
     }
@@ -451,25 +468,24 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public boolean sellPet(long petId, User owner, long newOwnerId, String contextURL) {
+    public void sellPet(long petId, long ownerId, long newOwnerId, String contextURL) {
         Optional<Pet> opPet = petDao.findById(petId);
-        if (!opPet.isPresent()) {
-            LOGGER.warn("Pet {} not found", petId);
-            return false;
-        }
+        if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
 
         if (pet.getNewOwner() != null) {
             LOGGER.warn("Pet {} is already sold to user {}", petId, pet.getNewOwner().getId());
-            return false;
+            throw new PetException("Pet already sold");
         }
+
+        Optional<User> opOwner = userService.findById(ownerId);
+        if (!opOwner.isPresent()) throw new NotFoundException("User " + opOwner + " not found.");
+        User owner = opOwner.get();
 
         if (pet.getUser().getId().equals(owner.getId())) {
             Optional<User> opUser = userService.findById(newOwnerId);
-            if (!opUser.isPresent()) {
-                LOGGER.warn("Target new owner {} was not found", newOwnerId);
-                return false;
-            }
+            if (!opUser.isPresent()) throw new NotFoundException("Target new owner"+ newOwnerId +" was not found");
+
             pet.setNewOwner(opUser.get());
             pet.setStatus(PetStatus.SOLD);
             requestService.sell(pet, opUser.get());
@@ -489,90 +505,89 @@ public class PetServiceImpl implements PetService {
             if (updated) {
                 requestService.rejectAllByPet(pet.getId());
             }
-            return updated;
+            return;
         }
-        return false;
+        LOGGER.warn("Owner and logged user are not the same");
+        throw new PetException("Owner and logged user are not the same");
     }
 
     @Transactional
     @Override
-    public boolean removePet(long petId, User user) {
+    public void removePet(long petId, long userId) {
         Optional<Pet> opPet = petDao.findById(petId);
-        if (!opPet.isPresent()) {
-            LOGGER.warn("Pet {} not found", petId);
-            return false;
-        }
+        if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
 
-        if (pet.getUser().getId().equals(user.getId())) {
+        if (pet.getUser().getId().equals(userId)) {
             requestService.rejectAllByPet(petId);
             pet.setStatus(PetStatus.REMOVED);
-            return petDao.update(pet).isPresent();
+            petDao.update(pet).orElseThrow(PetException::new);
+            return;
         }
-        return false;
+        LOGGER.warn("Owner and logged user are not the same");
+        throw new PetException("Owner and logged user are not the same");
     }
 
     @Transactional
     @Override
-    public boolean recoverPet(long petId, User user) {
+    public void recoverPet(long petId, long userId) {
         Optional<Pet> opPet = petDao.findById(petId);
-        if (!opPet.isPresent()) {
-            LOGGER.warn("Pet {} not found", petId);
-            return false;
-        }
+        if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
 
-        if (pet.getUser().getId().equals(user.getId()) && pet.getNewOwner() == null) {
+        if (pet.getUser().getId().equals(userId) && pet.getNewOwner() == null) {
             pet.setStatus(PetStatus.AVAILABLE);
-            return petDao.update(pet).isPresent();
+            petDao.update(pet).orElseThrow(PetException::new);
+            return;
         }
-        return false;
+        LOGGER.warn("Owner and logged user are not the same");
+        throw new PetException("Owner and logged user are not the same");
     }
 
     @Transactional
     @Override
-    public boolean adminSellPet(long petId, long newOwnerId) {
+    public void adminSellPet(long petId, long newOwnerId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
-            return false;
+            throw new NotFoundException("Pet " + petId + " not found.");
         }
         Pet pet = opPet.get();
         Optional<User> opNewOwner = userService.findById(newOwnerId);
         if (!opNewOwner.isPresent()) {
             LOGGER.warn("New owner {} not found", newOwnerId);
-            return false;
+            throw new NotFoundException("New Owner " + newOwnerId + " not found.");
         }
         pet.setNewOwner(opNewOwner.get());
         pet.setStatus(PetStatus.SOLD);
-        return petDao.update(pet).isPresent();
+        petDao.update(pet).orElseThrow(PetException::new);
     }
 
     @Transactional
     @Override
-    public boolean adminRemovePet(long petId) {
+    public void adminRemovePet(long petId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
-            return false;
+            throw new NotFoundException("Pet " + petId + " not found.");
         }
         Pet pet = opPet.get();
         requestService.rejectAllByPet(petId);
         pet.setStatus(PetStatus.REMOVED);
-        return petDao.update(pet).isPresent();
+        petDao.update(pet).orElseThrow(PetException::new);
     }
 
     @Transactional
     @Override
-    public boolean adminRecoverPet(long petId) {
+    public void adminRecoverPet(long petId) {
         Optional<Pet> opPet = petDao.findById(petId);
         if (!opPet.isPresent()) {
             LOGGER.warn("Pet {} not found", petId);
-            return false;
+            throw new NotFoundException("Pet " + petId + " not found.");
         }
         Pet pet = opPet.get();
         pet.setStatus(PetStatus.AVAILABLE);
-        return petDao.update(pet).isPresent();
+        petDao.update(pet).orElseThrow(PetException::new);
     }
 
     @Transactional
@@ -600,21 +615,19 @@ public class PetServiceImpl implements PetService {
     @Override
     public List<Question> listQuestions(long petId, int page, int pageSize) {
         Optional<Pet> pet = petDao.findById(petId);
-        List<Question> list = new ArrayList<>();
         if (pet.isPresent()) {
-            list = petDao.listQuestions(petId, page, pageSize);
+            return petDao.listQuestions(petId, page, pageSize);
         }
-        return list;
+        else throw new NotFoundException("Pet " + petId + " not found.");
     }
 
     @Override
-    public int getListQuestionsAmount(long petId) {
+    public int getListQuestionsAmount(Long petId) {
         Optional<Pet> pet = petDao.findById(petId);
-        int amount = 0;
         if (pet.isPresent()) {
-            amount = petDao.getListQuestionsAmount(petId);
+            return petDao.getListQuestionsAmount(petId);
         }
-        return amount;
+        else throw new NotFoundException("Pet " + petId + " not found.");
     }
 
     @Override
@@ -629,22 +642,18 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Question> createQuestion(String content, User user, long petId, String contextURL) {
-        if (user == null) {
-            LOGGER.warn("User is null");
-            return Optional.empty();
-        }
+    public Optional<Question> createQuestion(String content, Long userId, long petId, String contextURL) {
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
 
         Optional<Pet> opPet = petDao.findById(petId);
-        if (!opPet.isPresent()) {
-            LOGGER.warn("Pet {} not found", petId);
-            return Optional.empty();
-        }
+        if (!opPet.isPresent()) throw new NotFoundException("Pet " + petId + " not found.");
         Pet pet = opPet.get();
 
         if (user.getId().equals(pet.getUser().getId())) {
             LOGGER.warn("User {} cannot ask question to himself", pet.getUser().getId());
-            return Optional.empty();
+            throw new QuestionException("User cannot ask question to himself");
         }
 
         Question question = petDao.createQuestion(content, user, pet.getUser(), pet, QuestionStatus.VALID);
@@ -666,30 +675,26 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Optional<Answer> createAnswer(long questionId, String content, User user, String contextURL) {
-        if (user == null) {
-            LOGGER.warn("User is null");
-            return Optional.empty();
-        }
+    public Optional<Answer> createAnswer(Long questionId, String content, Long userId, String contextURL) {
+        Optional<User> opUser = userService.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
 
         Optional<Question> opQuestion = petDao.findQuestionById(questionId);
-        if (!opQuestion.isPresent()) {
-            LOGGER.warn("Question {} not found", questionId);
-            return Optional.empty();
-        }
+        if (!opQuestion.isPresent()) throw new NotFoundException("Question " + questionId + " not found.");
         Question question = opQuestion.get();
 
         if (user.getId().equals(question.getUser().getId())) {
-            LOGGER.warn("User {} cannot answer his own question", question.getTarget());
-            return Optional.empty();
+            LOGGER.warn("User {} cannot answer his own question", userId);
+            throw new QuestionException("User cannot answer his own question");
         }
 
         Pet pet = question.getPet();
 
         if (!pet.getUser().getId().equals(user.getId())) {
             LOGGER.warn("User {} is not pet {} owner", user.getId(), pet.getId());
+            return Optional.empty();
         }
-
         Answer answer = petDao.createAnswer(question, content, user, question.getUser(), pet, QuestionStatus.VALID);
 
         Map<String, Object> arguments = new HashMap<>();

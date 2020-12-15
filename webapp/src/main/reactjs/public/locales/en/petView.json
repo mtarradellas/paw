@@ -11,7 +11,9 @@
     "province": "Province",
     "department": "Department",
     "uploadDate": "Upload date",
-    "owner": "Owner"
+    "owner": "Owner",
+    "female": "Female",
+    "male": "Male"
   },
   "status": {
     "header": "Status",

@@ -1,11 +1,12 @@
 package ar.edu.itba.paw.interfaces;
 
+import java.util.List;
+import java.util.Optional;
+
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
-import java.util.List;
-import java.util.Optional;
 
 public interface RequestService {
 
@@ -47,4 +48,6 @@ public interface RequestService {
 
     void logRequestsAccess(User user);
     void logInterestsAccess(User user);
+
+    boolean hasRequest(User user, User target);
 }

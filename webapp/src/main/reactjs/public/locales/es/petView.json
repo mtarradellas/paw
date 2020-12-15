@@ -11,7 +11,9 @@
     "province": "Provincia",
     "department": "Departamento",
     "uploadDate": "Fecha de subida",
-    "owner": "Dueño"
+    "owner": "Dueño",
+    "female": "Hembra",
+    "male": "Macho"
   },
   "status": {
     "header": "Estado",

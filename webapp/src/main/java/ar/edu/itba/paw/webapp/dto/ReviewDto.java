@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.Review;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDateTime;
+
+import javax.ws.rs.core.UriInfo;
+
+import ar.edu.itba.paw.models.Review;
 
 public class ReviewDto {
 
@@ -27,8 +29,8 @@ public class ReviewDto {
         dto.description = review.getDescription();
         dto.status = review.getStatus().getValue();
 
-        dto.user = uriInfo.getAbsolutePathBuilder().path("users").path(String.valueOf(review.getOwner().getId())).build();
-        dto.target = uriInfo.getAbsolutePathBuilder().path("users").path(String.valueOf(review.getTarget().getId())).build();
+        dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(review.getOwner().getId())).build();
+        dto.target = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(review.getTarget().getId())).build();
 
         return dto;
     }
