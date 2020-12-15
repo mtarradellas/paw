@@ -5,11 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -45,7 +41,6 @@ import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Department;
-import ar.edu.itba.paw.models.ImageDTO;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Species;
@@ -326,6 +321,8 @@ public class PetController{
             }
         }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
+        if(petDto.getImages().isEmpty()) System.out.println("WWWWWWWWW");
+        //petDto.getImages().forEach(System.out::println);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
     }
 
@@ -339,8 +336,9 @@ public class PetController{
             LOGGER.debug("Pet {} not found", petId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        List<ImageDTO> images = opPet.get().getImages();
-        return Response.ok(new GenericEntity<List<ImageDTO>>(images) {}).build();
+        List<Long> images = new ArrayList<>();
+        opPet.get().getImages().stream().map(img -> images.add(img.getId()));
+        return Response.ok(new GenericEntity<List<Long>>(images) {}).build();
     }
 
     @GET

@@ -249,23 +249,23 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Optional<User> resetPassword(UUID uuid, String password) {
-        LOGGER.debug("Resetting password for token {}", uuid);
+        LOGGER.debug("Resetting password for token");
 
         Optional<Token> opToken = getToken(uuid);
-        if (!opToken.isPresent()) throw new NotFoundException("Token " + uuid + " not found.");
+        if (!opToken.isPresent()) throw new NotFoundException("Token not found.");
         final Token token = opToken.get();
 
         if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
-            LOGGER.warn("Token {} has expired", uuid);
+            LOGGER.warn("Token has expired", uuid);
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Token has expired.");
         }
-
+        
         Optional<User> opUser = findByToken(uuid);
         if (!opUser.isPresent()) {
-            LOGGER.warn("User of token {} not found", uuid);
+            LOGGER.warn("User of token not found");
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Token not found.");
         }
         final User user = opUser.get();
         Optional<User> updatedUser = Optional.empty();
@@ -353,26 +353,26 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Activating account token {}", uuid);
 
         Optional<Token> opToken = getToken(uuid);
-        if (!opToken.isPresent()) throw new NotFoundException("Token " + uuid + " not found.");
+        if (!opToken.isPresent()) throw new NotFoundException("Token not found.");
         final Token token = opToken.get();
         if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Token has expired");
         }
 
         Optional<User> opUser = findByToken(uuid);
         if (!opUser.isPresent()) {
-            LOGGER.warn("User of token {} not found", uuid);
+            LOGGER.warn("User not found");
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new NotFoundException("User not found.");
         }
         User user = opUser.get();
 
         if(!updateStatus(user.getId(), UserStatus.ACTIVE).isPresent()) {
             LOGGER.warn("Could not activate user {} account", user.getId());
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Error activating account.");
         }
 
         deleteToken(uuid);
