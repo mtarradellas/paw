@@ -34,6 +34,21 @@ header a {
     margin: 1.5rem 0 0 2rem;
 }
 
+.header--session {
+    display: flex;
+    flex-flow: row;
+}
+
+.header--session--logout {
+    margin-right: 2rem;
+}
+
+.header--session--username {
+    margin-right: 2rem;
+    color: white;
+    margin-top: 0.5rem;
+}
+
 @media only screen and (min-width: 1000px) {
     .header__title {
         display: block;

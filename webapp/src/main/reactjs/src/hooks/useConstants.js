@@ -5,6 +5,8 @@ import {getBreeds, getSpecies} from "../api/species";
 
 const FETCH_AGAIN_TIME = 1000 * 60 * 60;
 
+const RETRY_FETCH_TIME = 2000;
+
 const useConstants = () => {
     const [provinces, setProvinces] = useState(null);
     const [departments, setDepartments] = useState(null);
@@ -42,10 +44,10 @@ const useConstants = () => {
         setFetching(true);
 
         await Promise.all([
-            retryFetch(fetchProvinces),
-            retryFetch(fetchDepartments),
-            retryFetch(fetchBreeds),
-            retryFetch(fetchSpecies)
+            retryFetch(fetchProvinces, RETRY_FETCH_TIME),
+            retryFetch(fetchDepartments, RETRY_FETCH_TIME),
+            retryFetch(fetchBreeds, RETRY_FETCH_TIME),
+            retryFetch(fetchSpecies, RETRY_FETCH_TIME)
         ]);
 
         setFetching(false);
