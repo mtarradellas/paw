@@ -7,7 +7,7 @@ import {Link} from "react-router-dom";
 import {PET} from "../../constants/routes";
 
 function PetCard({pet}){
-    const {name, specie, breed, price, sex, owner, uploadDate, id} = pet;
+    const {petName, specie, breed, price, gender, owner, uploadDate, id} = pet;
 
     const {t} = useTranslation(["petInformation", "home"]);
 
@@ -22,11 +22,11 @@ function PetCard({pet}){
             <List
                 size={"small"}
             >
-                <List.Item>{t("name")}: {name}</List.Item>
+                <List.Item>{t("name")}: {petName}</List.Item>
                 <List.Item>{t("specie")}: {specie}</List.Item>
                 <List.Item>{t("breed")}: {breed}</List.Item>
-                <List.Item>{t("price")}: {price}</List.Item>
-                <List.Item>{t("sex")}: {sex}</List.Item>
+                <List.Item>{t("price")}: ${price}</List.Item>
+                <List.Item>{t("sex")}: {gender}</List.Item>
                 <List.Item>{t("owner")}: {owner}</List.Item>
                 <List.Item>{t("uploadDate")}: {uploadDate}</List.Item>
                 <List.Item>
