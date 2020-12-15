@@ -1,0 +1,112 @@
+{
+  "listRequests": "Listar Solicitudes",
+  "listPets": "Listar Mascotas",
+  "listUsers": "Listar Usuarios",
+  "addRequest": "+ Añadir Solicitud",
+  "addUser": "+ Añadir Usuario",
+  "addPet": "+ Añadir Mascota",
+  "home": {
+    "welcome": "Bienvenido a la página de control de administrador",
+    "listsTitle": "Aquí puede obtener todas las listas con las mascotas, los usuarios y solicitudes existentes, haga click en uno de los botones para ir a la página correspondiente:",
+    "addTitle": "También, si desea añadir una mascota/solicitud/usuario a la base de datos, haga click en el botón correspondiente:"
+  },
+  "requestsFilterForm": {
+    "labels": {
+      "status": "Estado de Solicitud",
+      "criteria": "Criterio",
+      "order": "Orden"
+    }
+  },
+  "usersFilterForm": {
+    "labels": {
+      "status": "Estado de Usuario",
+      "criteria": "Criterio",
+      "order": "Orden"
+    }
+  },
+  "petsFilterForm": {
+    "labels": {
+      "species": "Especies",
+      "breed": "Razas",
+      "gender": "Género",
+      "status": "Estado",
+      "criteria": "Criterio",
+      "order": "Orden"
+    }
+  },
+  "values": {
+    "any": "Cualquiera",
+    "date": "Fecha",
+    "petName": "Nombre de mascota",
+    "asc": "Ascendiente",
+    "desc": "Descendiente",
+    "username": "Nombre de Usuario",
+    "mail": "Correo Electrónico",
+    "species": "Especie",
+    "gender": "Género",
+    "breed": "Raza",
+    "price": "Precio",
+    "uploadDate": "Fecha de Subida"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "accepted": "Aceptada",
+    "rejected": "Rechazada",
+    "sold": "Vendida",
+    "canceled": "Cancelada",
+    "notSold": "Acceptada (No Vendida)",
+    "soldTo": "Vendida a {{ownerName}}",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "deleted": "Borrado",
+    "available": "Disponible",
+    "removed": "Removido",
+    "unavailable": "No Disponible"
+  },
+  "buttons": {
+    "filter": "Filtrar",
+    "clear": "Limpiar",
+    "close": "Cerrar",
+    "imSure": "Estoy Seguro",
+    "visitPet": "Visitar Mascota",
+    "visitUser": "Visitar Usuario",
+    "visitOwner": "Visitar Dueño",
+    "recover": "Recuperar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "remove": "Remover"
+  },
+  "requestsList": {
+    "title": "Listando todas las solicitudes existentes (Resultados totales: {{count}})",
+    "request": "Solicitud",
+    "status": "Estado de Solicitud",
+    "actions": "Acciones",
+    "isInterested": "{{username}} está interesado en {{petName}}"
+  },
+  "usersLists": {
+    "title": "Listando todos los usuarios existentes (Resultados totales: {{count}})",
+    "user": "Usuario",
+    "actions": "Acciones"
+  },
+  "petsList": {
+    "title": "Listando todas las mascotas existentes (Resultados totales: {{count}})",
+    "pet": "Mascota",
+    "actions": "Acciones"
+  },
+  "modals": {
+    "pleaseConfirm": "Por favor confirme su acción",
+    "cancelRequest": "¿Estás seguro que deseas cancelar esta solicitud?",
+    "recoverRequest": "¿Estás seguro que deseas recuperar esta solicitud?",
+    "deleteUser": "¿Estás seguro que deseas borrar este usuario?",
+    "recoverUser": "¿Estás seguro quedeseas recuperar este usuario?",
+    "deletePet": "¿Estás seguro que deseas borrar esta mascota?",
+    "recoverPet": "¿Estás seguro quedeseas recuperar esta mascota?",
+    "help": {
+      "title": "Ayuda",
+      "myRole": "Mi Rol",
+      "myRoleDesc": "Como administrador, posees una serie de herramientas que te ayudarán en el control de mascotas, usuarios y solicitudes en el sitio. Tenés el poder de crearlas, borrarlas, recuperarlas y actualizarlas.",
+      "meaning": "¿Qué significa el color?",
+      "meaningDesc": "Si un ítem es mas oscuro, significa que fue borrado. Para recuperarlo, presioná el boton \"recuperar\"."
+    }
+  }
+}

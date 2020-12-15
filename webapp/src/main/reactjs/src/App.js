@@ -13,12 +13,17 @@ import './css/html.css';
 
 import HomeView from "./views/home/HomeView";
 import BasicLayout from "./components/BasicLayout";
+import AdminLayout from "./components/AdminLayout";
 
 import RequestsView from "./views/requests&interests/RequestsView";
 import InterestsView from "./views/requests&interests/InterestsView";
 
 import ErrorWithImage from "./views/errors/ErrorWithImage";
-import ErrorWithoutImage from "./views/errors/ErrorWithoutImage";
+
+import AdminHome from "./views/admin/AdminHome";
+import AdminRequests from "./views/admin/requests/AdminRequests";
+import AdminUsers from "./views/admin/users/AdminUsers";
+import AdminPets from "./views/admin/pets/AdminPets";
 
 import LoginContext from './constants/loginContext';
 
@@ -37,7 +42,11 @@ import {
     ACCESS_DENIED,
     WRONG_METHOD,
     BAD_REQUEST,
-    INTERNAL_SERVER_ERROR
+    INTERNAL_SERVER_ERROR,
+    ADMIN_HOME,
+    ADMIN_PETS,
+    ADMIN_USERS,
+    ADMIN_REQUESTS
 } from "./constants/routes";
 import useLogin from "./hooks/useLogin";
 import UserView from "./views/user/UserView";
@@ -94,6 +103,29 @@ function App() {
                                )
                            }
                     />
+
+                    <Route exact path={ADMIN_HOME}>
+                        <AdminLayout>
+                            <AdminHome/>
+                        </AdminLayout>
+                    </Route>
+                    <Route exact path={ADMIN_REQUESTS}>
+                        <AdminLayout>
+                            <AdminRequests/>
+                        </AdminLayout>
+                    </Route>
+                    <Route exact path={ADMIN_USERS}>
+                        <AdminLayout>
+                            <AdminUsers/>
+                        </AdminLayout>
+                    </Route>
+                    <Route exact path={ADMIN_PETS}>
+                        <AdminLayout>
+                            <AdminPets/>
+                        </AdminLayout>
+                    </Route>
+
+
                     <Route path={ERROR_404}>
                         <BasicLayout>
                             <ErrorWithImage title={t('error404')} image={"/images/page_not_found.png"} text={t('pageNotFound')} />

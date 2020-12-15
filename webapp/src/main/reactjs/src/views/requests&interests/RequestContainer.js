@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import {List, Button, Modal} from 'antd';
 import {PET, USER} from '../../constants/routes';
 
-import GenericNotification from './GenericNotification'
+import ListContainer from '../../components/ListContainer'
 
 //TODO: ver el tema de formateo de fechas
 //TODO: manejo de formularios para botones y links y eso
@@ -103,7 +103,7 @@ function RequestNotification(
     }
 
     return (
-        <GenericNotification target={reqTarget} status={reqStatus} buttons={reqButtons} shaded={shaded} />
+        <ListContainer target={reqTarget} status={reqStatus} buttons={reqButtons} shaded={shaded} />
 
     )
 }

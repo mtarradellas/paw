@@ -1,7 +1,7 @@
 import React from 'react';
 import {Row, Col} from 'antd';
 
-function GenericNotification({target, status, buttons, shaded}) {
+function ListContainer({target, status, buttons, shaded}) {
     let classes = null;
     if (shaded) {
         classes = "request-notification shaded-div"
@@ -30,4 +30,4 @@ function GenericNotification({target, status, buttons, shaded}) {
     )
 }
 
-export default GenericNotification;
+export default ListContainer;
