@@ -4,14 +4,12 @@ import SmallCenteredContent from "../../components/SmallCenteredContent";
 import LoginForm from "./LoginForm";
 import {login, LOGIN_ERRORS} from "../../api/authentication";
 import {message} from "antd";
-import { useHistory } from 'react-router-dom'
-import {HOME} from "../../constants/routes";
 import useLogin from "../../hooks/useLogin";
+import {GET_LOGGED_USER_ERRORS, getLoggedUser} from "../../api/users";
 
 function LoginView(){
     const {t} = useTranslation("login");
     const [submitting, setSubmitting] = useState(false);
-    const history = useHistory();
 
 
     const {login: onLogin} = useLogin();
@@ -21,12 +19,16 @@ function LoginView(){
         try{
             const jwt = await login({username, password});
 
-            onLogin({jwt, username});
+            const {id, mail, isAdmin, status} = await getLoggedUser(jwt);
+
+            onLogin({jwt, username, id, mail, isAdmin, status});
         }catch (e) {
             switch (e) {
                 case LOGIN_ERRORS.INVALID_USERNAME_OR_PASSWORD:
                     setErrors({globalError: t('form.invalidUsernameOrPassword')});
                     break;
+                case GET_LOGGED_USER_ERRORS.CONN_ERROR:
+                case GET_LOGGED_USER_ERRORS.FORBIDDEN:
                 case LOGIN_ERRORS.CONN_ERROR:
                 default:
                     message.error(t('form.conError'));

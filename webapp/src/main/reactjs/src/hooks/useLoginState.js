@@ -3,14 +3,19 @@ import {useReducer} from 'react';
 const ACTIONS = {
     LOGOUT: "LOGOUT",
     LOGIN: "LOGIN",
-    PROMPT_LOGIN: "PROMPT_LOGIN"
+    PROMPT_LOGIN: "PROMPT_LOGIN",
+    SET_LOGGED_USER: "SET_LOGGED_USER"
 };
 
 const initialState = {
     isLoggedIn: false,
     username: null,
     jwt: null,
-    promptLogin: {index: null, path: null}
+    promptLogin: {index: null, path: null},
+    id: null,
+    mail: null,
+    isAdmin: null,
+    status: null
 };
 
 function reducer(state, action){
@@ -27,6 +32,9 @@ function reducer(state, action){
             const {index, path} = action;
             return Object.assign({}, state, {promptLogin: {index, path}})
         }
+        case ACTIONS.SET_LOGGED_USER:
+            const {id, mail, isAdmin, status} = action;
+            return Object.assign({}, state, {id, mail, isAdmin, status});
         default:
             return state;
     }
@@ -51,7 +59,14 @@ const useLoginState = () => {
         });
     };
 
-    return {state, login, logout, promptLogin};
+    const setUserInfo = ({id, mail, isAdmin, status}) => {
+        dispatch({
+            type: ACTIONS.SET_LOGGED_USER,
+            id, mail, isAdmin, status
+        });
+    };
+
+    return {state, login, logout, promptLogin, setUserInfo};
 };
 
 export default useLoginState;
