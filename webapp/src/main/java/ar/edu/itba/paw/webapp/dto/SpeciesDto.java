@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import java.net.URI;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.core.UriInfo;
-
 import ar.edu.itba.paw.models.Species;
 
 public class SpeciesDto {
@@ -12,6 +12,7 @@ public class SpeciesDto {
     private String en_us;
     private String es_ar;
     private String name;
+    private List<Long> breedIds;
     private URI breedList;
 
     public static SpeciesDto fromSpecies(Species species, UriInfo uriInfo) {
@@ -21,6 +22,8 @@ public class SpeciesDto {
         dto.en_us = species.getEn_us();
         dto.es_ar = species.getEs_ar();
         dto.name = species.getName();
+        dto.breedIds = new ArrayList<>();
+        species.getBreedList().forEach(b -> dto.breedIds.add(b.getId()));
         dto.breedList = uriInfo.getBaseUriBuilder().path("species").path(String.valueOf(dto.id)).path("breeds").build();
 
         return dto;
@@ -64,5 +67,13 @@ public class SpeciesDto {
 
     public void setBreedList(URI breedList) {
         this.breedList = breedList;
+    }
+
+    public List<Long> getBreedIds() {
+        return breedIds;
+    }
+
+    public void setBreedIds(List<Long> breedIds) {
+        this.breedIds = breedIds;
     }
 }
