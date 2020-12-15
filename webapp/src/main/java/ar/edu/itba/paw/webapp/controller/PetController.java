@@ -127,7 +127,13 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         final int amount = petService.getListAmount();
-        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new GenericEntity<List<PetDto>>(petList) {});
+        Map<String, Object> json = new HashMap<>();
+        json.put("amount", amount);
+        json.put("pagesize", PET_PAGE_SIZE);
+        json.put("pages", amount/PET_PAGE_SIZE);
+        json.put("petList", petList);
+
+        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, new Gson().toJson(json));
     }
 
     @GET
@@ -321,8 +327,6 @@ public class PetController{
             }
         }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
-        if(petDto.getImages().isEmpty()) System.out.println("WWWWWWWWW");
-        //petDto.getImages().forEach(System.out::println);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
     }
 
