@@ -1,24 +1,20 @@
-import React, {useContext} from 'react';
-import loginContext from "../constants/loginContext";
-
+import React from 'react';
 import '../css/header.css';
-import {Link, useHistory} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS} from "../constants/routes";
 import {useTranslation} from "react-i18next";
 import {Button} from "antd";
+import useLogin from "../hooks/useLogin";
 
 
 function LoggedIn(){
     const {t} = useTranslation('header');
-    const {state, logout} = useContext(loginContext);
-    const history = useHistory();
+    const {state, logout} = useLogin();
 
     const {username} = state;
 
     const _onLogout = () => {
         logout();
-
-        history.push(HOME);
     };
 
     return <>
@@ -69,7 +65,7 @@ function NotLoggedIn(){
 
 
 function Header() {
-    const {state} = useContext(loginContext);
+    const {state} = useLogin();
 
     const {isLoggedIn} = state;
 
@@ -86,8 +82,6 @@ function Header() {
 
 
         {isLoggedIn ? <LoggedIn/> : <NotLoggedIn/>}
-
-
 
     </header>;
 }

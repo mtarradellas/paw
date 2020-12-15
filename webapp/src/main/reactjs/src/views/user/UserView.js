@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useContext} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
 import {Table, Button, Divider, List, Rate, Spin} from "antd";
 import {useTranslation} from "react-i18next";
@@ -6,9 +6,9 @@ import PetCard from "../home/PetCard";
 import {useParams, useHistory} from 'react-router-dom';
 import '../../css/user/userView.css';
 import {Link} from "react-router-dom";
-import {HOME, LOGIN, ERROR_404_USER} from "../../constants/routes";
+import {HOME, ERROR_404_USER} from "../../constants/routes";
 import {GET_USER_ERRORS, getUser} from "../../api/users";
-import LoginContext from '../../constants/loginContext';
+import useLogin from "../../hooks/useLogin";
 
 const sleep = (time) => {
     return new Promise(accept => {
@@ -74,7 +74,7 @@ function Content({user}){
         fetchRatingAndTotalReviews();
         fetchPets();
         fetchReviews();
-    }, []);
+    }, [fetchRatingAndTotalReviews, fetchPets, fetchReviews]);
 
     const reviewColumns = [
         {
@@ -181,7 +181,7 @@ function Content({user}){
 function UserView(){
     const {id} = useParams();
     const [user, setUser] = useState({username: null, email: null, id});
-    const {state} = useContext(LoginContext);
+    const {state} = useLogin();
     const history = useHistory();
 
     const {jwt} = state;
@@ -202,11 +202,11 @@ function UserView(){
                     break;
             }
         }
-    }, [setUser, id]);
+    }, [setUser, id, history, jwt]);
 
     useEffect(() => {
         fetchUser();
-    }, []);
+    }, [fetchUser]);
 
     const {username} = user;
 

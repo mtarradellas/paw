@@ -1,11 +1,19 @@
-import React, {useContext} from 'react';
-import {Redirect, Route} from "react-router-dom";
-import {LOGIN} from "../constants/routes";
-import LoginContext from "../constants/loginContext";
+import React, {useEffect} from 'react';
+import {Route} from "react-router-dom";
+import useLogin from "../hooks/useLogin";
 
+const RedirectPromptLogin = () => {
+    const {promptLogin} = useLogin();
+
+    useEffect(()=>{
+        promptLogin();
+    }, []);
+
+    return <></>;
+};
 
 const PrivateRoute = ({component: Component, ...rest}) => {
-    const {state} = useContext(LoginContext);
+    const {state} = useLogin();
     const {isLoggedIn} = state;
 
     return <Route {...rest}>
@@ -13,7 +21,7 @@ const PrivateRoute = ({component: Component, ...rest}) => {
             isLoggedIn ?
                 <Component/>
                 :
-                <Redirect to={LOGIN}/>
+                <RedirectPromptLogin/>
         }
     </Route>;
 

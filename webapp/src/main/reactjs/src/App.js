@@ -39,7 +39,7 @@ import {
     BAD_REQUEST,
     INTERNAL_SERVER_ERROR
 } from "./constants/routes";
-import useLogin from "./hooks/useLogin";
+import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
 import RegisterView from "./views/register/RegisterView";
 import LoginView from "./views/login/LoginView";
@@ -49,7 +49,7 @@ import {Spin} from "antd";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
-    const login = useLogin();
+    const login = useLoginState();
     const constants = useConstants();
 
     const {loaded} = constants;

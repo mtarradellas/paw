@@ -1,43 +1,46 @@
-import {useReducer} from 'react';
+import React, {useContext} from 'react';
+import LoginContext from "../constants/loginContext";
+import { useHistory } from 'react-router-dom'
+import {HOME, LOGIN} from "../constants/routes";
 
-const ACTIONS = {
-    LOGOUT: "logout",
-    LOGIN: "login"
-};
 
-const initialState = {
-    isLoggedIn: false,
-    username: "Fastiz",
-    jwt: null
-};
+function useLogin(){
+    const {state, login: cLogin, logout: cLogout, promptLogin: cPromptLogin} = useContext(LoginContext);
+    const history = useHistory();
 
-function reducer(state, action){
-    switch (action.type){
-        case ACTIONS.LOGIN: {
-            const {username, jwt} = action;
+    const login = ({username, jwt}) => {
+        cLogin({username, jwt});
 
-            return Object.assign({}, state, {username, jwt, isLoggedIn: true});
+        const {promptLogin} = state;
+        const {path, index} = promptLogin;
+
+        console.log(path, index);
+
+        console.log(history);
+
+        if(index === history.length - 1){
+            history.push(path);
+        }else{
+            history.push(HOME);
         }
-        case ACTIONS.LOGOUT: {
-            return initialState;
-        }
-        default:
-            return state;
-    }
-}
-
-const useLogin = () => {
-    const [state, dispatch] = useReducer(reducer, initialState);
-
-    const login = ({username, jwt})=>{
-        dispatch({type: ACTIONS.LOGIN, username, jwt});
     };
 
     const logout = () => {
-        dispatch({type: ACTIONS.LOGOUT});
+        cLogout();
+
+        history.push(HOME);
     };
 
-    return {state, login, logout};
-};
+    const promptLogin = () => {
+        const index = history.length;
+        const path = history.location.pathname;
+
+        cPromptLogin({index, path});
+
+        history.push(LOGIN);
+    };
+
+    return {state, login, logout, promptLogin}
+}
 
 export default useLogin;
