@@ -1,20 +1,20 @@
 import React, {useState} from 'react';
 import {Divider, Pagination, Spin} from "antd";
-import _ from "./UserView";
+import _ from "lodash";
 import usePets from "../../hooks/usePets";
 import {useTranslation} from "react-i18next";
 import PetCard from "../home/PetCard";
 
-function PaginatedPetSection({userId}){
+function OwnedPets({userId}){
     const {t} = useTranslation('userView');
 
-    const {pets, fetchPets, fetching, amount, pageSize} = usePets({initialFilters: {userId}});
+    const {pets, fetchPets, fetching, amount, pageSize} = usePets({initialFilters: {ownerId: userId}});
     const [currentPage, setCurrentPage] = useState(1);
 
-    const _onChangePagination = newValue => {
+    const _onChangePagination = async newValue => {
         setCurrentPage(newValue);
 
-        fetchPets(Object.assign({page: newValue}, filter));
+        await fetchPets(Object.assign({page: newValue}, {ownerId: userId}));
     };
 
     return <>
@@ -22,7 +22,7 @@ function PaginatedPetSection({userId}){
                 pets === null ?
                     <Spin/>
                     :
-                    '(' + t('totalResults', {count: pets.length}) + ')'
+                    '(' + t('totalResults', {count: amount}) + ')'
             }</h1>
 
             <div className={"user-view--pets-container"}>
@@ -48,4 +48,4 @@ function PaginatedPetSection({userId}){
         </>
 }
 
-export default PaginatedPetSection;
+export default OwnedPets;

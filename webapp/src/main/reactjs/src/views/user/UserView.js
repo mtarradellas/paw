@@ -13,7 +13,7 @@ import usePets from "../../hooks/usePets";
 import _ from 'lodash';
 import useReviewsPagination from "../../hooks/useReviewsPagination";
 import Reviews from "./Reviews";
-import PaginatedPetSection from "./PaginatedPetSection";
+import OwnedPets from "./OwnedPets";
 
 
 const ListItem = List.Item;
@@ -41,7 +41,7 @@ function Content({user, id}){
         <p>
             {
                 reviewsPagination.amount !== 0 && reviewsPagination.amount !== null &&
-                    '(' + t('average', {averageReview: reviewsPagination.average, amountReview: reviewsPagination.amount}) + ') '
+                    '(' + t('average', {rating: reviewsPagination.average, reviewCount: reviewsPagination.amount}) + ') '
             }
             {t('averageClarification')}
         </p>
@@ -64,7 +64,9 @@ function Content({user, id}){
 
         <Divider/>
 
-        {/*<PaginatedPetSection userId={id}/>*/}
+        <OwnedPets userId={id}/>
+
+        //TODO: pets bought by user
 
         <Divider/>
 

@@ -30,11 +30,11 @@ function useReviewsPagination({userId}){
     const changePage = async page => {
         setCurrentPage(page);
 
-        await fetchReviews({page, userId});
+        await fetchReviews({page, targetId: userId});
     };
 
     useEffect(()=>{
-        fetchReviews({page: 1, userId});
+        fetchReviews({page: 1, targetId: userId});
     }, []);
 
     const {amount, pageSize, average} = paginationInfo;

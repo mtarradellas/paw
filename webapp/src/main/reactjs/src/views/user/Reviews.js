@@ -1,16 +1,19 @@
 import React from 'react';
-import {Pagination, Rate, Table} from "antd";
+import {Divider, Pagination, Rate, Table} from "antd";
 import {useTranslation} from "react-i18next";
+import {USER} from "../../constants/routes";
+import {Link} from "react-router-dom";
 
 function Reviews({userId, reviewsPagination}){
     const {t} = useTranslation('userView');
 
-    console.log(reviewsPagination.reviews);
-
     const reviewColumns = [
         {
             title: t('reviews.user'),
-            dataIndex: 'username'
+            dataIndex: 'username',
+            render: (text, {userId}) => (
+                <Link to={USER + userId}>{text}</Link>
+            )
         },
         {
             title: t('reviews.rating'),
@@ -31,16 +34,24 @@ function Reviews({userId, reviewsPagination}){
                 <>
                     <h1><b>{t('reviewsTitle')}:</b></h1>
 
+                    <Divider orientation={"left"}>
+                        <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
+                                    pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                    </Divider>
+
                     <Table
                         bordered={false}
                         columns={reviewColumns}
                         dataSource={reviewsPagination.reviews} size="small"
                         loading={reviewsPagination.fetching}
-                        pagination={
-                            <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
-                                        pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
-                        }
+                        pagination={false}
                     />
+
+                    <Divider orientation={"left"}>
+                        <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
+                                    pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                    </Divider>
+
                 </>
             }
         </>

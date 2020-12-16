@@ -33,7 +33,7 @@ export async function getReviews(
             average,
             list: list.map(review => {
                 return  _.pick(review, [
-                    'id', 'score', 'description', 'creationDate', 'status'
+                    'id', 'score', 'description', 'creationDate', 'status', 'username', 'userId'
                 ])})
         };
 
