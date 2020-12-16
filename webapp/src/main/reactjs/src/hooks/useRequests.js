@@ -1,7 +1,6 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState} from 'react';
 import {getRequests} from "../api/requests";
-import ConstantsContext from '../constants/constantsContext';
-import {getPets} from "../api/pets";
+import useLogin from "./useLogin";
 
 const useRequests = () => {
     const [requests, setRequests] = useState(null);
@@ -10,15 +9,18 @@ const useRequests = () => {
 
     const [fetching, setFetching] = useState(false);
 
+    const {id, jwt} = useLogin().state
+
     const fetchRequests = async filters => {
         setFetching(true);
 
         try{
-            const {amount, list, pages, pageSize} = await getRequests(filters);
+            const params = Object.assign(filters, {userId: id});
+            const {amount, list, pages, pageSize} = await getRequests(params, jwt);
 
             setRequests(list);
 
-            setPaginationInfo({amount, pages, pageSize});
+            setPaginationInfo({amount, pages, pageSize})
         }catch (e) {
             console.error(e);
         }

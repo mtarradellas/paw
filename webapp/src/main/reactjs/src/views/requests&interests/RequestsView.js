@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Modal, Row, Col, Divider, Pagination} from 'antd';
+import {Button, Modal, Row, Col, Divider, Pagination, Spin} from 'antd';
 
 import {useTranslation} from "react-i18next";
 import ContentWithSidebar from "../../components/ContentWithSidebar";
@@ -9,96 +9,13 @@ import RequestContainer from "./RequestContainer";
 
 import "../../css/requests&interests/requests-interests.css"
 
-import {getRequests} from "../../api/requests";
-
-import useLogin from "../../hooks/useLogin";
+import useRequests from "../../hooks/useRequests";
+import _ from "lodash";
 
 /*
 *  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
 *  PET STATUSES: AVAILABLE, REMOVED, SOLD, UNAVAILABLE
 * */
-
-const request = {
-    id: 0,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "ACCEPTED",
-    user: "pedro",
-    userId: 4,
-    pet: "Cato",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const request1 = {
-    id: 42,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "CANCELED",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const request2 = {
-    id: 12,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "REJECTED",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const request3 = {
-    id: 414,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "PENDING",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const request4 = {
-    id: 20,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "SOLD",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const sampleRequests = []
-sampleRequests.push(request)
-sampleRequests.push(request1)
-sampleRequests.push(request2)
-sampleRequests.push(request3)
-sampleRequests.push(request4)
 
 function SideContent() {
     return (<div>
@@ -106,27 +23,36 @@ function SideContent() {
     </div>)
 }
 
-function MainContent({requests, requestsCount}) {
+function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchPage}) {
     const {t} = useTranslation('requests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
-
     const showModal = () => {
         setIsModalVisible(true);
     };
-
     const handleOk = () => {
         setIsModalVisible(false);
     };
-
     const handleCancel = () => {
         setIsModalVisible(false);
+    };
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const _onChangePagination = newValue => {
+        setCurrentPage(newValue);
+
+        fetchPage(newValue);
     };
 
     return (<div>
         <Row style={{margin: 0, padding: 0}}>
             <Col span={23}>
-                <h1><b>{t("requests.title", {count: requestsCount})}</b></h1>
+                <h1><b>
+                    {
+                        !_.isNil(requestsCount) && t("requests.title", {count: requestsCount})
+                    }
+                </b>
+                </h1>
             </Col>
             <Col>
                 <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
@@ -147,10 +73,19 @@ function MainContent({requests, requestsCount}) {
             </Col>
         </Row>
         <Divider style={{margin: 0, padding: 0}}/>
-        <RequestContainer requests={requests}/>
+        {
+            _.isNil(requests) || fetching ?
+                <Spin/>
+                :
+                <RequestContainer requests={requests}/>
+        }
+
         <Divider orientation={"left"}>
-            <Pagination defaultCurrent={1} total={50}/>
-        </Divider>
+            {
+                pageSize && requestsCount &&
+                <Pagination showSizeChanger={false} current={currentPage} total={requestsCount} pageSize={pageSize}
+                            onChange={_onChangePagination}/>
+            }        </Divider>
         <Modal
             title={t("modals.helpModal.title")}
             visible={isModalVisible}
@@ -173,21 +108,25 @@ function MainContent({requests, requestsCount}) {
 
 
 function RequestsView() {
-    const {jwt,id} = useLogin().state;
+    const {requests, fetching, fetchRequests, pages, amount, pageSize} = useRequests();
 
-    const list = getRequests({userId: id, jwt});
-
-    console.log(list)
-
-    const requests = sampleRequests;
-    const requestsCount = sampleRequests.length;
+    const fetchPage = page => {
+        fetchRequests({page})
+    };
 
     return <ContentWithSidebar
         sideContent={
             <SideContent/>
         }
         mainContent={
-            <MainContent requestsCount={requestsCount} requests={requests}/>
+            <MainContent
+                requestsCount={amount}
+                requests={requests}
+                fetching={fetching}
+                pages={pages}
+                pageSize={pageSize}
+                fetchPage={fetchPage}
+            />
         }
     />;
 }

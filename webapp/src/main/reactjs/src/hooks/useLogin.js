@@ -11,9 +11,9 @@ function useLogin(){
 
     const login = ({username, jwt, id, mail, isAdmin, status}) => {
         cLogin({username, jwt});
-        console.log("sadsa")
+        // console.log("sadsa")
         setUserInfo({id, mail, isAdmin, status});
-        console.log("fdAAAAAAsa")
+        // console.log("fdAAAAAAsa")
         const {promptLogin} = state;
         const {path} = promptLogin;
 
