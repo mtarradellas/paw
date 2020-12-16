@@ -39,6 +39,8 @@ function MakeAReview({userId, refreshReviews}) {
             await createReview({targetId: userId, score, description}, jwt);
 
             refreshReviews();
+
+            setCanReview(false);
         }catch (e) {
             switch (e) {
                 case CREATE_REVIEW_ERRORS.FORBIDDEN:

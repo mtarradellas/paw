@@ -3,7 +3,8 @@
   "average": "Promedio de {{rating}} basado en {{reviewCount}} reseñas",
   "averageClarification": "*Solo puede calificar una vez por usuario, y no puede calificarse a usted o a un usuario a quien no le haya comprado/adoptado una mascota",
   "email": "Email",
-  "petsTitle": "Mascotas que este usuario ofrece",
+  "offeredPetsTitle": "Mascotas que este usuario ofrece",
+  "adoptedPetsTitle": "Mascotas que este usuario adoptó",
   "totalResults": "Resultados totales: {{count}}",
   "reviewsTitle": "Reseñas hechas a este usuario",
   "reviews": {
@@ -14,7 +15,7 @@
   "backToHome": "< Volver al inicio",
   "noReviews": "Este usuario aún no ha recibido reseñas",
   "sensibleInformation": "Información sensible sobre otros usuarios no es mostrada, para contactar a este usuario, él debe aceptar una solicitud suya a uno de sus animales",
-  "noPets": "Este usuario no tiene mascotas",
+  "noPets": "No hay resultados",
   "makeAReview": {
     "title": "Calificar al usuario",
     "form": {
