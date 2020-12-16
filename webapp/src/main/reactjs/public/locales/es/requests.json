@@ -54,7 +54,6 @@
     "pleaseConfirm": "Por favor confirme su acción",
     "cancel":"¿Estás seguro que deseas cancelar esta solicitud?",
     "recover": "¿Estás seguro que deseas recuperar esta solicitud?"
-
   },
   "messages": {
     "error": "Un error fue detectado",
@@ -63,5 +62,6 @@
     "rejected": "Tu solicitud de {{petName}} fue rechazada",
     "canceled": "Cancelaste tu solicitud de {{petName}}",
     "sold": "La mascota {{petName}} ha sido vendida"
-  }
+  },
+  "date": "{{day}}-{{month}}-{{year}}"
 }

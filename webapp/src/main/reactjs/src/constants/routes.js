@@ -18,6 +18,34 @@ export const ADD_PET = '/add-pet';
 
 export const VERIFY_EMAIL = '/verify-email';
 
+//ADMIN
+
+export const ADMIN_HOME = '/admin';
+
+export const ADMIN_REQUESTS = '/admin/requests';
+
+export const ADMIN_USERS = '/admin/users';
+
+export const ADMIN_PETS = '/admin/pets';
+
+export const ADMIN_ADD_REQUEST = '/admin/add-request';
+
+export const ADMIN_ADD_PET = '/admin/add-pet';
+
+export const ADMIN_ADD_USER = '/admin/add-user';
+
+export const ADMIN_EDIT_REQUEST = '/admin/edit-request/';
+
+export const ADMIN_EDIT_PET = '/admin/edit-pet/';
+
+export const ADMIN_EDIT_USER = '/admin/edit-user/';
+
+export const ADMIN_USER = '/admin/user/';
+
+export const ADMIN_PET = 'admin/pet/';
+
+//ERRORS
+
 export const ERROR_404 = '/404';
 
 export const ERROR_404_PET = '/404_pet';
