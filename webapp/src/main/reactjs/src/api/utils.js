@@ -9,7 +9,9 @@ const retryTimes = (initialDuration, n) => {
     return initialDuration * (n >= 4 ? Math.pow(4, 2) : Math.pow(n, 2));
 };
 
-export const retryFetch = async (fetchFn, initialDuration) => {
+
+const DEFAULT_INITIAL_DURATION = 2000;
+export const retryFetch = async (fetchFn, initialDuration = DEFAULT_INITIAL_DURATION) => {
     let n = 0;
     while(true){
         try{

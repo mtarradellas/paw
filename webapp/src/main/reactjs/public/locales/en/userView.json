@@ -14,5 +14,20 @@
   "backToHome": "< Back to home",
   "noReviews": "This user has not received reviews yet",
   "sensibleInformation": "Sensitive data about other users is not displayed, to contact this user, he must first accept a request for one of his animals",
-  "noPets": "This user has no pets"
+  "noPets": "This user has no pets",
+  "makeAReview": {
+    "title": "Rate user",
+    "form": {
+      "score": {
+        "label": "Score",
+        "required": "Please enter a score"
+      },
+      "description": {
+        "label": "Description",
+        "required": "Please enter a description",
+        "max": "Description cannot be more than {{max}} characters long"
+      },
+      "submit": "Rate"
+    }
+  }
 }

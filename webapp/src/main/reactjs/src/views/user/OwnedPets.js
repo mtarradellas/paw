@@ -28,7 +28,7 @@ function OwnedPets({userId}){
             <div className={"user-view--pets-container"}>
                 <Divider orientation={"left"}>
                     {
-                        pageSize && amount &&
+                        !_.isNil(pageSize) && !_.isNil(amount) &&
                             <Pagination showSizeChanger={false} current={currentPage} total={amount} pageSize={pageSize} onChange={_onChangePagination}/>
                     }
                 </Divider>

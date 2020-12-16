@@ -12,6 +12,7 @@ function useReviewsPagination({userId}){
     const {jwt} = state;
 
     const fetchReviews = async filters => {
+        console.log("bbb")
         setFetching(true);
 
         try{
@@ -28,9 +29,14 @@ function useReviewsPagination({userId}){
     };
 
     const changePage = async page => {
+        console.log("aaaa")
         setCurrentPage(page);
 
         await fetchReviews({page, targetId: userId});
+    };
+
+    const refresh = async () => {
+        await fetchReviews({page: currentPage, targetId: userId});
     };
 
     useEffect(()=>{
@@ -39,7 +45,7 @@ function useReviewsPagination({userId}){
 
     const {amount, pageSize, average} = paginationInfo;
 
-    return {reviews, currentPage, fetching, fetchReviews, setCurrentPage, amount, pageSize, average, changePage};
+    return {reviews, currentPage, fetching, fetchReviews, setCurrentPage, amount, pageSize, average, changePage, refresh};
 }
 
 export default useReviewsPagination;

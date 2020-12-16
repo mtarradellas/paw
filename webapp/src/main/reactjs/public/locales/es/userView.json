@@ -14,5 +14,20 @@
   "backToHome": "< Volver al inicio",
   "noReviews": "Este usuario aún no ha recibido reseñas",
   "sensibleInformation": "Información sensible sobre otros usuarios no es mostrada, para contactar a este usuario, él debe aceptar una solicitud suya a uno de sus animales",
-  "noPets": "Este usuario no tiene mascotas"
+  "noPets": "Este usuario no tiene mascotas",
+  "makeAReview": {
+    "title": "Calificar al usuario",
+    "form": {
+      "score": {
+        "label": "Calificación",
+        "required": "Porfavor ingrese una calificación"
+      },
+      "description": {
+        "label": "Descripción",
+        "required": "Porfavor ingrese una descripción",
+        "max": "La descripción no debe superar los {{max}} caracteres"
+      },
+      "submit": "Calificar"
+    }
+  }
 }

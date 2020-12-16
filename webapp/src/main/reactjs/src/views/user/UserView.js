@@ -1,19 +1,18 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
-import {Table, Button, Divider, List, Rate, Spin, Pagination} from "antd";
+import {Button, Divider, List, Rate, Spin} from "antd";
 import {useTranslation} from "react-i18next";
-import PetCard from "../home/PetCard";
 import {useParams, useHistory} from 'react-router-dom';
 import '../../css/user/userView.css';
 import {Link} from "react-router-dom";
 import {HOME, ERROR_404_USER} from "../../constants/routes";
 import {GET_USER_ERRORS, getUser} from "../../api/users";
 import useLogin from "../../hooks/useLogin";
-import usePets from "../../hooks/usePets";
-import _ from 'lodash';
 import useReviewsPagination from "../../hooks/useReviewsPagination";
 import Reviews from "./Reviews";
 import OwnedPets from "./OwnedPets";
+import MakeAReviewForm from "./MakeAReviewForm";
+import MakeAReview from "./MakeAReview";
 
 
 const ListItem = List.Item;
@@ -45,6 +44,8 @@ function Content({user, id}){
             }
             {t('averageClarification')}
         </p>
+
+        <MakeAReview userId={id} refreshReviews={reviewsPagination.refresh}/>
 
         <Divider/>
 
