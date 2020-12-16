@@ -20,6 +20,9 @@
     "registerButton": "Regístrese",
     "forgotPassword": "¿Olvidó su contraseña?",
     "conError": "Se perdió la conexión",
-    "invalidUsernameOrPassword": "Usuario o contraseña incorrectos"
+    "invalidUsernameOrPassword": "Usuario o contraseña incorrectos",
+    "rememberMe": {
+      "label": "Recuérdame"
+    }
   }
 }

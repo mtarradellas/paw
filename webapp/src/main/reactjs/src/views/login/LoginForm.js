@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form, Input} from "formik-antd";
+import {Form, Input, Checkbox} from "formik-antd";
 import {ErrorMessage, Formik} from "formik";
 import {Button} from "antd";
 import {useTranslation} from "react-i18next";
@@ -19,6 +19,7 @@ function RegisterForm({onSubmit, submitting}){
                     .required(t('form.username.errors.required')),
                 password: Yup.string()
                     .required(t('form.password.errors.required')),
+                rememberMe: Yup.boolean()
             })
         }
         onSubmit={onSubmit}
@@ -26,7 +27,8 @@ function RegisterForm({onSubmit, submitting}){
             {
                 username: '',
                 password: '',
-                globalError: ''
+                globalError: '',
+                rememberMe: false
             }
         }
     >
@@ -42,6 +44,10 @@ function RegisterForm({onSubmit, submitting}){
             </FormItem>
 
             <p className={"error-message"}><ErrorMessage name={"globalError"}/></p>
+
+            <FormItem name={"rememberMe"}>
+                <Checkbox name={"rememberMe"}>{t('form.rememberMe.label')}</Checkbox>
+            </FormItem>
 
             <FormItem name>
                 <Button type="primary" htmlType="submit" loading={submitting}>

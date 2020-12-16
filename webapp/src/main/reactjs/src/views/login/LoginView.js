@@ -14,14 +14,15 @@ function LoginView(){
 
     const {login: onLogin} = useLogin();
 
-    const _onSubmit = async ({username, password}, {setErrors}) => {
+    const _onSubmit = async ({username, password, rememberMe}, {setErrors}) => {
+        console.log(rememberMe)
         setSubmitting(true);
         try{
             const jwt = await login({username, password});
 
             const {id, mail, isAdmin, status} = await getLoggedUser(jwt);
 
-            onLogin({jwt, username, id, mail, isAdmin, status});
+            onLogin({jwt, username, id, mail, isAdmin, status}, rememberMe);
         }catch (e) {
             switch (e) {
                 case LOGIN_ERRORS.INVALID_USERNAME_OR_PASSWORD:

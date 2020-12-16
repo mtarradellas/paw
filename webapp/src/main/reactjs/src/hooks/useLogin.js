@@ -4,15 +4,20 @@ import { useHistory } from 'react-router-dom'
 import {HOME, LOGIN} from "../constants/routes";
 import _ from 'lodash';
 
+const LOCAL_STORAGE_AUTH_KEY = "LOCAL_STORAGE_AUTH_KEY";
 
 function useLogin(){
     const {state, login: cLogin, logout: cLogout, promptLogin: cPromptLogin, setUserInfo} = useContext(LoginContext);
     const history = useHistory();
 
-    const login = ({username, jwt, id, mail, isAdmin, status}) => {
+    const login = ({username, jwt, id, mail, isAdmin, status}, rememberMe) => {
         cLogin({username, jwt});
 
         setUserInfo({id, mail, isAdmin, status});
+
+        if(rememberMe){
+            localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify({username, jwt, id, mail, isAdmin, status}))
+        }
 
         const {promptLogin} = state;
         const {path} = promptLogin;
@@ -28,6 +33,8 @@ function useLogin(){
         cLogout();
 
         history.push(HOME);
+
+        localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
     };
 
     const promptLogin = () => {
