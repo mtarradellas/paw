@@ -1,9 +1,9 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect
 } from "react-router-dom";
 
 import {useTranslation} from "react-i18next";
@@ -13,11 +13,17 @@ import './css/html.css';
 
 import HomeView from "./views/home/HomeView";
 import BasicLayout from "./components/BasicLayout";
+import AdminLayout from "./components/AdminLayout";
 
 import RequestsView from "./views/requests&interests/RequestsView";
 import InterestsView from "./views/requests&interests/InterestsView";
 
 import ErrorWithImage from "./views/errors/ErrorWithImage";
+
+import AdminHome from "./views/admin/AdminHome";
+import AdminRequests from "./views/admin/requests/AdminRequests";
+import AdminUsers from "./views/admin/users/AdminUsers";
+import AdminPets from "./views/admin/pets/AdminPets";
 
 import LoginContext from './constants/loginContext';
 import ConstantsContext from './constants/constantsContext';
@@ -37,7 +43,12 @@ import {
     ACCESS_DENIED,
     WRONG_METHOD,
     BAD_REQUEST,
-    INTERNAL_SERVER_ERROR, ADD_PET
+    INTERNAL_SERVER_ERROR,
+    ADMIN_HOME,
+    ADMIN_PETS,
+    ADMIN_USERS,
+    ADMIN_REQUESTS,
+    ADD_PET
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -83,31 +94,60 @@ function App() {
                                 </Route>
 
                                 <PrivateRoute path={USER + ':id'}
-                                    component={
-                                        () => (<BasicLayout>
-                                            <UserView/>
-                                        </BasicLayout>)
-                                    }
+                                              component={
+                                                  () => (<BasicLayout>
+                                                      <UserView/>
+                                                  </BasicLayout>)
+                                              }
                                 />
+
+                                {/*<Route exact path={ADMIN_HOME}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminHome/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
+                                {/*<Route exact path={ADMIN_REQUESTS}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminRequests/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
+                                {/*<Route exact path={ADMIN_USERS}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminUsers/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
+                                {/*<Route exact path={ADMIN_PETS}>*/}
+                                {/*    <AdminLayout>*/}
+                                {/*        <AdminPets/>*/}
+                                {/*    </AdminLayout>*/}
+                                {/*</Route>*/}
 
                                 <PrivateRoute path={ADD_PET}
-                                      component={
-                                          () => (<BasicLayout>
-                                              <AddPetView/>
-                                          </BasicLayout>)
-                                      }
+                                              component={
+                                                  () => (<BasicLayout>
+                                                      <AddPetView/>
+                                                  </BasicLayout>)
+                                              }
                                 />
+                                <PrivateRoute path={REQUESTS}
+                                              component={
+                                                  () => (
+                                                      <BasicLayout>
+                                                          <RequestsView/>
+                                                      </BasicLayout>
+                                                  )
 
-                                <Route exact path={REQUESTS}>
-                                    <BasicLayout>
-                                        <RequestsView/>
-                                    </BasicLayout>
-                                </Route>
-                                <Route exact path={INTERESTS}>
-                                    <BasicLayout>
-                                        <InterestsView/>
-                                    </BasicLayout>
-                                </Route>
+                                              }
+                                />
+                                <PrivateRoute path={INTERESTS}
+                                              component={
+                                                  () => (
+                                                      <BasicLayout>
+                                                          <InterestsView/>
+                                                      </BasicLayout>
+                                                  )
+                                              }
+                                />
                                 <Route exact path={PET + ':id'}
                                        render={
                                            ({id}) => (
@@ -119,37 +159,45 @@ function App() {
                                 />
                                 <Route path={ERROR_404}>
                                     <BasicLayout>
-                                        <ErrorWithImage title={t('error404')} image={"/images/page_not_found.png"} text={t('pageNotFound')} />
+                                        <ErrorWithImage title={t('error404')} image={"/images/page_not_found.png"}
+                                                        text={t('pageNotFound')}/>
                                     </BasicLayout>
                                 </Route>
                                 <Route path={ERROR_404_PET}>
                                     <BasicLayout>
-                                        <ErrorWithImage title={t('error404')} image={"/images/pet_not_found.png"} text={t('petNotFound')} />
+                                        <ErrorWithImage title={t('error404')} image={"/images/pet_not_found.png"}
+                                                        text={t('petNotFound')}/>
                                     </BasicLayout>
                                 </Route>
                                 <Route path={ERROR_404_USER}>
                                     <BasicLayout>
-                                        <ErrorWithImage title={t('error404')} image={"/images/user_not_found.png"} text={t('userNotFound')} />
+                                        <ErrorWithImage title={t('error404')} image={"/images/user_not_found.png"}
+                                                        text={t('userNotFound')}/>
                                     </BasicLayout>
                                 </Route>
                                 <Route path={ACCESS_DENIED}>
                                     <BasicLayout>
-                                        <ErrorWithImage title={t('error403')} image={"/images/access_denied.png"} text={t('accessDenied')}/>
+                                        <ErrorWithImage title={t('error403')} image={"/images/access_denied.png"}
+                                                        text={t('accessDenied')}/>
                                     </BasicLayout>
                                 </Route>
                                 <Route path={WRONG_METHOD}>
                                     <BasicLayout>
-                                        <ErrorWithImage title={t('error405')} image={"/images/access_denied.png"} text={t('wrongMethod')}/>
+                                        <ErrorWithImage title={t('error405')} image={"/images/access_denied.png"}
+                                                        text={t('wrongMethod')}/>
                                     </BasicLayout>
                                 </Route>
                                 <Route path={BAD_REQUEST}>
                                     <BasicLayout>
-                                        <ErrorWithImage title={t('error400')} image={"/images/access_denied.png"} text={t('badRequest')}/>
+                                        <ErrorWithImage title={t('error400')} image={"/images/access_denied.png"}
+                                                        text={t('badRequest')}/>
                                     </BasicLayout>
                                 </Route>
                                 <Route path={INTERNAL_SERVER_ERROR}>
                                     <BasicLayout>
-                                        <ErrorWithImage title={t('error500')} image={"/images/internal_server_error.png"} text={t('serverError')}/>
+                                        <ErrorWithImage title={t('error500')}
+                                                        image={"/images/internal_server_error.png"}
+                                                        text={t('serverError')}/>
                                     </BasicLayout>
                                 </Route>
                                 <Redirect to={ERROR_404}/>

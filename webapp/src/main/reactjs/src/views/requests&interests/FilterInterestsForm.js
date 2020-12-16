@@ -6,13 +6,13 @@ import {useTranslation} from "react-i18next";
 
 const FormItem = Form.Item;
 
-const FilterRequestsForm = () => {
+const FilterInterestsForm = () => {
     const {t} = useTranslation('interests');
 
     //TODO: hay que solo mostrar los que sean correspondientes a lo que existe
     //TODO: hay que hacer que se desbloquee el order cuando selecciono un criteria de request
 
-    return <Form layout={"vertical"}>
+    return <Form layout={"vertical"} className={"requests-interests__container"}>
         <div className={"form-content"}>
             <FormItem name={"status"} label={t("filterForm.labels.status")}>
                 <Select name={"status"} defaultValue={"any"}>
@@ -25,11 +25,11 @@ const FilterRequestsForm = () => {
                 </Select>
             </FormItem>
 
-            <FormItem name={"status"} label={t("filterForm.labels.pet")}>
-                <Select name={"status"} defaultValue={"any"}>
+            <FormItem name={"pet"} label={t("filterForm.labels.pet")}>
+                <Select name={"pet"} defaultValue={"any"}>
                     <Select.Option value={"any"}>{t("filterForm.values.any")}</Select.Option>
-                    <Select.Option value={"accepted"}>Firulais</Select.Option>
-                    <Select.Option value={"rejected"}>Hiperion</Select.Option>
+                    <Select.Option value={"Firulais"}>Firulais</Select.Option>
+                    <Select.Option value={"Hiperion"}>Hiperion</Select.Option>
                 </Select>
             </FormItem>
 
@@ -62,4 +62,4 @@ export default withFormik({
     handleSubmit: (values) => {
         console.log(values);
     }
-})(FilterRequestsForm);
+})(FilterInterestsForm);
