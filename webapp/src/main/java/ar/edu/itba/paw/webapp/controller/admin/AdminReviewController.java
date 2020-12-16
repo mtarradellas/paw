@@ -26,16 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.ReviewService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.ReviewException;
 import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
 import ar.edu.itba.paw.webapp.dto.ReviewDto;
@@ -47,15 +43,12 @@ import ar.edu.itba.paw.webapp.util.ParseUtils;
 @Path("/admin/reviews")
 public class AdminReviewController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ar.edu.itba.paw.webapp.controller.ReviewController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminReviewController.class);
 
     private static final int REV_PAGE_SIZE = 12;
 
     @Autowired
     private ReviewService reviewService;
-
-    @Autowired
-    private UserService userService;
 
     @Context
     private UriInfo uriInfo;
@@ -141,7 +134,7 @@ public class AdminReviewController {
         } catch (DataIntegrityViolationException | NotFoundException | ReviewException ex) {
             LOGGER.warn("Review creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 

@@ -45,7 +45,7 @@ public interface PetService {
                          throws InvalidImageQuantityException;
 
 
-    void sellPet(long petId, long ownerId, long newOwnerId, String contextURL);
+    void sellPet(Pet pet, User owner, User newOwner, String contextURL);
     void removePet(long petId, long userId);
     void recoverPet(long petId, long userId);
 

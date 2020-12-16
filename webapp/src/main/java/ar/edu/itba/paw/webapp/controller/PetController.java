@@ -57,7 +57,6 @@ import ar.edu.itba.paw.webapp.dto.ErrorDto;
 import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ProvinceDto;
 import ar.edu.itba.paw.webapp.dto.SpeciesDto;
-import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
@@ -66,7 +65,7 @@ import ar.edu.itba.paw.webapp.util.ParseUtils;
 @Path("/pets")
 public class PetController{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PetController.class);
 
     private static final int PET_PAGE_SIZE = 12;
 
@@ -94,7 +93,7 @@ public class PetController{
                             @QueryParam("searchCriteria") String searchCriteria,
                             @QueryParam("find") String find,
                             @QueryParam("searchOrder") String searchOrder,
-                            @QueryParam("priceRange") int priceRange,
+                            @QueryParam("priceRange") @DefaultValue("0") int priceRange,
                             @QueryParam("page") @DefaultValue("1") int page) {
 
         final String locale = ApiUtils.getLocale();
@@ -180,13 +179,13 @@ public class PetController{
         List<Department> departments;
         List<Breed> breeds;
         try {
-            breeds = petService.filteredBreedList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+            breeds = petService.filteredBreedList(locale, findList, owner, species, breed, gender, PetStatus.AVAILABLE,
                  minPrice, maxPrice, province, department);
-            departments = petService.filteredDepartmentList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+            departments = petService.filteredDepartmentList(locale, findList, owner, species, breed, gender, PetStatus.AVAILABLE,
                     minPrice, maxPrice, province, department);
-            rangeList = petService.filteredRangesList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+            rangeList = petService.filteredRangesList(locale, findList, owner, species, breed, gender, PetStatus.AVAILABLE,
                     minPrice, maxPrice, province, department);
-            genderList = petService.filteredGenderList(locale, findList, null, species, breed, gender, PetStatus.AVAILABLE,
+            genderList = petService.filteredGenderList(locale, findList, owner, species, breed, gender, PetStatus.AVAILABLE,
                     minPrice, maxPrice, province, department);
         } catch(NotFoundException | PetException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -233,7 +232,7 @@ public class PetController{
                     pet.getProvinceId(), pet.getDepartmentId(),null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -249,6 +248,7 @@ public class PetController{
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response edit(final PetDto pet) {
+        if (pet == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
@@ -263,13 +263,13 @@ public class PetController{
         }
         if (!opOwner.isPresent()) {
             LOGGER.warn("Owner invalid");
-            final ErrorDto body = new ErrorDto(2, "Owner invalid");
+            final ErrorDto body = new ErrorDto(1, "Owner invalid");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if(!loggedUser.getId().equals(opOwner.get().getId())) {
             LOGGER.warn("User has no permission to perform this action.");
-            final ErrorDto body = new ErrorDto(3, "User has no permissions to perform this action.");
+            final ErrorDto body = new ErrorDto(2, "User has no permissions to perform this action.");
             return Response.status(Response.Status.FORBIDDEN.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -300,7 +300,7 @@ public class PetController{
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(4, ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -328,10 +328,12 @@ public class PetController{
 
         //pets are only visible to the public if they are available, only the owners can see them with a different status
         if(pet.getStatus() != PetStatus.AVAILABLE) {
-            if(loggedUser == null || !loggedUser.getId().equals(pet.getUser().getId()) ||
-                    (pet.getNewOwner() != null && loggedUser.getId().equals(pet.getNewOwner().getId()))) {
+            if (loggedUser == null || 
+                (!loggedUser.getId().equals(pet.getUser().getId()) && pet.getNewOwner() != null && !loggedUser.getId().equals(pet.getNewOwner().getId())) ||
+                !loggedUser.getId().equals(pet.getUser().getId())) {
                 return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
             }
+
         }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
@@ -380,49 +382,6 @@ public class PetController{
         byte[] imageInByte = baos.toByteArray();
         baos.close();
         return Response.ok(imageInByte).build();
-    }
-
-    @POST
-    @Path("/{petId}/sell-adopt")
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response petUpdateSold(@PathParam("petId") Long petId,
-                                  final UserDto newOwner) {
-        Long newOwnerId;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
-        if(loggedUser == null) {
-            LOGGER.warn("User has no permission to perform this action.");
-            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        try {
-            newOwnerId = ParseUtils.parseUserId(newOwner.getId());
-            petId = ParseUtils.parsePetId(petId);
-        } catch(BadRequestException ex) {
-            LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        if(newOwnerId == null || petId == null) {
-            LOGGER.warn("Invalid parameters. New owner {}, pet {}", newOwnerId, petId);
-            final ErrorDto body = new ErrorDto(2, "Invalid parameters");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        try {
-            petService.sellPet(petId, loggedUser.getId(), newOwnerId, uriInfo.getBaseUri().toString());
-        } catch (NotFoundException ex) {
-            LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        } catch(PetException ex) {
-            LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(3, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        return Response.ok().build();
     }
 
     @POST
