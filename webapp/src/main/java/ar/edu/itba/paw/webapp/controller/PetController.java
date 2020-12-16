@@ -85,6 +85,7 @@ public class PetController{
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+                            @QueryParam("newOwnerId") @DefaultValue("0") Long newOwnerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
@@ -98,8 +99,10 @@ public class PetController{
 
         final String locale = ApiUtils.getLocale();
         int[] range;
+        PetStatus petStatus = null;
         try {
             ownerId = ParseUtils.parseUserId(ownerId);
+            newOwnerId = ParseUtils.parseUserId(newOwnerId);
             ParseUtils.parsePage(page);
             ParseUtils.isAllowedFind(find);
             searchCriteria = ParseUtils.parseCriteria(searchCriteria);
@@ -117,16 +120,21 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
+        if(newOwnerId == null) {
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            petStatus = PetStatus.AVAILABLE;
+        }
+
         int minPrice = range[0];
         int maxPrice = range[1];
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
         int amount;
         try {
-            petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE,
+            petList = petService.filteredList(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus,
                                         searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
                                         .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
-            amount = petService.getFilteredListAmount(locale, findList, ownerId, species, breed, gender, PetStatus.AVAILABLE, minPrice, 
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, newOwnerId, species, breed, gender, PetStatus.AVAILABLE, minPrice,
                                         maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
