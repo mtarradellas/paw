@@ -89,6 +89,7 @@ public class PetController{
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
                             @QueryParam("department") @DefaultValue("0") Long department,
+                            @QueryParam("status") @DefaultValue("-1") int status,
                             @QueryParam("gender") String gender,
                             @QueryParam("searchCriteria") String searchCriteria,
                             @QueryParam("find") String find,
@@ -114,6 +115,7 @@ public class PetController{
             breed = ParseUtils.parseBreed(breed);
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
+            petStatus = ParseUtils.parseStatus(PetStatus.class, status);
             gender = ParseUtils.parseGender(gender);
             range = ParseUtils.parseRange(priceRange);
         } catch (BadRequestException ex) {
@@ -122,8 +124,6 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-
-        if (newOwnerId == null || ownerId == null || (ownerId != loggedUser.getId())) petStatus = PetStatus.AVAILABLE;
 
         int minPrice = range[0];
         int maxPrice = range[1];
@@ -149,7 +149,7 @@ public class PetController{
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getFilters(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
