@@ -20,6 +20,7 @@ import InterestsView from "./views/requests&interests/InterestsView";
 
 import ErrorWithImage from "./views/errors/ErrorWithImage";
 
+import ForgotPassword from "./views/forgotPassword/forgotPassword"
 import AdminHome from "./views/admin/AdminHome";
 import AdminRequests from "./views/admin/requests/AdminRequests";
 import AdminUsers from "./views/admin/users/AdminUsers";
@@ -48,7 +49,8 @@ import {
     ADMIN_PETS,
     ADMIN_USERS,
     ADMIN_REQUESTS,
-    ADD_PET
+    ADD_PET,
+    FORGOT_PASSWORD
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
