@@ -75,7 +75,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
         User user = opUser.get();
 
-        return userDao.canReview(user, target);
+        return userDao.canReview(user, target) && !userDao.hasReviewed(user, target);
     }
 
     @Override

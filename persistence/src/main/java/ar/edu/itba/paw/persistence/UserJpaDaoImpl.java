@@ -329,6 +329,19 @@ public class UserJpaDaoImpl implements UserDao {
     }
 
     @Override
+    public boolean hasReviewed(User user, User target) {
+        String qStr = "SELECT count(*) FROM reviews WHERE status = :status AND ownerid = :owner AND targetid = :target";
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("status", ReviewStatus.VALID.getValue());
+        query.setParameter("owner", user.getId().intValue());
+        query.setParameter("target", target.getId().intValue());
+        Number r = (Number)query.getResultList().stream().findAny().orElse(null);
+        return r != null && r.intValue() > 0;
+    }
+
+
+
+    @Override
     public double getReviewAverage(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
         String qStr = "SELECT AVG(score) FROM reviews WHERE score >= :minScore AND score <= :maxScore";
         if (userId != null) {
