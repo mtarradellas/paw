@@ -143,11 +143,11 @@ public class PetServiceImplTest {
     public void testFilteredListSpecies() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), eq(PET.getSpecies()), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
+        when(petDao.searchList(any(), any(), any(), any(), eq(PET.getSpecies()), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
                 any(), anyInt(), anyInt())).thenReturn(petList);
         when(speciesService.findSpeciesById(eq(PET.getSpecies().getId()))).thenReturn(Optional.of(PET.getSpecies()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, PET.getSpecies().getId(), null, null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, PET.getSpecies().getId(), null, null,
                 null, null, null, 0, -1, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
@@ -160,12 +160,12 @@ public class PetServiceImplTest {
     public void testFilteredListBreed() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), eq(PET.getSpecies()), eq(PET.getBreed()), any(), any(), any(), any(), anyInt(), anyInt(), any(),
+        when(petDao.searchList(any(), any(), any(), any(), eq(PET.getSpecies()), eq(PET.getBreed()), any(), any(), any(), any(), anyInt(), anyInt(), any(),
                 any(), anyInt(), anyInt())).thenReturn(petList);
         when(speciesService.findSpeciesById(eq(PET.getSpecies().getId()))).thenReturn(Optional.of(PET.getSpecies()));
         when(speciesService.findBreedById(eq(PET.getBreed().getId()))).thenReturn(Optional.of(PET.getBreed()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, PET.getSpecies().getId(), PET.getBreed().getId(), null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, PET.getSpecies().getId(), PET.getBreed().getId(), null,
                 null, null, null, 0, -1, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
@@ -178,11 +178,11 @@ public class PetServiceImplTest {
     public void testFilteredListProvince() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
+        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
                 any(), anyInt(), anyInt())).thenReturn(petList);
         when(locationService.findProvinceById(eq(PET.getProvince().getId()))).thenReturn(Optional.of(PET.getProvince()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, null, null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null,null, null, null,
                 null, null, null, 0, -1, PET.getProvince().getId(), null, PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
@@ -195,12 +195,12 @@ public class PetServiceImplTest {
     public void testFilteredListDepartment() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
+        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
                 eq(PET.getDepartment()), anyInt(), anyInt())).thenReturn(petList);
         when(locationService.findProvinceById(eq(PET.getProvince().getId()))).thenReturn(Optional.of(PET.getProvince()));
         when(locationService.findDepartmentById(eq(PET.getDepartment().getId()))).thenReturn(Optional.of(PET.getDepartment()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, null, null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null,null, null, null,
                 null, null, null, 0, -1, PET.getProvince().getId(), PET.getDepartment().getId(), PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
