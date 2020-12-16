@@ -340,4 +340,10 @@ public class RequestController {
         }
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
     }
+
+    // @GET
+    // @Path("/notifications")
+    // public Response getNotifications(@QueryParam("")) {
+        
+    // }
 }
