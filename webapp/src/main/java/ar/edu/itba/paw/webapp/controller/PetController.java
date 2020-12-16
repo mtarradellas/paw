@@ -120,10 +120,7 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        if(newOwnerId == null) {
-            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            petStatus = PetStatus.AVAILABLE;
-        }
+        if(newOwnerId == null) petStatus = PetStatus.AVAILABLE;
 
         int minPrice = range[0];
         int maxPrice = range[1];
