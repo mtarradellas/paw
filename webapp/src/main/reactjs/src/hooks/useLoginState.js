@@ -1,4 +1,5 @@
-import {useReducer} from 'react';
+import React, {useReducer, useEffect} from 'react';
+import _ from "lodash";
 
 const ACTIONS = {
     LOGOUT: "LOGOUT",
@@ -65,6 +66,21 @@ const useLoginState = () => {
             id, mail, isAdmin, status
         });
     };
+
+    useEffect(()=>{
+        const auth = localStorage.getItem("LOCAL_STORAGE_AUTH_KEY");
+
+        if(!_.isNil(auth)){
+            const {username, jwt, id, mail, isAdmin, status} = JSON.parse(auth);
+
+            login({username, jwt});
+
+            setUserInfo({id: parseInt(id),
+                mail,
+                isAdmin: isAdmin === 'true',
+                status: parseInt(status)})
+        }
+    }, []);
 
     return {state, login, logout, promptLogin, setUserInfo};
 };

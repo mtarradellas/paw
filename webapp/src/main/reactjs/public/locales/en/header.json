@@ -4,5 +4,6 @@
   "requests": "Requests",
   "interests": "Interests",
   "addPet": "Add pet!",
-  "logout": "Logout"
+  "logout": "Logout",
+  "profile": "Profile"
 }

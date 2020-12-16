@@ -1,7 +1,7 @@
 import React from 'react';
 import '../css/header.css';
 import {Link} from "react-router-dom";
-import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS, ADD_PET} from "../constants/routes";
+import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS, ADD_PET, USER} from "../constants/routes";
 import {useTranslation} from "react-i18next";
 import {Button} from "antd";
 import useLogin from "../hooks/useLogin";
@@ -11,7 +11,7 @@ function LoggedIn(){
     const {t} = useTranslation('header');
     const {state, logout} = useLogin();
 
-    const {username} = state;
+    const {username, id} = state;
 
     const _onLogout = () => {
         logout();
@@ -28,6 +28,10 @@ function LoggedIn(){
 
             <Link className={"header__subtitle"} to={INTERESTS}>
                 {t('interests')}
+            </Link>
+
+            <Link className={"header__subtitle"} to={USER + id}>
+                {t('profile')}
             </Link>
 
             <div className={"header__right header--session"}>

@@ -25,8 +25,8 @@ public class UserDto {
         dto.username = user.getUsername();
         dto.status = user.getStatus().getValue();
 
-        dto.requests = uriInfo.getAbsolutePathBuilder().path("requests").build(); // TODO wrong paths
-        dto.interests = uriInfo.getAbsolutePathBuilder().path("interests").build();
+        dto.requests  = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(dto.id)).path("requests").queryParam("userId", dto.id).build();
+        dto.interests = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(dto.id)).path("requests").queryParam("targetId", dto.id).build();
 
         // Not including password and mail for security
 
@@ -41,8 +41,8 @@ public class UserDto {
         dto.status = user.getStatus().getValue();
         dto.mail = user.getMail();
 
-        dto.requests = uriInfo.getAbsolutePathBuilder().path("requests").build(); // TODO wrong paths
-        dto.interests = uriInfo.getAbsolutePathBuilder().path("interests").build();
+        dto.requests  = uriInfo.getBaseUriBuilder().path("admin").path("users").path(String.valueOf(dto.id)).path("requests").queryParam("userId", dto.id).build();
+        dto.interests = uriInfo.getBaseUriBuilder().path("admin").path("users").path(String.valueOf(dto.id)).path("requests").queryParam("targetId", dto.id).build();
 
         // Not including password for security
 
@@ -56,8 +56,8 @@ public class UserDto {
         dto.username = user.getUsername();
         dto.status = user.getStatus().getValue();
 
-        dto.requests = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("requests").build();
-        dto.interests = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("interests").build();
+        dto.requests  = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(dto.id)).path("requests").queryParam("userId", dto.id).build();
+        dto.interests = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(dto.id)).path("requests").queryParam("targetId", dto.id).build();
 
         // Not including password and mail for security
 

@@ -20,6 +20,9 @@
     "registerButton": "Register",
     "forgotPassword": "¿Forgot password?",
     "conError": "Connection lost",
-    "invalidUsernameOrPassword": "Invalid username or password"
+    "invalidUsernameOrPassword": "Invalid username or password",
+    "rememberMe": {
+      "label": "Remember me"
+    }
   }
 }

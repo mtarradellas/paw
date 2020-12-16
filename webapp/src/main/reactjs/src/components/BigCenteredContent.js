@@ -3,7 +3,7 @@ import '../css/components/bigCenteredContent.css';
 
 function BigCenteredContent({children}){
 
-    return <div className={"small-centered-content"}>
+    return <div className={"big-centered-content"}>
         {children}
     </div>
 }

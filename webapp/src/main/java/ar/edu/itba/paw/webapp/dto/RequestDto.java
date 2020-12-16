@@ -1,16 +1,18 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.Request;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDateTime;
+
+import javax.ws.rs.core.UriInfo;
+
+import ar.edu.itba.paw.models.Request;
 
 public class RequestDto {
 
     private Long id;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
-    private int status;
+    private Integer status;
 
     private URI user;
     private URI target;
@@ -65,11 +67,11 @@ public class RequestDto {
         this.updateDate = updateDate;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

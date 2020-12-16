@@ -63,7 +63,7 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize}){
 
 
 function HomeView(){
-    const {pets, fetching, fetchPets, pages, amount, pageSize} = usePets();
+    const {pets, fetching, fetchPets, pages, amount, pageSize} = usePets({});
 
     const fetchPage = page => {
         fetchPets({page})
