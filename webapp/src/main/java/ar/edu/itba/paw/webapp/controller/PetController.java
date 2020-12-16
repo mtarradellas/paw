@@ -96,6 +96,10 @@ public class PetController{
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange,
                             @QueryParam("page") @DefaultValue("1") int page) {
 
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(userService, auth);
+
         final String locale = ApiUtils.getLocale();
         int[] range;
         PetStatus petStatus = null;
@@ -119,7 +123,7 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        if(newOwnerId == null) petStatus = PetStatus.AVAILABLE;
+        if (newOwnerId == null || ownerId == null || (ownerId != loggedUser.getId())) petStatus = PetStatus.AVAILABLE;
 
         int minPrice = range[0];
         int maxPrice = range[1];
@@ -130,7 +134,7 @@ public class PetController{
             petList = petService.filteredList(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus,
                                         searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
                                         .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
-            amount = petService.getFilteredListAmount(locale, findList, ownerId, newOwnerId, species, breed, gender, PetStatus.AVAILABLE, minPrice,
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus, minPrice,
                                         maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
