@@ -133,7 +133,7 @@ public class ParseUtils {
     }
 
     public static void parseReviewDescription(String description) {
-        if (description == null || description.length() > 2048) {
+        if (description != null && description.length() > 2048) {
             String hint = "Description must contain less than 2048 characters";
             throw new BadRequestException("description", description, hint);
         }
@@ -190,11 +190,10 @@ public class ParseUtils {
     }
 
     public static void parseReview(ReviewDto review) {
-        if (review == null || review.getUserId() == null || review.getTargetId() == null || review.getScore() == null) {
+        if (review == null || review.getTargetId() == null || review.getScore() == null) {
             String hint = "Review is missing a required attribute";
             throw new BadRequestException("review", "user, target or score", hint);
         }
-        parseUserId(review.getUserId());
         parseUserId(review.getTargetId());
         parseReviewScore(review.getScore());
         parseReviewDescription(review.getDescription());

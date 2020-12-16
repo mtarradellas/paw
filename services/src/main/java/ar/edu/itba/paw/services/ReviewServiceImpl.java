@@ -55,8 +55,27 @@ public class ReviewServiceImpl implements ReviewService {
             LOGGER.warn("Target of review is the same as the owner ({}), ignoring review.", user.getId());
             throw new ReviewException("Target and Owner of review are the same.");
         }
+
+        if (!userDao.canReview(user, target)) {
+            LOGGER.warn("User cannot review. They must adopt a pet first.");
+            throw new ReviewException("User cannot review. They must adopt a pet first");
+        }
+
         Review review = userDao.addReview(user, target, score, description, ReviewStatus.VALID);
         return Optional.of(review);
+    }
+
+    @Override
+    public boolean canReview(long userId, long targetId) {
+        Optional<User> opTarget = userDao.findById(targetId);
+        if (!opTarget.isPresent()) throw new NotFoundException("Target " + targetId + " not found.");
+        User target = opTarget.get();
+
+        Optional<User> opUser = userDao.findById(userId);
+        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
+        User user = opUser.get();
+
+        return userDao.canReview(user, target);
     }
 
     @Override
