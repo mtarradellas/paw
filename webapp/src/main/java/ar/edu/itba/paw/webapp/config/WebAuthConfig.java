@@ -1,7 +1,5 @@
 package ar.edu.itba.paw.webapp.config;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -56,20 +55,14 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/login", "/register").anonymous()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/questions/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/questions/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/questions/**").authenticated()
                 .antMatchers("/users/**").authenticated()
                 .antMatchers("/reviews/**").authenticated()
                 .antMatchers("/pets/upload").authenticated()
                 .antMatchers("/pets/*/question", "/pet/*/answer").authenticated()
                 .antMatchers("/pets/*/request","/interests/**","/requests/**").authenticated()
                 .anyRequest().permitAll()
-            .and().rememberMe()
-                .rememberMeParameter("rememberme")
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(365))
-                .key(ApiUtils.readToken(token))
-//            .and().logout() /* TODO uncomment?*/
-//                .logoutUrl("/logout")
-//                .logoutSuccessUrl("/login")
             .and().exceptionHandling()
                 .accessDeniedPage("/403")
             .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -283,7 +283,7 @@ public class UserServiceImpl implements UserService {
         if (!opTarget.isPresent()) throw new NotFoundException("User not found.");
         final User target = opTarget.get();
 
-        if (user.getId() == userId || requestService.hasRequest(user, target)) {
+        if (target.getStatus() == UserStatus.ACTIVE && (user.getId() == userId || requestService.hasRequest(user, target))) {
             return target.getMail();
         }
 

@@ -1,26 +1,36 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
 import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @Path("/species")
 public class SpeciesController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpeciesController.class);
 
     @Autowired
     private SpeciesService speciesService;
