@@ -89,13 +89,14 @@ public class AdminPetController {
                             @QueryParam("searchCriteria") String searchCriteria,
                             @QueryParam("find") String find,
                             @QueryParam("searchOrder") String searchOrder,
-                            @QueryParam("priceRange") int priceRange,
-                            @QueryParam("status") int status,
+                            @QueryParam("priceRange") @DefaultValue("0") int priceRange,
+                            @QueryParam("status") @DefaultValue("-1") int status,
                             @QueryParam("page") @DefaultValue("1") int page) {
 
         final String locale = ApiUtils.getLocale();
         int[] range;
         PetStatus petStatus;
+        Long newOwnerId = 17L;
         try {
             ownerId = ParseUtils.parseUserId(ownerId);
             ParseUtils.parsePage(page);
@@ -121,10 +122,10 @@ public class AdminPetController {
         List<PetDto> petList;
         int amount;
         try {
-            petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, petStatus,
+            petList = petService.filteredList(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus,
                     searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
                     .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
-            amount = petService.getFilteredListAmount(locale, findList, ownerId, species, breed, gender, petStatus, 
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -146,8 +147,8 @@ public class AdminPetController {
                             @QueryParam("department") @DefaultValue("0") Long department,
                             @QueryParam("gender") String gender,
                             @QueryParam("find") String find,
-                            @QueryParam("status") int status,
-                            @QueryParam("priceRange") int priceRange) {
+                            @QueryParam("status") @DefaultValue("0") int status,
+                            @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
         final String locale = ApiUtils.getLocale();
         int[] range;
@@ -177,13 +178,13 @@ public class AdminPetController {
         List<Department> departments;
         List<Breed> breeds;
         try {
-            breeds = petService.filteredBreedList(locale, findList, null, species, breed, gender, petStatus,
+            breeds = petService.filteredBreedList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
-            departments = petService.filteredDepartmentList(locale, findList, null, species, breed, gender, petStatus,
+            departments = petService.filteredDepartmentList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
-            rangeList = petService.filteredRangesList(locale, findList, null, species, breed, gender, petStatus,
+            rangeList = petService.filteredRangesList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
-            genderList = petService.filteredGenderList(locale, findList, null, species, breed, gender, petStatus,
+            genderList = petService.filteredGenderList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -235,7 +236,7 @@ public class AdminPetController {
             petStatus = ParseUtils.parseStatus(PetStatus.class, pet.getStatus());
             opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
                     pet.getPrice(), pet.getDescription(), petStatus, pet.getUserId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(),null);
+                    pet.getProvinceId(), pet.getDepartmentId(), null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
@@ -254,6 +255,7 @@ public class AdminPetController {
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response edit(final PetDto pet) {
+        if (pet == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         String locale = ApiUtils.getLocale();
         Optional<Pet> opPet;
         Optional<User> opOwner;
@@ -299,7 +301,7 @@ public class AdminPetController {
 
         try {
             opPet = petService.update(locale, pet.getId(), opOwner.get().getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
-                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
+                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), petStatus, pet.getSpeciesId(),
                     pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -324,6 +326,7 @@ public class AdminPetController {
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response petUpdateSold(@PathParam("petId") Long petId,
                                   final UserDto newOwner) {
+        if (newOwner == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         Long newOwnerId;
         try {
             newOwnerId = ParseUtils.parseUserId(newOwner.getId());

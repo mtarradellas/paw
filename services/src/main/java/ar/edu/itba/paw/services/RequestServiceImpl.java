@@ -64,7 +64,6 @@ public class RequestServiceImpl implements RequestService {
 
         // Interests
         if (targetId != null) {
-            System.out.println("\nTARGET\n");
             Optional<User> opUser = userService.findById(targetId);
             if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
             User user = opUser.get();
@@ -298,26 +297,9 @@ public class RequestServiceImpl implements RequestService {
             LOGGER.warn("Request {} accept by user {} failed", request.getId(), user.getId());
             return false;
         }
-
-        rejectAllByPet(request.getPet().getId());
-
-        final User recipient = request.getUser();
-        Pet pet = request.getPet();
-        User contact = pet.getUser();
-
-        Map<String, Object> arguments = new HashMap<>();
-
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("contactEmail", contact.getMail());
-        arguments.put("ownerURL", contextURL +  "/user/" + recipient.getId());
-        arguments.put("petName", pet.getPetName());
-
-        String userLocale = recipient.getLocale();
-
-        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_ACCEPT);
-
         LOGGER.debug("Request {} accepted by user {}", request.getId(), user.getId());
+
+        petService.sellPet(request.getPet(), user, request.getUser(), contextURL);
         return true;
     }
 

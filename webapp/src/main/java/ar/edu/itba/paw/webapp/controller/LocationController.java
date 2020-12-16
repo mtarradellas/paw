@@ -1,26 +1,33 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.models.Department;
 import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.webapp.dto.DepartmentDto;
 import ar.edu.itba.paw.webapp.dto.ProvinceDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 @Component
 @Path("/location")
 public class LocationController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocationController.class);
 
     @Autowired
     private LocationService locationService;
