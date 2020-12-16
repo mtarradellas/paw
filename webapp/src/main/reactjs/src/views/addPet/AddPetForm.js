@@ -93,7 +93,9 @@ function AddPetForm({submitting}){
                     </FormItem>
 
                     <FormItem name={"province"} label={t('form.province.label')}>
-                        <Select name={"province"} placeholder={t('form.province.placeholder')}>
+                        <Select name={"province"} placeholder={t('form.province.placeholder')}
+                                onChange={() => setFieldValue('department', '')}
+                        >
                             {
                                 Object.values(provinces).map(({id, name}) => {
                                     return <Select.Option value={id}>{name}</Select.Option>
@@ -103,10 +105,11 @@ function AddPetForm({submitting}){
                     </FormItem>
 
                     <FormItem name={"department"} label={t('form.department.label')}>
-                        <Select name={"department"} placeholder={t('form.department.placeholder')}>
+                        <Select name={"department"} placeholder={t('form.department.placeholder')} disabled={!values.province}>
                             {
-                                //TODO: make departments depend of provinces
-                                Object.values(departments).map(({id, name}) => {
+                                values.province && provinces[values.province].departmentIds.map(departmentId => {
+                                    const {id, name} = departments[departmentId];
+
                                     return <Select.Option value={id}>{name}</Select.Option>
                                 })
                             }
