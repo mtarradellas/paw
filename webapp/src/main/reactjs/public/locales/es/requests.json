@@ -61,7 +61,7 @@
     "accepted": "¡Tu solicitud de {{petName}} fue aceptada!",
     "rejected": "Tu solicitud de {{petName}} fue rechazada",
     "canceled": "Cancelaste tu solicitud de {{petName}}",
-    "sold": "La mascota {{petName}} ha sido vendida"
+    "sold": "La mascota {{petName}} fue vendida"
   },
   "date": "{{day}}-{{month}}-{{year}}"
 }

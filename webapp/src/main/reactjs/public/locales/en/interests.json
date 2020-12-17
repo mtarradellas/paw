@@ -57,7 +57,7 @@
     },
     "pleaseConfirm": "Please confirm your action",
     "reserve": "Are you sure you want to reserve this pet for this user? This action is irreversible, please choose carefully.",
-    "acceptRequest": "PLEASE READ CAREFULLY:\nChoosing this option will send an email to this user with your email, so you can directly arrange the terms of adoption. After clicking \"I'm sure\", you will be able to definitively give the pet to this user, thus completing the adoption and blocking other requesters. You can do this at any time from the interests or pet pages, using the \"Reserve for User\" buttons.",
+    "acceptRequest": "PLEASE READ CAREFULLY:\nChoosing this option will send an email to this user with your email, so you can directly arrange the terms of adoption. After clicking \"I'm sure\", you can't unaccept this request, thus completing the adoption process.",
     "rejectRequest": "Are you sure you want to reject this request? This action is irreversible, please choose carefully."
   },
   "messages": {
@@ -66,5 +66,6 @@
     "pending": "{{username}} is interested in {{petName}}",
     "canceled": "{{username}} was interested in {{petName}} and he canceled the request",
     "sold": "{{username}} was interested in {{petName}}"
-  }
+  },
+  "date": "{{month}}-{{day}}-{{year}}"
 }

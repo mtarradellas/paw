@@ -28,10 +28,27 @@ const FilterRequestsForm = ({filters,fetchRequests}) => {
         t("status.sold")
     ]
 
+    const [selectedValues, changeSelectedValues] = useState({status:-1,searchCriteria:"any", searchOrder:"asc"})
+
+    const refreshStatus = (value) => {
+        changeSelectedValues(Object.assign(selectedValues, {status:value}));
+    }
+    const refreshCriteria = (value) => {
+        changeSelectedValues(Object.assign(selectedValues, {searchCriteria:value}));
+    }
+    const refreshOrder = (value) => {
+        changeSelectedValues(Object.assign(selectedValues, {searchOrder:value}));
+    }
+
+    const clearFilters = () => {
+        changeSelectedValues({status:-1,searchCriteria:"any", searchOrder:"asc"});
+        toggleDisabled(true);
+    }
+
     return <Form layout={"vertical"} className={"requests-interests__container"}>
         <div className={"form-content"}>
             <FormItem name={"status"} label={t("filterForm.labels.status")}>
-                <Select name={"status"} defaultValue={-1} >
+                <Select name={"status"} value={selectedValues.status} onSelect={refreshStatus} >
                     <Select.Option value={-1}>{t("filterForm.values.any")}</Select.Option>
                     {
                         filters && filters.map((status) =>{
@@ -42,7 +59,7 @@ const FilterRequestsForm = ({filters,fetchRequests}) => {
             </FormItem>
 
             <FormItem name={"searchCriteria"} label={t("filterForm.labels.criteria")}>
-                <Select name={"searchCriteria"} defaultValue={"any"} onChange={enableOrder}>
+                <Select name={"searchCriteria"} value={selectedValues.searchCriteria} onChange={enableOrder} onSelect={refreshCriteria}>
                     <Select.Option value={"any"}>{t("filterForm.values.any")}</Select.Option>
                     <Select.Option value={"date"}>{t("filterForm.values.date")}</Select.Option>
                     <Select.Option value={"petName"}>{t("filterForm.values.petName")}</Select.Option>
@@ -50,7 +67,7 @@ const FilterRequestsForm = ({filters,fetchRequests}) => {
             </FormItem>
 
             <FormItem name={"searchOrder"} label={t("filterForm.labels.order")}>
-                <Select name={"searchOrder"} defaultValue={"asc"} disabled={isDisabled}>
+                <Select name={"searchOrder"} value={selectedValues.searchOrder} disabled={isDisabled} onSelect={refreshOrder}>
                     <Select.Option value={"asc"}>{t("filterForm.values.asc")}</Select.Option>
                     <Select.Option value={"desc"}>{t("filterForm.values.desc")}</Select.Option>
 
@@ -60,7 +77,7 @@ const FilterRequestsForm = ({filters,fetchRequests}) => {
 
         <div className={"form-buttons"}>
             <Button type={"primary"} htmlType={"submit"}>{t('filterForm.filterButtons.filter')}</Button>
-            <Button type={"secondary"}>{t('filterForm.filterButtons.clear')}</Button>
+            <Button type={"secondary"} onClick={clearFilters} >{t('filterForm.filterButtons.clear')}</Button>
         </div>
     </Form>
 }

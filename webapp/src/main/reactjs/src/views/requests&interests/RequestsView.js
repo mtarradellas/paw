@@ -12,7 +12,7 @@ import "../../css/requests&interests/requests-interests.css"
 import useRequests from "../../hooks/useRequests";
 import _ from "lodash";
 
-import {getRequestsFilter} from "../../api/requests";
+import {getRequestsFilters} from "../../api/requests";
 import useLogin from "../../hooks/useLogin";
 
 /*
@@ -50,10 +50,6 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
         fetchPage(newValue);
     };
 
-    const reloadPage = () => {
-        fetchPage(currentPage);
-    }
-
     return (<div>
         <Row style={{margin: 0, padding: 0}}>
             <Col span={23}>
@@ -87,7 +83,7 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
             _.isNil(requests) || fetching ?
                 <Spin/>
                 :
-                <RequestContainer requests={requests} reloadPage={reloadPage} fetchFilters={fetchFilters}/>
+                <RequestContainer requests={requests} fetchFilters={fetchFilters}/>
         }
 
         <Divider orientation={"left"}>
@@ -95,7 +91,8 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
                 pageSize && requestsCount &&
                 <Pagination showSizeChanger={false} current={currentPage} total={requestsCount} pageSize={pageSize}
                             onChange={_onChangePagination}/>
-            }        </Divider>
+            }
+        </Divider>
         <Modal
             title={t("modals.helpModal.title")}
             visible={isModalVisible}
@@ -129,7 +126,7 @@ function RequestsView() {
 
     const fetchFilters = async () => {
         try{
-            const newFilters = await getRequestsFilter(jwt);
+            const newFilters = await getRequestsFilters(jwt);
 
             setFilters(newFilters);
         }catch (e) {

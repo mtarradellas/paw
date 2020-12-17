@@ -10,7 +10,7 @@ import {cancelRequest, recoverRequest} from "../../api/requests";
 import ListContainer from '../../components/ListContainer'
 
 function RequestNotification(
-    {id, creationDate, updateDate, status, username, userId, petName, petId, modal, reloadPage, fetchFilers}) {
+    {id, creationDate, updateDate, status, username, userId, petName, petId, modal, fetchFilters}) {
     const {t} = useTranslation("requests");
 
     const {jwt} = useLogin().state;
@@ -30,19 +30,7 @@ function RequestNotification(
     let reqButtons = null;
     let shaded = false;
 
-    if (petStatus === REQUEST_STATUS.ACCEPTED) {
-        reqTarget = (
-            <p>{t("messages.accepted", {petName: petName})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
-            </p>
-        )
-        reqStatus = <p>{t("status.notSold")}</p>
-        reqButtons = (
-            <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
-            </div>
-        )
-    } else if (petStatus === REQUEST_STATUS.REJECTED) {
+    if (petStatus === REQUEST_STATUS.REJECTED) {
         shaded = true;
         reqTarget = (
             <p>{t("messages.rejected", {petName: petName})}
@@ -59,10 +47,10 @@ function RequestNotification(
         const onConfirm = async () => {
             try{
                 await cancelRequest(id,jwt);
-                fetchFilers();
+                fetchFilters();
                 setStatus(REQUEST_STATUS.CANCELED);
             }catch (e){
-                console.log("ERROR")
+                console.log(e)
             }
         }
 
@@ -87,10 +75,10 @@ function RequestNotification(
         const onConfirm = async () => {
             try{
                 await recoverRequest(id, jwt);
-                fetchFilers();
+                fetchFilters();
                 setStatus(REQUEST_STATUS.PENDING);
             }catch (e){
-                console.log("ERROR")
+                console.log(e)
             }
 
         }
@@ -111,14 +99,14 @@ function RequestNotification(
             </div>
         )
 
-    } else if (petStatus === REQUEST_STATUS.SOLD) {
+    } else if ( petStatus === REQUEST_STATUS.SOLD || petStatus === REQUEST_STATUS.ACCEPTED) {
         shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: petName})}
                 <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
             </p>
         )
-        reqStatus = <p>{t("status.soldTo", {ownerName: username})}</p>
+        reqStatus = <p>{t("status.sold")}</p>
         reqButtons = (
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
@@ -134,7 +122,7 @@ function RequestNotification(
     )
 }
 
-function RequestContainer({requests, reloadPage, fetchFilters}) {
+function RequestContainer({requests, fetchFilters}) {
     const {t} = useTranslation("requests");
 
     const [modalState, setModalState] = useState({show: false, callbackMethod: null, modalMessage: ""});
@@ -160,8 +148,7 @@ function RequestContainer({requests, reloadPage, fetchFilters}) {
                                 <List.Item key={request.id}>
                                     <RequestNotification
                                         modal={showModal}
-                                        reloadPage={reloadPage}
-                                        fetchFilers={fetchFilters}
+                                        fetchFilters={fetchFilters}
                                         {...request} />
                                 </List.Item>
                             )

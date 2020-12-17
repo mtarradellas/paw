@@ -6,7 +6,7 @@ import {getAuthConfig} from "./utils";
 const GET_REQUESTS_ENDPOINT = "/requests";
 const CANCEL_REQUEST_ENDPOINT = (id) => "/requests/" + id + "/cancel";
 const RECOVER_REQUEST_ENDPOINT = (id) => "/requests/" + id + "/recover";
-const FILTER_REQUEST_ENDPOINT = "/requests/filters";
+const REQUESTS_FILTER_ENDPOINT = "/requests/filters";
 
 
 export const GET_REQUESTS_ERRORS = {
@@ -18,7 +18,7 @@ export const CANCEL_REQUEST_ERRORS = {
 export const RECOVER_REQUEST_ERRORS = {
     CONN_ERROR: 0
 };
-export const FILTER_REQUEST_ERRORS = {
+export const FILTER_REQUESTS_ERRORS = {
     CONN_ERROR: 0
 };
 
@@ -70,14 +70,14 @@ export async function recoverRequest( id, jwt){
     }
 }
 
-export async function getRequestsFilter(jwt){
+export async function getRequestsFilters(jwt){
     try{
         const config = getAuthConfig(jwt);
-        const response = await axios.get(SERVER_URL + FILTER_REQUEST_ENDPOINT, config);
+        const response = await axios.get(SERVER_URL + REQUESTS_FILTER_ENDPOINT, config);
         const {statusList} = response.data;
 
         return statusList;
     }catch (e) {
-        throw FILTER_REQUEST_ERRORS.CONN_ERROR;
+        throw FILTER_REQUESTS_ERRORS.CONN_ERROR;
     }
 }
