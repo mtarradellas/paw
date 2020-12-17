@@ -38,6 +38,7 @@ import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 
@@ -315,6 +316,30 @@ public class UserJpaDaoImpl implements UserDao {
         em.persist(review);
         return Optional.of(review);
     }
+
+    @Override
+    public boolean canReview(User user, User target) {
+        String qStr = "SELECT count(*) FROM requests WHERE status = :status AND ownerid = :owner AND targetid = :target";
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("status", RequestStatus.SOLD.getValue());
+        query.setParameter("owner", user.getId().intValue());
+        query.setParameter("target", target.getId().intValue());
+        Number r = (Number)query.getResultList().stream().findAny().orElse(null);
+        return r != null && r.intValue() > 0;
+    }
+
+    @Override
+    public boolean hasReviewed(User user, User target) {
+        String qStr = "SELECT count(*) FROM reviews WHERE status = :status AND ownerid = :owner AND targetid = :target";
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("status", ReviewStatus.VALID.getValue());
+        query.setParameter("owner", user.getId().intValue());
+        query.setParameter("target", target.getId().intValue());
+        Number r = (Number)query.getResultList().stream().findAny().orElse(null);
+        return r != null && r.intValue() > 0;
+    }
+
+
 
     @Override
     public double getReviewAverage(Long userId, Long targetId, int minScore, int maxScore, ReviewStatus status) {

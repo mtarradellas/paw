@@ -10,7 +10,7 @@ export const GET_PETS_ERRORS = {
 export async function getPets(
     {
         ownerId, species, breed, province, department, gender,
-        searchCriteria, find, searchOrder, priceRange, page
+        searchCriteria, find, searchOrder, priceRange, page, newOwnerId
     }
     ) {
     try {
@@ -18,7 +18,7 @@ export async function getPets(
             {
                 params: {
                     ownerId, species, breed, province, department, gender,
-                    searchCriteria, find, searchOrder, priceRange, page
+                    searchCriteria, find, searchOrder, priceRange, page, newOwnerId
                 }
             }
             );

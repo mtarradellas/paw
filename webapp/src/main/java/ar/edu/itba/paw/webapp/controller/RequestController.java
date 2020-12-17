@@ -106,7 +106,6 @@ public class RequestController {
                     searchCriteria, searchOrder, page, REQ_PAGE_SIZE)
                     .stream().map(r -> RequestDto.fromRequest(r, uriInfo)).collect(Collectors.toList());
             amount = requestService.getFilteredListAmount(user, target, pet, Collections.emptyList(), requestStatus);
-            System.out.println("AMOUNT: " + amount);
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
@@ -340,4 +339,10 @@ public class RequestController {
         }
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
     }
+
+    // @GET
+    // @Path("/notifications")
+    // public Response getNotifications(@QueryParam("")) {
+        
+    // }
 }

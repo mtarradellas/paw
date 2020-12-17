@@ -23,7 +23,7 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize}){
     const _onChangePagination = newValue => {
         setCurrentPage(newValue);
 
-        fetchPage(currentPage);
+        fetchPage(newValue);
     };
 
     return <div className={"home__pets"}>

@@ -57,8 +57,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> ids = resultList.stream().map(Number::longValue).collect(Collectors.toList());
-        System.out.println("IDS: " + ids.size());
-        ids.forEach(System.out::println);
         if(ids.size() == 0) {
             return Collections.emptyList();
         }

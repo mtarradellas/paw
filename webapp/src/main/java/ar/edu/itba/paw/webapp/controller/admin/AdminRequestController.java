@@ -32,7 +32,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.RequestService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.RequestException;
 import ar.edu.itba.paw.models.Pet;
@@ -54,9 +53,6 @@ public class AdminRequestController {
     private RequestService requestService;
 
     private static final int REQ_PAGE_SIZE = 25;
-
-    @Autowired
-    private UserService userService;
 
     @Context
     private UriInfo uriInfo;

@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.webapp.controller.admin;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,29 +20,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.google.gson.Gson;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.QuestionException;
 import ar.edu.itba.paw.models.Answer;
 import ar.edu.itba.paw.models.Question;
-import ar.edu.itba.paw.webapp.controller.UserController;
 import ar.edu.itba.paw.webapp.dto.AnswerDto;
 import ar.edu.itba.paw.webapp.dto.QuestionDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 
 @Component
 @Path("/admin/questions")
 public class AdminQuestionController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminQuestionController.class);
 
     private static final int QUESTION_PAGE_SIZE = 12;
 
@@ -53,9 +48,6 @@ public class AdminQuestionController {
 
     @Autowired
     private PetService petService;
-
-    @Autowired
-    private UserService userService;
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
@@ -72,45 +64,26 @@ public class AdminQuestionController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         List<QuestionDto> questions;
+        int amount;
         try {
             questions = petService.listQuestions(petId, page, QUESTION_PAGE_SIZE)
                     .stream().map(q -> QuestionDto.fromQuestion(q, uriInfo)).collect(Collectors.toList());
-        } catch (NotFoundException ex) {
-            LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        return Response.ok(new GenericEntity<List<QuestionDto>>(questions) {}).build();
-    }
-
-    @GET
-    @Path("/amount")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestionAmount(@QueryParam("petId") @DefaultValue("0") Long petId) {
-        try {
-            petId = ParseUtils.parsePetId(petId);
-        } catch (ar.edu.itba.paw.webapp.exception.BadRequestException ex) {
-            LOGGER.warn(ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        if(petId == null) {
-            LOGGER.warn("Invalid parameter: petId");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        int amount;
-        try {
             amount = petService.getListQuestionsAmount(petId);
         } catch (NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        Map<String, Integer> response = new HashMap<>();
-        response.put("amount", amount);
-        return Response.ok(new Gson().toJson(response)).build();
+        
+        return ApiUtils.paginatedListResponse(amount, QUESTION_PAGE_SIZE, page, uriInfo, questions, null);
     }
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createQuestion(final QuestionDto question) {
+        if (question == null || question.getContent() == null || question.getUserId() == null || question.getPetId() == null) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+
         Optional<Question> opNewQuestion;
         try {
             opNewQuestion = petService.createQuestion(question.getContent(), question.getUserId(), question.getPetId(),
@@ -164,6 +137,9 @@ public class AdminQuestionController {
     @Path("/{questionId}/answer")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createAnswer(@PathParam("questionId") Long questionId, final AnswerDto answer) {
+        if (answer == null || answer.getContent() == null || answer.getUserId() == null) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
         try {
             questionId = ParseUtils.parseQuestionId(questionId);
         } catch (BadRequestException ex) {

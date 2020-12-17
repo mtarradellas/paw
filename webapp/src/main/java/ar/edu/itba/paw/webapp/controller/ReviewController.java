@@ -20,7 +20,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+
+import com.google.gson.Gson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,20 +140,18 @@ public class ReviewController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ApiUtils.loggedUser(userService, auth);
-        if (currentUser == null || currentUser.getId() != reviewDto.getUserId()) {
-            LOGGER.warn("User has no permission to perform this action.");
-            final ErrorDto body = new ErrorDto(2, "User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
-                                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
 
         Optional<Review> opReview;
         try {
-            opReview = reviewService.addReview(reviewDto.getUserId(), reviewDto.getTargetId(), reviewDto.getScore(), reviewDto.getDescription());
-        } catch (DataIntegrityViolationException | NotFoundException | ReviewException ex) {
+            opReview = reviewService.addReview(currentUser.getId(), reviewDto.getTargetId(), reviewDto.getScore(), reviewDto.getDescription());
+        } catch (NotFoundException | ReviewException ex) {
             LOGGER.warn("Review creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, "User already has reviewed this target");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
@@ -162,6 +163,23 @@ public class ReviewController {
 
         final URI reviewUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(review.getId())).build();
         return Response.created(reviewUri).build();
+    }
+
+    @GET
+    @Path("/can-review")
+    @Consumes(value = { MediaType.APPLICATION_JSON})
+    public Response canReview(@QueryParam("targetId") Long targetId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = ApiUtils.loggedUser(userService, auth);
+
+        if (currentUser == null || targetId == null) {
+            return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
+        }
+
+        boolean canReview = reviewService.canReview(currentUser.getId(), targetId);
+        Map<String, Object> json = new HashMap<>();
+        json.put("canReview", canReview);
+        return Response.ok(new Gson().toJson(json)).build();
     }
 
     @DELETE

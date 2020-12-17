@@ -13,6 +13,7 @@ public interface ReviewService {
     int getReviewListAmount(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status);
 
     Optional<Review> findReviewById(long id);
+    boolean canReview(long userId, long targetId);
     Optional<Review> addReview(long userId, long targetId, int score, String description);
     Optional<Review> updateReview(Review review);
     Optional<Review> updateReview(long id, long ownerId, long targetId, int score, String description);
