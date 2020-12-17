@@ -124,7 +124,7 @@ public class HomeController {
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
 
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        final String baseUrl = uriInfo.getBaseUri().toString();
         try {
             userService.requestPasswordReset(dto.getMail(), baseUrl);
         } catch (NotFoundException ex) {
