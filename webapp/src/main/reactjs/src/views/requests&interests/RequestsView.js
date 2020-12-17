@@ -33,6 +33,7 @@ function MainContent(
     const {t} = useTranslation('requests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -126,7 +127,6 @@ function RequestsView() {
             page
         }
         fetchRequests(params)
-
     };
 
     const [filters, setFilters] = useState(null);

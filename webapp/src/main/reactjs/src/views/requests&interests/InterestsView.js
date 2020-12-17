@@ -12,13 +12,21 @@ import _ from "lodash";
 import useLogin from "../../hooks/useLogin";
 import {getInterestsFilters} from "../../api/interests";
 
-function SideContent() {
+function SideContent({filters,fetchInterests,changeFilters,setCurrentPage,fetchFilters}) {
     return (<div>
-        <FilterInterestsForm/>
+        <FilterInterestsForm
+            filters={filters}
+            fetchInterests={fetchInterests}
+            changeFilters={changeFilters}
+            setCurrentPage={setCurrentPage}
+            fetchFilters={fetchFilters}
+        />
     </div>)
 }
 
-function MainContent({interestsCount, interests, fetching, pages, pageSize, fetchPage, fetchFilters}) {
+function MainContent(
+    {interestsCount, interests, fetching, pages, pageSize, fetchPage, fetchFilters, currentPage, setCurrentPage}
+) {
     const {t} = useTranslation('interests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,7 +43,6 @@ function MainContent({interestsCount, interests, fetching, pages, pageSize, fetc
         setIsModalVisible(false);
     };
 
-    const [currentPage, setCurrentPage] = useState(1);
     const _onChangePagination = newValue => {
         setCurrentPage(newValue);
 
@@ -105,17 +112,23 @@ function MainContent({interestsCount, interests, fetching, pages, pageSize, fetc
 
 function InterestsView() {
     const {interests, fetching, fetchInterests, pages, amount, pageSize} = useInterests();
+    const {jwt} = useLogin().state;
+
+    const [appliedFilters, setAppliedFilters] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const fetchPage = page => {
-        fetchInterests({page})
+        const params = {
+            ...appliedFilters,
+            page
+        }
+        fetchInterests(params)
     };
 
-    const {jwt} = useLogin().state;
     const [filters, setFilters] = useState(null);
-
-    const fetchFilters = async () => {
+    const fetchFilters = async params => {
         try{
-            const newFilters = await getInterestsFilters({},jwt);
+            const newFilters = await getInterestsFilters(params,jwt);
 
             setFilters(newFilters);
         }catch (e) {
@@ -124,12 +137,18 @@ function InterestsView() {
     };
 
     useEffect(()=>{
-        fetchFilters();
+        fetchFilters({});
     }, []);
 
     return <ContentWithSidebar
         sideContent={
-            <SideContent/>
+            <SideContent
+                filters={filters}
+                fetchInterests={fetchInterests}
+                changeFilters={setAppliedFilters}
+                setCurrentPage={setCurrentPage}
+                fetchFilters={fetchFilters}
+            />
         }
         mainContent={
             <MainContent
@@ -140,6 +159,8 @@ function InterestsView() {
                 pageSize={pageSize}
                 fetchPage={fetchPage}
                 fetchFilters={fetchFilters}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
             />
         }
     />;
