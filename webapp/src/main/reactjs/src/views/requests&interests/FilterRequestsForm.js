@@ -6,7 +6,7 @@ import {useTranslation} from "react-i18next";
 
 const FormItem = Form.Item;
 
-const FilterRequestsForm = ({filters,fetchRequests}) => {
+const FilterRequestsForm = ({filters,fetchRequests,changeFilters,setCurrentPage}) => {
 
     const {t} = useTranslation('requests');
 
@@ -76,7 +76,7 @@ const FilterRequestsForm = ({filters,fetchRequests}) => {
         </div>
 
         <div className={"form-buttons"}>
-            <Button type={"primary"} htmlType={"submit"}>{t('filterForm.filterButtons.filter')}</Button>
+            <Button type={"primary"} htmlType={"submit"} onClick={() => changeFilters(selectedValues)}>{t('filterForm.filterButtons.filter')}</Button>
             <Button type={"secondary"} onClick={clearFilters} >{t('filterForm.filterButtons.clear')}</Button>
         </div>
     </Form>
@@ -85,6 +85,7 @@ const FilterRequestsForm = ({filters,fetchRequests}) => {
 export default withFormik({
     mapPropsToValues: () => ({}),
     handleSubmit: (values,formikBag) => {
-        formikBag.props.fetchRequests(values)
+        formikBag.props.fetchRequests({...values, page:1})
+        formikBag.props.setCurrentPage(1)
     }
 })(FilterRequestsForm);

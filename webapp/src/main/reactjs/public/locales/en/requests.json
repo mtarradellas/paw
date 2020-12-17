@@ -47,7 +47,7 @@
     "helpModal": {
       "title": "Help",
       "firstTitle": "Requests Page",
-      "firstDesc": "Welcome to the requests page, here you can see the status of all the pets you have showed interest in. There are four states: pending (it means the owner has not decided yet), accepted or rejected (owner has chosen if he wishes you to adopt an animal, you cannot recover this request) and canceled (you can cancel pending requests by clicking 'cancel', and recover it by clicking 'recover').",
+      "firstDesc": "Welcome to the requests page, here you can see the status of all the pets you have showed interest in. There are four states: pending (it means the owner has not decided yet), sold or rejected (owner has chosen if he wishes you to adopt an animal, you cannot recover this request) and canceled (you can cancel pending requests by clicking 'cancel', and recover it by clicking 'recover').",
       "secondTitle": "Filter Tools",
       "secondDesc": "To aid you in organizing your requests, fell free to use the filter tools on the left side."
     },

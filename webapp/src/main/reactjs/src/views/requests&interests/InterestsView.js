@@ -115,8 +115,8 @@ function InterestsView() {
 
     const fetchFilters = async () => {
         try{
-            const newFilters = await getInterestsFilters(jwt);
-            console.log(newFilters)
+            const newFilters = await getInterestsFilters({},jwt);
+
             setFilters(newFilters);
         }catch (e) {
             //TODO: conn error

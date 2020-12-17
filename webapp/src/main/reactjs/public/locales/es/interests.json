@@ -51,7 +51,7 @@
     "helpModal": {
       "title": "Ayuda",
       "firstTitle": "Página de Intereses",
-      "firstDesc": "Bienvenido a la página de intereses, aquí puede ver estado de todas las solicitudes que otros usuarios le hicieron. Hay cuatro estados: pendiente (significa que el usted no ha decidido todavía), aceptado o rechazado (usted ha decidido si desea darle el animal mediante el uso de los botones correspondientes) y cancelado (el usuario ha decidido cancelar la solicitud).",
+      "firstDesc": "Bienvenido a la página de intereses, aquí puede ver estado de todas las solicitudes que otros usuarios le hicieron. Hay cuatro estados: pendiente (significa que el usted no ha decidido todavía), vendida o rechazada (usted ha decidido si desea darle la mascota mediante el uso de los botones correspondientes) y cancelada (el usuario ha decidido cancelar la solicitud).",
       "secondTitle": "Herramientas de Filtrado",
       "secondDesc": "Para asistirlo en la organización de los intereses, utilize el menú de filtrado encontrado a la izquierda."
     },

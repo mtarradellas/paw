@@ -15,21 +15,21 @@ import _ from "lodash";
 import {getRequestsFilters} from "../../api/requests";
 import useLogin from "../../hooks/useLogin";
 
-/*
-*  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
-*  PET STATUSES: AVAILABLE, REMOVED, SOLD, UNAVAILABLE
-* */
 
-function SideContent({filters,fetchRequests}) {
+function SideContent({filters,fetchRequests,changeFilters,setCurrentPage}) {
     return (<div>
         <FilterRequestsForm
             filters={filters}
             fetchRequests={fetchRequests}
+            changeFilters={changeFilters}
+            setCurrentPage={setCurrentPage}
         />
     </div>)
 }
 
-function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchPage, fetchFilters}) {
+function MainContent(
+    {requestsCount, requests, fetching, pages, pageSize, fetchPage, fetchFilters, currentPage,setCurrentPage}
+    ) {
     const {t} = useTranslation('requests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -43,7 +43,6 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
         setIsModalVisible(false);
     };
 
-    const [currentPage, setCurrentPage] = useState(1);
     const _onChangePagination = newValue => {
         setCurrentPage(newValue);
 
@@ -116,14 +115,21 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
 
 function RequestsView() {
     const {requests, fetching, fetchRequests, pages, amount, pageSize} = useRequests();
+    const {jwt} = useLogin().state;
+
+    const [appliedFilters, setAppliedFilters] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const fetchPage = page => {
-        fetchRequests({page})
+        const params = {
+            ...appliedFilters,
+            page
+        }
+        fetchRequests(params)
+
     };
 
-    const {jwt} = useLogin().state;
     const [filters, setFilters] = useState(null);
-
     const fetchFilters = async () => {
         try{
             const newFilters = await getRequestsFilters(jwt);
@@ -136,13 +142,15 @@ function RequestsView() {
 
     useEffect(()=>{
         fetchFilters();
-    }, []);
+    });
 
     return <ContentWithSidebar
         sideContent={
             <SideContent
                 filters={filters}
                 fetchRequests={fetchRequests}
+                changeFilters={setAppliedFilters}
+                setCurrentPage={setCurrentPage}
             />
         }
         mainContent={
@@ -154,6 +162,8 @@ function RequestsView() {
                 pageSize={pageSize}
                 fetchPage={fetchPage}
                 fetchFilters={fetchFilters}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
             />
         }
     />;

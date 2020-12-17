@@ -72,9 +72,11 @@ export async function rejectInterest(id, jwt){
     }
 }
 
-export async function getInterestsFilters(jwt){
+export async function getInterestsFilters({petId, status},jwt){
     try{
-        const config = getAuthConfig(jwt);
+        const config = Object.assign(getAuthConfig(jwt),{
+            params: {petId, status}
+        });
         const response = await axios.get(SERVER_URL + INTERESTS_FILTERS_ENDPOINT, config);
         return response.data;
     }catch (e) {
