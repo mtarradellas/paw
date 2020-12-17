@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,6 +42,7 @@ import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Department;
@@ -97,9 +97,6 @@ public class PetController{
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange,
                             @QueryParam("page") @DefaultValue("1") int page) {
 
-        
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
 
         final String locale = ApiUtils.getLocale();
         int[] range;

@@ -189,6 +189,14 @@ public class ParseUtils {
         return questionId;
     }
 
+    public static String parseQuestion(String question) {
+        if (question == null || question.length() > 250 || question.length() < 1) {
+            String hint = "Question must have between 1 and 250 characters";
+            throw new BadRequestException("Question", question, hint);
+        }
+        return question;
+    }
+
     public static void parseReview(ReviewDto review) {
         if (review == null || review.getTargetId() == null || review.getScore() == null) {
             String hint = "Review is missing a required attribute";

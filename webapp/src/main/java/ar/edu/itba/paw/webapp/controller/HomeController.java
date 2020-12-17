@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
@@ -126,9 +124,8 @@ public class HomeController {
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
 
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
         try {
-            userService.requestPasswordReset(dto.getMail(), baseUrl);
+            userService.requestPasswordReset(dto.getMail(), uriInfo.getBaseUri().toString());
         } catch (NotFoundException ex) {
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();

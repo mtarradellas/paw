@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.QuestionException;
 import ar.edu.itba.paw.models.Answer;
 import ar.edu.itba.paw.models.Question;
@@ -90,6 +91,13 @@ public class QuestionController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
         Optional<Question> opNewQuestion;
+        if (question == null || question.getPetId() == null) return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
+        try {
+            question.setContent(ParseUtils.parseQuestion(question.getContent()));
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
         try {
             opNewQuestion = petService.createQuestion(question.getContent(), loggedUser.getId(), question.getPetId(), uriInfo.getBaseUri().toString());
         } catch(NotFoundException ex) {
@@ -145,6 +153,7 @@ public class QuestionController {
         User loggedUser = ApiUtils.loggedUser(userService, auth);
         try {
             questionId = ParseUtils.parseQuestionId(questionId);
+            answer.setContent(ParseUtils.parseQuestion(answer.getContent()));
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();

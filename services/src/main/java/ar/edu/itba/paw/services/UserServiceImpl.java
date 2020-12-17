@@ -27,6 +27,7 @@ import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.UserStatus;
 
@@ -108,12 +109,12 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
 
-        Map<String, Object> arguments = new HashMap<>();
-        String urlToken = contextURL + "/account-activation";
+        Map<MailArg, Object> arguments = new HashMap<>();
+        String urlToken = contextURL + "/activate-account";
         urlToken += "?token=" + uuid;
 
-        arguments.put("URLToken", urlToken );
-        arguments.put("username",user.getUsername());
+        arguments.put(MailArg.TOKEN, urlToken );
+        arguments.put(MailArg.USERNAME,user.getUsername());
 
         String userLocale = user.getLocale();
 
@@ -232,13 +233,13 @@ public class UserServiceImpl implements UserService {
         UUID token = UUID.randomUUID();
         createToken(token, user);
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
         String urlToken = contextURL + "/password-reset";
         urlToken += "?token=" + token;
 
-        arguments.put("URLToken", urlToken );
-        arguments.put("username",user.getUsername());
+        arguments.put(MailArg.TOKEN, urlToken );
+        arguments.put(MailArg.USERNAME,user.getUsername());
 
         String userLocale = user.getLocale();
 
