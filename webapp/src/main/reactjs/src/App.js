@@ -50,7 +50,9 @@ import {
     ADMIN_USERS,
     ADMIN_REQUESTS,
     ADD_PET,
-    FORGOT_PASSWORD
+    FORGOT_PASSWORD,
+    VERIFY_EMAIL,
+    RESET_PASSWORD
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -62,6 +64,8 @@ import useConstants from "./hooks/useConstants";
 import {Spin} from "antd";
 import PrivateRoute from "./components/PrivateRoute";
 import AddPetView from "./views/addPet/AddPetView";
+import EmailSent from "./views/information/EmailSent"
+
 
 function App() {
     const login = useLoginState();
@@ -98,6 +102,11 @@ function App() {
                                 <Route exact path={FORGOT_PASSWORD}>
                                     <BasicLayout>
                                         <ForgotPasswordView/>
+                                    </BasicLayout>
+                                </Route>
+                                <Route exact path={VERIFY_EMAIL}>
+                                    <BasicLayout>
+                                        <EmailSent/>
                                     </BasicLayout>
                                 </Route>
                                 <PrivateRoute path={USER + ':id'}

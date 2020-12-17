@@ -12,6 +12,8 @@ export const USER = '/user/';
 
 export const FORGOT_PASSWORD = '/forgot-password';
 
+export const RESET_PASSWORD = '/reset-password';
+
 export const PET = '/pet/';
 
 export const ADD_PET = '/add-pet';
