@@ -64,7 +64,8 @@ import useConstants from "./hooks/useConstants";
 import {Spin} from "antd";
 import PrivateRoute from "./components/PrivateRoute";
 import AddPetView from "./views/addPet/AddPetView";
-import EmailSent from "./views/information/EmailSent"
+import EmailSent from "./views/information/EmailSent";
+import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
 
 
 function App() {
@@ -102,6 +103,11 @@ function App() {
                                 <Route exact path={FORGOT_PASSWORD}>
                                     <BasicLayout>
                                         <ForgotPasswordView/>
+                                    </BasicLayout>
+                                </Route>
+                                <Route exact path={RESET_PASSWORD}>
+                                    <BasicLayout>
+                                        <ResetPasswordView/>
                                     </BasicLayout>
                                 </Route>
                                 <Route exact path={VERIFY_EMAIL}>
