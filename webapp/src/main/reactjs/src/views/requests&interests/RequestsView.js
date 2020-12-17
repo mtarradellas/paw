@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Button, Modal, Row, Col, Divider, Pagination, Spin} from 'antd';
 
 import {useTranslation} from "react-i18next";
@@ -12,18 +12,24 @@ import "../../css/requests&interests/requests-interests.css"
 import useRequests from "../../hooks/useRequests";
 import _ from "lodash";
 
+import {getRequestsFilter} from "../../api/requests";
+import useLogin from "../../hooks/useLogin";
+
 /*
 *  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
 *  PET STATUSES: AVAILABLE, REMOVED, SOLD, UNAVAILABLE
 * */
 
-function SideContent() {
+function SideContent({filters,fetchRequests}) {
     return (<div>
-        <FilterRequestsForm/>
+        <FilterRequestsForm
+            filters={filters}
+            fetchRequests={fetchRequests}
+        />
     </div>)
 }
 
-function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchPage}) {
+function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchPage, fetchFilters}) {
     const {t} = useTranslation('requests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -43,6 +49,10 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
 
         fetchPage(newValue);
     };
+
+    const reloadPage = () => {
+        fetchPage(currentPage);
+    }
 
     return (<div>
         <Row style={{margin: 0, padding: 0}}>
@@ -77,7 +87,7 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
             _.isNil(requests) || fetching ?
                 <Spin/>
                 :
-                <RequestContainer requests={requests}/>
+                <RequestContainer requests={requests} reloadPage={reloadPage} fetchFilters={fetchFilters}/>
         }
 
         <Divider orientation={"left"}>
@@ -114,9 +124,29 @@ function RequestsView() {
         fetchRequests({page})
     };
 
+    const {jwt} = useLogin().state;
+    const [filters, setFilters] = useState(null);
+
+    const fetchFilters = async () => {
+        try{
+            const newFilters = await getRequestsFilter(jwt);
+
+            setFilters(newFilters);
+        }catch (e) {
+            //TODO: conn error
+        }
+    };
+
+    useEffect(()=>{
+        fetchFilters();
+    }, []);
+
     return <ContentWithSidebar
         sideContent={
-            <SideContent/>
+            <SideContent
+                filters={filters}
+                fetchRequests={fetchRequests}
+            />
         }
         mainContent={
             <MainContent
@@ -126,6 +156,7 @@ function RequestsView() {
                 pages={pages}
                 pageSize={pageSize}
                 fetchPage={fetchPage}
+                fetchFilters={fetchFilters}
             />
         }
     />;

@@ -4,7 +4,21 @@ import _ from 'lodash';
 import {getAuthConfig} from "./utils";
 
 const GET_REQUESTS_ENDPOINT = "/requests";
+const CANCEL_REQUEST_ENDPOINT = (id) => "/requests/" + id + "/cancel";
+const RECOVER_REQUEST_ENDPOINT = (id) => "/requests/" + id + "/recover";
+const FILTER_REQUEST_ENDPOINT = "/requests/filters";
+
+
 export const GET_REQUESTS_ERRORS = {
+    CONN_ERROR: 0
+};
+export const CANCEL_REQUEST_ERRORS = {
+    CONN_ERROR: 0
+};
+export const RECOVER_REQUEST_ERRORS = {
+    CONN_ERROR: 0
+};
+export const FILTER_REQUEST_ERRORS = {
     CONN_ERROR: 0
 };
 
@@ -31,5 +45,39 @@ export async function getRequests(
         }
     } catch (e) {
         throw GET_REQUESTS_ERRORS.CONN_ERROR;
+    }
+}
+
+export async function cancelRequest(id, jwt){
+    try{
+        const config = getAuthConfig(jwt);
+        const response = await axios.post(SERVER_URL + CANCEL_REQUEST_ENDPOINT(id), {} , config);
+
+        return response.data
+    } catch (e){
+        throw CANCEL_REQUEST_ERRORS.CONN_ERROR;
+    }
+}
+
+export async function recoverRequest( id, jwt){
+    try{
+        const config = getAuthConfig(jwt);
+        const response = await axios.post(SERVER_URL + RECOVER_REQUEST_ENDPOINT(id), {} , config);
+
+        return response.data
+    } catch (e){
+        throw RECOVER_REQUEST_ERRORS.CONN_ERROR;
+    }
+}
+
+export async function getRequestsFilter(jwt){
+    try{
+        const config = getAuthConfig(jwt);
+        const response = await axios.get(SERVER_URL + FILTER_REQUEST_ENDPOINT, config);
+        const {statusList} = response.data;
+
+        return statusList;
+    }catch (e) {
+        throw FILTER_REQUEST_ERRORS.CONN_ERROR;
     }
 }
