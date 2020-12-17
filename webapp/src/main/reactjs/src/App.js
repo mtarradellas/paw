@@ -20,7 +20,7 @@ import InterestsView from "./views/requests&interests/InterestsView";
 
 import ErrorWithImage from "./views/errors/ErrorWithImage";
 
-import ForgotPassword from "./views/forgotPassword/forgotPassword"
+import ForgotPassword from "./views/forgotPassword/ForgotPasswordView"
 import AdminHome from "./views/admin/AdminHome";
 import AdminRequests from "./views/admin/requests/AdminRequests";
 import AdminUsers from "./views/admin/users/AdminUsers";
@@ -56,6 +56,7 @@ import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
 import RegisterView from "./views/register/RegisterView";
 import LoginView from "./views/login/LoginView";
+import ForgotPasswordView from "./views/forgotPassword/ForgotPasswordView";
 import PetView from "./views/pet/PetView";
 import useConstants from "./hooks/useConstants";
 import {Spin} from "antd";
@@ -94,7 +95,11 @@ function App() {
                                         <LoginView/>
                                     </BasicLayout>
                                 </Route>
-
+                                <Route exact path={FORGOT_PASSWORD}>
+                                    <BasicLayout>
+                                        <ForgotPasswordView/>
+                                    </BasicLayout>
+                                </Route>
                                 <PrivateRoute path={USER + ':id'}
                                               component={
                                                   () => (<BasicLayout>

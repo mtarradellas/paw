@@ -38,3 +38,16 @@ export async function login({username, password}){
         throw e.response.status === 401 ? LOGIN_ERRORS.INVALID_USERNAME_OR_PASSWORD : LOGIN_ERRORS.CONN_ERROR;
     }
 }
+
+const FORGOT_PASSWORD_ENDPOINT = '/request-password-reset';
+export const FORGOT_PASSWORD_ERRORS = {
+    NON_EXISTENT_EMAIL: 2,
+    CONN_ERROR: 1
+};
+export async function forgotPassword({email}){
+    try {
+        await axios.post(SERVER_URL + FORGOT_PASSWORD_ENDPOINT, {mail: email},{});
+    }catch (e) {
+        throw _.get(e, 'response.data.code', FORGOT_PASSWORD_ERRORS.CONN_ERROR);
+    }
+}
