@@ -8,10 +8,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -97,13 +99,13 @@ public class HomeController {
 
     @POST
     @Path("/activate-account")
-    public Response activateAccount(final PasswordDto dto) {
+    public Response activateAccount(@QueryParam("token") String token) {
         
-        if (dto == null || dto.getToken() == null) {
+        if (token == null) {
             LOGGER.warn("Token parameter null.");
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final UUID uuid = UUID.fromString(dto.getToken());
+        final UUID uuid = UUID.fromString(token);
 
         try {
             userService.activateAccountWithToken(uuid);

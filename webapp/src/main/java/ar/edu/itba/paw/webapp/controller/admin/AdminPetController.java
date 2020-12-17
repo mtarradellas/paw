@@ -31,9 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
-import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
@@ -63,12 +61,6 @@ public class AdminPetController {
 
     @Autowired
     private PetService petService;
-
-    @Autowired
-    private SpeciesService speciesService;
-
-    @Autowired
-    private LocationService locationService;
 
     @Autowired
     private UserService userService;
