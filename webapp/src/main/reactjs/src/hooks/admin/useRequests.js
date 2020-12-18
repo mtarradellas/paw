@@ -15,11 +15,11 @@ const useAdminRequests = () => {
         setFetching(true);
 
         try{
-            const params = Object.assign(filters, {userId: id});
-            const {amount, list, pages,pageSize} = await getAdminRequests(params,jwt);
+            const params = Object.assign(filters, {});
+            const {amount, list, pages, pageSize} = await getAdminRequests(params,jwt);
 
             setAdminRequests(list);
-            setPaginationInfo()
+            setPaginationInfo({amount, pages, pageSize})
 
         }catch (e){
             console.log(e)

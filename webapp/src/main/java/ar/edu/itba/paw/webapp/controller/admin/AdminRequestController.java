@@ -166,7 +166,6 @@ public class AdminRequestController {
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-
         List<RequestStatus> statusList;
         if(requestStatus != null)  {
             statusList = new ArrayList<>();
@@ -253,8 +252,9 @@ public class AdminRequestController {
     @POST
     @Path("/{requestId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response editRequest(final RequestDto requestDto) {
-        if (requestDto == null || requestDto.getId() == null || requestDto.getStatus() == null) {
+    public Response editRequest(final RequestDto requestDto,
+                                @PathParam("requestId") long requestId) {
+        if (requestDto == null || requestDto.getStatus() == null) {
             final ErrorDto body = new ErrorDto(1, "Missing required fields.");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -268,7 +268,7 @@ public class AdminRequestController {
         }
 
         try {
-            requestService.adminUpdateStatus(requestDto.getId(), status);
+            requestService.adminUpdateStatus(requestId, status);
         } catch (NotFoundException | RequestException ex) {
             LOGGER.warn(ex.getMessage());
             final ErrorDto body = new ErrorDto(3, ex.getMessage());

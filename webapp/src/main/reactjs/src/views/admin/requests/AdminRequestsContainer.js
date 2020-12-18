@@ -1,18 +1,36 @@
 import React, {useState} from 'react';
-import {Button, Divider, List, Modal} from "antd";
+import {Button, List, Modal} from "antd";
 import {useTranslation} from "react-i18next";
 
 import ListContainer from "../../../components/ListContainer";
 import {ADMIN_PET, ADMIN_USER, ADMIN_EDIT_REQUEST} from "../../../constants/routes";
+import useLogin from "../../../hooks/useLogin";
+import {editAdminRequest} from "../../../api/admin/requests";
 
 
 function Request(
-    {id, creationDate, updateDate, status, user, userId, pet, petId, petStatus, newPetOwner, newPetOwnerId, modal}) {
+    {id, creationDate, updateDate, status, username, userId, petName, petId, modal, fetchFilters}) {
     const {t} = useTranslation("admin");
 
+    const {jwt} = useLogin().state;
+
+    const REQUEST_STATUS = {
+        PENDING: 0,
+        ACCEPTED: 1,
+        REJECTED: 2,
+        CANCELED: 3,
+        SOLD: 4
+    }
+
+    const [requestStatus, setRequestStatus] = useState(status)
+
     let reqTarget = (
-        <p>{t("requestsList.isInterested", {petName: pet, username: user})}
-            <small className={"date-text"}> {updateDate.toLocaleString()}  </small>
+        <p>{t("requestsList.isInterested", {petName: petName, username: username})}
+            <small className={"date-text"}> {t("date", {
+                day: updateDate.date.day,
+                month: updateDate.date.month,
+                year: updateDate.date.year
+            })} </small>
             (id: {id})
         </p>
 
@@ -21,32 +39,19 @@ function Request(
     let reqButtons = null;
     let shaded = false;
 
-    if (status === "ACCEPTED") {
-        const onConfirm = () => {
-            alert("canceled" + id)
+    if (requestStatus === REQUEST_STATUS.REJECTED) {
+        shaded = true
+        const onConfirm = async () => {
+            try{
+                await editAdminRequest(REQUEST_STATUS.PENDING, id, jwt)
+                fetchFilters();
+                setRequestStatus(REQUEST_STATUS.PENDING);
+            }catch (e){
+                console.log(e)
+            }
         }
 
-        const modalMessage = t("modals.cancelRequest")
-
-        reqStatus = <p>{t("status.notSold")}</p>
-        reqButtons = (
-            <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + petId}>{t("buttons.visitPet")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitUser")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_REQUEST + id}>{t("buttons.edit")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} danger
-                        onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.cancel")}</Button>
-            </div>
-        )
-    } else if (status === "REJECTED") {
-        const onConfirm = () => {
-            alert("canceled" + id)
-        }
-
-        const modalMessage = t("modals.cancelRequest")
+        const modalMessage = t("modals.recoverRequest")
 
         reqStatus = <p>{t("status.rejected")}</p>
         reqButtons = (
@@ -58,12 +63,18 @@ function Request(
                 <Button type={"primary"} href={ADMIN_EDIT_REQUEST + id}>{t("buttons.edit")}</Button>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger
-                        onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.cancel")}</Button>
+                        onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )
-    } else if (status === "PENDING") {
-        const onConfirm = () => {
-            alert("canceled" + id)
+    } else if (requestStatus === REQUEST_STATUS.PENDING) {
+        const onConfirm = async () => {
+            try{
+                await editAdminRequest( REQUEST_STATUS.CANCELED, id, jwt)
+                fetchFilters();
+                setRequestStatus(REQUEST_STATUS.CANCELED);
+            }catch (e){
+                console.log(e)
+            }
         }
 
         const modalMessage = t("modals.cancelRequest")
@@ -82,10 +93,16 @@ function Request(
             </div>
         )
 
-    } else if (status === "CANCELED") {
+    } else if (requestStatus === REQUEST_STATUS.CANCELED) {
         shaded = true;
-        const onConfirm = () => {
-            alert("recovered" + id)
+        const onConfirm = async () => {
+            try{
+                await editAdminRequest( REQUEST_STATUS.PENDING, id, jwt)
+                fetchFilters();
+                setRequestStatus(REQUEST_STATUS.PENDING);
+            }catch (e){
+                console.log(e)
+            }
         }
 
         const modalMessage = t("modals.recoverRequest")
@@ -104,15 +121,21 @@ function Request(
             </div>
         )
 
-    } else if (status === "SOLD") {
+    } else if (requestStatus === REQUEST_STATUS.SOLD || requestStatus === REQUEST_STATUS.ACCEPTED) {
         shaded = true;
-        const onConfirm = () => {
-            alert("recovered" + id)
+        const onConfirm = async () => {
+            try{
+                await editAdminRequest(REQUEST_STATUS.PENDING, id, jwt)
+                fetchFilters();
+                setRequestStatus(REQUEST_STATUS.PENDING);
+            }catch (e){
+                console.log(e)
+            }
         }
 
         const modalMessage = t("modals.recoverRequest")
 
-        reqStatus = <p>{t("status.soldTo", {ownerName: newPetOwner})}</p>
+        reqStatus = <p>{t("status.sold")}</p>
         reqButtons = (
             <div className={"button-container"}>
                 <Button type={"primary"} href={ADMIN_PET + petId}>{t("buttons.visitPet")}</Button>
@@ -133,7 +156,7 @@ function Request(
     )
 }
 
-function AdminRequestsContainer({requests}) {
+function AdminRequestsContainer({requests, fetchFilters}) {
     const {t} = useTranslation("admin");
 
     const [modalState, setModalState] = useState({show: false, callbackMethod: null, modalMessage: ""});
@@ -156,7 +179,10 @@ function AdminRequestsContainer({requests}) {
                         .map(
                             (request) => (
                                 <List.Item key={request.id}>
-                                    <Request modal={showModal} {...request} />
+                                    <Request
+                                        modal={showModal}
+                                        fetchFilters={fetchFilters}
+                                        {...request} />
                                 </List.Item>
                             )
                         )

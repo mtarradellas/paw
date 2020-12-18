@@ -4,8 +4,16 @@ import _ from 'lodash';
 import {getAuthConfig} from "../utils";
 
 const GET_ADMIN_REQUESTS_ENDPOINT = "/admin/requests";
+const EDIT_ADMIN_REQUESTS_ENDPOINT = (id) => "/admin/requests/"+id+"/edit"
+const GET_ADMIN_REQUESTS_FILTERS = "/admin/requests/filters";
 
 export const GET_REQUESTS_ERROR = {
+    CON_ERROR: 0
+};
+export const EDIT_REQUESTS_ERROR = {
+    CON_ERROR: 0
+};
+export const GET_REQUESTS_FILTERS_ERROR = {
     CON_ERROR: 0
 };
 
@@ -18,10 +26,8 @@ export async function getAdminRequests(
                 page, userId, petId, status, searchCriteria, searchOrder
             }
         });
-        const response = axios.get(SERVER_URL + GET_ADMIN_REQUESTS_ENDPOINT, config);
-        console.log(response)
+        const response = await axios.get(SERVER_URL + GET_ADMIN_REQUESTS_ENDPOINT, config);
         const {list, pages, amount, pagesize} = response.data;
-        console.log(list)
 
         return {
             pages,
@@ -34,5 +40,28 @@ export async function getAdminRequests(
         }
     } catch(e){
         throw GET_REQUESTS_ERROR.CON_ERROR;
+    }
+}
+
+export async function editAdminRequest(status, id, jwt){
+    try{
+        const config = getAuthConfig(jwt);
+        const response = await axios.post(SERVER_URL + EDIT_ADMIN_REQUESTS_ENDPOINT(id), {status: status} , config);
+        return response.data
+
+    }catch (e){
+        throw EDIT_REQUESTS_ERROR.CON_ERROR;
+    }
+}
+
+export async function getAdminRequestsFilters(jwt){
+    try{
+        const config = getAuthConfig(jwt);
+        const response = await axios.get(SERVER_URL + GET_ADMIN_REQUESTS_FILTERS,config);
+        const {statusList} = response.data;
+
+        return statusList;
+    }catch (e){
+        throw GET_REQUESTS_FILTERS_ERROR.CON_ERROR;
     }
 }

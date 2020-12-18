@@ -1,103 +1,32 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useTranslation} from "react-i18next";
 
 import ContentWithSidebar from "../../../components/ContentWithSidebar";
 import AdminFilterRequestsForm from "./AdminFilterRequestsForm";
-import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
+import {Button, Col, Divider, Modal, Pagination, Row, Spin} from "antd";
 import AdminRequestsContainer from "./AdminRequestsContainer";
 
 import {ADMIN_ADD_REQUEST} from "../../../constants/routes";
 import useAdminRequests from "../../../hooks/admin/useRequests";
+import useLogin from "../../../hooks/useLogin";
+import _ from "lodash";
+import {getAdminRequestsFilters} from "../../../api/admin/requests";
 
-const request = {
-    id: 0,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "ACCEPTED",
-    user: "pedro",
-    userId: 4,
-    pet: "Cato",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
 
-}
-
-const request1 = {
-    id: 42,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "CANCELED",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const request2 = {
-    id: 12,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "REJECTED",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const request3 = {
-    id: 414,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "PENDING",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const request4 = {
-    id: 20,
-    creationDate: "02-03-2020",
-    updateDate: "05-05-2020",
-    status: "SOLD",
-    user: "pedro",
-    userId: 4,
-    pet: "nairobi",
-    petId: 41,
-    petStatus: "AVAILABLE",
-    newPetOwner: "JORGE",
-    newPetOwnerId: 1
-
-}
-
-const sampleRequests = []
-sampleRequests.push(request)
-sampleRequests.push(request1)
-sampleRequests.push(request2)
-sampleRequests.push(request3)
-sampleRequests.push(request4)
-
-function SideContent() {
+function SideContent({filters, changeFilters, setCurrentPage, fetchAdminRequests}) {
     return (<div>
-        <AdminFilterRequestsForm/>
+        <AdminFilterRequestsForm
+            filters={filters}
+            changeFilters={changeFilters}
+            setCurrentPage={setCurrentPage}
+            fetchAdminRequests={fetchAdminRequests}
+        />
     </div>)
 }
 
-function MainContent({requests, requestsCount}) {
+function MainContent(
+    {requestsCount, requests, fetching, pages, pageSize, fetchPage, currentPage, setCurrentPage, fetchFilters}
+    ) {
     const {t} = useTranslation('admin');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -114,12 +43,23 @@ function MainContent({requests, requestsCount}) {
         setIsModalVisible(false);
     };
 
+    const _onChangePagination = newValue => {
+        setCurrentPage(newValue);
+
+        fetchPage(newValue);
+    };
+
     return (
         <div>
             <Row style={{margin: 0, padding: 0}}>
                 <Col span={23}>
                     <Row>
-                        <h1><b>{t('requestsList.title', {count: requestsCount})}</b></h1>
+                        <h1><b>
+                            {
+                                !_.isNil(requestsCount) && t('requestsList.title', {count: requestsCount})
+                            }
+                        </b>
+                        </h1>
                         <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"} href={ADMIN_ADD_REQUEST}>{t('addRequest')}</Button>
                     </Row>
                 </Col>
@@ -127,7 +67,6 @@ function MainContent({requests, requestsCount}) {
                     <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
                 </Col>
             </Row>
-            <Pagination defaultCurrent={1} total={50}/>
             <Row style={{margin: 0, padding: 0}}>
                 <Col span={12}>
                     <h3><b>{t("requestsList.request")}</b></h3>
@@ -143,9 +82,19 @@ function MainContent({requests, requestsCount}) {
                 </Col>
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
-            <AdminRequestsContainer requests={requests}/>
-            <Divider />
-            <Pagination defaultCurrent={1} total={50}/>
+            {
+                _.isNil(requests) || fetching ?
+                    <Spin/>
+                    :
+                    <AdminRequestsContainer requests={requests} fetchFilters={fetchFilters}/>
+            }
+            <Divider orientation={"left"}>
+                {
+                    pageSize && requestsCount &&
+                    <Pagination showSizeChanger={false} current={currentPage} total={requestsCount} pageSize={pageSize}
+                                onChange={_onChangePagination}/>
+                }
+            </Divider>
             <Modal
                 title={t("modals.help.title")}
                 visible={isModalVisible}
@@ -169,19 +118,59 @@ function MainContent({requests, requestsCount}) {
 
 function AdminRequests() {
     const {adminRequests,fetchAdminRequests,fetching, pages, amount, pageSize} = useAdminRequests();
-    // console.log(adminRequests);
-    // console.log(amount);
 
-    const requests = sampleRequests;
-    const requestsCount = sampleRequests.length;
+    const {jwt} = useLogin().state;
+
+    const [appliedFilters, setAppliedFilters] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const fetchPage = page => {
+        const params = {
+            ...appliedFilters,
+            page
+        }
+        fetchAdminRequests(params)
+    };
+
+    const [filters, setFilters] = useState(null);
+    console.log(filters)
+    const fetchFilters = async () => {
+        try{
+            const newFilters = await getAdminRequestsFilters(jwt);
+
+            setFilters(newFilters);
+        }catch (e) {
+            //TODO: conn error
+        }
+    };
+
+    useEffect(()=>{
+        fetchFilters();
+    });
+
 
     return (
         <ContentWithSidebar
             mainContent={
-                <MainContent requests={requests} requestsCount={requestsCount}/>
+                <MainContent
+                    requestsCount={amount}
+                    requests={adminRequests}
+                    fetching={fetching}
+                    pages={pages}
+                    pageSize={pageSize}
+                    fetchPage={fetchPage}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    fetchFilters={fetchFilters}
+                />
             }
             sideContent={
-                <SideContent/>
+                <SideContent
+                    filters={filters}
+                    changeFilters={setAppliedFilters}
+                    setCurrentPage={setCurrentPage}
+                    fetchAdminRequests={fetchAdminRequests}
+                />
             }
         />
     )
