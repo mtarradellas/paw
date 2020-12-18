@@ -9,6 +9,7 @@ public enum MailArg {
     USERNAME("userName"),
     QUESTION("question"),
     ANSWER("answer"),
+    REQUESTURL("requestURL"),
     REQUEST("request"),
     URL("URL"),
     TOKEN("URLToken");
