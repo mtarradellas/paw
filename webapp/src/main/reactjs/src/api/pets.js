@@ -54,7 +54,7 @@ export async function createPet(
     const config = getAuthConfig(jwt);
 
     try{
-        const response = await axios.post(CREATE_PET_ENDPOINT, {
+        const response = await axios.post(SERVER_URL + CREATE_PET_ENDPOINT, {
 
         }, config);
     }catch (e) {
@@ -63,3 +63,27 @@ export async function createPet(
         throw CREATE_PET_ERRORS.CONN_ERROR;
     }
 }
+
+const PET_FILTERS_ENDPOINT = "/pets/filters";
+export const PET_FILTERS_ERRORS = {
+    CONN_ERROR: 0
+};
+export async function petFilters(
+    {ownerId, species, breed, province, department, gender, find, priceRange}
+) {
+    try {
+        const response = await axios.get(SERVER_URL + PET_FILTERS_ENDPOINT,
+            {
+                params: {ownerId, species, breed, province, department, gender, find, priceRange}
+            });
+
+        return _.pick(response.data, ['speciesList', 'breedList', 'departmentList', 'provinceList', 'genderList', 'rangeList']);
+    } catch (e) {
+        throw PET_FILTERS_ERRORS.CONN_ERROR;
+    }
+}
+
+
+
+
+
