@@ -1,32 +1,18 @@
-import React from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
 import {useTranslation} from "react-i18next";
-import {Button, Divider, List} from "antd";
+import {Button, Divider, List, Spin} from "antd";
 import Questions from "./Questions";
 import {Link} from "react-router-dom";
 import {HOME, USER} from "../../constants/routes";
 import _ from 'lodash';
-
+import {getPet} from "../../api/pets";
+import {useParams} from 'react-router-dom';
+import {petImageSrc} from "../../api/images";
+import ConstantsContext from '../../constants/constantsContext';
+import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
 
 const ListItem = List.Item;
-
-const nairobi =  {
-    name: "Nairobi",
-    specie: "Perro",
-    breed: "Border Collie",
-    price: 3000,
-    gender: "Female",
-    owner: "lenny",
-    uploadDate: "05-05-2019",
-    description: "Es muy gentil con los chicos, muy pacifica.",
-    dateOfBirth: "05-05-2019",
-    province: 'Buenos Aires',
-    department: 'Departamento',
-    vaccinated: true,
-    onAdoption: false,
-    onSale: true,
-    ownerId: 16
-};
 
 function isMale(sex){
     return _.toLower(sex) === 'male';
@@ -34,45 +20,81 @@ function isMale(sex){
 
 function ListItemRow({name, value}){
     return <ListItem>
-        <b>{name}</b>: {value}
+        <b>{name}</b>: {_.isNil(value) ? <Spin/> : value}
     </ListItem>;
 }
 
-function Content({name, specie, breed, price, gender, owner, uploadDate, img, onAdoption, onSale,
-                     description, dateOfBirth, province, department, vaccinated, ownerId}){
+function Content({pet}){
     const {t} = useTranslation('petView');
 
-    return <>
-            <img alt="example" src="http://pawserver.it.itba.edu.ar/paw-2020a-7/img/1" />
+    const {breeds, species, provinces, departments} = useContext(ConstantsContext);
 
-            <p>{description}</p>
+    const {
+        petName,
+        birthDate,
+        gender,
+        vaccinated,
+        price,
+        uploadDate,
+        description,
+        username,
+        userId,
+        speciesId,
+        breedId,
+        provinceId,
+        departmentId,
+        images
+    } = pet;
+
+    console.log(species);
+
+    return <>
+            {
+                _.isNil(description) ?
+                    <Spin/>
+                    :
+                    <>
+                        <img alt="example" src={petImageSrc(images[0])}/>
+
+                        <p>{description}</p>
+                    </>
+            }
+
 
             <Divider/>
+
+            {
+                price === 0 ?
+                    <h2>{t('status.onAdoption')}</h2>
+                    :
+                    <h2>{t('status.onSale')}: ${price}</h2>
+            }
+
+            <Divider/>
+
 
             <h2>
                 { isMale(gender) ? t('someInformationAboutHim') : t('someInformationAboutHer') }:
             </h2>
 
             <List bordered={true}>
-                <ListItemRow name={t('details.name')} value={name}/>
-                <ListItemRow name={t('details.dateOfBirth')} value={dateOfBirth}/>
-                <ListItemRow name={t('details.specie')} value={specie}/>
-                <ListItemRow name={t('details.breed')} value={breed}/>
+                <ListItemRow name={t('details.name')} value={petName}/>
+                <ListItemRow name={t('details.dateOfBirth')} value={birthDate}/>
+                <ListItemRow name={t('details.specie')} value={speciesId && species[speciesId].name}/>
+                <ListItemRow name={t('details.breed')} value={breedId && breeds[breedId].name}/>
                 <ListItemRow name={t('details.sex')} value={t('details.' + _.toLower(gender))}/>
-                <ListItemRow name={t('details.province')} value={province}/>
-                <ListItemRow name={t('details.department')} value={department}/>
+                <ListItemRow name={t('details.province')} value={provinceId && provinces[provinceId].name}/>
+                <ListItemRow name={t('details.department')} value={departmentId && departments[departmentId].name}/>
                 <ListItemRow name={t('details.uploadDate')} value={uploadDate}/>
-                <ListItemRow name={t('details.owner')} value={owner}/>
-            </List>
-
-            <Divider/>
-
-            <h2>{t('status.header')}:</h2>
-
-            <List bordered={true}>
-                <ListItemRow name={t('status.vaccinated')} value={'' + vaccinated}/>
-                <ListItemRow name={t('status.onAdoption')} value={'' + onAdoption}/>
-                <ListItemRow name={t('status.onSale')} value={'' + onSale}/>
+                <ListItemRow name={t('details.owner')} value={<Link to={USER + userId}>{username}</Link>}/>
+                <ListItemRow name={t('status.vaccinated')}
+                             value={
+                                 vaccinated ?
+                                     <CheckOutlined />
+                                     :
+                                     <CloseOutlined />
+                             }
+                />
             </List>
 
             <Divider/>
@@ -84,7 +106,7 @@ function Content({name, specie, breed, price, gender, owner, uploadDate, img, on
             <Divider/>
 
             <div>
-                <Link to={USER + ownerId}>
+                <Link to={USER + userId}>
                     <Button>{t('goToOwnersPage')}</Button>
                 </Link>
             </div>
@@ -97,21 +119,57 @@ function Content({name, specie, breed, price, gender, owner, uploadDate, img, on
         </>;
 }
 
-function PetView({id}){
+const initialStatePet = {
+    petName: null,
+    birthDate: null,
+    gender: null,
+    vaccinated: null,
+    price: null,
+    uploadDate: null,
+    description: null,
+    status: null,
+    username: null,
+    userId: null,
+    speciesId: null,
+    breedId: null,
+    provinceId: null,
+    departmentId: null,
+    images: null
+};
+
+function PetView(){
+    const {id} = useParams();
+
+    const [pet, setPet] = useState(initialStatePet);
+
     const {t} = useTranslation('petView');
 
-    const {name} = nairobi;
+    const fetchPet = async () => {
+        try{
+            const result = await getPet({petId: id});
+
+            setPet(result);
+        }catch (e) {
+            //TODO: conn error
+        }
+    };
+
+    useEffect(()=>{
+        fetchPet();
+    }, []);
+
+    const {petName} = pet;
 
     return <ContentWithHeader
         content={
-            <Content {...nairobi}/>
+            <Content pet={pet}/>
         }
         actionComponents={
             [
                 <Button key={0}>Mascota Ya Solicitada</Button>
             ]
         }
-        title={t('title', {name})}
+        title={petName ? t('title', {name: petName}) : <Spin/>}
     />
 }
 
