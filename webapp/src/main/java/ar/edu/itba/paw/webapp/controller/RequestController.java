@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import com.google.gson.Gson;
@@ -140,6 +142,7 @@ public class RequestController {
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createRequest(final RequestDto requestDto) {
+        if (requestDto == null || requestDto.getPetId() == null) return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         final String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ApiUtils.loggedUser(userService, auth);
@@ -340,9 +343,16 @@ public class RequestController {
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
     }
 
-    // @GET
-    // @Path("/notifications")
-    // public Response getNotifications(@QueryParam("")) {
-        
-    // }
+    @GET
+    @Path("/notifications")
+    public Response getNotifications() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = ApiUtils.loggedUser(userService, auth);
+        int interests = requestService.interestNotifs(user);
+        int requests  = requestService.requestNotifs(user);
+        Map<String, Integer> json = new HashMap<>();
+        json.put("interests", interests);
+        json.put("requests", requests);
+        return Response.ok(new Gson().toJson(json)).build();
+    }
 }

@@ -33,6 +33,7 @@ import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.QuestionStatus;
@@ -506,12 +507,13 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
             pet.setStatus(PetStatus.SOLD);
             requestService.sell(pet, newOwner);
 
-            Map<String, Object> arguments = new HashMap<>();
+            Map<MailArg, Object> arguments = new HashMap<>();
 
-            arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-            arguments.put("petName", pet.getPetName());
-            arguments.put("ownerUsername", pet.getUser().getUsername());
-            arguments.put("ownerURL", contextURL + "/user/" + pet.getUser().getId());
+            arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+            arguments.put(MailArg.PETNAME, pet.getPetName());
+            arguments.put(MailArg.OWNERURL, contextURL + "user/" + pet.getUser().getId());
+            arguments.put(MailArg.OWNERNAME, pet.getUser().getUsername());
+            arguments.put(MailArg.USERNAME, newOwner.getUsername());
 
             String userLocale = pet.getNewOwner().getLocale();
 
@@ -674,13 +676,13 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
         Question question = petDao.createQuestion(content, user, pet.getUser(), pet, QuestionStatus.VALID);
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("petName", pet.getPetName());
-        arguments.put("userUsername", user.getUsername()); // User who asked the question
-        arguments.put("userURL", contextURL + "/user/" + user.getId()); // User who asked the question
-        arguments.put("question", content);
+        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETNAME, pet.getPetName());
+        arguments.put(MailArg.USERURL, contextURL + "user/" + user.getId()); // User who asked the question
+        arguments.put(MailArg.USERNAME, user.getUsername()); // User who asked the question
+        arguments.put(MailArg.QUESTION, content);
 
         String userLocale = pet.getUser().getLocale();
 
@@ -713,14 +715,14 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
         }
         Answer answer = petDao.createAnswer(question, content, user, question.getUser(), pet, QuestionStatus.VALID);
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("petName", pet.getPetName());
-        arguments.put("userUsername", user.getUsername()); // User who answered the question (pet owner)
-        arguments.put("userURL", contextURL + "/user/" + user.getId()); // User who answered the question (pet owner)
-        arguments.put("question", question.getContent());
-        arguments.put("answer", content);
+        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETNAME, pet.getPetName());
+        arguments.put(MailArg.USERURL, contextURL + "user/" + user.getId()); // User who answered the question (pet owner)
+        arguments.put(MailArg.USERNAME, user.getUsername()); // User who answered the question (pet owner)
+        arguments.put(MailArg.QUESTION, question.getContent());
+        arguments.put(MailArg.ANSWER, content);
 
         String userLocale = question.getUser().getLocale();
 

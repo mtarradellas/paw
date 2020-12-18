@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Map;
 import ar.edu.itba.paw.interfaces.MailService;
+import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -29,8 +30,7 @@ public class MailServiceImpl implements MailService {
     private MessageSource messageSource;
 
     @Async
-    public void sendMail(String recipient, String recipientLocale, Map<String, Object> arguments, MailType mailType){
-
+    public void sendMail(String recipient, String recipientLocale, Map<MailArg, Object> arguments, MailType mailType) {
 
         MimeMessagePreparator preparator = mimeMessage -> {
 
@@ -43,8 +43,8 @@ public class MailServiceImpl implements MailService {
 
             VelocityContext context = new VelocityContext();
 
-            for(String key : arguments.keySet()){
-                context.put(key,arguments.get(key));
+            for(MailArg key : arguments.keySet()){
+                context.put(key.getName(), arguments.get(key));
             }
             context.put("msg", messageSourceAccessor);
 
@@ -62,9 +62,9 @@ public class MailServiceImpl implements MailService {
     }
 
     /** TODO methond not used */
-    private String getMailTemplateName(MailType mailType){
-        return mailType.getName() + ".ftl";
-    }
+    // private String getMailTemplateName(MailType mailType){
+    //     return mailType.getName() + ".ftl";
+    // }
 
     private Locale getLocaleForMail(String recipientLocale){
         if(recipientLocale == null){
