@@ -5,7 +5,7 @@ import {HOME} from "../../constants/routes"
 import {Link} from "react-router-dom";
 
 function EmailSent({title}) {
-    const {t} = useTranslation("informationP    ")
+    const {t} = useTranslation("informationPages")
 
     return (
         <div>
@@ -15,7 +15,7 @@ function EmailSent({title}) {
             <br/>
             <br/>
             <div className={"centered"}>
-                <h1>{t('emailSent.checkEmail')}</h1>
+                <h1>{t('emailSent.checkMail')}</h1>
                 <h2><Link to={HOME}>{t('backToHome')}</Link></h2>
             </div>
             <div style={{height: "22rem"}}/>

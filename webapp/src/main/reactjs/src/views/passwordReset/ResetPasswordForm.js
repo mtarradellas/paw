@@ -44,7 +44,7 @@ function ResetPasswordForm({onSubmit, submitting}){
 
             <FormItem name>
                 <Button type="primary" htmlType="submit" loading={submitting}>
-                    {t('form.submit')}
+                    {t('submit')}
                 </Button>
             </FormItem>
 

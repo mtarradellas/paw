@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import SmallCenteredContent from "../../components/SmallCenteredContent";
-import RegisterForm from "./RegisterForm";
 import {useTranslation} from "react-i18next";
-import {register, REGISTER_ERRORS} from "../../api/authentication";
 import {message} from 'antd';
-import {useHistory} from 'react-router-dom';
+import {useHistory, useParams} from 'react-router-dom';
 import {VERIFY_EMAIL} from "../../constants/routes";
+import ResetPasswordForm from "./ResetPasswordForm";
+import {resetPassword} from "../../api/authentication";
 
-function ResetPasswordView(){
+function ResetPasswordView({token}){
     const {t} = useTranslation("forgotPassword");
     const history = useHistory();
 
@@ -17,7 +17,7 @@ function ResetPasswordView(){
         setSubmitting(true);
 
         try{
-            await register(values);
+            await resetPassword(values, token);
 
             history.push(VERIFY_EMAIL);
 
@@ -30,7 +30,8 @@ function ResetPasswordView(){
 
     return <SmallCenteredContent>
         <h1>{t('title')}</h1>
-        <RegisterForm
+        <div>{token}</div>
+        <ResetPasswordForm
             onSubmit={_onSubmit}
             submitting={submitting}
         />

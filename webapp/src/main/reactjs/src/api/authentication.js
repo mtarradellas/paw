@@ -52,15 +52,15 @@ export async function forgotPassword({email}){
     }
 }
 
-const RESET_PASSWORD_ENDPOINT = '/request-password-reset';
+const RESET_PASSWORD_ENDPOINT = '/password-reset';
 export const RESET_PASSWORD_ERRORS = {
     NON_EXISTENT_EMAIL: 2,
     CONN_ERROR: 1
 };
-export async function forgotPassword({email}){
+export async function resetPassword({password}, {token}){
     try {
-        await axios.post(SERVER_URL + FORGOT_PASSWORD_ENDPOINT, {mail: email},{});
+        await axios.post(SERVER_URL + RESET_PASSWORD_ENDPOINT, {password: password, token: token},{});
     }catch (e) {
-        throw e.response.status === 404 ? FORGOT_PASSWORD_ERRORS.NON_EXISTENT_EMAIL : FORGOT_PASSWORD_ERRORS.CONN_ERROR;
+        throw e.response.status === 400 ? FORGOT_PASSWORD_ERRORS.NON_EXISTENT_EMAIL : FORGOT_PASSWORD_ERRORS.CONN_ERROR;
     }
 }

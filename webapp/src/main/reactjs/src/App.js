@@ -105,11 +105,15 @@ function App() {
                                         <ForgotPasswordView/>
                                     </BasicLayout>
                                 </Route>
-                                <Route exact path={RESET_PASSWORD}>
-                                    <BasicLayout>
-                                        <ResetPasswordView/>
-                                    </BasicLayout>
-                                </Route>
+                                <Route path={RESET_PASSWORD }
+                                       render={
+                                    ({token}) => {
+                                      return <BasicLayout>
+                                          <ResetPasswordView token={token}/>
+                                      </BasicLayout>
+                                    }
+                                }/>
+
                                 <Route exact path={VERIFY_EMAIL}>
                                     <BasicLayout>
                                         <EmailSent/>
