@@ -39,11 +39,11 @@ import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.RequestException;
-import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
+import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.RequestDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
@@ -248,23 +248,19 @@ public class RequestController {
         List<Integer> statusIdList = statusList.stream().map(RequestStatus::getValue).collect(Collectors.toList());
 
         /** Pet Filter */
-        List<Long> petList;
-        if (pet != null) {
-            petList = new ArrayList<>();
-            petList.add(pet);
-        }
-        else {
-            try {
-                petList = requestService.filteredPetListByPetOwner(currentUser.getId(), pet, Collections.emptyList(), requestStatus)
-                        .stream().map(Pet::getId).collect(Collectors.toList());
-            } catch (NotFoundException ex) {
-                LOGGER.warn("{}", ex.getMessage());
-                final ErrorDto body = new ErrorDto(3, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
-            }
-        }
+        List<PetDto> petList;
 
-        Map<String, Object> filters = new TreeMap<>();
+        try {
+            petList = requestService.filteredPetListByPetOwner(currentUser.getId(), pet, Collections.emptyList(), requestStatus)
+                    .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        petList.forEach(System.out::println);
+
+        Map<String, Object> filters = new HashMap<>();
         filters.put("statusList", statusIdList);
         filters.put("petList", petList);
 

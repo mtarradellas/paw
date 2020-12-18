@@ -88,9 +88,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestStatus> filteredStatusList(Long userId, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
-        Optional<User> opUser = userService.findById(userId);
-        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
-        User user = opUser.get();
+        User user = userService.findById(userId).orElse(null);
         Set<Integer> results = requestDao.searchStatusList(user, pet, find, status );
         List<RequestStatus> toReturn = new ArrayList<>();
         results.forEach(r->toReturn.add(RequestStatus.values()[r]));
@@ -213,9 +211,9 @@ public class RequestServiceImpl implements RequestService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + user.getId());
         arguments.put(MailArg.OWNERNAME, request.getUser().getUsername());
         arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + pet.getUser().getId());
 
@@ -262,9 +260,9 @@ public class RequestServiceImpl implements RequestService {
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
         arguments.put(MailArg.REQUESTURL, contextURL + "interests" + "?targetId=" + recipient.getId());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
@@ -336,9 +334,9 @@ public class RequestServiceImpl implements RequestService {
         Map<MailArg, Object> arguments = new HashMap<>();
 
         arguments.put(MailArg.URL, contextURL);
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
@@ -379,9 +377,9 @@ public class RequestServiceImpl implements RequestService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
         arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + recipient.getId());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
