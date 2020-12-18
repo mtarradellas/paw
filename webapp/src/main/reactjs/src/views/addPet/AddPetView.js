@@ -21,6 +21,7 @@ function AddPetView(){
 
             history.push(PET + id);
         }catch (e) {
+            console.error(e)
             switch (e) {
                 case CREATE_PET_ERRORS.FORBIDDEN:
                     promptLogin();
