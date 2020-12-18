@@ -1,7 +1,7 @@
 import axios from "axios";
-import {SERVER_URL} from "../config";
+import {SERVER_URL} from "../../config";
 import _ from 'lodash';
-import {getAuthConfig} from "./utils";
+import {getAuthConfig} from "../utils";
 
 const GET_ADMIN_REQUESTS_ENDPOINT = "/admin/requests";
 
@@ -19,7 +19,9 @@ export async function getAdminRequests(
             }
         });
         const response = axios.get(SERVER_URL + GET_ADMIN_REQUESTS_ENDPOINT, config);
+        console.log(response)
         const {list, pages, amount, pagesize} = response.data;
+        console.log(list)
 
         return {
             pages,

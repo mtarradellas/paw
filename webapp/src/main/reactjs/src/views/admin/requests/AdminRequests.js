@@ -7,6 +7,7 @@ import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
 import AdminRequestsContainer from "./AdminRequestsContainer";
 
 import {ADMIN_ADD_REQUEST} from "../../../constants/routes";
+import useAdminRequests from "../../../hooks/admin/useRequests";
 
 const request = {
     id: 0,
@@ -167,6 +168,10 @@ function MainContent({requests, requestsCount}) {
 }
 
 function AdminRequests() {
+    const {adminRequests,fetchAdminRequests,fetching, pages, amount, pageSize} = useAdminRequests();
+    // console.log(adminRequests);
+    // console.log(amount);
+
     const requests = sampleRequests;
     const requestsCount = sampleRequests.length;
 
