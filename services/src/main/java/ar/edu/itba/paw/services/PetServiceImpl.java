@@ -509,9 +509,9 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
             Map<MailArg, Object> arguments = new HashMap<>();
 
-            arguments.put(MailArg.PETURL, contextURL + "/pet/" + pet.getId());
+            arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
             arguments.put(MailArg.PETNAME, pet.getPetName());
-            arguments.put(MailArg.OWNERURL, contextURL + "/user/" + pet.getUser().getId());
+            arguments.put(MailArg.OWNERURL, contextURL + "users/" + pet.getUser().getId());
             arguments.put(MailArg.OWNERNAME, pet.getUser().getUsername());
             arguments.put(MailArg.USERNAME, newOwner.getUsername());
 
@@ -678,9 +678,9 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "/pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.USERURL, contextURL + "/user/" + user.getId()); // User who asked the question
+        arguments.put(MailArg.USERURL, contextURL + "users/" + user.getId()); // User who asked the question
         arguments.put(MailArg.USERNAME, user.getUsername()); // User who asked the question
         arguments.put(MailArg.QUESTION, content);
 
@@ -717,9 +717,9 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "/pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.USERURL, contextURL + "/user/" + user.getId()); // User who answered the question (pet owner)
+        arguments.put(MailArg.USERURL, contextURL + "users/" + user.getId()); // User who answered the question (pet owner)
         arguments.put(MailArg.USERNAME, user.getUsername()); // User who answered the question (pet owner)
         arguments.put(MailArg.QUESTION, question.getContent());
         arguments.put(MailArg.ANSWER, content);

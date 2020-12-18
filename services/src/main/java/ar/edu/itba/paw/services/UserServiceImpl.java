@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Map<MailArg, Object> arguments = new HashMap<>();
-        String urlToken = contextURL + "/activate-account";
+        String urlToken = contextURL + "activate-account";
         urlToken += "?token=" + uuid;
 
         arguments.put(MailArg.TOKEN, urlToken );
@@ -235,7 +235,7 @@ public class UserServiceImpl implements UserService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        String urlToken = contextURL + "/password-reset";
+        String urlToken = contextURL + "password-reset";
         urlToken += "?token=" + token;
 
         arguments.put(MailArg.TOKEN, urlToken );
