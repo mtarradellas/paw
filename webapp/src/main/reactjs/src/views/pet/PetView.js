@@ -45,7 +45,7 @@ function Content({pet, id}){
         departmentId,
         images
     } = pet;
-    
+
     return <>
             {
                 _.isNil(description) ?

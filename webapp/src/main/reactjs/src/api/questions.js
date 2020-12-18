@@ -40,3 +40,26 @@ export async function getQuestions ({petId, page}, jwt){
         throw GET_QUESTIONS_ERRORS.CONN_ERROR;
     }
 }
+
+const CREATE_QUESTION_ENDPOINT = '/questions';
+export const CREATE_QUESTION_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1,
+    NOT_FOUND: 2
+};
+export async function createQuestion ({content, petId}, jwt){
+    const config = getAuthConfig(jwt);
+
+    try{
+        await axios.post(SERVER_URL + CREATE_QUESTION_ENDPOINT, {content, petId}, config);
+    }catch (e) {
+        switch (e.response.status) {
+            case 403:
+                return CREATE_QUESTION_ERRORS.FORBIDDEN;
+            case 400:
+                return CREATE_QUESTION_ERRORS.NOT_FOUND;
+            default:
+                return CREATE_QUESTION_ERRORS.CONN_ERROR;
+        }
+    }
+}

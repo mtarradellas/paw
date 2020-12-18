@@ -29,8 +29,11 @@
     "askButton": "Ask",
     "owner": "Owner",
     "errors": {
+      "min": "Question must be at least {{min}} characters long",
+      "max": "Question must be at most {{max}} characters long",
       "required": "Please enter a question"
-    }
+    },
+    "loadMore": "Load more"
   },
   "goToOwnersPage": "Go to owner's page",
   "backToHome": "< Back to home"

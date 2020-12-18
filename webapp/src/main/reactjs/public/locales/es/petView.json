@@ -29,8 +29,11 @@
     "askButton": "Preguntar",
     "owner": "Dueño",
     "errors": {
+      "min": "La pregunta debe tener al menos {{min}} caracteres",
+      "max": "La pregunta debe tener a lo sumo {{max}} catacteres",
       "required": "Por favor ingrese una pregunta"
-    }
+    },
+    "loadMore": "Cargar más"
   },
   "goToOwnersPage": "Ir a la página del dueño",
   "backToHome": "< Volver al inicio"
