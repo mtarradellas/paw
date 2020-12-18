@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -342,10 +343,16 @@ public class RequestController {
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
     }
 
-    /* TODO this shit */
-    // @GET
-    // @Path("/notifications")
-    // public Response getNotifications(@QueryParam("")) {
-        
-    // }
+    @GET
+    @Path("/notifications")
+    public Response getNotifications() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = ApiUtils.loggedUser(userService, auth);
+        int interests = requestService.interestNotifs(user);
+        int requests  = requestService.requestNotifs(user);
+        Map<String, Integer> json = new HashMap<>();
+        json.put("interests", interests);
+        json.put("requests", requests);
+        return Response.ok(new Gson().toJson(json)).build();
+    }
 }
