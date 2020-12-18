@@ -408,7 +408,7 @@ public class RequestJpaDaoImpl implements RequestDao {
     public boolean hasRequest(User user, User target) {
         String qStr = "SELECT count(*) " +
                       "FROM requests " +
-                      "WHERE ownerId = :user AND targetId = :target AND status = 1";
+                      "WHERE ownerId = :user AND targetId = :target AND status = 4";
 
         Query query = em.createNativeQuery(qStr);
         query.setParameter("user", user.getId());
