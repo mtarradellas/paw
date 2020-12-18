@@ -105,12 +105,12 @@ function App() {
                                         <ForgotPasswordView/>
                                     </BasicLayout>
                                 </Route>
-                                <Route path={RESET_PASSWORD }
-                                       render={
-                                    ({token}) => {
-                                      return <BasicLayout>
-                                          <ResetPasswordView token={token}/>
-                                      </BasicLayout>
+                                <Route path={RESET_PASSWORD + ':token'}
+                                       component={
+                                    () => {
+                                        return <BasicLayout>
+                                            <ResetPasswordView/>
+                                        </BasicLayout>
                                     }
                                 }/>
 
