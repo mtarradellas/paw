@@ -163,7 +163,7 @@
                                     <table border="0" cellspacing="0" cellpadding="0">
                                       <tbody>
                                         <tr>
-                                          <td align="center" style="border-radius: 3px;" bgcolor="#425b76" width="auto"><a href="#" target="_blank" style="border: 1px solid #425b76; border-radius: 3px; color: #FFFFFF; display: inline-block; font-size: 14px; font-weight: 500; line-height: 1; padding: 12px 20px; text-decoration: none; width: auto; min-width: 170px; white-space: nowrap; ">${msg.getMessage("mail.request.button")}</a></td>
+                                          <td align="center" style="border-radius: 3px;" bgcolor="#425b76" width="auto"><a href="${requestURL}" target="_blank" style="border: 1px solid #425b76; border-radius: 3px; color: #FFFFFF; display: inline-block; font-size: 14px; font-weight: 500; line-height: 1; padding: 12px 20px; text-decoration: none; width: auto; min-width: 170px; white-space: nowrap; ">${msg.getMessage("mail.request.button")}</a></td>
                                         </tr>
                                       </tbody>
                                     </table>
@@ -171,18 +171,6 @@
                                 </tr>
                               </tbody>
                             </table>
-                            <div itemscope itemtype="http://schema.org/EmailMessage">
-                              <div itemprop="potentialAction" itemscope itemtype="http://schema.org/ViewAction">
-                                <link itemprop="target" href="https://app.hubspot.com/login?loginRedirectUrl=https%3A%2F%2Fapp.hubspot.com%2Fsignup%2Fcrm%3FloginPortalId%3D733590%26didShowPartnerPrivacy%3Dfalse%26utm_medium%3Demail%26preReferrer%3Dhttps%25253A%25252F%25252Fapp.hubspot.com%25252Flogin%25253FloginPortalId%25253D733590%252526utm_source%25253Dhs_email%252526utm_medium%25253Demail%252526utm_content%25253D25593492%26utm_source%3Dhs_email%26utm_content%3D25593492%26nov%3D1%26lang%3Den">
-                                <meta itemprop="name" content="Log in">
-                              </div>
-                              <meta itemprop="description" content="Log ins">
-                            </div>
-                            <div itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-                              <meta itemprop="name" content="HubSpot">
-                              <link itemprop="url" content="https://www.hubspot.com">
-                              <link itemprop="url/googlePlus" content="https://plus.google.com/+hubspot/">
-                            </div>
                             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 0; height: 50px; width: 100%; min-width: 100%; line-height: 0;">
                               <tbody>
                                 <tr>
