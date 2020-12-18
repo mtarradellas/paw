@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.util;
 import java.util.Arrays;
 import java.util.List;
 
+import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ReviewDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
@@ -216,5 +217,19 @@ public class ParseUtils {
         parseUsername(user.getUsername());
         parseMail(user.getMail());
         parsePassword(user.getPassword());
+    }
+
+    public static void parsePet(PetDto pet) {
+        if (pet == null || pet.getPetName() == null) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+        pet.setPetName(pet.getPetName().trim().replaceAll(" +", " "));
+        if (pet.getPetName().length() == 0 || pet.getPetName().length() > 255) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+        if (pet.getGender() == null || pet.getPrice() == null || pet.getSpeciesId() == null || pet.getBreedId() == null || 
+            pet.getProvinceId() == null || pet.getDepartmentId() == null) {
+                throw new BadRequestException("Invalid or missing required fields");
+        }
     }
 }

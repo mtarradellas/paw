@@ -31,7 +31,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
@@ -40,7 +39,6 @@ import ar.edu.itba.paw.models.Department;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Species;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
 import ar.edu.itba.paw.webapp.dto.DepartmentDto;
@@ -62,9 +60,6 @@ public class AdminPetController {
     @Autowired
     private PetService petService;
 
-    @Autowired
-    private UserService userService;
-
     @Context
     private UriInfo uriInfo;
 
@@ -73,6 +68,7 @@ public class AdminPetController {
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+                            @QueryParam("newOwnerId") @DefaultValue("0") Long newOwnerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
@@ -88,9 +84,9 @@ public class AdminPetController {
         final String locale = ApiUtils.getLocale();
         int[] range;
         PetStatus petStatus;
-        Long newOwnerId = 17L;
         try {
             ownerId = ParseUtils.parseUserId(ownerId);
+            newOwnerId = ParseUtils.parseUserId(newOwnerId);
             ParseUtils.parsePage(page);
             ParseUtils.isAllowedFind(find);
             searchCriteria = ParseUtils.parseCriteria(searchCriteria);
@@ -220,6 +216,15 @@ public class AdminPetController {
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response create(final PetDto pet) {
+        try {
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
         String locale = ApiUtils.getLocale();
         Optional<Pet> opNewPet;
         /* TODO como recibir las fotos ?*/
@@ -231,7 +236,7 @@ public class AdminPetController {
                     pet.getProvinceId(), pet.getDepartmentId(), null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -247,23 +252,19 @@ public class AdminPetController {
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response edit(final PetDto pet) {
-        if (pet == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        String locale = ApiUtils.getLocale();
-        Optional<Pet> opPet;
-        Optional<User> opOwner;
-        PetStatus petStatus;
         try {
-            opOwner = userService.findById(pet.getUserId());
-        } catch (NotFoundException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if (!opOwner.isPresent()) {
-            LOGGER.warn("Owner invalid");
-            final ErrorDto body = new ErrorDto(1, "Owner invalid");
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+
+        String locale = ApiUtils.getLocale();
+        Optional<Pet> opPet;
+        PetStatus petStatus;
+        
         try {
             petStatus = ParseUtils.parseStatus(PetStatus.class, pet.getStatus());
         } catch (BadRequestException ex) {
@@ -292,7 +293,7 @@ public class AdminPetController {
 //        }
 
         try {
-            opPet = petService.update(locale, pet.getId(), opOwner.get().getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
+            opPet = petService.update(locale, pet.getId(), null, pet.getPetName(), pet.getBirthDate(), pet.getGender(),
                     pet.isVaccinated(), pet.getPrice(), pet.getDescription(), petStatus, pet.getSpeciesId(),
                     pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
         } catch(NotFoundException ex) {

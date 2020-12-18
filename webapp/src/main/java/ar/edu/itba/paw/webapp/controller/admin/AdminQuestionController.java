@@ -51,7 +51,7 @@ public class AdminQuestionController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestions(@QueryParam("petId") Long petId, @QueryParam("page") @DefaultValue("1") int page) {
+    public Response getQuestions(@QueryParam("petId") @DefaultValue("0") Long petId, @QueryParam("page") @DefaultValue("1") int page) {
         try {
             petId = ParseUtils.parsePetId(petId);
             ParseUtils.parsePage(page);

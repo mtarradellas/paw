@@ -21,6 +21,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import com.google.gson.Gson;
@@ -140,6 +141,7 @@ public class RequestController {
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createRequest(final RequestDto requestDto) {
+        if (requestDto == null || requestDto.getPetId() == null) return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         final String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ApiUtils.loggedUser(userService, auth);
@@ -340,6 +342,7 @@ public class RequestController {
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
     }
 
+    /* TODO this shit */
     // @GET
     // @Path("/notifications")
     // public Response getNotifications(@QueryParam("")) {

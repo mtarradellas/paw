@@ -153,7 +153,7 @@ public class PetController{
                             @QueryParam("department") @DefaultValue("0") Long department,
                             @QueryParam("gender") String gender,
                             @QueryParam("find") String find,
-                            @QueryParam("priceRange") int priceRange) {
+                            @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
         final String locale = ApiUtils.getLocale();
         int[] range;
@@ -210,8 +210,8 @@ public class PetController{
         filters.put("rangeList", rangeList);
 
         return Response.ok().entity(new Gson().toJson(filters)).build();
-
     }
+
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response create(final PetDto pet) {
@@ -224,16 +224,26 @@ public class PetController{
             return Response.status(Response.Status.FORBIDDEN.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+
+        try {
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
         Optional<Pet> opNewPet;
 
         /* TODO como recibir las fotos ?*/
         try {
             opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
                     pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(),null);
+                    pet.getProvinceId(), pet.getDepartmentId(), null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -249,49 +259,38 @@ public class PetController{
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response edit(final PetDto pet) {
-        if (pet == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        try {
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
         String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
 
-        Optional<Pet> opPet;
-        Optional<User> opOwner;
-        try {
-            opOwner = userService.findById(pet.getUserId());
-        } catch (NotFoundException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if (!opOwner.isPresent()) {
-            LOGGER.warn("Owner invalid");
-            final ErrorDto body = new ErrorDto(1, "Owner invalid");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        if(!loggedUser.getId().equals(opOwner.get().getId())) {
-            LOGGER.warn("User has no permission to perform this action.");
-            final ErrorDto body = new ErrorDto(2, "User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
         /* TODO como recibir las fotos ?*/
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : editPetForm.getPhotos()) {
-//                if(!photo.isEmpty()) {
-//                    try {
-//                        photos.add(photo.getBytes());
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                        throw new ImageLoadException(ex);
-//                    }
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return editPetForm(editPetForm, id).addObject("imageError", true);
-//        }
-
+        //        List<byte[]> photos = new ArrayList<>();
+        //        try {
+            //            for (MultipartFile photo : editPetForm.getPhotos()) {
+                //                if(!photo.isEmpty()) {
+                    //                    try {
+                        //                        photos.add(photo.getBytes());
+                        //                    } catch (IOException ex) {
+                            //                        ex.printStackTrace();
+                            //                        throw new ImageLoadException(ex);
+                            //                    }
+                            //                }
+                            //            }
+                            //        } catch (ImageLoadException ex) {
+                                //            LOGGER.warn("Image bytes load from pet form failed");
+                                //            return editPetForm(editPetForm, id).addObject("imageError", true);
+                                //        }
+                                
+        Optional<Pet> opPet;
         try {
             opPet = petService.update(locale, pet.getId(), loggedUser.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
                     pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
@@ -301,7 +300,7 @@ public class PetController{
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
