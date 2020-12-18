@@ -317,24 +317,13 @@ public class PetController{
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getPet(@PathParam("petId") Long petId) {
         String locale = ApiUtils.getLocale();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
+        
         Pet pet = opPet.get();
-
-        //pets are only visible to the public if they are available, only the owners can see them with a different status
-        if(pet.getStatus() != PetStatus.AVAILABLE) {
-            if (loggedUser == null || 
-                (!loggedUser.getId().equals(pet.getUser().getId()) && pet.getNewOwner() != null && !loggedUser.getId().equals(pet.getNewOwner().getId())) ||
-                !loggedUser.getId().equals(pet.getUser().getId())) {
-                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-            }
-
-        }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
     }
