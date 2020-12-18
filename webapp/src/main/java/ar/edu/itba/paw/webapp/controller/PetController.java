@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import com.google.gson.Gson;
 
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Path("/pets")
@@ -235,12 +237,31 @@ public class PetController{
         }
 
         Optional<Pet> opNewPet;
-
-        /* TODO como recibir las fotos ?*/
+        List<byte[]> photos = new ArrayList<>();
+        if(pet.getPhotos().isEmpty()){
+            LOGGER.warn("Photos is empty");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        try {
+            for (MultipartFile photo : pet.getPhotos()) {
+                if(!photo.isEmpty()) {
+                    try {
+                        photos.add(photo.getBytes());
+                    } catch (IOException ex) {
+                        LOGGER.warn(ex.getMessage());
+                        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+                    }
+                }
+            }
+        } catch (ImageLoadException ex) {
+            final ErrorDto body = new ErrorDto(1, "Failed to load bytes from image");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
         try {
             opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
                     pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(), null);
+                    pet.getProvinceId(), pet.getDepartmentId(), photos);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(3, ex.getMessage());
@@ -272,29 +293,29 @@ public class PetController{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
 
-        /* TODO como recibir las fotos ?*/
-        //        List<byte[]> photos = new ArrayList<>();
-        //        try {
-            //            for (MultipartFile photo : editPetForm.getPhotos()) {
-                //                if(!photo.isEmpty()) {
-                    //                    try {
-                        //                        photos.add(photo.getBytes());
-                        //                    } catch (IOException ex) {
-                            //                        ex.printStackTrace();
-                            //                        throw new ImageLoadException(ex);
-                            //                    }
-                            //                }
-                            //            }
-                            //        } catch (ImageLoadException ex) {
-                                //            LOGGER.warn("Image bytes load from pet form failed");
-                                //            return editPetForm(editPetForm, id).addObject("imageError", true);
-                                //        }
+        List<byte[]> photos = new ArrayList<>();
+        try {
+            for (MultipartFile photo : pet.getPhotos()) {
+                if(!photo.isEmpty()) {
+                    try {
+                        photos.add(photo.getBytes());
+                    } catch (IOException ex) {
+                        LOGGER.warn(ex.getMessage());
+                        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+                    }
+                }
+            }
+        } catch (ImageLoadException ex) {
+            final ErrorDto body = new ErrorDto(1, "Failed to load bytes from image");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
                                 
         Optional<Pet> opPet;
         try {
             opPet = petService.update(locale, pet.getId(), loggedUser.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
                     pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
-                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
+                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(), photos, null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
