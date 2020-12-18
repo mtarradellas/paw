@@ -24,7 +24,7 @@ function ListItemRow({name, value}){
     </ListItem>;
 }
 
-function Content({pet}){
+function Content({pet, id}){
     const {t} = useTranslation('petView');
 
     const {breeds, species, provinces, departments} = useContext(ConstantsContext);
@@ -45,9 +45,7 @@ function Content({pet}){
         departmentId,
         images
     } = pet;
-
-    console.log(species);
-
+    
     return <>
             {
                 _.isNil(description) ?
@@ -101,7 +99,7 @@ function Content({pet}){
 
             <h2>{t('questions.header')}:</h2>
 
-            <Questions/>
+            <Questions petId={id}/>
 
             <Divider/>
 
@@ -162,7 +160,7 @@ function PetView(){
 
     return <ContentWithHeader
         content={
-            <Content pet={pet}/>
+            <Content id={id} pet={pet}/>
         }
         actionComponents={
             [

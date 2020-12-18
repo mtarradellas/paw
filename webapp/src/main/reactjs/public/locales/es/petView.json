@@ -27,6 +27,7 @@
     "noQuestionsYet": "No hay preguntas todavía",
     "noAnswerYet": "No hay respuesta todavía",
     "askButton": "Preguntar",
+    "owner": "Dueño",
     "errors": {
       "required": "Por favor ingrese una pregunta"
     }
