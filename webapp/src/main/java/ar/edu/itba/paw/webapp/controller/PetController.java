@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,6 +42,7 @@ import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Department;
@@ -89,12 +89,14 @@ public class PetController{
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
                             @QueryParam("department") @DefaultValue("0") Long department,
+                            @QueryParam("status") @DefaultValue("-1") int status,
                             @QueryParam("gender") String gender,
                             @QueryParam("searchCriteria") String searchCriteria,
                             @QueryParam("find") String find,
                             @QueryParam("searchOrder") String searchOrder,
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange,
                             @QueryParam("page") @DefaultValue("1") int page) {
+
 
         final String locale = ApiUtils.getLocale();
         int[] range;
@@ -110,6 +112,7 @@ public class PetController{
             breed = ParseUtils.parseBreed(breed);
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
+            petStatus = ParseUtils.parseStatus(PetStatus.class, status);
             gender = ParseUtils.parseGender(gender);
             range = ParseUtils.parseRange(priceRange);
         } catch (BadRequestException ex) {
@@ -118,8 +121,6 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-
-        if(newOwnerId == null) petStatus = PetStatus.AVAILABLE;
 
         int minPrice = range[0];
         int maxPrice = range[1];
@@ -130,7 +131,7 @@ public class PetController{
             petList = petService.filteredList(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus,
                                         searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
                                         .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
-            amount = petService.getFilteredListAmount(locale, findList, ownerId, newOwnerId, species, breed, gender, PetStatus.AVAILABLE, minPrice,
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus, minPrice,
                                         maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -145,14 +146,14 @@ public class PetController{
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getFilters(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
                             @QueryParam("department") @DefaultValue("0") Long department,
                             @QueryParam("gender") String gender,
                             @QueryParam("find") String find,
-                            @QueryParam("priceRange") int priceRange) {
+                            @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
         final String locale = ApiUtils.getLocale();
         int[] range;
@@ -209,8 +210,8 @@ public class PetController{
         filters.put("rangeList", rangeList);
 
         return Response.ok().entity(new Gson().toJson(filters)).build();
-
     }
+
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response create(final PetDto pet) {
@@ -223,16 +224,26 @@ public class PetController{
             return Response.status(Response.Status.FORBIDDEN.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+
+        try {
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
         Optional<Pet> opNewPet;
 
         /* TODO como recibir las fotos ?*/
         try {
             opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
                     pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(),null);
+                    pet.getProvinceId(), pet.getDepartmentId(), null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -248,49 +259,38 @@ public class PetController{
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response edit(final PetDto pet) {
-        if (pet == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        try {
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
         String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(userService, auth);
 
-        Optional<Pet> opPet;
-        Optional<User> opOwner;
-        try {
-            opOwner = userService.findById(pet.getUserId());
-        } catch (NotFoundException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if (!opOwner.isPresent()) {
-            LOGGER.warn("Owner invalid");
-            final ErrorDto body = new ErrorDto(1, "Owner invalid");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        if(!loggedUser.getId().equals(opOwner.get().getId())) {
-            LOGGER.warn("User has no permission to perform this action.");
-            final ErrorDto body = new ErrorDto(2, "User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
         /* TODO como recibir las fotos ?*/
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : editPetForm.getPhotos()) {
-//                if(!photo.isEmpty()) {
-//                    try {
-//                        photos.add(photo.getBytes());
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                        throw new ImageLoadException(ex);
-//                    }
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return editPetForm(editPetForm, id).addObject("imageError", true);
-//        }
-
+        //        List<byte[]> photos = new ArrayList<>();
+        //        try {
+            //            for (MultipartFile photo : editPetForm.getPhotos()) {
+                //                if(!photo.isEmpty()) {
+                    //                    try {
+                        //                        photos.add(photo.getBytes());
+                        //                    } catch (IOException ex) {
+                            //                        ex.printStackTrace();
+                            //                        throw new ImageLoadException(ex);
+                            //                    }
+                            //                }
+                            //            }
+                            //        } catch (ImageLoadException ex) {
+                                //            LOGGER.warn("Image bytes load from pet form failed");
+                                //            return editPetForm(editPetForm, id).addObject("imageError", true);
+                                //        }
+                                
+        Optional<Pet> opPet;
         try {
             opPet = petService.update(locale, pet.getId(), loggedUser.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
                     pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
@@ -300,7 +300,7 @@ public class PetController{
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
