@@ -101,26 +101,41 @@ function App() {
                                               }
                                 />
 
-                                {/*<Route exact path={ADMIN_HOME}>*/}
-                                {/*    <AdminLayout>*/}
-                                {/*        <AdminHome/>*/}
-                                {/*    </AdminLayout>*/}
-                                {/*</Route>*/}
-                                {/*<Route exact path={ADMIN_REQUESTS}>*/}
-                                {/*    <AdminLayout>*/}
-                                {/*        <AdminRequests/>*/}
-                                {/*    </AdminLayout>*/}
-                                {/*</Route>*/}
-                                {/*<Route exact path={ADMIN_USERS}>*/}
-                                {/*    <AdminLayout>*/}
-                                {/*        <AdminUsers/>*/}
-                                {/*    </AdminLayout>*/}
-                                {/*</Route>*/}
-                                {/*<Route exact path={ADMIN_PETS}>*/}
-                                {/*    <AdminLayout>*/}
-                                {/*        <AdminPets/>*/}
-                                {/*    </AdminLayout>*/}
-                                {/*</Route>*/}
+                                <PrivateRoute path={ADMIN_HOME}
+                                              component={
+                                                  () => (
+                                                      <AdminLayout>
+                                                          <AdminHome/>
+                                                      </AdminLayout>
+                                                  )
+                                              }
+                                />
+                                <PrivateRoute path={ADMIN_REQUESTS}
+                                              component={
+                                                  () => (
+                                                      <AdminLayout>
+                                                          <AdminRequests/>
+                                                      </AdminLayout>
+                                                  )}
+                                />
+                                <PrivateRoute path={ADMIN_USERS}
+                                              component={
+                                                  () => (
+                                                      <AdminLayout>
+                                                          <AdminUsers/>
+                                                      </AdminLayout>
+                                                  )
+                                              }
+                                />
+                                <PrivateRoute path={ADMIN_PETS}
+                                              component={
+                                                  () => (
+                                                      <AdminLayout>
+                                                          <AdminPets/>
+                                                      </AdminLayout>
+                                                  )
+                                              }
+                                />
 
                                 <PrivateRoute path={ADD_PET}
                                               component={

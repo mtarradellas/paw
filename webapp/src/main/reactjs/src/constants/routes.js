@@ -20,7 +20,7 @@ export const VERIFY_EMAIL = '/verify-email';
 
 //ADMIN
 
-export const ADMIN_HOME = '/admin';
+export const ADMIN_HOME = '/admin/home';
 
 export const ADMIN_REQUESTS = '/admin/requests';
 

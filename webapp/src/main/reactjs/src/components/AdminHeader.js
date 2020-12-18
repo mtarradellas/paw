@@ -3,10 +3,20 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {ADMIN_HOME, LOGIN, REGISTER, ADMIN_REQUESTS, ADMIN_PETS, ADMIN_USERS} from "../constants/routes";
+import {Button} from "antd";
+import useLogin from "../hooks/useLogin";
 
 
 function AdminHeader() {
     const {t} = useTranslation('admin');
+
+    const {state, logout} = useLogin();
+
+    const {username, id} = state;
+
+    const _onLogout = () => {
+        logout();
+    };
 
     return (
         <header className={"admin-header"}>
@@ -32,14 +42,15 @@ function AdminHeader() {
                 {t('listPets')}
             </Link>
 
-            <div className={"header__right"}>
-                <Link className={"header__register"} to={REGISTER}>
-                    {t('register')}
-                </Link>
+            <div className={"header__right header--session"}>
+                <p className={"header--session--username"}>
+                    {username}
+                </p>
 
-                <Link className={"header__login"} to={LOGIN}>
-                    {t('login')}
-                </Link>
+                <Button className={"header--session--logout"} onClick={_onLogout}>
+                    {t('logout')}
+                </Button>
+
             </div>
         </header>
     )
