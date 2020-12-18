@@ -1,7 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -16,9 +22,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import ar.edu.itba.paw.webapp.dto.PetDto;
 import com.google.gson.Gson;
 
 import org.slf4j.Logger;
@@ -33,11 +39,11 @@ import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.RequestException;
-import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
+import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.RequestDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
@@ -136,6 +142,7 @@ public class RequestController {
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response createRequest(final RequestDto requestDto) {
+        if (requestDto == null || requestDto.getPetId() == null) return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         final String locale = ApiUtils.getLocale();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = ApiUtils.loggedUser(userService, auth);
@@ -332,9 +339,16 @@ public class RequestController {
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
     }
 
-    // @GET
-    // @Path("/notifications")
-    // public Response getNotifications(@QueryParam("")) {
-        
-    // }
+    @GET
+    @Path("/notifications")
+    public Response getNotifications() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = ApiUtils.loggedUser(userService, auth);
+        int interests = requestService.interestNotifs(user);
+        int requests  = requestService.requestNotifs(user);
+        Map<String, Integer> json = new HashMap<>();
+        json.put("interests", interests);
+        json.put("requests", requests);
+        return Response.ok(new Gson().toJson(json)).build();
+    }
 }

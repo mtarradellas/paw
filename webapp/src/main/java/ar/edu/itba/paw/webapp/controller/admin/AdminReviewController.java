@@ -128,6 +128,7 @@ public class AdminReviewController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body) {
             }).build();
         }
+        if (reviewDto.getUserId() == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         Optional<Review> opReview;
         try {
             opReview = reviewService.addReview(reviewDto.getUserId(), reviewDto.getTargetId(), reviewDto.getScore(), reviewDto.getDescription());

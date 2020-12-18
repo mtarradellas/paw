@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.QuestionException;
 import ar.edu.itba.paw.models.Answer;
 import ar.edu.itba.paw.models.Question;
@@ -51,7 +51,7 @@ public class AdminQuestionController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestions(@QueryParam("petId") Long petId, @QueryParam("page") @DefaultValue("1") int page) {
+    public Response getQuestions(@QueryParam("petId") @DefaultValue("0") Long petId, @QueryParam("page") @DefaultValue("1") int page) {
         try {
             petId = ParseUtils.parsePetId(petId);
             ParseUtils.parsePage(page);
