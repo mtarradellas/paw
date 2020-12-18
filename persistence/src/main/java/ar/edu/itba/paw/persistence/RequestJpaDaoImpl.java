@@ -291,7 +291,8 @@ public class RequestJpaDaoImpl implements RequestDao {
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM requests");
-        return nativeQuery.getFirstResult();
+        Number n = (Number) nativeQuery.getSingleResult();
+        return n.intValue();
     }
 
     @Override
