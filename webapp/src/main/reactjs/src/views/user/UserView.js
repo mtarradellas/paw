@@ -6,12 +6,11 @@ import {useParams, useHistory} from 'react-router-dom';
 import '../../css/user/userView.css';
 import {Link} from "react-router-dom";
 import {HOME, ERROR_404_USER} from "../../constants/routes";
-import {GET_USER_ERRORS, getUser} from "../../api/users";
+import {GET_MAIL_ERRORS, GET_USER_ERRORS, getMail, getUser} from "../../api/users";
 import useLogin from "../../hooks/useLogin";
 import useReviewsPagination from "../../hooks/useReviewsPagination";
 import Reviews from "./Reviews";
 import OwnedPets from "./OwnedPets";
-import MakeAReviewForm from "./MakeAReviewForm";
 import MakeAReview from "./MakeAReview";
 
 
@@ -19,11 +18,40 @@ const ListItem = List.Item;
 
 
 function Content({user, id}){
-    const {email} = user;
+    const [email, setEmail] = useState(null);
+
+    const {state, promptLogin} = useLogin();
 
     const reviewsPagination = useReviewsPagination({userId: id});
 
     const {t} = useTranslation('userView');
+
+    const {jwt} = state;
+
+    const fetchEmail = async () => {
+        try{
+            const mail = await getMail({userId: id}, jwt);
+
+            setEmail(mail);
+        }catch (e) {
+            switch (e) {
+                case GET_MAIL_ERRORS.NOT_ALLOWED:
+                    setEmail(false);
+                    break;
+                case GET_MAIL_ERRORS.FORBIDDEN:
+                    promptLogin();
+                    break;
+                case GET_MAIL_ERRORS.CONN_ERROR:
+                default:
+                    //TODO: message error with retrying
+                    break;
+            }
+        }
+    };
+
+    useEffect(()=>{
+        fetchEmail()
+    }, []);
 
     return <>
         <h1><b>
