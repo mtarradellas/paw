@@ -99,7 +99,7 @@ function Content({pet, id}){
 
             <h2>{t('questions.header')}:</h2>
 
-            <Questions petId={id}/>
+            <Questions petId={id} ownerId={userId}/>
 
             <Divider/>
 

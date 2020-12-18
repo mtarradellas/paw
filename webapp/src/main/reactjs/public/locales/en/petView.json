@@ -35,6 +35,15 @@
     },
     "loadMore": "Load more"
   },
+  "answers": {
+    "answer": "Answer",
+    "answerButton": "Answer",
+    "errors": {
+      "min": "Answer must be at least {{min}} characters long",
+      "max": "Answer must be at most {{max}} characters long",
+      "required": "Please enter an answer"
+    }
+  },
   "goToOwnersPage": "Go to owner's page",
   "backToHome": "< Back to home"
 }

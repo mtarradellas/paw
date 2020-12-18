@@ -63,3 +63,26 @@ export async function createQuestion ({content, petId}, jwt){
         }
     }
 }
+
+const CREATE_ANSWER_ENDPOINT = id => "/questions/" + id + "/answer";
+export const CREATE_ANSWER_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1,
+    NOT_FOUND: 2
+};
+export async function createAnswer({content, questionId}, jwt){
+    const config = getAuthConfig(jwt);
+
+    try{
+        await axios.post(SERVER_URL + CREATE_ANSWER_ENDPOINT(questionId), {content}, config);
+    }catch (e) {
+        switch (e.response.status) {
+            case 403:
+                return CREATE_ANSWER_ERRORS.FORBIDDEN;
+            case 400:
+                return CREATE_ANSWER_ERRORS.NOT_FOUND;
+            default:
+                return CREATE_ANSWER_ERRORS.CONN_ERROR;
+        }
+    }
+}

@@ -30,10 +30,19 @@
     "owner": "Dueño",
     "errors": {
       "min": "La pregunta debe tener al menos {{min}} caracteres",
-      "max": "La pregunta debe tener a lo sumo {{max}} catacteres",
+      "max": "La pregunta debe tener a lo sumo {{max}} caracteres",
       "required": "Por favor ingrese una pregunta"
     },
     "loadMore": "Cargar más"
+  },
+  "answers": {
+    "answer": "Respuesta",
+    "answerButton": "Responder",
+    "errors": {
+      "min": "La respuesta debe tener al menos {{min}} caracteres",
+      "max": "La respuesta debe tener a lo sumo {{max}} caracteres",
+      "required": "Por favor ingrese una respuesta"
+    }
   },
   "goToOwnersPage": "Ir a la página del dueño",
   "backToHome": "< Volver al inicio"
