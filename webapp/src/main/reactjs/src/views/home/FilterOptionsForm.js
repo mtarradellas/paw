@@ -13,9 +13,22 @@ const FormItem = Form.Item;
 
 const SelectOption = Select.Option;
 
-const FilterOptionsForm = ({onChangeFilters, fetching}) => {
+const initialValues = {
+        species: -1,
+        breed: -1,
+        price: -1,
+        gender: -1,
+        province: -1,
+        department: -1,
+        searchCriteria: -1,
+        searchOrder: 'asc'
+    };
+
+const FilterOptionsForm = () => {
     const {
-        filters
+        filters,
+        onSubmitFilters,
+        fetching
     } = useContext(FilterAndSearchContext);
 
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
@@ -32,7 +45,7 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
 
             setAvailableFilters(newFilters);
 
-            onChangeFilters(values);
+            onSubmitFilters(values);
         }catch (e) {
             //TODO: conn error
         }
@@ -64,28 +77,17 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
                 })
             }
             onSubmit={_onSubmit}
-            initialValues={
-                {
-                    species: -1,
-                    breed: -1,
-                    price: -1,
-                    gender: -1,
-                    province: -1,
-                    department: -1,
-                    searchCriteria: -1,
-                    searchOrder: 'asc'
-                }
-            }
+            initialValues={Object.assign({}, initialValues, filters)}
             render={
-                ({setFieldValue, values, resetForm, handleSubmit}) => {
+                ({setFieldValue, values, handleSubmit, setValues}) => {
                     const breedsToShow = values.species && values.species !== -1 && _.intersection(
                         species[values.species].breedIds,
-                        breedList.map(({id}) => id)
+                        breedList && breedList.map(({id}) => id)
                     ).map(id => ({id, name: breeds[id].name}));
 
                     const departmentsToShow = values.province && values.province !== -1 && _.intersection(
                         provinces[values.province].departmentIds,
-                        departmentList.map(({id}) => id)
+                        departmentList && departmentList.map(({id}) => id)
                     ).map(id => ({id, name: departments[id].name}));
 
                     return <Form layout={"vertical"}>
@@ -184,7 +186,7 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
 
                             <Button type={"secondary"}
                                 onClick={()=>{
-                                    resetForm();
+                                    setValues(initialValues);
                                     handleSubmit();
                                 }}
                                 loading={fetching}
