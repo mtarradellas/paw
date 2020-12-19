@@ -1,65 +1,116 @@
 import React from 'react';
 import {Form, Select} from "formik-antd";
-import {withFormik} from "formik";
+import {Formik} from "formik";
 import {Button} from "antd";
 import {useTranslation} from "react-i18next";
+import * as Yup from "yup";
 
 const FormItem = Form.Item;
 
-const FilterInterestsForm = () => {
+const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrentPage, fetchFilters}) => {
     const {t} = useTranslation('interests');
 
-    //TODO: hay que solo mostrar los que sean correspondientes a lo que existe
-    //TODO: hay que hacer que se desbloquee el order cuando selecciono un criteria de request
+    const statusLocale = [
+        t("status.pending"),
+        t("status.accepted"),
+        t("status.rejected"),
+        t("status.canceled"),
+        t("status.sold")
+    ]
 
-    return <Form layout={"vertical"} className={"requests-interests__container"}>
-        <div className={"form-content"}>
-            <FormItem name={"status"} label={t("filterForm.labels.status")}>
-                <Select name={"status"} defaultValue={"any"}>
-                    <Select.Option value={"any"}>{t("filterForm.values.any")}</Select.Option>
-                    <Select.Option value={"accepted"}>{t("status.accepted")}</Select.Option>
-                    <Select.Option value={"rejected"}>{t("status.rejected")}</Select.Option>
-                    <Select.Option value={"pending"}>{t("status.pending")}</Select.Option>
-                    <Select.Option value={"canceled"}>{t("status.canceled")}</Select.Option>
-                    <Select.Option value={"sold"}>{t("status.sold")}</Select.Option>
-                </Select>
-            </FormItem>
+    const _onSubmit = (values) => {
+        fetchInterests({...values, page: 1})
+        setCurrentPage(1)
+        changeFilters(values)
+    }
 
-            <FormItem name={"pet"} label={t("filterForm.labels.pet")}>
-                <Select name={"pet"} defaultValue={"any"}>
-                    <Select.Option value={"any"}>{t("filterForm.values.any")}</Select.Option>
-                    <Select.Option value={"Firulais"}>Firulais</Select.Option>
-                    <Select.Option value={"Hiperion"}>Hiperion</Select.Option>
-                </Select>
-            </FormItem>
+    return <Formik
+        initialValues={{status: -1, petId:0, searchCriteria: "any", searchOrder: "asc"}}
+        onSubmit={_onSubmit}
+        validationSchema={
+            Yup.object().shape({
+                status: Yup.number(),
+                petId: Yup.number(),
+                searchOrder: Yup.string(),
+                searchCriteria: Yup.string()
+            })
+        }
+        render={({values, setFieldValue}) => {
+            const resetFields = () => {
+                setFieldValue("status", -1);
+                setFieldValue("petId",0);
+                setFieldValue("searchCriteria", "any");
+                setFieldValue("searchOrder", "asc");
+                fetchFilters({petId:0, status:-1})
+            }
 
-            <FormItem name={"criteria"} label={t("filterForm.labels.criteria")}>
-                <Select name={"criteria"} defaultValue={"any"}>
-                    <Select.Option value={"any"}>{t("filterForm.values.any")}</Select.Option>
-                    <Select.Option value={"date"}>{t("filterForm.values.date")}</Select.Option>
-                    <Select.Option value={"petName"}>{t("filterForm.values.petName")}</Select.Option>
-                </Select>
-            </FormItem>
+            const filterOtherValue = (value, filter) => {
+                let params;
 
-            <FormItem name={"order"} label={t("filterForm.labels.order")}>
-                <Select name={"order"} defaultValue={"asc"}>
-                    <Select.Option value={"asc"}>{t("filterForm.values.asc")}</Select.Option>
-                    <Select.Option value={"desc"}>{t("filterForm.values.desc")}</Select.Option>
+                if(filter === "petId"){
+                    params = {
+                        petId:value
+                    }
+                }else {
+                    params = {
+                        status: value
+                    }
+                }
 
-                </Select>
-            </FormItem>
-        </div>
+                fetchFilters(params);
+            }
 
-        <div className={"form-buttons"}>
-            <Button type={"primary"} htmlType={"submit"}>{t('filterForm.filterButtons.filter')}</Button>
-            <Button type={"secondary"}>{t('filterForm.filterButtons.clear')}</Button>
-        </div>
-    </Form>
+            return <Form layout={"vertical"} className={"requests-interests__container"}>
+                <div className={"form-content"}>
+                    <FormItem name={"status"} label={t("filterForm.labels.status")}>
+                        <Select name={"status"} >
+                            <Select.Option value={-1}>{t("filterForm.values.any")}</Select.Option>
+                            {
+                                filters && filters.statusList.map((status) => {
+                                    return <Select.Option value={status}
+                                                          key={status}>{statusLocale[status]}</Select.Option>
+                                })
+                            }
+                        </Select>
+                    </FormItem>
+
+                    <FormItem name={"petId"} label={t("filterForm.labels.pet")}>
+                        <Select name={"petId"} onSelect={(value) => filterOtherValue(value, "petId")}>
+                            <Select.Option value={0}>{t("filterForm.values.any")}</Select.Option>
+                            {
+                                filters && filters.petList.map((pet) => {
+                                    return <Select.Option value={pet.id} key={pet.id}>{pet.petName}</Select.Option>
+                                })
+                            }
+                        </Select>
+                    </FormItem>
+
+                    <FormItem name={"searchCriteria"} label={t("filterForm.labels.criteria")}>
+                        <Select name={"searchCriteria"}>
+                            <Select.Option value={"any"}>{t("filterForm.values.any")}</Select.Option>
+                            <Select.Option value={"date"}>{t("filterForm.values.date")}</Select.Option>
+                            <Select.Option value={"petName"}>{t("filterForm.values.petName")}</Select.Option>
+                        </Select>
+                    </FormItem>
+
+                    <FormItem name={"searchOrder"} label={t("filterForm.labels.order")}>
+                        <Select name={"searchOrder"} disabled={values.searchCriteria === "any"}>
+                            <Select.Option value={"asc"}>{t("filterForm.values.asc")}</Select.Option>
+                            <Select.Option value={"desc"}>{t("filterForm.values.desc")}</Select.Option>
+
+                        </Select>
+                    </FormItem>
+                </div>
+
+                <div className={"form-buttons"}>
+                    <Button type={"primary"} htmlType={"submit"}>{t('filterForm.filterButtons.filter')}</Button>
+                    <Button type={"secondary"} onClick={resetFields}>{t('filterForm.filterButtons.clear')}</Button>
+                </div>
+            </Form>
+
+        }
+        }/>
+
 }
 
-export default withFormik({
-    mapPropsToValues: () => ({}),
-    handleSubmit: (values) => {
-        console.log(values);
-    }
-})(FilterInterestsForm);
+export default FilterInterestsForm;

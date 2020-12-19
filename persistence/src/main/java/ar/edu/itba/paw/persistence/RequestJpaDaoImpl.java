@@ -57,8 +57,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         @SuppressWarnings("unchecked")
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> ids = resultList.stream().map(Number::longValue).collect(Collectors.toList());
-        System.out.println("IDS: " + ids.size());
-        ids.forEach(System.out::println);
         if(ids.size() == 0) {
             return Collections.emptyList();
         }
@@ -410,7 +408,7 @@ public class RequestJpaDaoImpl implements RequestDao {
     public boolean hasRequest(User user, User target) {
         String qStr = "SELECT count(*) " +
                       "FROM requests " +
-                      "WHERE ownerId = :user AND targetId = :target AND status = 1";
+                      "WHERE ownerId = :user AND targetId = :target AND status = 4";
 
         Query query = em.createNativeQuery(qStr);
         query.setParameter("user", user.getId());

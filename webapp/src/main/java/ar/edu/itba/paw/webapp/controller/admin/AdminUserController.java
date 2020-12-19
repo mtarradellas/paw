@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -135,7 +136,7 @@ public class AdminUserController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createUser(final UserDto user) {
+    public Response createUser(@Context HttpServletRequest httpRequest, final UserDto user) {
         try {
             ParseUtils.parseUser(user);
         } catch (BadRequestException ex) {
@@ -144,7 +145,7 @@ public class AdminUserController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         Optional<User> opNewUser;
         try {
             opNewUser = userService.adminCreate(user.getUsername(), user.getPassword(), user.getMail(), locale);

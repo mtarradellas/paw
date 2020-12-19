@@ -8,12 +8,27 @@
       "state": "Provincia",
       "department": "Departamento",
       "criteria": "Criterio",
-      "order": "Orden"
+      "order": "Orden",
+      "any": "Cualquiera",
+      "priceRange": {
+        "range": "${{min}} a ${{max}}",
+        "free": "Gratis",
+        "max": "Más de ${{min}}"
+      }
     },
     "filterButtons": {
       "filter": "Filtrar",
       "clear": "Limpiar"
-    }
+    },
+    "criteria": {
+      "uploadDate": "Fecha de subida",
+      "gender": "Género",
+      "species": "Especie",
+      "breed": "Raza",
+      "price": "Precio"
+    },
+    "asc": "Ascendente",
+    "desc": "Descendente"
   },
   "pets": {
     "title": "¡Estas son las mascotas disponibles!",
@@ -21,5 +36,9 @@
     "petsCard": {
       "goToPage": "Ir a la página"
     }
+  },
+  "sex": {
+    "female": "Hembra",
+    "male": "Macho"
   }
 }

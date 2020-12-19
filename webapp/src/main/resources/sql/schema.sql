@@ -58,7 +58,7 @@ gender VARCHAR(255) NOT NULL,
 description TEXT,
 birthDate TIMESTAMP,
 uploadDate TIMESTAMP DEFAULT NOW(),
-price INTEGER,
+price INTEGER NOT NULL,
 ownerId BIGINT NOT NULL REFERENCES users(id),
 status INTEGER NOT NULL
 );

@@ -1,19 +1,34 @@
 {
   "filterForm": {
     "labels": {
-      "specie": "Specie",
+      "specie": "Species",
       "breed": "Breed",
       "price": "Price",
       "sex": "Sex",
       "state": "Province",
       "department": "Department ¿?",
       "criteria": "Criteria",
-      "order": "Order"
+      "order": "Order",
+      "any": "Any",
+      "priceRange": {
+        "range": "${{min}} to ${{max}}",
+        "free": "Free",
+        "max": "More than ${{min}}"
+      }
     },
     "filterButtons": {
       "filter": "Filter",
       "clear": "Clear"
-    }
+    },
+    "criteria": {
+      "uploadDate": "Upload date",
+      "gender": "Gender",
+      "species": "Species",
+      "breed": "Breed",
+      "price": "Price"
+    },
+    "asc": "Ascending",
+    "desc": "Descending"
   },
   "pets": {
     "title": "Take a look at the available pets!",
@@ -21,5 +36,9 @@
     "petsCard": {
       "goToPage": "Go to page"
     }
+  },
+  "sex": {
+    "female": "Female",
+    "male": "Male"
   }
 }

@@ -7,11 +7,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -24,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.interfaces.UserService;
@@ -55,9 +56,9 @@ public class HomeController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getAvailable() {
+    public Response getAvailable(@Context HttpServletRequest httpRequest) {
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         final List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<SpeciesDto>>(speciesList) {}).build();
     }
@@ -65,7 +66,7 @@ public class HomeController {
     @POST
     @Path("/register")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createUser(final UserDto user) {
+    public Response createUser(@Context HttpServletRequest httpRequest, final UserDto user) {
         try {
             ParseUtils.parseUser(user);
         } catch (BadRequestException ex) {
@@ -74,7 +75,7 @@ public class HomeController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         Optional<User> opNewUser;
         try {
             opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getBaseUri().toString());
@@ -97,13 +98,13 @@ public class HomeController {
 
     @POST
     @Path("/activate-account")
-    public Response activateAccount(final PasswordDto dto) {
+    public Response activateAccount(@QueryParam("token") String token) {
         
-        if (dto == null || dto.getToken() == null) {
+        if (token == null) {
             LOGGER.warn("Token parameter null.");
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final UUID uuid = UUID.fromString(dto.getToken());
+        final UUID uuid = UUID.fromString(token);
 
         try {
             userService.activateAccountWithToken(uuid);
@@ -123,10 +124,11 @@ public class HomeController {
             LOGGER.warn("Mail parameter null.");
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
-
+        
         final String baseUrl = uriInfo.getBaseUri().toString();
+
         try {
-            userService.requestPasswordReset(dto.getMail(), baseUrl);
+            userService.requestPasswordReset(dto.getMail(), uriInfo.getBaseUri().toString());
         } catch (NotFoundException ex) {
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();

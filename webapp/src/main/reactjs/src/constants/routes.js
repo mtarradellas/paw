@@ -18,6 +18,8 @@ export const PET = '/pet/';
 
 export const ADD_PET = '/add-pet';
 
+export const EDIT_PET = id => '/edit-pet/' + id;
+
 export const VERIFY_EMAIL = '/verify-email';
 
 //ADMIN

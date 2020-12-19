@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Button, Modal, Row, Col, Divider, Pagination, Spin} from 'antd';
 
 import {useTranslation} from "react-i18next";
@@ -12,21 +12,28 @@ import "../../css/requests&interests/requests-interests.css"
 import useRequests from "../../hooks/useRequests";
 import _ from "lodash";
 
-/*
-*  REQUEST STATUSES: ACCEPTED, REJECTED, PENDING, CANCELED, SOLD
-*  PET STATUSES: AVAILABLE, REMOVED, SOLD, UNAVAILABLE
-* */
+import {getRequestsFilters} from "../../api/requests";
+import useLogin from "../../hooks/useLogin";
 
-function SideContent() {
+
+function SideContent({filters,fetchRequests,changeFilters,setCurrentPage}) {
     return (<div>
-        <FilterRequestsForm/>
+        <FilterRequestsForm
+            filters={filters}
+            fetchRequests={fetchRequests}
+            changeFilters={changeFilters}
+            setCurrentPage={setCurrentPage}
+        />
     </div>)
 }
 
-function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchPage}) {
+function MainContent(
+    {requestsCount, requests, fetching, pages, pageSize, fetchPage, fetchFilters, currentPage,setCurrentPage}
+    ) {
     const {t} = useTranslation('requests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -37,7 +44,6 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
         setIsModalVisible(false);
     };
 
-    const [currentPage, setCurrentPage] = useState(1);
     const _onChangePagination = newValue => {
         setCurrentPage(newValue);
 
@@ -77,7 +83,7 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
             _.isNil(requests) || fetching ?
                 <Spin/>
                 :
-                <RequestContainer requests={requests}/>
+                <RequestContainer requests={requests} fetchFilters={fetchFilters}/>
         }
 
         <Divider orientation={"left"}>
@@ -85,7 +91,8 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
                 pageSize && requestsCount &&
                 <Pagination showSizeChanger={false} current={currentPage} total={requestsCount} pageSize={pageSize}
                             onChange={_onChangePagination}/>
-            }        </Divider>
+            }
+        </Divider>
         <Modal
             title={t("modals.helpModal.title")}
             visible={isModalVisible}
@@ -109,14 +116,42 @@ function MainContent({requestsCount, requests, fetching, pages, pageSize, fetchP
 
 function RequestsView() {
     const {requests, fetching, fetchRequests, pages, amount, pageSize} = useRequests();
+    const {jwt} = useLogin().state;
+
+    const [appliedFilters, setAppliedFilters] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const fetchPage = page => {
-        fetchRequests({page})
+        const params = {
+            ...appliedFilters,
+            page
+        }
+        fetchRequests(params)
     };
+
+    const [filters, setFilters] = useState(null);
+    const fetchFilters = async () => {
+        try{
+            const newFilters = await getRequestsFilters(jwt);
+
+            setFilters(newFilters);
+        }catch (e) {
+            //TODO: conn error
+        }
+    };
+
+    useEffect(()=>{
+        fetchFilters();
+    }, []);
 
     return <ContentWithSidebar
         sideContent={
-            <SideContent/>
+            <SideContent
+                filters={filters}
+                fetchRequests={fetchRequests}
+                changeFilters={setAppliedFilters}
+                setCurrentPage={setCurrentPage}
+            />
         }
         mainContent={
             <MainContent
@@ -126,6 +161,9 @@ function RequestsView() {
                 pages={pages}
                 pageSize={pageSize}
                 fetchPage={fetchPage}
+                fetchFilters={fetchFilters}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
             />
         }
     />;

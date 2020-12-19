@@ -13,24 +13,25 @@ import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 
 public interface PetService {
 
     List<Pet> list(String locale, int page, int pageSize);
-    List<Pet> filteredList(String locale, List<String> find, Long userId, Long species, Long breed, String gender, PetStatus status, String searchCriteria,
+    List<Pet> filteredList(String locale, List<String> find, Long userId, Long newOwnerId, Long species, Long breed, String gender, PetStatus status, String searchCriteria,
                            String searchOrder, int minPrice, int maxPrice, Long province, Long department, int page, int pageSize);
     List<Breed> filteredBreedList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                   PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
     List<Department> filteredDepartmentList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                             PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
-    Set<Integer> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+    Set<PriceRange> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                   PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
     Set<String> filteredGenderList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                     PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
     List<Pet> listByUser(String locale, Long userId, int page, int pageSize);
 
     int getListAmount();
-    int getFilteredListAmount(String locale, List<String> find, Long userId, Long species, Long breed, String gender, PetStatus status,
+    int getFilteredListAmount(String locale, List<String> find, Long userId, Long newOwnerId, Long species, Long breed, String gender, PetStatus status,
                               int minPrice, int maxPrice, Long province, Long department);
     int getListByUserAmount(String locale, Long userId);
 
@@ -45,7 +46,7 @@ public interface PetService {
                          throws InvalidImageQuantityException;
 
 
-    void sellPet(long petId, long ownerId, long newOwnerId, String contextURL);
+    void sellPet(Pet pet, User owner, User newOwner, String contextURL);
     void removePet(long petId, long userId);
     void recoverPet(long petId, long userId);
 

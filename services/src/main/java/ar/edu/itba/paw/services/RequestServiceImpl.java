@@ -25,6 +25,7 @@ import ar.edu.itba.paw.interfaces.exceptions.RequestException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 
@@ -64,7 +65,6 @@ public class RequestServiceImpl implements RequestService {
 
         // Interests
         if (targetId != null) {
-            System.out.println("\nTARGET\n");
             Optional<User> opUser = userService.findById(targetId);
             if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
             User user = opUser.get();
@@ -88,9 +88,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestStatus> filteredStatusList(Long userId, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
-        Optional<User> opUser = userService.findById(userId);
-        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
-        User user = opUser.get();
+        User user = userService.findById(userId).orElse(null);
         Set<Integer> results = requestDao.searchStatusList(user, pet, find, status );
         List<RequestStatus> toReturn = new ArrayList<>();
         results.forEach(r->toReturn.add(RequestStatus.values()[r]));
@@ -211,13 +209,13 @@ public class RequestServiceImpl implements RequestService {
 
         Request request = requestDao.create(user, pet, RequestStatus.PENDING, LocalDateTime.now());
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put("requestURL", contextURL + "/interests");
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("ownerUsername", request.getUser().getUsername());
-        arguments.put("ownerURL", contextURL + "/user/" + user.getId());
-        arguments.put("petName", pet.getPetName());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
+        arguments.put(MailArg.PETNAME, pet.getPetName());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + user.getId());
+        arguments.put(MailArg.OWNERNAME, request.getUser().getUsername());
+        arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + pet.getUser().getId());
 
         String userLocale = pet.getUser().getLocale();
 
@@ -256,16 +254,17 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
         Pet pet = request.getPet();
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
-        arguments.put("petName", pet.getPetName());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
+        arguments.put(MailArg.PETNAME, pet.getPetName());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
+        arguments.put(MailArg.REQUESTURL, contextURL + "interests" + "?targetId=" + recipient.getId());
+        arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
 
@@ -298,26 +297,9 @@ public class RequestServiceImpl implements RequestService {
             LOGGER.warn("Request {} accept by user {} failed", request.getId(), user.getId());
             return false;
         }
-
-        rejectAllByPet(request.getPet().getId());
-
-        final User recipient = request.getUser();
-        Pet pet = request.getPet();
-        User contact = pet.getUser();
-
-        Map<String, Object> arguments = new HashMap<>();
-
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("contactEmail", contact.getMail());
-        arguments.put("ownerURL", contextURL +  "/user/" + recipient.getId());
-        arguments.put("petName", pet.getPetName());
-
-        String userLocale = recipient.getLocale();
-
-        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_ACCEPT);
-
         LOGGER.debug("Request {} accepted by user {}", request.getId(), user.getId());
+
+        petService.sellPet(request.getPet(), user, request.getUser(), contextURL);
         return true;
     }
 
@@ -349,13 +331,13 @@ public class RequestServiceImpl implements RequestService {
         Pet pet = request.getPet();
         User contact = pet.getUser();
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put("URL", contextURL );
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
-        arguments.put("petName", pet.getPetName());
+        arguments.put(MailArg.URL, contextURL);
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
+        arguments.put(MailArg.PETNAME, pet.getPetName());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
+        arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
 
@@ -393,13 +375,13 @@ public class RequestServiceImpl implements RequestService {
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put("requestURL", contextURL + "/interests");
-        arguments.put("petURL", contextURL + "/pet/" + pet.getId());
-        arguments.put("ownerUsername", contact.getUsername());
-        arguments.put("ownerURL", contextURL + "/user/" + + user.getId());
-        arguments.put("petName", pet.getPetName());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
+        arguments.put(MailArg.PETNAME, pet.getPetName());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
+        arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + recipient.getId());
+        arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
 

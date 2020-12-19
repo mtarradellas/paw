@@ -8,10 +8,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -31,19 +31,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
-import ar.edu.itba.paw.interfaces.LocationService;
 import ar.edu.itba.paw.interfaces.PetService;
-import ar.edu.itba.paw.interfaces.SpeciesService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Department;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Species;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
 import ar.edu.itba.paw.webapp.dto.DepartmentDto;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
@@ -64,15 +62,6 @@ public class AdminPetController {
     @Autowired
     private PetService petService;
 
-    @Autowired
-    private SpeciesService speciesService;
-
-    @Autowired
-    private LocationService locationService;
-
-    @Autowired
-    private UserService userService;
-
     @Context
     private UriInfo uriInfo;
 
@@ -80,7 +69,9 @@ public class AdminPetController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getPets(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+                            @QueryParam("newOwnerId") @DefaultValue("0") Long newOwnerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
@@ -89,15 +80,16 @@ public class AdminPetController {
                             @QueryParam("searchCriteria") String searchCriteria,
                             @QueryParam("find") String find,
                             @QueryParam("searchOrder") String searchOrder,
-                            @QueryParam("priceRange") int priceRange,
-                            @QueryParam("status") int status,
+                            @QueryParam("priceRange") @DefaultValue("0") int priceRange,
+                            @QueryParam("status") @DefaultValue("-1") int status,
                             @QueryParam("page") @DefaultValue("1") int page) {
 
-        final String locale = ApiUtils.getLocale();
-        int[] range;
+        final String locale = ApiUtils.getLocale(httpRequest);
+        PriceRange range;
         PetStatus petStatus;
         try {
             ownerId = ParseUtils.parseUserId(ownerId);
+            newOwnerId = ParseUtils.parseUserId(newOwnerId);
             ParseUtils.parsePage(page);
             ParseUtils.isAllowedFind(find);
             searchCriteria = ParseUtils.parseCriteria(searchCriteria);
@@ -107,7 +99,7 @@ public class AdminPetController {
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
             petStatus = ParseUtils.parseStatus(PetStatus.class, status);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -115,16 +107,16 @@ public class AdminPetController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
         int amount;
         try {
-            petList = petService.filteredList(locale, findList, ownerId, species, breed, gender, petStatus,
+            petList = petService.filteredList(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus,
                     searchCriteria, searchOrder, minPrice, maxPrice, province, department, page, PET_PAGE_SIZE)
                     .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
-            amount = petService.getFilteredListAmount(locale, findList, ownerId, species, breed, gender, petStatus, 
+            amount = petService.getFilteredListAmount(locale, findList, ownerId, newOwnerId, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -139,18 +131,19 @@ public class AdminPetController {
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") long ownerId,
+    public Response getPets(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") long ownerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
                             @QueryParam("department") @DefaultValue("0") Long department,
                             @QueryParam("gender") String gender,
                             @QueryParam("find") String find,
-                            @QueryParam("status") int status,
-                            @QueryParam("priceRange") int priceRange) {
+                            @QueryParam("status") @DefaultValue("0") int status,
+                            @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
-        final String locale = ApiUtils.getLocale();
-        int[] range;
+        final String locale = ApiUtils.getLocale(httpRequest);
+        PriceRange range;
         Long owner;
         PetStatus petStatus;
         try {
@@ -160,7 +153,7 @@ public class AdminPetController {
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
             petStatus = ParseUtils.parseStatus(PetStatus.class, status);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -169,21 +162,21 @@ public class AdminPetController {
                     .entity(new GenericEntity<ErrorDto>(body) {
                     }).build();
         }
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         Set<String> genderList;
-        Set<Integer> rangeList;
+        Set<PriceRange> rangeList;
         List<Department> departments;
         List<Breed> breeds;
         try {
-            breeds = petService.filteredBreedList(locale, findList, null, species, breed, gender, petStatus,
+            breeds = petService.filteredBreedList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
-            departments = petService.filteredDepartmentList(locale, findList, null, species, breed, gender, petStatus,
+            departments = petService.filteredDepartmentList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
-            rangeList = petService.filteredRangesList(locale, findList, null, species, breed, gender, petStatus,
+            rangeList = petService.filteredRangesList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
-            genderList = petService.filteredGenderList(locale, findList, null, species, breed, gender, petStatus,
+            genderList = petService.filteredGenderList(locale, findList, owner, species, breed, gender, petStatus,
                     minPrice, maxPrice, province, department);
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -205,7 +198,11 @@ public class AdminPetController {
         filters.put("departmentList", departmentList);
         filters.put("provinceList", provinceList);
         filters.put("genderList", genderList);
-        filters.put("rangeList", rangeList);
+
+        Map<String, Object> ranges = new TreeMap<>();
+        rangeList.forEach(r -> ranges.put(String.valueOf(r.ordinal()), r.asMap()));
+
+        filters.put("rangeList", ranges);
 
         return Response.ok().entity(new Gson().toJson(filters)).build();
     }
@@ -213,8 +210,8 @@ public class AdminPetController {
     @GET
     @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPet(@PathParam("petId") Long petId) {
-        String locale = ApiUtils.getLocale();
+    public Response getPet(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -226,8 +223,17 @@ public class AdminPetController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response create(final PetDto pet) {
-        String locale = ApiUtils.getLocale();
+    public Response create(@Context HttpServletRequest httpRequest, final PetDto pet) {
+        try {
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opNewPet;
         /* TODO como recibir las fotos ?*/
         PetStatus petStatus;
@@ -235,10 +241,10 @@ public class AdminPetController {
             petStatus = ParseUtils.parseStatus(PetStatus.class, pet.getStatus());
             opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
                     pet.getPrice(), pet.getDescription(), petStatus, pet.getUserId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(),null);
+                    pet.getProvinceId(), pet.getDepartmentId(), null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -253,23 +259,20 @@ public class AdminPetController {
     @POST
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response edit(final PetDto pet) {
-        String locale = ApiUtils.getLocale();
-        Optional<Pet> opPet;
-        Optional<User> opOwner;
-        PetStatus petStatus;
+    public Response edit(@Context HttpServletRequest httpRequest, final PetDto pet) {
         try {
-            opOwner = userService.findById(pet.getUserId());
-        } catch (NotFoundException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        }
-        if (!opOwner.isPresent()) {
-            LOGGER.warn("Owner invalid");
-            final ErrorDto body = new ErrorDto(1, "Owner invalid");
+            ParseUtils.parsePet(pet);
+        } catch (BadRequestException ex) {
+            LOGGER.warn(ex.getMessage());
+            final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+
+        String locale = ApiUtils.getLocale(httpRequest);
+        Optional<Pet> opPet;
+        PetStatus petStatus;
+        
         try {
             petStatus = ParseUtils.parseStatus(PetStatus.class, pet.getStatus());
         } catch (BadRequestException ex) {
@@ -298,8 +301,8 @@ public class AdminPetController {
 //        }
 
         try {
-            opPet = petService.update(locale, pet.getId(), opOwner.get().getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
-                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
+            opPet = petService.update(locale, pet.getId(), null, pet.getPetName(), pet.getBirthDate(), pet.getGender(),
+                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), petStatus, pet.getSpeciesId(),
                     pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -324,6 +327,7 @@ public class AdminPetController {
     @Consumes(value = { MediaType.APPLICATION_JSON})
     public Response petUpdateSold(@PathParam("petId") Long petId,
                                   final UserDto newOwner) {
+        if (newOwner == null) return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         Long newOwnerId;
         try {
             newOwnerId = ParseUtils.parseUserId(newOwner.getId());

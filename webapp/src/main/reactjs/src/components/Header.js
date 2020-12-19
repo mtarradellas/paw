@@ -1,10 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import '../css/header.css';
 import {Link} from "react-router-dom";
 import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS, ADD_PET, USER} from "../constants/routes";
 import {useTranslation} from "react-i18next";
 import {Button} from "antd";
 import useLogin from "../hooks/useLogin";
+import * as Yup from 'yup';
+import {Formik} from "formik";
+import {Form, Input} from "formik-antd";
+import FilterAndSearchContext from "../constants/filterAndSearchContext";
+import {useHistory} from 'react-router-dom';
 
 
 function LoggedIn(){
@@ -18,9 +23,6 @@ function LoggedIn(){
     };
 
     return <>
-            <Link className={"header__subtitle"} to={ADD_PET}>
-                {t('addPet')}
-            </Link>
 
             <Link className={"header__subtitle"} to={REQUESTS}>
                 {t('requests')}
@@ -35,6 +37,8 @@ function LoggedIn(){
             </Link>
 
             <div className={"header__right header--session"}>
+                <SearchBar/>
+
                 <p className={"header--session--username"}>
                     {username}
                 </p>
@@ -51,11 +55,10 @@ function NotLoggedIn(){
     const {t} = useTranslation('header');
 
     return <>
-            <Link className={"header__subtitle"} to={ADD_PET}>
-                {t('addPet')}
-            </Link>
 
             <div className={"header__right"}>
+                <SearchBar/>
+
                 <Link className={"header__register"} to={REGISTER}>
                     {t('register')}
                 </Link>
@@ -64,6 +67,62 @@ function NotLoggedIn(){
                     {t('login')}
                 </Link>
             </div>
+        </>
+}
+
+function SearchBar() {
+    const history = useHistory();
+    const {t} = useTranslation('header');
+
+    const {
+        onSubmitSearch,
+        fetching,
+        find
+    } = useContext(FilterAndSearchContext);
+
+    const onSubmit = values => {
+        onSubmitSearch(values);
+
+        if(history.location !== HOME)
+            history.push(HOME);
+    };
+
+    return <Formik
+        onSubmit={onSubmit}
+        initialValues={
+            {
+                find
+            }
+        }
+        validationSchema={
+            Yup.object().shape({
+                find: Yup.string()
+            })
+        }
+        validateOnBlur={false}
+        validateOnChange={false}
+        >
+                <Form layout={'inline'}>
+                    <Form.Item name={'find'}>
+                        <Input name={'find'} placeholder={t('searchPlaceholder')} allowClear/>
+                    </Form.Item>
+
+                    <Form.Item name>
+                        <Button type="primary" htmlType="submit" loading={fetching}>
+                            {t('searchButton')}
+                        </Button>
+                    </Form.Item>
+                </Form>
+    </Formik>;
+}
+
+function Common(){
+    const {t} = useTranslation('header');
+
+    return <>
+        <Link className={"header__subtitle"} to={ADD_PET}>
+            {t('addPet')}
+        </Link>
         </>
 }
 
@@ -84,7 +143,7 @@ function Header() {
             </span>
         </Link>
 
-
+        <Common/>
         {isLoggedIn ? <LoggedIn/> : <NotLoggedIn/>}
 
     </header>;

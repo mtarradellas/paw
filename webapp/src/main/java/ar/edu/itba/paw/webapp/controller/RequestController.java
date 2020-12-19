@@ -3,12 +3,14 @@ package ar.edu.itba.paw.webapp.controller;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -21,6 +23,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import com.google.gson.Gson;
@@ -37,11 +40,11 @@ import ar.edu.itba.paw.interfaces.RequestService;
 import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.RequestException;
-import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
+import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.RequestDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
@@ -66,7 +69,8 @@ public class RequestController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequestList(@QueryParam("page") @DefaultValue("1") int page,
+    public Response getRequestList(@Context HttpServletRequest request,
+                                   @QueryParam("page") @DefaultValue("1") int page,
                                    @QueryParam("userId") @DefaultValue("0") long userId,
                                    @QueryParam("targetId") @DefaultValue("0") long targetId,
                                    @QueryParam("petId") @DefaultValue("0") long petId,
@@ -93,7 +97,7 @@ public class RequestController {
         }
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
         if (currentUser.getId() != user && currentUser.getId() != target) {
             LOGGER.warn("User has no permissions to perform this action.");
             return Response.status(Response.Status.FORBIDDEN.getStatusCode()).build();
@@ -106,7 +110,6 @@ public class RequestController {
                     searchCriteria, searchOrder, page, REQ_PAGE_SIZE)
                     .stream().map(r -> RequestDto.fromRequest(r, uriInfo)).collect(Collectors.toList());
             amount = requestService.getFilteredListAmount(user, target, pet, Collections.emptyList(), requestStatus);
-            System.out.println("AMOUNT: " + amount);
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
@@ -119,7 +122,7 @@ public class RequestController {
     @GET
     @Path("/{requestId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequest(@PathParam("requestId") long requestId) {
+    public Response getRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
 
         final Optional<Request> opRequest = requestService.findById(requestId);
 
@@ -129,7 +132,7 @@ public class RequestController {
         }
         final Request request = opRequest.get();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if (currentUser.getId() != request.getUser().getId() && currentUser.getId() != request.getTarget().getId()){
             LOGGER.warn("User has no permissions to perform this action.");
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -140,10 +143,11 @@ public class RequestController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createRequest(final RequestDto requestDto) {
-        final String locale = ApiUtils.getLocale();
+    public Response createRequest(@Context HttpServletRequest httpRequest, final RequestDto requestDto) {
+        if (requestDto == null || requestDto.getPetId() == null) return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
+        final String locale = ApiUtils.getLocale(httpRequest);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         Optional<Request> opRequest;
         try {
@@ -168,7 +172,8 @@ public class RequestController {
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequestFilters(@QueryParam("petId") @DefaultValue("0") long petId,
+    public Response getRequestFilters(@Context HttpServletRequest httpRequest,
+                                      @QueryParam("petId") @DefaultValue("0") long petId,
                                       @QueryParam("status") @DefaultValue("-1") int status) {
 
         RequestStatus requestStatus;
@@ -183,7 +188,7 @@ public class RequestController {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         List<RequestStatus> statusList;
         if(requestStatus != null)  {
@@ -211,8 +216,9 @@ public class RequestController {
     @GET
     @Path("/interests/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getInterestFilters(@QueryParam("petId") @DefaultValue("0") long petId,
-                                      @QueryParam("status") @DefaultValue("-1") int status) {
+    public Response getInterestFilters(@Context HttpServletRequest httpRequest,
+                                       @QueryParam("petId") @DefaultValue("0") long petId,
+                                       @QueryParam("status") @DefaultValue("-1") int status) {
 
         RequestStatus requestStatus;
         Long pet;
@@ -226,7 +232,7 @@ public class RequestController {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         /** Status Filter */
         List<RequestStatus> statusList;
@@ -246,23 +252,19 @@ public class RequestController {
         List<Integer> statusIdList = statusList.stream().map(RequestStatus::getValue).collect(Collectors.toList());
 
         /** Pet Filter */
-        List<Long> petList;
-        if (pet != null) {
-            petList = new ArrayList<>();
-            petList.add(pet);
-        }
-        else {
-            try {
-                petList = requestService.filteredPetListByPetOwner(currentUser.getId(), pet, Collections.emptyList(), requestStatus)
-                        .stream().map(Pet::getId).collect(Collectors.toList());
-            } catch (NotFoundException ex) {
-                LOGGER.warn("{}", ex.getMessage());
-                final ErrorDto body = new ErrorDto(3, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
-            }
-        }
+        List<PetDto> petList;
 
-        Map<String, Object> filters = new TreeMap<>();
+        try {
+            petList = requestService.filteredPetListByPetOwner(currentUser.getId(), pet, Collections.emptyList(), requestStatus)
+                    .stream().map(p -> PetDto.fromPetForList(p, uriInfo)).collect(Collectors.toList());
+        } catch (NotFoundException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        petList.forEach(System.out::println);
+
+        Map<String, Object> filters = new HashMap<>();
         filters.put("statusList", statusIdList);
         filters.put("petList", petList);
 
@@ -271,9 +273,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/cancel")
-    public Response cancelRequest(@PathParam("requestId") long requestId) {
+    public Response cancelRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.cancel(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -289,9 +291,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/recover")
-    public Response recoverRequest(@PathParam("requestId") long requestId) {
+    public Response recoverRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.recover(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -307,9 +309,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/accept")
-    public Response acceptRequest(@PathParam("requestId") long requestId) {
+    public Response acceptRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.accept(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -325,9 +327,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/reject")
-    public Response rejectRequest(@PathParam("requestId") long requestId) {
+    public Response rejectRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.reject(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -339,5 +341,18 @@ public class RequestController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+    }
+
+    @GET
+    @Path("/notifications")
+    public Response getNotifications(@Context HttpServletRequest httpRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = ApiUtils.loggedUser(httpRequest, userService, auth);
+        int interests = requestService.interestNotifs(user);
+        int requests  = requestService.requestNotifs(user);
+        Map<String, Integer> json = new HashMap<>();
+        json.put("interests", interests);
+        json.put("requests", requests);
+        return Response.ok(new Gson().toJson(json)).build();
     }
 }

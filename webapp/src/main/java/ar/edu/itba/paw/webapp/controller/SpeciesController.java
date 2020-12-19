@@ -1,26 +1,37 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import ar.edu.itba.paw.interfaces.SpeciesService;
 import ar.edu.itba.paw.models.Breed;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
 import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @Path("/species")
 public class SpeciesController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpeciesController.class);
 
     @Autowired
     private SpeciesService speciesService;
@@ -30,8 +41,8 @@ public class SpeciesController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getSpecies() {
-        String locale = ApiUtils.getLocale();
+    public Response getSpecies(@Context HttpServletRequest request) {
+        String locale = ApiUtils.getLocale(request);
         List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<SpeciesDto>>(speciesList) {}).build();
     }
@@ -65,8 +76,8 @@ public class SpeciesController {
     @GET
     @Path("/breeds")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getBreeds() {
-        String locale = ApiUtils.getLocale();
+    public Response getBreeds(@Context HttpServletRequest request) {
+        String locale = ApiUtils.getLocale(request);
         List<BreedDto> breedList = speciesService.breedList(locale).stream().map(BreedDto::fromBreed).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<BreedDto>>(breedList) {}).build();
     }

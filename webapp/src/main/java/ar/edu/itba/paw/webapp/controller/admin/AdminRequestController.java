@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -32,7 +33,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.RequestService;
-import ar.edu.itba.paw.interfaces.UserService;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.RequestException;
 import ar.edu.itba.paw.models.Pet;
@@ -54,9 +54,6 @@ public class AdminRequestController {
     private RequestService requestService;
 
     private static final int REQ_PAGE_SIZE = 25;
-
-    @Autowired
-    private UserService userService;
 
     @Context
     private UriInfo uriInfo;
@@ -123,8 +120,8 @@ public class AdminRequestController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createRequest(final RequestDto requestDto) {
-        final String locale = ApiUtils.getLocale();
+    public Response createRequest(@Context HttpServletRequest httpRequest, final RequestDto requestDto) {
+        final String locale = ApiUtils.getLocale(httpRequest);
        
         if (requestDto == null || requestDto.getPetId() == null || requestDto.getUserId() == null) {
             final ErrorDto body = new ErrorDto(1, "Missing required request fields.");

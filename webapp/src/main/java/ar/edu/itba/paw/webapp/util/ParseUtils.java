@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.util;
 import java.util.Arrays;
 import java.util.List;
 
+import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ReviewDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
@@ -99,23 +100,6 @@ public class ParseUtils {
         return "asc";
     }
 
-    public static int[] parseRange(int range) {
-        int[] price;
-        switch (range) {
-            case 0 : price = new int[]{0, -1}; break; // Any price
-            case 1 : price = new int[]{0, 0}; break;
-            case 2 : price = new int[]{1, 4999}; break;
-            case 3 : price = new int[]{5000, 9999}; break;
-            case 4 : price = new int[]{10000, 14999}; break;
-            case 5 : price = new int[]{15000, 19999}; break;
-            case 6 : price = new int[]{20000, 24999}; break;
-            case 7 : price = new int[]{25000, -1}; break;
-            default  : String hint = "Range must be between 1 and 7 inclusive, or 0 for any range";
-                       throw new BadRequestException("price range", String.valueOf(range), hint);
-        }
-        return price;
-    }
-
     public static void parseReviewScore(Integer score) {
         if (score == null || score < 1 || score > 5) {
             String hint = "Score must be between 1 and 5 inclusive";
@@ -133,7 +117,7 @@ public class ParseUtils {
     }
 
     public static void parseReviewDescription(String description) {
-        if (description == null || description.length() > 2048) {
+        if (description != null && description.length() > 2048) {
             String hint = "Description must contain less than 2048 characters";
             throw new BadRequestException("description", description, hint);
         }
@@ -189,12 +173,19 @@ public class ParseUtils {
         return questionId;
     }
 
+    public static String parseQuestion(String question) {
+        if (question == null || question.length() > 250 || question.length() < 1) {
+            String hint = "Question must have between 1 and 250 characters";
+            throw new BadRequestException("Question", question, hint);
+        }
+        return question;
+    }
+
     public static void parseReview(ReviewDto review) {
-        if (review == null || review.getUserId() == null || review.getTargetId() == null || review.getScore() == null) {
+        if (review == null || review.getTargetId() == null || review.getScore() == null) {
             String hint = "Review is missing a required attribute";
             throw new BadRequestException("review", "user, target or score", hint);
         }
-        parseUserId(review.getUserId());
         parseUserId(review.getTargetId());
         parseReviewScore(review.getScore());
         parseReviewDescription(review.getDescription());
@@ -209,5 +200,19 @@ public class ParseUtils {
         parseUsername(user.getUsername());
         parseMail(user.getMail());
         parsePassword(user.getPassword());
+    }
+
+    public static void parsePet(PetDto pet) {
+        if (pet == null || pet.getPetName() == null) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+        pet.setPetName(pet.getPetName().trim().replaceAll(" +", " "));
+        if (pet.getPetName().length() == 0 || pet.getPetName().length() > 255) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+        if (pet.getGender() == null || pet.getPrice() == null || pet.getSpeciesId() == null || pet.getBreedId() == null || 
+            pet.getProvinceId() == null || pet.getDepartmentId() == null) {
+                throw new BadRequestException("Invalid or missing required fields");
+        }
     }
 }

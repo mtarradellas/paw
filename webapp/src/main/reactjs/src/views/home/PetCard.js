@@ -6,14 +6,17 @@ import {Link} from "react-router-dom";
 import {PET, USER} from "../../constants/routes";
 import {petImageSrc} from "../../api/images";
 import _ from 'lodash';
+import {petStatus, petStatusToString} from '../../constants/petStatus';
 
 function PetCard({pet}){
-    const {petName, specie, breed, price, gender, username, uploadDate, id, images, userId} = pet;
+    const {petName, specie, breed, price, gender, username, uploadDate, id, images, userId, status} = pet;
 
     const {t} = useTranslation(["petInformation", "home"]);
 
+    const isAvailable = status === petStatus.AVAILABLE;
+
     return <Card
-            className={"pet-card"}
+            className={"pet-card" + (!isAvailable ? " pet-card--not-available" : '')}
             cover={
                 <Link to={PET + id}>
                     <img className={"pet-card--img"} alt="example" src={petImageSrc(images[0])}/>
@@ -34,6 +37,11 @@ function PetCard({pet}){
                     <Link to={PET + id}>
                         <Button type={"primary"}>{t("home:pets.petsCard.goToPage")}</Button>
                     </Link>
+                    {
+                        !isAvailable && <span>
+                            ({t('statuses.' + petStatusToString(status))})
+                        </span>
+                    }
                 </List.Item>
             </List>
         </Card>

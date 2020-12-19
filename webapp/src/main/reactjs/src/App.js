@@ -52,7 +52,8 @@ import {
     ADD_PET,
     FORGOT_PASSWORD,
     VERIFY_EMAIL,
-    RESET_PASSWORD
+    RESET_PASSWORD,
+    EDIT_PET
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -64,8 +65,159 @@ import useConstants from "./hooks/useConstants";
 import {Spin} from "antd";
 import PrivateRoute from "./components/PrivateRoute";
 import AddPetView from "./views/addPet/AddPetView";
+
 import EmailSent from "./views/information/EmailSent";
 import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
+import useFormAndSearch from "./hooks/useFormAndSearch";
+import FilterAndSearchContext from './constants/filterAndSearchContext'
+import EditPetView from "./views/editPet/EditPetView";
+
+
+function AppSwitch(){
+    const {t} = useTranslation('error-pages');
+
+    const formAndSearch = useFormAndSearch();
+
+    return <FilterAndSearchContext.Provider value={formAndSearch}>
+        <Switch>
+            <Route exact path={HOME}>
+                <BasicLayout>
+                    <HomeView/>
+                </BasicLayout>
+            </Route>
+            <Route exact path={REGISTER}>
+                <BasicLayout>
+                    <RegisterView/>
+                </BasicLayout>
+            </Route>
+
+            <Route exact path={LOGIN}>
+                <BasicLayout>
+                    <LoginView/>
+                </BasicLayout>
+            </Route>
+
+            <PrivateRoute path={USER + ':id'}
+                          component={
+                              () => (<BasicLayout>
+                                  <UserView/>
+                              </BasicLayout>)
+                          }
+            />
+
+            {/*<Route exact path={ADMIN_HOME}>*/}
+            {/*    <AdminLayout>*/}
+            {/*        <AdminHome/>*/}
+            {/*    </AdminLayout>*/}
+            {/*</Route>*/}
+            {/*<Route exact path={ADMIN_REQUESTS}>*/}
+            {/*    <AdminLayout>*/}
+            {/*        <AdminRequests/>*/}
+            {/*    </AdminLayout>*/}
+            {/*</Route>*/}
+            {/*<Route exact path={ADMIN_USERS}>*/}
+            {/*    <AdminLayout>*/}
+            {/*        <AdminUsers/>*/}
+            {/*    </AdminLayout>*/}
+            {/*</Route>*/}
+            {/*<Route exact path={ADMIN_PETS}>*/}
+            {/*    <AdminLayout>*/}
+            {/*        <AdminPets/>*/}
+            {/*    </AdminLayout>*/}
+            {/*</Route>*/}
+
+            <PrivateRoute path={ADD_PET}
+                          component={
+                              () => (<BasicLayout>
+                                  <AddPetView/>
+                              </BasicLayout>)
+                          }
+            />
+            <PrivateRoute path={REQUESTS}
+                          component={
+                              () => (
+                                  <BasicLayout>
+                                      <RequestsView/>
+                                  </BasicLayout>
+                              )
+
+                          }
+            />
+            <PrivateRoute path={INTERESTS}
+                          component={
+                              () => (
+                                  <BasicLayout>
+                                      <InterestsView/>
+                                  </BasicLayout>
+                              )
+                          }
+            />
+            <Route exact path={PET + ':id'}
+                   render={
+                       () => (
+                           <BasicLayout>
+                               <PetView/>
+                           </BasicLayout>
+                       )
+                   }
+            />
+            <Route exact path={EDIT_PET(':id')}
+                   render={
+                       () => (
+                           <BasicLayout>
+                               <EditPetView/>
+                           </BasicLayout>
+                       )
+                   }
+            />
+            <Route path={ERROR_404}>
+                <BasicLayout>
+                    <ErrorWithImage title={t('error404')} image={"/images/page_not_found.png"}
+                                    text={t('pageNotFound')}/>
+                </BasicLayout>
+            </Route>
+            <Route path={ERROR_404_PET}>
+                <BasicLayout>
+                    <ErrorWithImage title={t('error404')} image={"/images/pet_not_found.png"}
+                                    text={t('petNotFound')}/>
+                </BasicLayout>
+            </Route>
+            <Route path={ERROR_404_USER}>
+                <BasicLayout>
+                    <ErrorWithImage title={t('error404')} image={"/images/user_not_found.png"}
+                                    text={t('userNotFound')}/>
+                </BasicLayout>
+            </Route>
+            <Route path={ACCESS_DENIED}>
+                <BasicLayout>
+                    <ErrorWithImage title={t('error403')} image={"/images/access_denied.png"}
+                                    text={t('accessDenied')}/>
+                </BasicLayout>
+            </Route>
+            <Route path={WRONG_METHOD}>
+                <BasicLayout>
+                    <ErrorWithImage title={t('error405')} image={"/images/access_denied.png"}
+                                    text={t('wrongMethod')}/>
+                </BasicLayout>
+            </Route>
+            <Route path={BAD_REQUEST}>
+                <BasicLayout>
+                    <ErrorWithImage title={t('error400')} image={"/images/access_denied.png"}
+                                    text={t('badRequest')}/>
+                </BasicLayout>
+            </Route>
+            <Route path={INTERNAL_SERVER_ERROR}>
+                <BasicLayout>
+                    <ErrorWithImage title={t('error500')}
+                                    image={"/images/internal_server_error.png"}
+                                    text={t('serverError')}/>
+                </BasicLayout>
+            </Route>
+            <Redirect to={ERROR_404}/>
+        </Switch>
+    </FilterAndSearchContext.Provider>
+}
+
 
 
 function App() {
@@ -73,7 +225,6 @@ function App() {
     const constants = useConstants();
 
     const {loaded} = constants;
-    const {t} = useTranslation('error-pages');
 
     return (
         <LoginContext.Provider value={login}>
@@ -83,6 +234,7 @@ function App() {
                         !loaded ?
                             <Spin/>
                             :
+
                             <Switch>
                                 <Route exact path={HOME}>
                                     <BasicLayout>
@@ -228,6 +380,8 @@ function App() {
                                 </Route>
                                 <Redirect to={ERROR_404}/>
                             </Switch>
+
+
                     }
                 </Router>
             </ConstantsContext.Provider>

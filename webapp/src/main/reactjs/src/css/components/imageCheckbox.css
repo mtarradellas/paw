@@ -1,0 +1,33 @@
+
+.image-checkbox img {
+    max-width: 8rem;
+    max-height: 8rem;
+}
+
+.image-checkbox.image-checkbox--checked {
+    height: 8.5rem;
+    width: 8.5rem;
+    border: 0.25rem solid red;
+}
+
+.image-checkbox {
+    height: 8.5rem;
+    width: 8.5rem;
+    position:relative;
+    border: 0.25rem solid rgba(255, 255, 255, 0);
+}
+.image-checkbox:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: none;
+    transition: all .3s linear;
+    cursor: pointer;
+}
+.image-checkbox:hover:before {
+    background: rgba(255, 30, 38, 0.3);
+}

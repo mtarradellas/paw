@@ -2,20 +2,40 @@ import React, {useContext} from 'react';
 import {useTranslation} from "react-i18next";
 import {ErrorMessage, Formik} from "formik";
 import {Form, Input, InputNumber, Checkbox, Select, DatePicker} from "formik-antd";
-import {Button, Upload} from 'antd';
+import {Button, Spin, Upload} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import * as Yup from 'yup';
 import ConstantsContext from '../../constants/constantsContext';
+import DeleteImagesInput from "../editPet/DeleteImagesInput";
 
 const FormItem = Form.Item;
 
-function AddPetForm({submitting}){
+const defaultValues = {
+    petName: '',
+    price: '',
+    isAdoption: '',
+    description: '',
+    province: '',
+    department: '',
+    specie: '',
+    breed: '',
+    dateOfBirth: '',
+    isVaccinated: '',
+    gender: '',
+    filesToDelete: [],
+    files: []
+};
+
+function AddPetForm({submitting, onSubmit, editing, initialValues}){
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
     const {t} = useTranslation('addPet');
 
     const _onSubmit = values => {
-        console.log(values);
+        onSubmit(values);
     };
+
+    if(editing && !initialValues.petName)
+        return <Spin/>;
 
     return <Formik
         validationSchema={
@@ -46,27 +66,13 @@ function AddPetForm({submitting}){
                 isVaccinated: Yup.boolean(),
                 gender: Yup.string()
                     .required(t('form.gender.required')),
-                images: Yup.array()
+                filesToDelete: Yup.array(),
+                files: editing ? Yup.array() : Yup.array()
                     .min(1, min => t('form.images.min', {min}))
             })
         }
         onSubmit={_onSubmit}
-        initialValues={
-            {
-                petName: '',
-                price: '',
-                isAdoption: '',
-                description: '',
-                province: '',
-                department: '',
-                specie: '',
-                breed: '',
-                dateOfBirth: '',
-                isVaccinated: '',
-                gender: '',
-                images: []
-            }
-        }
+        initialValues={Object.assign({}, defaultValues, initialValues)}
         render={
             ({setFieldValue, values}) => {
 
@@ -93,7 +99,9 @@ function AddPetForm({submitting}){
                     </FormItem>
 
                     <FormItem name={"province"} label={t('form.province.label')}>
-                        <Select name={"province"} placeholder={t('form.province.placeholder')}>
+                        <Select name={"province"} placeholder={t('form.province.placeholder')}
+                                onChange={() => setFieldValue('department', '')}
+                        >
                             {
                                 Object.values(provinces).map(({id, name}) => {
                                     return <Select.Option value={id}>{name}</Select.Option>
@@ -103,10 +111,11 @@ function AddPetForm({submitting}){
                     </FormItem>
 
                     <FormItem name={"department"} label={t('form.department.label')}>
-                        <Select name={"department"} placeholder={t('form.department.placeholder')}>
+                        <Select name={"department"} placeholder={t('form.department.placeholder')} disabled={!values.province}>
                             {
-                                //TODO: make departments depend of provinces
-                                Object.values(departments).map(({id, name}) => {
+                                values.province && provinces[values.province].departmentIds.map(departmentId => {
+                                    const {id, name} = departments[departmentId];
+
                                     return <Select.Option value={id}>{name}</Select.Option>
                                 })
                             }
@@ -154,11 +163,15 @@ function AddPetForm({submitting}){
                         </Select>
                     </FormItem>
 
+                    {
+                        editing && <DeleteImagesInput setFieldValue={setFieldValue} values={values}/>
+                    }
+
                     <Upload
                         beforeUpload={()=>false}
                         listType="picture-card"
                         onChange={({fileList}) => {
-                            setFieldValue("images", [...fileList])
+                            setFieldValue("files", [...fileList])
                         }}
                     >
                         <div>
@@ -167,7 +180,7 @@ function AddPetForm({submitting}){
                         </div>
 
                     </Upload>
-                    <p className={"error-message"}><ErrorMessage name={"images"}/></p>
+                    <p className={"error-message"}><ErrorMessage name={"files"}/></p>
 
                     <FormItem name>
                         <Button type="primary" htmlType="submit" loading={submitting}>

@@ -38,6 +38,7 @@ import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.models.constants.QuestionStatus;
 
 @Repository
@@ -69,23 +70,23 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public List<Pet> searchList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
+    public List<Pet> searchList(String locale, List<String> find, User user, User newOwner, Species species, Breed breed, String gender, PetStatus status, String searchCriteria,
                                 String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize) {
 
         /* TODO descomentar para deployar*/
-        indexPets();
+        // indexPets();
 
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, newOwner, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, searchCriteria, searchOrder);
         jpaQuery.setProjection(ProjectionConstants.ID);
-        return paginationAndOrder(locale, jpaQuery,searchCriteria,searchOrder,page,pageSize);
+        return paginationAndOrder(locale, jpaQuery, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
     public List<Breed> searchBreedList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                        PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
 
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, null, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, null, null);
 
         jpaQuery.setProjection("breed.eid");
@@ -106,7 +107,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public List<Department> searchDepartmentList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                                  PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, null, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, null,null);
 
         jpaQuery.setProjection("department.eid");
@@ -122,24 +123,24 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public Set<Integer> searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
+    public Set<PriceRange> searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                                  PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, null, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, null, null);
 
         jpaQuery.setProjection("price");
         @SuppressWarnings("unchecked")
         List<Object[]> results = jpaQuery.getResultList();
         if (results.size() == 0) return new TreeSet<>();
-        Set<Integer> ranges = new TreeSet<>();
+        Set<PriceRange> ranges = new TreeSet<>();
         for (Object[] price:results) {
-            if(price[0].equals(0)) ranges.add(0);
-            else if((Integer)price[0] < 5000) ranges.add(1);
-            else if((Integer)price[0] < 10000) ranges.add(2);
-            else if((Integer)price[0] < 15000) ranges.add(3);
-            else if((Integer)price[0] < 20000) ranges.add(4);
-            else if((Integer)price[0] < 25000) ranges.add(5);
-            else if((Integer)price[0] >= 25000) ranges.add(6);
+            if(price[0].equals(PriceRange.ONE.max())) ranges.add(PriceRange.ONE);
+            else if((Integer)price[0] <= PriceRange.TWO.max()) ranges.add(PriceRange.TWO);
+            else if((Integer)price[0] <= PriceRange.THREE.max()) ranges.add(PriceRange.THREE);
+            else if((Integer)price[0] <= PriceRange.FOUR.max()) ranges.add(PriceRange.FOUR);
+            else if((Integer)price[0] <= PriceRange.FIVE.max()) ranges.add(PriceRange.FIVE);
+            else if((Integer)price[0] <= PriceRange.SIX.max()) ranges.add(PriceRange.SIX);
+            else if((Integer)price[0] >= PriceRange.SEVEN.min()) ranges.add(PriceRange.SEVEN);
 
             if(ranges.size() == MAX_RANGES) return ranges;
         }
@@ -149,7 +150,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public Set<String> searchGenderList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                         PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
-        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, species, breed, gender, status,
+        org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, null, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, null, null);
 
         jpaQuery.setProjection("gender");
@@ -170,7 +171,7 @@ public class PetJpaDaoImpl implements PetDao {
                                   String searchCriteria, String searchOrder, int minPrice, int maxPrice, Province province,
                                   Department department, int page, int pageSize) {
 
-        return searchList(locale, null, user, species, breed, gender, status, searchCriteria, searchOrder,
+        return searchList(locale, null, user, null, species, breed, gender, status, searchCriteria, searchOrder,
                 minPrice, maxPrice, province, department, page, pageSize);
     }
 
@@ -248,7 +249,7 @@ public class PetJpaDaoImpl implements PetDao {
         return em.createQuery(cr).getResultList();
     }
 
-    private org.hibernate.search.jpa.FullTextQuery searchQuery(String locale, List<String> find, User user, Species species,
+    private org.hibernate.search.jpa.FullTextQuery searchQuery(String locale, List<String> find, User user, User newOwner, Species species,
                                                                   Breed breed, String gender, PetStatus status, int minPrice,
                                                                   int maxPrice, Province province,
                                                                   Department department, String searchCriteria, String searchOrder) {
@@ -281,6 +282,7 @@ public class PetJpaDaoImpl implements PetDao {
             }
         }
         if(user != null)  boolJunction.must(queryBuilder.keyword().onField("user.eid").matching(user.getId()).createQuery());
+        if(newOwner != null)  boolJunction.must(queryBuilder.keyword().onField("newOwner.eid").matching(newOwner.getId()).createQuery());
         if(species != null)  boolJunction.must(queryBuilder.keyword().onField("species.eid").matching(species.getId()).createQuery());
         if(breed != null)  boolJunction.must(queryBuilder.keyword().onField("breed.eid").matching(breed.getId()).createQuery());
         if(gender != null)boolJunction.must(queryBuilder.keyword().onField("gender").matching(gender).createQuery());
@@ -323,9 +325,9 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public int getSearchListAmount(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status,
+    public int getSearchListAmount(String locale, List<String> find, User user, User newOwner, Species species, Breed breed, String gender, PetStatus status,
                                    int minPrice, int maxPrice, Province province, Department department) {
-        org.hibernate.search.jpa.FullTextQuery query = searchQuery(locale, find, user, species, breed, gender, status,
+        org.hibernate.search.jpa.FullTextQuery query = searchQuery(locale, find, user, newOwner, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, null, null);
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
@@ -336,7 +338,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Deprecated
     public int getFilteredListAmount(String locale, User user, Species species, Breed breed, String gender, PetStatus status,
                                      int minPrice, int maxPrice, Province province, Department department) {
-        return getSearchListAmount(locale, null, user, species, breed, gender, status, minPrice,  maxPrice, province, department);
+        return getSearchListAmount(locale, null, user, null, species, breed, gender, status, minPrice,  maxPrice, province, department);
     }
 
     @Override
@@ -363,6 +365,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public Optional<Pet> update(Pet pet) {
         em.persist(pet);
+        indexPets();
         return Optional.of(pet);
     }
 
@@ -374,6 +377,7 @@ public class PetJpaDaoImpl implements PetDao {
         query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
         query.executeUpdate();
+        indexPets();
     }
 
     @Override

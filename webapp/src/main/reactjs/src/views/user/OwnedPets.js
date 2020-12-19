@@ -1,24 +1,28 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Divider, Pagination, Spin} from "antd";
 import _ from "lodash";
 import usePets from "../../hooks/usePets";
 import {useTranslation} from "react-i18next";
 import PetCard from "../home/PetCard";
 
-function OwnedPets({userId}){
+function OwnedPets({userId, title, filters}){
     const {t} = useTranslation('userView');
 
-    const {pets, fetchPets, fetching, amount, pageSize} = usePets({initialFilters: {ownerId: userId}});
+    const {pets, fetchPets, fetching, amount, pageSize} = usePets({});
     const [currentPage, setCurrentPage] = useState(1);
 
     const _onChangePagination = async newValue => {
         setCurrentPage(newValue);
 
-        await fetchPets(Object.assign({page: newValue}, {ownerId: userId}));
+        await fetchPets(Object.assign({page: newValue}, filters));
     };
 
+    useEffect(()=>{
+        _onChangePagination(1);
+    }, []);
+
     return <>
-            <h1><b>{t('petsTitle')}</b> {
+            <h1><b>{t(title)}</b> {
                 pets === null ?
                     <Spin/>
                     :
@@ -28,7 +32,7 @@ function OwnedPets({userId}){
             <div className={"user-view--pets-container"}>
                 <Divider orientation={"left"}>
                     {
-                        pageSize && amount &&
+                        !_.isNil(pageSize) && !_.isNil(amount) &&
                             <Pagination showSizeChanger={false} current={currentPage} total={amount} pageSize={pageSize} onChange={_onChangePagination}/>
                     }
                 </Divider>
