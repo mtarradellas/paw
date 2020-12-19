@@ -9,7 +9,7 @@ export const GET_PETS_ERRORS = {
 };
 export async function getPets(
     {
-        ownerId, species, breed, province, department, gender,
+        ownerId, species, breed, province, department, gender, status,
         searchCriteria, find, searchOrder, priceRange, page, newOwnerId
     }
     ) {
@@ -17,7 +17,7 @@ export async function getPets(
         const response = await axios.get(SERVER_URL + GET_PETS_ENDPOINT,
             {
                 params: {
-                    ownerId, species, breed, province, department, gender,
+                    ownerId, species, breed, province, department, gender, status,
                     searchCriteria, find, searchOrder, priceRange, page, newOwnerId
                 }
             }

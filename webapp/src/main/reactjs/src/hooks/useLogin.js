@@ -45,6 +45,15 @@ function useLogin(){
         history.push(LOGIN);
     };
 
+    const relog = () => {
+        cLogout();
+        localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
+        
+        const path = history.location.pathname;
+        cPromptLogin({path});
+        history.push(LOGIN);
+    };
+
     useEffect(()=>{
         return history.listen((location, action) => {
             if(location.pathname === LOGIN || action !== 'PUSH')
@@ -54,7 +63,7 @@ function useLogin(){
         });
     }, [history.listen, history.unlisten]);
 
-    return {state, login, logout, promptLogin}
+    return {state, login, logout, promptLogin, relog}
 }
 
 export default useLogin;

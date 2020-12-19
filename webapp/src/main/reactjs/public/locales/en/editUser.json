@@ -1,0 +1,49 @@
+{
+    "title": "Edit Profile",
+    "usernameForm": {
+        "username": {
+            "label": "Username",
+            "errors": {
+                "duplicated": "Username is not available",
+                "tooShort": "Username must be at least {{min}} characters long",
+                "tooLong": "Username must be at most {{max}} characters long",
+                "validCharacters": "Username must only contain letters and numbers",
+                "required": "Username cannot be empty"
+            }
+        },
+        "conError": "Connection lost",
+        "submit": "Update"
+    },
+    "passwordForm": {
+        "oldPassword": {
+            "label": "Current Password",
+            "placeholder": "Enter current password",
+            "errors": {
+              "tooShort": "Password must be at least {{min}} characters long",
+              "tooLong": "Password must be at most {{max}} characters long",
+              "required": "Password cannot be empty",
+              "wrong": "Invalid current password"
+            }
+          },
+          "password": {
+            "label": "New Password",
+            "placeholder": "Enter new password",
+            "errors": {
+              "tooShort": "Password must be at least {{min}} characters long",
+              "tooLong": "Password must be at most {{max}} characters long",
+              "required": "Password cannot be empty"
+            }
+          },
+          "repeatPassword": {
+            "label": "Repeat new password",
+            "placeholder": "Enter new password again",
+            "errors": {
+              "required": "Repeat password cannot be empty",
+              "notEqual": "Passwords do not match"
+            }
+          },
+          "submit": "Update",
+          "conError": "Connection lost",
+          "success": "Password updated!"
+    }
+}
