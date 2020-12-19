@@ -142,7 +142,7 @@ function RequestsView() {
 
     useEffect(()=>{
         fetchFilters();
-    });
+    }, []);
 
     return <ContentWithSidebar
         sideContent={
