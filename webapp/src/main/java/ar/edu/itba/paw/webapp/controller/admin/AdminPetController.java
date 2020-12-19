@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -67,7 +68,8 @@ public class AdminPetController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getPets(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("newOwnerId") @DefaultValue("0") Long newOwnerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
@@ -81,7 +83,7 @@ public class AdminPetController {
                             @QueryParam("status") @DefaultValue("-1") int status,
                             @QueryParam("page") @DefaultValue("1") int page) {
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         int[] range;
         PetStatus petStatus;
         try {
@@ -128,7 +130,8 @@ public class AdminPetController {
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") long ownerId,
+    public Response getPets(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") long ownerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
@@ -138,7 +141,7 @@ public class AdminPetController {
                             @QueryParam("status") @DefaultValue("0") int status,
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         int[] range;
         Long owner;
         PetStatus petStatus;
@@ -202,8 +205,8 @@ public class AdminPetController {
     @GET
     @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPet(@PathParam("petId") Long petId) {
-        String locale = ApiUtils.getLocale();
+    public Response getPet(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -215,7 +218,7 @@ public class AdminPetController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response create(final PetDto pet) {
+    public Response create(@Context HttpServletRequest httpRequest, final PetDto pet) {
         try {
             ParseUtils.parsePet(pet);
         } catch (BadRequestException ex) {
@@ -225,7 +228,7 @@ public class AdminPetController {
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        String locale = ApiUtils.getLocale();
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opNewPet;
         /* TODO como recibir las fotos ?*/
         PetStatus petStatus;
@@ -251,7 +254,7 @@ public class AdminPetController {
     @POST
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response edit(final PetDto pet) {
+    public Response edit(@Context HttpServletRequest httpRequest, final PetDto pet) {
         try {
             ParseUtils.parsePet(pet);
         } catch (BadRequestException ex) {
@@ -261,7 +264,7 @@ public class AdminPetController {
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        String locale = ApiUtils.getLocale();
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet;
         PetStatus petStatus;
         

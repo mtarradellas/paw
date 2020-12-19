@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -87,9 +88,9 @@ public class QuestionController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createQuestion(final QuestionDto question) {
+    public Response createQuestion(@Context HttpServletRequest httpRequest, final QuestionDto question) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         Optional<Question> opNewQuestion;
         if (question == null || question.getPetId() == null) return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         try {
@@ -148,9 +149,9 @@ public class QuestionController {
     @POST
     @Path("/{questionId}/answer")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createAnswer(@PathParam("questionId") Long questionId, final AnswerDto answer) {
+    public Response createAnswer(@Context HttpServletRequest httpRequest, @PathParam("questionId") Long questionId, final AnswerDto answer) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         try {
             questionId = ParseUtils.parseQuestionId(questionId);
             answer.setContent(ParseUtils.parseQuestion(answer.getContent()));
