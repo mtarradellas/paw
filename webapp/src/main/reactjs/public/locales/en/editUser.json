@@ -21,7 +21,8 @@
             "errors": {
               "tooShort": "Password must be at least {{min}} characters long",
               "tooLong": "Password must be at most {{max}} characters long",
-              "required": "Password cannot be empty"
+              "required": "Password cannot be empty",
+              "wrong": "Invalid current password"
             }
           },
           "password": {
@@ -42,6 +43,7 @@
             }
           },
           "submit": "Update",
-          "conError": "Connection lost"
+          "conError": "Connection lost",
+          "success": "Password updated!"
     }
 }

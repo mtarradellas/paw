@@ -26,10 +26,10 @@ function EditUserView () {
         } catch (e) {
             switch (e) {
                 case EDIT_USERNAME_ERRORS.DUPLICATED_USERNAME:
-                    setErrors({username: t('form.username.errors.duplicated')});
+                    setErrors({username: t('usernameForm.username.errors.duplicated')});
                     break;
                 default:
-                    message.error(t('form.conError'));
+                    message.error(t('usernameForm.conError'));
                     break;
             }
         }
@@ -37,7 +37,7 @@ function EditUserView () {
         setSubmittingUsername(false);
     }
 
-    const onEditPassword = async ({oldPassword, newPassword}, {setErrors}) => {
+    const onEditPassword = async ({oldPassword, newPassword}, {setErrors, resetForm}) => {
         setSubmittingPassword(true);
         
         try {
@@ -45,15 +45,19 @@ function EditUserView () {
         } catch (e) {
             switch (e) {
                 case EDIT_PASSWORD_ERRORS.WRONG_PASS:
-                    setErrors({username: t('form.password.errors.wrong')});
+                    setErrors({oldPassword: t('passwordForm.oldPassword.errors.wrong')});
                     break;
                 default:
-                    message.error(t('form.conError'));
+                    message.error(t('passwordForm.conError'));
                     break;
             }
+            setSubmittingPassword(false);
+            return;
         }
 
+        resetForm();
         setSubmittingPassword(false);
+        message.success(t('passwordForm.success'));
     }
 
     return (

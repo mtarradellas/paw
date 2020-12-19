@@ -1,4 +1,3 @@
-import { repeat } from 'lodash'
 import React from 'react'
 import {Form, Input} from "formik-antd";
 import {Formik} from "formik";
@@ -18,19 +17,19 @@ const EditPasswordForm = ({onSubmit, submitting}) => {
                         .min(4, ({min}) => (t('passwordForm.password.errors.tooShort', {min})))
                         .max(254, ({max}) => (t('passwordForm.password.errors.tooLong', {max})))
                         .required(t('passwordForm.password.errors.required')),
-                    password: Yup.string()
+                    newPassword: Yup.string()
                         .min(4, ({min}) => (t('passwordForm.password.errors.tooShort', {min})))
                         .max(254, ({max}) => (t('passwordForm.password.errors.tooLong', {max})))
                         .required(t('passwordForm.password.errors.required')),
                     repeatPassword: Yup.string()
-                        .oneOf([Yup.ref('password'), null], t('passwordForm.repeatPassword.errors.notEqual'))
+                        .oneOf([Yup.ref('newPassword'), null], t('passwordForm.repeatPassword.errors.notEqual'))
                         .required(t('passwordForm.repeatPassword.errors.required')),
                 })
             }
             onSubmit={onSubmit}
             initialValues={{
                 oldPassword: '',
-                password: '',
+                newPassword: '',
                 repeatPassword: ''
             }}
         >
@@ -39,8 +38,8 @@ const EditPasswordForm = ({onSubmit, submitting}) => {
                     <Input.Password name={"oldPassword"} placeholder={t('passwordForm.oldPassword.placeholder')}/>
                 </FormItem>
 
-                <FormItem name={"password"} label={t('passwordForm.password.label')}>
-                    <Input.Password name={"password"} placeholder={t('passwordForm.password.placeholder')}/>
+                <FormItem name={"newPassword"} label={t('passwordForm.password.label')}>
+                    <Input.Password name={"newPassword"} placeholder={t('passwordForm.password.placeholder')}/>
                 </FormItem>
 
                 <FormItem name={"repeatPassword"} label={t('passwordForm.repeatPassword.label')}>

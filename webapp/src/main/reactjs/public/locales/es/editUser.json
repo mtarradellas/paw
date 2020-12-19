@@ -21,7 +21,8 @@
             "errors": {
                 "tooShort": "La contraseña debe tener al menos {{min}} caracteres",
                 "tooLong": "La contraseña no puede tener más de {{max}} caracteres",
-                "required": "La contraseña no puede estar vacía"
+                "required": "La contraseña no puede estar vacía",
+                "wrong": "Contraseña invalida"
             }
           },
           "password": {
@@ -42,6 +43,7 @@
             }
           },
           "submit": "Actualizar",
-          "conError": "Se perdió la conexión"
+          "conError": "Se perdió la conexión",
+          "success": "Contraseña actualizada!"
     }
 }

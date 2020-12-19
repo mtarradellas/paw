@@ -99,7 +99,7 @@ export async function editPassword({oldPassword, newPassword, id}, jwt) {
     const config = getAuthConfig(jwt);
 
     try {
-        axios.post(SERVER_URL+EDIT_PASSWORD_ENDPOINT(id), {oldPassword, newPassword}, config);
+        await axios.post(SERVER_URL+EDIT_PASSWORD_ENDPOINT(id), {oldPassword, newPassword}, config);
     } catch (e) {
         throw _.get(e, 'response.data.code', EDIT_PASSWORD_ERRORS.CONN_ERROR);
     }
