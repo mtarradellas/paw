@@ -51,13 +51,13 @@
     "helpModal": {
       "title": "Ayuda",
       "firstTitle": "Página de Intereses",
-      "firstDesc": "Bienvenido a la página de intereses, aquí puede ver estado de todas las solicitudes que otros usuarios le hicieron. Hay cuatro estados: pendiente (significa que el usted no ha decidido todavía), aceptado o rechazado (usted ha decidido si desea darle el animal mediante el uso de los botones correspondientes) y cancelado (el usuario ha decidido cancelar la solicitud).",
+      "firstDesc": "Bienvenido a la página de intereses, aquí puede ver estado de todas las solicitudes que otros usuarios le hicieron. Hay cuatro estados: pendiente (significa que el usted no ha decidido todavía), vendida o rechazada (usted ha decidido si desea darle la mascota mediante el uso de los botones correspondientes) y cancelada (el usuario ha decidido cancelar la solicitud).",
       "secondTitle": "Herramientas de Filtrado",
       "secondDesc": "Para asistirlo en la organización de los intereses, utilize el menú de filtrado encontrado a la izquierda."
     },
     "pleaseConfirm": "Por favor confirme su acción",
     "reserve": "¿Estás seguro que deseas reservar esta mascota para este usuario? Esta acción es irreversible, por favor elegir con cuidado.",
-    "acceptRequest": "POR FAVOR LEER CUIDADOSAMENTE: Elegir esta opción le enviara un correo a este usuario con su dirección de correo, así pueden arreglar los términos de la adopción. Luego de clickear \"Estoy Seguro\", se te habilitará un boton de \"Reservar para Usuario\" con la opción de completar la transacción de adopción, hacer click en este botón hace que otros usuarios no puedan solicitar esta mascota. Esta accion tambien puede realizarse en cualquier momento desde la pagina de la mascota",
+    "acceptRequest": "POR FAVOR LEER CUIDADOSAMENTE: Elegir esta opción le enviara un correo a este usuario con su dirección de correo, así pueden arreglar los términos de la adopción. Luego de clickear \"Estoy Seguro\", no se puede deshacer, por lo que se completa el proceso.",
     "rejectRequest": "¿Estás seguro que deseas rechazar esta solicitud? Esta acción es irreversible, por favor elegir con cuidado."
   },
   "messages": {
@@ -66,5 +66,6 @@
     "pending": "{{username}} esta interesado en {{petName}}",
     "canceled": "{{username}} estaba interesado en {{petName}} y canceló la solicitud",
     "sold": "{{username}} esta interesado en {{petName}}"
-  }
+  },
+  "date": "{{day}}-{{month}}-{{year}}"
 }

@@ -4,44 +4,35 @@ import {Button, List, Modal} from "antd";
 import {PET, USER} from '../../constants/routes';
 
 import ListContainer from '../../components/ListContainer'
+import useLogin from "../../hooks/useLogin";
 
-//TODO: ver el tema de formateo de fechas
-//TODO: manejo de formularios para botones y links y eso
+import {acceptInterest,rejectInterest} from "../../api/interests";
 
 function InterestNotification(
-    {id,creationDate, updateDate, status, user, userId, pet, petId, petStatus, newPetOwner, newPetOwnerId, modal}) {
+    {id,creationDate, updateDate, status, username, userId, petName, petId, modal, fetchFilters}) {
     const {t} = useTranslation("interests");
+
+    const INTEREST_STATUS = {
+        PENDING: 0,
+        ACCEPTED: 1,
+        REJECTED: 2,
+        CANCELED: 3,
+        SOLD: 4
+    }
+
+    const {jwt} = useLogin().state;
+    const [petStatus, setStatus] = useState(status)
 
     let reqTarget = null;
     let reqStatus = null;
     let reqButtons = null;
     let shaded = false;
 
-    if (status === "ACCEPTED") {
-        const onConfirm = () => {
-            alert("recovered" + id)
-        }
-        const modalMessage = t("modals.reserve")
-        reqTarget = (
-            <p>{t("messages.accepted", {petName: pet, username: user})}
-                <small className={"date-text"}> {updateDate.toLocaleString()}</small>
-            </p>
-        )
-        reqStatus = <p>{t("status.notSold")}</p>
-        reqButtons = (
-            <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.reserve")}</Button>
-            </div>
-        )
-    } else if (status === "REJECTED") {
+    if (petStatus === INTEREST_STATUS.REJECTED) {
         shaded = true;
         reqTarget = (
-            <p>{t("messages.rejected", {petName: pet, username: user})}
-                <small className={"date-text"}> {updateDate.toLocaleString()}</small>
+            <p>{t("messages.rejected", {petName: petName, username: username})}
+                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
             </p>
         )
         reqStatus = <p>{t("status.rejected")}</p>
@@ -52,20 +43,32 @@ function InterestNotification(
                 <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
             </div>
         )
-    } else if (status === "PENDING") {
-        const onConfirmAccept = () => {
-            alert("canceled" + id)
+    } else if (petStatus === INTEREST_STATUS.PENDING) {
+        const onConfirmAccept = async () => {
+            try{
+                await acceptInterest(id,jwt);
+                fetchFilters();
+                setStatus(INTEREST_STATUS.ACCEPTED);
+            }catch (e){
+                console.log(e)
+            }
         }
         const modalMessageAccept = t("modals.acceptRequest")
 
-        const onConfirmReject = () => {
-            alert("canceled" + id)
+        const onConfirmReject = async () => {
+            try{
+                await rejectInterest(id,jwt);
+                fetchFilters();
+                setStatus(INTEREST_STATUS.REJECTED);
+            }catch (e){
+                console.log(e)
+            }
         }
         const modalMessageReject = t("modals.rejectRequest")
 
         reqTarget = (
-            <p>{t("messages.pending", {petName: pet, username: user})}
-                <small className={"date-text"}> {creationDate.toLocaleString()}</small>
+            <p>{t("messages.pending", {petName: petName, username: username})}
+                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
             </p>
         )
         reqStatus = <p>{t("status.pending")}</p>
@@ -81,11 +84,11 @@ function InterestNotification(
             </div>
         )
 
-    } else if (status === "CANCELED") {
+    } else if (petStatus === INTEREST_STATUS.CANCELED) {
         shaded = true;
         reqTarget = (
-            <p>{t("messages.canceled", {petName: pet, username: user})}
-                <small className={"date-text"}> {updateDate.toLocaleString()}</small>
+            <p>{t("messages.canceled", {petName: petName, username: username})}
+                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
             </p>
         )
         reqStatus = <p>{t("status.canceled")}</p>
@@ -97,19 +100,19 @@ function InterestNotification(
             </div>
         )
 
-    } else if (status === "SOLD") {
+    } else if (petStatus === INTEREST_STATUS.SOLD || petStatus === INTEREST_STATUS.ACCEPTED) {
         shaded = true;
         reqTarget = (
-            <p>{t("messages.sold", {petName: pet, username: user})}
-                <small className={"date-text"}> {updateDate.toLocaleString()}</small>
+            <p>{t("messages.sold", {petName: petName, username: username})}
+                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
             </p>
         )
-        reqStatus = <p>{t("status.soldTo", {ownerName: newPetOwner, username: user})}</p>
+        reqStatus = <p>{t("status.sold")}</p>
         reqButtons = (
             <div className={"button-container"}>
                 <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={USER + newPetOwnerId}>{t("buttons.visitOwner")}</Button>
+                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
             </div>
         )
     }
@@ -120,7 +123,7 @@ function InterestNotification(
     )
 }
 
-function InterestContainer({interests}) {
+function InterestContainer({interests, fetchFilters}) {
     const {t} = useTranslation("interests");
 
     const [modalState, setModalState] = useState({show: false, callbackMethod: null, modalMessage: ""});
@@ -144,7 +147,10 @@ function InterestContainer({interests}) {
                         .map(
                             (request) => (
                                 <List.Item key={request.id}>
-                                    <InterestNotification modal={showModal} {...request} />
+                                    <InterestNotification
+                                        modal={showModal}
+                                        fetchFilters={fetchFilters}
+                                        {...request} />
                                 </List.Item>
                             )
                         )

@@ -150,9 +150,9 @@ function App() {
                                 />
                                 <Route exact path={PET + ':id'}
                                        render={
-                                           ({id}) => (
+                                           () => (
                                                <BasicLayout>
-                                                   <PetView id={id}/>
+                                                   <PetView/>
                                                </BasicLayout>
                                            )
                                        }

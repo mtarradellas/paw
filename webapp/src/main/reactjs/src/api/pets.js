@@ -60,7 +60,6 @@ export async function createPet(values, jwt) {
         form.append(key, values[key]);
     });
 
-    console.log(files)
     files.forEach((file, i) => {
         form.append('files[' + i + ']', file.originFileObj, file.name);
     });
@@ -102,6 +101,27 @@ export async function petFilters(
     }
 }
 
+
+const GET_PET_ENDPOINT = id => "/pets/" + id;
+export const GET_PET_ERRORS = {
+    CONN_ERROR: 0
+};
+export async function getPet(
+    {petId}
+) {
+    try {
+        const response = await axios.get(SERVER_URL + GET_PET_ENDPOINT(petId));
+
+        return _.pick(response.data,
+            [
+                'petName', 'birthDate', 'gender', 'vaccinated', 'price', 'uploadDate', 'description',
+                'status', 'username', 'userId', 'speciesId', 'breedId', 'provinceId', 'departmentId', 'images'
+            ]
+        );
+    } catch (e) {
+        throw GET_PET_ERRORS.CONN_ERROR;
+    }
+}
 
 
 
