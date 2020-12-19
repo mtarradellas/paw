@@ -48,7 +48,7 @@ import {
     ADMIN_PETS,
     ADMIN_USERS,
     ADMIN_REQUESTS,
-    ADD_PET
+    ADD_PET, EDIT_PET
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -61,6 +61,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import AddPetView from "./views/addPet/AddPetView";
 import useFormAndSearch from "./hooks/useFormAndSearch";
 import FilterAndSearchContext from './constants/filterAndSearchContext'
+import EditPetView from "./views/editPet/EditPetView";
 
 
 function AppSwitch(){
@@ -147,6 +148,15 @@ function AppSwitch(){
                        () => (
                            <BasicLayout>
                                <PetView/>
+                           </BasicLayout>
+                       )
+                   }
+            />
+            <Route exact path={EDIT_PET(':id')}
+                   render={
+                       () => (
+                           <BasicLayout>
+                               <EditPetView/>
                            </BasicLayout>
                        )
                    }
