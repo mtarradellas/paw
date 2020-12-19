@@ -232,4 +232,14 @@ public class ParseUtils {
                 throw new BadRequestException("Invalid or missing required fields");
         }
     }
+
+    public static void parsePet(String petName, String gender, Long speciesId, Long breedId, Long provinceId, Long departmentId) {
+        petName = (petName.trim().replaceAll(" +", " "));
+        if (petName.length() == 0 || petName.length() > 255) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+        if (gender == null || speciesId == null || breedId == null || provinceId == null || departmentId == null) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+    }
 }

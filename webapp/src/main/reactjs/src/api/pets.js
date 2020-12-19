@@ -61,7 +61,7 @@ export async function createPet(values, jwt) {
     });
 
     files.forEach((file, i) => {
-        form.append('files[' + i + ']', file.originFileObj, file.name);
+        form.append('files', file.originFileObj);
     });
 
     const {headers: authHeaders} = getAuthConfig(jwt);
