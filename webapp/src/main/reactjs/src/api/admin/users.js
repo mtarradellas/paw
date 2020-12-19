@@ -2,6 +2,7 @@ import axios from "axios";
 import {SERVER_URL} from "../../config";
 import _ from 'lodash';
 import {getAuthConfig} from "../utils";
+import {GET_USER_ERRORS} from "../users";
 
 const GET_USERS_ENDPOINT = "/admin/users";
 const RECOVER_USER_ENDPOINT = (id) => "/admin/users/recover/" + id;
@@ -9,7 +10,9 @@ const DELETE_USER_ENDPOINT = (id) => "/admin/users/" + id;
 const GET_USER_FILTERS_ENDPOINT = "/admin/users/filters";
 
 export const GET_USERS_ERRORS = {
-    CON_ERROR:0
+    CONN_ERROR: 0,
+    NOT_FOUND: 1,
+    FORBIDDEN: 2
 };
 export const DELETE_USER_ERRORS = {
     CON_ERROR:0
@@ -20,6 +23,19 @@ export const RECOVER_USER_ERRORS = {
 export const GET_FILTERS_ERRORS = {
     CON_ERROR:0
 };
+
+export async function getUserAdmin(userId, jwt){
+    const config = getAuthConfig(jwt);
+
+    try{
+        const response = await axios.get(SERVER_URL + GET_USERS_ENDPOINT+"/"+userId,config);
+        return _.pick(response.data, ['id', 'status', 'username']);
+    }catch (e) {
+        if(e.response.status === 403) throw GET_USER_ERRORS.FORBIDDEN;
+
+        throw GET_USER_ERRORS.CONN_ERROR;
+    }
+}
 
 export async function getAdminUsers(
     {page, status, find, searchCriteria, searchOrder}, jwt

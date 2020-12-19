@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import useLogin from "../useLogin";
 import {getAdminPets} from "../../api/admin/pets";
+import useLogin from "../useLogin";
 
 const useAdminPets = () => {
     const [adminPets, setAdminPets] = useState(null);

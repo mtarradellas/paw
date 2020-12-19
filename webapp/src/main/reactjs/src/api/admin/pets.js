@@ -31,8 +31,7 @@ export async function getAdminPets(
         }
         const config = Object.assign(getAuthConfig(jwt), {
             params:{
-                ownerId, newOwnerId, species, breed, province, department, gender, searchCriteria, find, searchOrder,
-                priceRange, status, page
+                species, breed, gender, searchCriteria, find, searchOrder, status, page
             }
         });
         const response = await axios.get(SERVER_URL + GET_PETS_ENDPOINT, config);
@@ -74,6 +73,9 @@ export async function recoverPetAdmin(id,jwt){
 
 export async function getAdminPetsFilters({species, breed, gender},jwt){
     try{
+        if(gender === "any"){
+            gender = null
+        }
         const config = Object.assign(getAuthConfig(jwt), {
             params:{
                 species, breed, gender

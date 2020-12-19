@@ -22,7 +22,17 @@ function SideContent({filters, changeFilters, setCurrentPage, fetchAdminPets, fe
     />
 }
 
-function MainContent({pets, petCount, fetching, pages, pageSize, fetchPage, currentPage, setCurrentPage, fetchFilters}) {
+function MainContent({
+                         pets,
+                         petCount,
+                         fetching,
+                         pages,
+                         pageSize,
+                         fetchPage,
+                         currentPage,
+                         setCurrentPage,
+                         fetchFilters
+                     }) {
     const {t} = useTranslation('admin');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -129,9 +139,9 @@ function AdminPets() {
     };
 
     const [filters, setFilters] = useState(null);
-    const fetchFilters = async filters => {
+    const fetchFilters = async chosenFilters => {
         try {
-            const newFilters = await getAdminPetsFilters(filters, jwt);
+            const newFilters = await getAdminPetsFilters(chosenFilters, jwt);
             setFilters(newFilters);
         } catch (e) {
             //TODO: conn error
@@ -139,7 +149,7 @@ function AdminPets() {
     };
 
     useEffect(() => {
-        fetchFilters();
+        fetchFilters({});
     }, []);
 
     return (

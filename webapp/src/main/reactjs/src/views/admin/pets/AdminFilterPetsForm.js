@@ -43,7 +43,7 @@ const AdminFilterPetsForm = ({filters, changeFilters, setCurrentPage, fetchAdmin
                 setFieldValue("gender", "any");
                 setFieldValue("searchCriteria", "any");
                 setFieldValue("searchOrder", "asc");
-            } 
+            }
 
             const updateFilters = (value, param) => {
                 console.log(value)
