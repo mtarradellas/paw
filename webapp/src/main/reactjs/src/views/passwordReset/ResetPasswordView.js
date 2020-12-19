@@ -3,7 +3,7 @@ import SmallCenteredContent from "../../components/SmallCenteredContent";
 import {useTranslation} from "react-i18next";
 import {message} from 'antd';
 import {useHistory, useParams} from 'react-router-dom';
-import {LOGIN} from "../../constants/routes";
+import {SUCCESS} from "../../constants/routes";
 import ResetPasswordForm from "./ResetPasswordForm";
 import {FORGOT_PASSWORD_ERRORS, RESET_PASSWORD_ERRORS, resetPassword} from "../../api/authentication";
 
@@ -21,7 +21,7 @@ function ResetPasswordView({}){
             console.log(token)
             await resetPassword({password: values.password, token});
 
-            history.push(LOGIN);
+            history.push(SUCCESS);
 
         }catch (e) {
             switch (e) {
