@@ -16,7 +16,7 @@ const SelectOption = Select.Option;
 const initialValues = {
         species: -1,
         breed: -1,
-        price: -1,
+        priceRange: -1,
         gender: -1,
         province: -1,
         department: -1,
@@ -41,7 +41,7 @@ const FilterOptionsForm = () => {
 
     const fetchFilters = async values => {
         try{
-            const newFilters = await petFilters(Object.assign(filters, values));
+            const newFilters = await petFilters(Object.assign({}, {find: filters.find}, values));
 
             setAvailableFilters(newFilters);
 
@@ -53,7 +53,7 @@ const FilterOptionsForm = () => {
 
     useEffect(()=>{
         fetchFilters(filters);
-    }, []);
+    }, [filters.find]);
 
     const {speciesList, breedList, departmentList, provinceList, genderList, rangeList} = availableFilters;
 
@@ -68,8 +68,8 @@ const FilterOptionsForm = () => {
                 Yup.object().shape({
                     species: Yup.number(),
                     breed: Yup.number(),
-                    price: Yup.number(),
-                    gender: Yup.number(),
+                    priceRange: Yup.number(),
+                    gender: Yup.string(),
                     province: Yup.number(),
                     department: Yup.number(),
                     searchCriteria: Yup.string(),
@@ -116,12 +116,18 @@ const FilterOptionsForm = () => {
                                 </Select>
                             </FormItem>
 
-                            <FormItem name={"price"} label={t("filterForm.labels.price")}>
-                                <Select name={"price"} disabled={_.isNil(rangeList)}>
+                            <FormItem name={"priceRange"} label={t("filterForm.labels.price")}>
+                                <Select name={"priceRange"} disabled={_.isNil(rangeList)}>
                                     <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
                                     {
-                                        rangeList && rangeList.map(({id, name}) => {
-                                            return <SelectOption value={id}>{name}</SelectOption>;
+                                        rangeList && Object.entries(rangeList).map(([id, {min, max}]) => {
+                                            if(min === 0 && max === 0)
+                                                return <SelectOption value={id}>{t('filterForm.labels.priceRange.free')}</SelectOption>;
+
+                                            if(max === -1)
+                                                return <SelectOption value={id}>{t('filterForm.labels.priceRange.max', {min})}</SelectOption>;
+
+                                            return <SelectOption value={id}>{t('filterForm.labels.priceRange.range', {min, max})}</SelectOption>;
                                         })
                                     }
                                 </Select>
@@ -131,8 +137,8 @@ const FilterOptionsForm = () => {
                                 <Select name={"gender"} disabled={_.isNil(genderList)}>
                                     <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
                                     {
-                                        genderList && genderList.map(({id, name}) => {
-                                            return <SelectOption value={id}>{name}</SelectOption>;
+                                        genderList && genderList.map(name => {
+                                            return <SelectOption value={name}>{t('sex.' + name)}</SelectOption>;
                                         })
                                     }
                                 </Select>

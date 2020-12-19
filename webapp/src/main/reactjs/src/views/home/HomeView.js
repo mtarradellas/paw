@@ -34,7 +34,7 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
 
         <Divider orientation={"left"}>
             {
-                pageSize && petCount &&
+                !_.isNil(pageSize) && _.isNil(petCount) &&
                     <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
             }
         </Divider>
