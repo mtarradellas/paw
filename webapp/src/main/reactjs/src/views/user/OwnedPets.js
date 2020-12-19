@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Divider, Pagination, Spin} from "antd";
 import _ from "lodash";
 import usePets from "../../hooks/usePets";
@@ -8,7 +8,7 @@ import PetCard from "../home/PetCard";
 function OwnedPets({userId, title, filters}){
     const {t} = useTranslation('userView');
 
-    const {pets, fetchPets, fetching, amount, pageSize} = usePets({initialFilters: filters});
+    const {pets, fetchPets, fetching, amount, pageSize} = usePets();
     const [currentPage, setCurrentPage] = useState(1);
 
     const _onChangePagination = async newValue => {
@@ -16,6 +16,10 @@ function OwnedPets({userId, title, filters}){
 
         await fetchPets(Object.assign({page: newValue}, filters));
     };
+
+    useEffect(()=>{
+        _onChangePagination(1);
+    }, []);
 
     return <>
             <h1><b>{t(title)}</b> {

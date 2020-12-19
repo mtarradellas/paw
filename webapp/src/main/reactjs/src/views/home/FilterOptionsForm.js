@@ -7,12 +7,17 @@ import _ from 'lodash';
 import * as Yup from 'yup';
 import {petFilters} from "../../api/pets";
 import ConstantsContext from "../../constants/constantsContext";
+import FilterAndSearchContext from "../../constants/filterAndSearchContext";
 
 const FormItem = Form.Item;
 
 const SelectOption = Select.Option;
 
 const FilterOptionsForm = ({onChangeFilters, fetching}) => {
+    const {
+        filters
+    } = useContext(FilterAndSearchContext);
+
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
 
     const {t} = useTranslation('home');
@@ -21,20 +26,20 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
         speciesList: null, breedList: null, departmentList: null, provinceList: null, genderList: null, rangeList: null
     });
 
-    const fetchFilters = async filters => {
+    const fetchFilters = async values => {
         try{
-            const newFilters = await petFilters(filters);
+            const newFilters = await petFilters(Object.assign(filters, values));
 
             setAvailableFilters(newFilters);
 
-            onChangeFilters(filters);
+            onChangeFilters(values);
         }catch (e) {
             //TODO: conn error
         }
     };
 
     useEffect(()=>{
-        fetchFilters({});
+        fetchFilters(filters);
     }, []);
 
     const {speciesList, breedList, departmentList, provinceList, genderList, rangeList} = availableFilters;
