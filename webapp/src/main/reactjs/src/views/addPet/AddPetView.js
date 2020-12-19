@@ -19,7 +19,7 @@ function AddPetView(){
         try {
             const id = await createPet(values, jwt);
 
-            history.push(PET + id);
+            //history.push(PET + id);
         }catch (e) {
             console.error(e)
             switch (e) {

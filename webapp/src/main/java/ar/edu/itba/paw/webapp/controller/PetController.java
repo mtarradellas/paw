@@ -1,10 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +18,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -27,6 +32,8 @@ import javax.ws.rs.core.*;
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import com.google.gson.Gson;
 
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,65 +218,91 @@ public class PetController{
     }
 
     @POST
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response create(final PetDto pet) {
-        String locale = ApiUtils.getLocale();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
-        if(loggedUser == null) {
-            LOGGER.warn("User has no permission to perform this action.");
-            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA})
+    public Response create(@NotEmpty @FormDataParam("files[0]") InputStream fileInputStreams,
+                           @NotEmpty @FormDataParam("petName") String petName,
+                           @NotEmpty @FormDataParam("price") int price,
+                           @NotEmpty @FormDataParam("description") String description,
+                           @NotEmpty @FormDataParam("province") Long provinceId,
+                           @NotEmpty @FormDataParam("department") Long departmentId,
+                           @NotEmpty @FormDataParam("species") Long species,
+                           @NotEmpty @FormDataParam("breed") Long breed,
+                           @NotEmpty @FormDataParam("dateOfBirth") LocalDate dateOfBirth,
+                           @NotEmpty @FormDataParam("isVaccinated") boolean vaccinated,
+                           @NotEmpty @FormDataParam("gender") String gender) throws IOException {
 
-        try {
-            ParseUtils.parsePet(pet);
-        } catch (BadRequestException ex) {
-            LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
+        System.out.println(petName + price + description + provinceId + departmentId + species + breed + dateOfBirth + vaccinated + gender);
+        System.out.println((fileInputStreams == null)+"LLLLLLLLLLLLLL");
+        Image img = ImageIO.read(fileInputStreams);
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(img)));
+        System.out.println(fileInputStreams.read());
+//        fileInputStreams.forEach(i -> {
+//            try {
+//                System.out.println(i.read());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                System.out.println("WWWWWWWWWWWWWWWWWWWWW");
+//            }
+//        });
 
-        Optional<Pet> opNewPet;
-        List<byte[]> photos = new ArrayList<>();
-        if(pet.getPhotos().isEmpty()){
-            LOGGER.warn("Photos is empty");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        try {
-            for (MultipartFile photo : pet.getPhotos()) {
-                if(!photo.isEmpty()) {
-                    try {
-                        photos.add(photo.getBytes());
-                    } catch (IOException ex) {
-                        LOGGER.warn(ex.getMessage());
-                        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-                    }
-                }
-            }
-        } catch (ImageLoadException ex) {
-            final ErrorDto body = new ErrorDto(1, "Failed to load bytes from image");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        try {
-            opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
-                    pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(), photos);
-        } catch(NotFoundException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(3, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body){}).build();
-        }
-        if (!opNewPet.isPresent()) {
-            LOGGER.warn("Pet creation failed");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
-        return Response.created(petUri).build();
+        return Response.ok().build();
+//        String locale = ApiUtils.getLocale();
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        User loggedUser = ApiUtils.loggedUser(userService, auth);
+//        if(loggedUser == null) {
+//            LOGGER.warn("User has no permission to perform this action.");
+//            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+//            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+//                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+//        }
+//
+//        try {
+//            ParseUtils.parsePet(pet);
+//        } catch (BadRequestException ex) {
+//            LOGGER.warn(ex.getMessage());
+//            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+//            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+//                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+//        }
+//
+//        Optional<Pet> opNewPet;
+//        List<byte[]> photos = new ArrayList<>();
+//        if(pet.getPhotos().isEmpty()){
+//            LOGGER.warn("Photos is empty");
+//            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+//        }
+//        try {
+//            for (MultipartFile photo : pet.getPhotos()) {
+//                if(!photo.isEmpty()) {
+//                    try {
+//                        photos.add(photo.getBytes());
+//                    } catch (IOException ex) {
+//                        LOGGER.warn(ex.getMessage());
+//                        return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+//                    }
+//                }
+//            }
+//        } catch (ImageLoadException ex) {
+//            final ErrorDto body = new ErrorDto(1, "Failed to load bytes from image");
+//            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+//                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+//        }
+//        try {
+//            opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
+//                    pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
+//                    pet.getProvinceId(), pet.getDepartmentId(), photos);
+//        } catch(NotFoundException ex) {
+//            LOGGER.warn("{}", ex.getMessage());
+//            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+//            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+//                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+//        }
+//        if (!opNewPet.isPresent()) {
+//            LOGGER.warn("Pet creation failed");
+//            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+//        }
+//        final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
+//        return Response.created(petUri).build();
     }
 
     @POST

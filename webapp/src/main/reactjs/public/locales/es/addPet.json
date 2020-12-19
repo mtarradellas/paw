@@ -1,5 +1,5 @@
 {
-  "title": "Add pet",
+  "title": "Agregar mascota",
   "form": {
     "petName": {
       "label": "Name",
@@ -51,8 +51,8 @@
       "label": "Gender",
       "placeholder": "Gender",
       "required": "Gender is required",
-      "male": "Male",
-      "female": "Female"
+      "male": "Macho",
+      "female": "Hembra"
     },
     "images": {
       "min": "Please upload at least one image"
