@@ -3,7 +3,14 @@
   "someInformationAboutHer": "Algunos datos de ella",
   "someInformationAboutHim": "Algunos datos de él",
   "buttons": {
-    "editPet": "Editar"
+    "editPet": "Editar",
+    "deletePet": "Eliminar",
+    "deleteModal": {
+      "title": "¿Estás seguro?",
+      "content": "Se eliminará su mascota {{name}}, ¿está seguro?",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
+    }
   },
   "details": {
     "name": "Nombre",

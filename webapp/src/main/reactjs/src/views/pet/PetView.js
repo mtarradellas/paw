@@ -1,17 +1,18 @@
 import React, {useEffect, useState, useContext} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
 import {useTranslation} from "react-i18next";
-import {Button, Divider, List, Spin} from "antd";
+import {Button, Divider, List, Modal, Spin} from "antd";
 import Questions from "./Questions";
 import {Link} from "react-router-dom";
-import {EDIT_PET, HOME, USER} from "../../constants/routes";
+import {EDIT_PET, ERROR_404_PET, HOME, USER} from "../../constants/routes";
 import _ from 'lodash';
-import {getPet} from "../../api/pets";
+import {DELETE_PET_ERRORS, getPet, deletePet as deletePetApi} from "../../api/pets";
 import {useParams} from 'react-router-dom';
 import {petImageSrc} from "../../api/images";
 import ConstantsContext from '../../constants/constantsContext';
 import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
 import useLogin from "../../hooks/useLogin";
+import {useHistory} from 'react-router-dom';
 
 const ListItem = List.Item;
 
@@ -118,13 +119,58 @@ function Content({pet, id}){
         </>;
 }
 
-function IsOwnerButtons({petId}){
+function IsOwnerButtons({petId, petName}){
+    const history = useHistory();
+    const {promptLogin, state} = useLogin();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+
     const {t} = useTranslation('petView');
 
+    const {id: userId, jwt} = state;
+
+    const deletePet = async () => {
+        setSubmitting(true);
+        try {
+            await deletePetApi({petId}, jwt);
+
+            history.push(USER + userId);
+        }catch (e) {
+            switch (e) {
+                case DELETE_PET_ERRORS.NOT_LOGGED_IN:
+                    promptLogin();
+                    break;
+                case DELETE_PET_ERRORS.NO_PERMISSION:
+                    history.push(HOME);
+                    break;
+                case DELETE_PET_ERRORS.NOT_FOUND:
+                    history.push(ERROR_404_PET);
+                    break;
+                default:
+                //TODO: con error
+                    setSubmitting(false);
+            }
+        }
+
+    };
+
     return <>
+            <Button onClick={() => setIsModalVisible(true)} loading={submitting}>{t('buttons.deletePet')}</Button>
             <Link to={EDIT_PET(petId)}>
                 <Button>{t('buttons.editPet')}</Button>
             </Link>
+
+            <Modal
+                title={t('buttons.deleteModal.title')}
+                visible={isModalVisible}
+                onOk={deletePet}
+                onCancel={() => setIsModalVisible(false)}
+                okText={t('buttons.deleteModal.confirm')}
+                cancelTest={t('buttons.deleteModal.cancel')}
+                confirmLoading={submitting}
+            >
+                <p>{t('buttons.deleteModal.content', {name: petName})}</p>
+            </Modal>
         </>;
 }
 
@@ -180,7 +226,7 @@ function PetView(){
         }
         actionComponents={
             isOwner ?
-                <IsOwnerButtons petId={id}/>
+                <IsOwnerButtons petId={id} petName={petName}/>
                 :
                 <></>
         }

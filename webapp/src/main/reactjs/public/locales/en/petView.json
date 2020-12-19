@@ -3,7 +3,14 @@
   "someInformationAboutHer": "Some information about her",
   "someInformationAboutHim": "Some information about him",
   "buttons": {
-    "editPet": "Edit"
+    "editPet": "Edit",
+    "deletePet": "Delete",
+    "deleteModal": {
+      "title": "Are you sure?",
+      "content": "You are about to delete {{name}}, are you sure?",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    }
   },
   "details": {
     "name": "Name",
