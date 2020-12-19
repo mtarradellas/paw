@@ -18,7 +18,6 @@ const useAdminRequests = () => {
 
             setAdminRequests(list);
             setPaginationInfo({amount, pages, pageSize})
-
         }catch (e){
             console.log(e)
         }

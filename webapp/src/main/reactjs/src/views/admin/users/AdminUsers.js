@@ -8,6 +8,8 @@ import AdminFilterUsersForm from "./AdminFilterUsersForm";
 
 import {ADMIN_ADD_USER} from "../../../constants/routes";
 import AdminUsersContainer from "./AdminUsersContainer";
+import {getUserRequests} from "../../../api/admin/user";
+import useAdminUsers from "../../../hooks/admin/useUser";
 
 const user = {
     id:0,
@@ -116,8 +118,11 @@ function MainContent({users, userCount}){
     )}
 
 function AdminUsers(){
+    const {adminUsers, fetchAdminUsers, fetching, pages, amount, pageSize} = useAdminUsers();
+
     const users = sampleUsers;
     const userCount = sampleUsers.length;
+
 
     return (
         <ContentWithSidebar
