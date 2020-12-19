@@ -24,9 +24,11 @@ const initialValues = {
         searchOrder: 'asc'
     };
 
-const FilterOptionsForm = ({onChangeFilters, fetching}) => {
+const FilterOptionsForm = () => {
     const {
-        filters
+        filters,
+        onSubmitFilters,
+        fetching
     } = useContext(FilterAndSearchContext);
 
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
@@ -43,7 +45,7 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
 
             setAvailableFilters(newFilters);
 
-            onChangeFilters(values);
+            onSubmitFilters(values);
         }catch (e) {
             //TODO: conn error
         }
@@ -75,9 +77,9 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
                 })
             }
             onSubmit={_onSubmit}
-            initialValues={Object.assign(initialValues, filters)}
+            initialValues={Object.assign({}, initialValues, filters)}
             render={
-                ({setFieldValue, values, resetForm, handleSubmit}) => {
+                ({setFieldValue, values, handleSubmit, setValues}) => {
                     const breedsToShow = values.species && values.species !== -1 && _.intersection(
                         species[values.species].breedIds,
                         breedList && breedList.map(({id}) => id)
@@ -184,7 +186,7 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
 
                             <Button type={"secondary"}
                                 onClick={()=>{
-                                    resetForm();
+                                    setValues(initialValues);
                                     handleSubmit();
                                 }}
                                 loading={fetching}

@@ -7,6 +7,7 @@ function useFormAndSearch(){
     const {pets, fetching, fetchPets, pages, amount, pageSize} = usePets({});
 
     const onSubmitFilters = async values => {
+
         const {find} = filters;
         const newFilters = Object.assign(values, {page: 1, find});
 

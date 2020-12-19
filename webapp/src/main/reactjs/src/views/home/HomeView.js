@@ -9,9 +9,9 @@ import ContentWithSidebar from "../../components/ContentWithSidebar";
 import FilterAndSearchContext from '../../constants/filterAndSearchContext'
 
 
-function SideContent({onChangeFilters, fetching}){
+function SideContent({}){
     return <div className={"home__filter"}>
-        <FilterOptionsForm onChangeFilters={onChangeFilters} fetching={fetching}/>
+        <FilterOptionsForm/>
     </div>;
 }
 
@@ -69,13 +69,12 @@ function HomeView(){
         pages,
         amount,
         pageSize,
-        onSubmitFilters,
         onChangePage
     } = useContext(FilterAndSearchContext);
 
     return <ContentWithSidebar
                     sideContent={
-                        <SideContent onChangeFilters={onSubmitFilters} fetching={fetching}/>
+                        <SideContent/>
                     }
                     mainContent={
                         <MainContent
