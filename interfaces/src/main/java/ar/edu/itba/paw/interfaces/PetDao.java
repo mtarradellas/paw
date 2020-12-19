@@ -1,13 +1,21 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.models.constants.QuestionStatus;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import ar.edu.itba.paw.models.Answer;
+import ar.edu.itba.paw.models.Breed;
+import ar.edu.itba.paw.models.Department;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Province;
+import ar.edu.itba.paw.models.Question;
+import ar.edu.itba.paw.models.Species;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
+import ar.edu.itba.paw.models.constants.QuestionStatus;
 
 public interface PetDao {
 
@@ -18,7 +26,7 @@ public interface PetDao {
                                 int minPrice, int maxPrice, Province province, Department department);
     List<Department> searchDepartmentList(String locale, List<String> find, User user, Species species, Breed breed, String gender, PetStatus status,
                                             int minPrice, int maxPrice, Province province, Department department);
-    Set<Integer> searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
+    Set<PriceRange>searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                   PetStatus status, int minPrice, int maxPrice, Province province, Department department);
     Set<String> searchGenderList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                   PetStatus status, int minPrice, int maxPrice, Province province, Department department);

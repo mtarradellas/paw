@@ -41,6 +41,7 @@ import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
 import ar.edu.itba.paw.webapp.dto.DepartmentDto;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
@@ -84,7 +85,7 @@ public class AdminPetController {
                             @QueryParam("page") @DefaultValue("1") int page) {
 
         final String locale = ApiUtils.getLocale(httpRequest);
-        int[] range;
+        PriceRange range;
         PetStatus petStatus;
         try {
             ownerId = ParseUtils.parseUserId(ownerId);
@@ -98,7 +99,7 @@ public class AdminPetController {
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
             petStatus = ParseUtils.parseStatus(PetStatus.class, status);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -106,8 +107,8 @@ public class AdminPetController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
         int amount;
@@ -142,7 +143,7 @@ public class AdminPetController {
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
         final String locale = ApiUtils.getLocale(httpRequest);
-        int[] range;
+        PriceRange range;
         Long owner;
         PetStatus petStatus;
         try {
@@ -152,7 +153,7 @@ public class AdminPetController {
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
             petStatus = ParseUtils.parseStatus(PetStatus.class, status);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
@@ -161,11 +162,11 @@ public class AdminPetController {
                     .entity(new GenericEntity<ErrorDto>(body) {
                     }).build();
         }
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         Set<String> genderList;
-        Set<Integer> rangeList;
+        Set<PriceRange> rangeList;
         List<Department> departments;
         List<Breed> breeds;
         try {
@@ -197,7 +198,11 @@ public class AdminPetController {
         filters.put("departmentList", departmentList);
         filters.put("provinceList", provinceList);
         filters.put("genderList", genderList);
-        filters.put("rangeList", rangeList);
+
+        Map<String, Object> ranges = new TreeMap<>();
+        rangeList.forEach(r -> ranges.put(String.valueOf(r.ordinal()), r.asMap()));
+
+        filters.put("rangeList", ranges);
 
         return Response.ok().entity(new Gson().toJson(filters)).build();
     }

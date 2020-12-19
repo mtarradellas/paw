@@ -38,6 +38,7 @@ import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.models.constants.QuestionStatus;
 
 @Repository
@@ -122,7 +123,7 @@ public class PetJpaDaoImpl implements PetDao {
     }
 
     @Override
-    public Set<Integer> searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
+    public Set<PriceRange> searchRangesList(String locale, List<String> find, User user, Species species, Breed breed, String gender,
                                                  PetStatus status, int minPrice, int maxPrice, Province province, Department department) {
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, null, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, null, null);
@@ -131,15 +132,15 @@ public class PetJpaDaoImpl implements PetDao {
         @SuppressWarnings("unchecked")
         List<Object[]> results = jpaQuery.getResultList();
         if (results.size() == 0) return new TreeSet<>();
-        Set<Integer> ranges = new TreeSet<>();
+        Set<PriceRange> ranges = new TreeSet<>();
         for (Object[] price:results) {
-            if(price[0].equals(0)) ranges.add(0);
-            else if((Integer)price[0] < 5000) ranges.add(1);
-            else if((Integer)price[0] < 10000) ranges.add(2);
-            else if((Integer)price[0] < 15000) ranges.add(3);
-            else if((Integer)price[0] < 20000) ranges.add(4);
-            else if((Integer)price[0] < 25000) ranges.add(5);
-            else if((Integer)price[0] >= 25000) ranges.add(6);
+            if(price[0].equals(PriceRange.ONE.max())) ranges.add(PriceRange.ONE);
+            else if((Integer)price[0] <= PriceRange.TWO.max()) ranges.add(PriceRange.TWO);
+            else if((Integer)price[0] <= PriceRange.THREE.max()) ranges.add(PriceRange.THREE);
+            else if((Integer)price[0] <= PriceRange.FOUR.max()) ranges.add(PriceRange.FOUR);
+            else if((Integer)price[0] <= PriceRange.FIVE.max()) ranges.add(PriceRange.FIVE);
+            else if((Integer)price[0] <= PriceRange.SIX.max()) ranges.add(PriceRange.SIX);
+            else if((Integer)price[0] >= PriceRange.SEVEN.min()) ranges.add(PriceRange.SEVEN);
 
             if(ranges.size() == MAX_RANGES) return ranges;
         }
