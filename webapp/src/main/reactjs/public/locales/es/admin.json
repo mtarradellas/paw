@@ -46,7 +46,9 @@
     "gender": "Género",
     "breed": "Raza",
     "price": "Precio",
-    "uploadDate": "Fecha de Subida"
+    "uploadDate": "Fecha de Subida",
+    "male": "Masculino",
+    "female": "Femenini"
   },
   "status": {
     "pending": "Pendiente",

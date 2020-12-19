@@ -10,10 +10,16 @@ import AdminPetsContainer from "./AdminPetsContainer";
 import useLogin from "../../../hooks/useLogin";
 import useAdminPets from "../../../hooks/admin/usePets";
 import _ from "lodash";
-import AdminUsersContainer from "../users/AdminUsersContainer";
+import {getAdminPetsFilters} from "../../../api/admin/pets";
 
-function SideContent() {
-    return <AdminFilterPetsForm/>
+function SideContent({filters, changeFilters, setCurrentPage, fetchAdminPets, fetchFilters}) {
+    return <AdminFilterPetsForm
+        filters={filters}
+        changeFilters={changeFilters}
+        setCurrentPage={setCurrentPage}
+        fetchAdminPets={fetchAdminPets}
+        fetchFilters={fetchFilters}
+    />
 }
 
 function MainContent({pets, petCount, fetching, pages, pageSize, fetchPage, currentPage, setCurrentPage, fetchFilters}) {
@@ -123,11 +129,10 @@ function AdminPets() {
     };
 
     const [filters, setFilters] = useState(null);
-    const fetchFilters = async () => {
+    const fetchFilters = async filters => {
         try {
-            // const newFilters = await getAdminUsersFilters(jwt);
-            console.log("FILTERSSS")
-            // setFilters(newFilters);
+            const newFilters = await getAdminPetsFilters(filters, jwt);
+            setFilters(newFilters);
         } catch (e) {
             //TODO: conn error
         }
@@ -153,7 +158,13 @@ function AdminPets() {
                 />
             }
             sideContent={
-                <SideContent/>
+                <SideContent
+                    filters={filters}
+                    changeFilters={setAppliedFilters}
+                    setCurrentPage={setCurrentPage}
+                    fetchAdminPets={fetchAdminPets}
+                    fetchFilters={fetchFilters}
+                />
             }
         />
     )

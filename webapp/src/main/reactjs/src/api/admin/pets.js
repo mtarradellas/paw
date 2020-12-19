@@ -5,7 +5,8 @@ import {getAuthConfig} from "../utils";
 
 const GET_PETS_ENDPOINT = "/admin/pets";
 const REMOVE_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/remove";
-const RECOVER_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/recover"
+const RECOVER_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/recover";
+const GET_PETS_FILTERS_ENDPOINT = "/admin/pets/filters";
 
 export const GET_PETS_ERRORS = {
     CONN_ERROR: 0
@@ -16,12 +17,18 @@ export const REMOVE_PETS_ERRORS = {
 export const RECOVER_PETS_ERRORS = {
     CONN_ERROR: 0
 };
+export const GET_PETS_FILTERS = {
+    CONN_ERROR:0
+}
 
 export async function getAdminPets(
     {ownerId, newOwnerId, species, breed, province, department, gender, searchCriteria, find, searchOrder, priceRange,
         status, page}, jwt
 ){
     try{
+        if(gender === "any"){
+            gender = null
+        }
         const config = Object.assign(getAuthConfig(jwt), {
             params:{
                 ownerId, newOwnerId, species, breed, province, department, gender, searchCriteria, find, searchOrder,
@@ -40,7 +47,7 @@ export async function getAdminPets(
             })
         }
     }catch (e) {
-        throw GET_PETS_ENDPOINT;
+        throw GET_PETS_ERRORS.CONN_ERROR;
     }
 }
 
@@ -62,5 +69,21 @@ export async function recoverPetAdmin(id,jwt){
 
     }catch (e) {
         throw RECOVER_PETS_ERRORS.CONN_ERROR
+    }
+}
+
+export async function getAdminPetsFilters({species, breed, gender},jwt){
+    try{
+        const config = Object.assign(getAuthConfig(jwt), {
+            params:{
+                species, breed, gender
+            }
+        });
+        const response = await axios.get(SERVER_URL + GET_PETS_FILTERS_ENDPOINT, config);
+        const {breedList, departmentList, genderList, provinceList, rangeList, speciesList, statusList} = response.data;
+
+        return {breedList, departmentList, genderList, provinceList, rangeList, speciesList,statusList};
+    }catch (e) {
+        throw GET_PETS_FILTERS.CONN_ERROR;
     }
 }

@@ -14,7 +14,8 @@ function Pet({id, petName, userId, status, modal, fetchFilters}){
     const imgSrc = "http://pawserver.it.itba.edu.ar/paw-2020a-7/img/"+id;
     let reqTarget = (
 
-        <p> <img width={"70px"} alt="pet_photo" src={imgSrc} />
+        <p>
+            {/*<img width={"70px"} alt="pet_photo" src={imgSrc} />*/}
             &nbsp;&nbsp;{petName} (id: {id})</p>
 
     );

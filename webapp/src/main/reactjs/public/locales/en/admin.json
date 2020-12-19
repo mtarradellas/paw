@@ -46,7 +46,9 @@
     "gender": "Gender",
     "breed": "Breed",
     "price": "Price",
-    "uploadDate": "Upload Date"
+    "uploadDate": "Upload Date",
+    "male": "Male",
+    "female": "Female"
   },
   "status": {
     "pending": "Pending",

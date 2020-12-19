@@ -5,6 +5,7 @@ import {Button} from "antd";
 import {useTranslation} from "react-i18next";
 import * as Yup from "yup";
 
+
 const FormItem = Form.Item;
 
 const AdminFilterUsersForm = ({filters, changeFilters, setCurrentPage, fetchAdminUsers}) => {
@@ -66,7 +67,6 @@ const AdminFilterUsersForm = ({filters, changeFilters, setCurrentPage, fetchAdmi
                         <Select name={"searchOrder"} disabled={values.searchCriteria === "any"}>
                             <Select.Option value={"asc"}>{t("values.asc")}</Select.Option>
                             <Select.Option value={"desc"}>{t("values.desc")}</Select.Option>
-
                         </Select>
                     </FormItem>
                 </div>
