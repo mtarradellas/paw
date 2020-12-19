@@ -48,6 +48,7 @@ import {
     FORGOT_PASSWORD,
     VERIFY_EMAIL,
     RESET_PASSWORD,
+    SUCCESS,
     ADMIN_HOME,
     ADMIN_PETS,
     ADMIN_USERS,
@@ -70,6 +71,7 @@ import EditPetView from "./views/editPet/EditPetView";
 import ForgotPasswordView from "./views/forgotPassword/ForgotPasswordView";
 import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
 import EmailSent from "./views/information/EmailSent";
+import OperationSuccessful from "./views/information/OperationSuccessful";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -112,6 +114,12 @@ function AppSwitch(){
             <Route exact path={VERIFY_EMAIL}>
                 <BasicLayout>
                     <EmailSent/>
+                </BasicLayout>
+            </Route>
+
+            <Route exact path={SUCCESS}>
+                <BasicLayout>
+                    <OperationSuccessful/>
                 </BasicLayout>
             </Route>
 
