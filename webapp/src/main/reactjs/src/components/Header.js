@@ -1,36 +1,60 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import '../css/header.css';
 import {Link} from "react-router-dom";
 import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS, ADD_PET, USER} from "../constants/routes";
 import {useTranslation} from "react-i18next";
-import {Button} from "antd";
+import {Badge, Button} from "antd";
 import useLogin from "../hooks/useLogin";
 import * as Yup from 'yup';
 import {Formik} from "formik";
 import {Form, Input} from "formik-antd";
 import FilterAndSearchContext from "../constants/filterAndSearchContext";
 import {useHistory} from 'react-router-dom';
+import {getNotifications} from "../api/requests";
+import _ from 'lodash';
 
 
-function LoggedIn(){
+function LoggedIn() {
     const {t} = useTranslation('header');
     const {state, logout} = useLogin();
 
-    const {username, id} = state;
+    const [notifications, setNotifications] = useState({interests: null, requests: null});
+
+    const {username, id, jwt} = state;
+
+    const {interests, requests} = notifications;
 
     const _onLogout = () => {
         logout();
     };
 
+    const fetchNotifications = async () => {
+        try{
+            const {interests, requests} = await getNotifications(jwt);
+
+            setNotifications({interests, requests});
+        }catch (e) {
+            //TODO: conn error
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications()
+    }, []);
+
     return <>
 
-            <Link className={"header__subtitle"} to={REQUESTS}>
-                {t('requests')}
-            </Link>
+            <Badge className={"header__subtitle"} count={_.isNil(requests) ? 0 : requests}>
+                <Link to={REQUESTS}>
+                    {t('requests')}
+                </Link>
+            </Badge>
 
-            <Link className={"header__subtitle"} to={INTERESTS}>
-                {t('interests')}
-            </Link>
+            <Badge className={"header__subtitle"} count={_.isNil(interests) ? 0 : interests}>
+                <Link to={INTERESTS}>
+                    {t('interests')}
+                </Link>
+            </Badge>
 
             <Link className={"header__subtitle"} to={USER + id}>
                 {t('profile')}
@@ -55,9 +79,10 @@ function NotLoggedIn(){
     const {t} = useTranslation('header');
 
     return <>
+        <SearchBar/>
 
-            <div className={"header__right"}>
-                <SearchBar/>
+        <div className={"header__right"}>
+
 
                 <Link className={"header__register"} to={REGISTER}>
                     {t('register')}
@@ -66,8 +91,8 @@ function NotLoggedIn(){
                 <Link className={"header__login"} to={LOGIN}>
                     {t('login')}
                 </Link>
-            </div>
-        </>
+        </div>
+    </>
 }
 
 function SearchBar() {
