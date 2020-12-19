@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -83,7 +85,8 @@ public class PetController{
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getPets(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("newOwnerId") @DefaultValue("0") Long newOwnerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
@@ -98,7 +101,7 @@ public class PetController{
                             @QueryParam("page") @DefaultValue("1") int page) {
 
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         int[] range;
         PetStatus petStatus = null;
         try {
@@ -144,9 +147,23 @@ public class PetController{
     }
 
     @GET
+    @Path("/locale")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response locale(@Context HttpServletRequest request) {
+        String locale = ApiUtils.getLocale(request);
+        Map<String, String> json = new HashMap<>();
+        json.put("locale", locale);
+        System.out.println("\n\n" + locale + "\n\n");
+
+        return Response.ok(new Gson().toJson(json)).build();
+
+    }
+
+    @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getFilters(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getFilters(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
@@ -155,7 +172,7 @@ public class PetController{
                             @QueryParam("find") String find,
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         int[] range;
         Long owner;
         try {
@@ -214,10 +231,10 @@ public class PetController{
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response create(final PetDto pet) {
-        String locale = ApiUtils.getLocale();
+    public Response create(@Context HttpServletRequest httpRequest, final PetDto pet) {
+        String locale = ApiUtils.getLocale(httpRequest);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if(loggedUser == null) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
@@ -258,7 +275,7 @@ public class PetController{
     @POST
     @Path("/{petId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response edit(final PetDto pet) {
+    public Response edit(@Context HttpServletRequest httpRequest, final PetDto pet) {
         try {
             ParseUtils.parsePet(pet);
         } catch (BadRequestException ex) {
@@ -268,9 +285,9 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        String locale = ApiUtils.getLocale();
+        String locale = ApiUtils.getLocale(httpRequest);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         /* TODO como recibir las fotos ?*/
         //        List<byte[]> photos = new ArrayList<>();
@@ -315,8 +332,8 @@ public class PetController{
     @GET
     @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPet(@PathParam("petId") Long petId) {
-        String locale = ApiUtils.getLocale();
+    public Response getPet(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -331,8 +348,8 @@ public class PetController{
     @GET
     @Path("/{petId}/images")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getImages(@PathParam("petId") long petId) {
-        String locale = ApiUtils.getLocale();
+    public Response getImages(@Context HttpServletRequest httpRequest, @PathParam("petId") long petId) {
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -368,16 +385,16 @@ public class PetController{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(cropped, "jpg", baos );
         baos.flush();
-        byte[] imageInByte = baos.toByteArray();
+        byte[] imageInByte = baos.toByteArray(); 
         baos.close();
         return Response.ok(imageInByte).build();
     }
 
     @POST
     @Path("/{petId}/remove")
-    public Response petUpdateRemove(@PathParam("petId") Long petId) {
+    public Response petUpdateRemove(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if(loggedUser == null) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
@@ -412,9 +429,9 @@ public class PetController{
 
     @POST
     @Path("/{petId}/recover")
-    public Response petUpdateRecover(@PathParam("petId") Long petId) {
+    public Response petUpdateRecover(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if(loggedUser == null) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
