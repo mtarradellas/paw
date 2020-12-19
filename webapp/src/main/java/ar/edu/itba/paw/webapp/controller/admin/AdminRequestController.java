@@ -84,7 +84,6 @@ public class AdminRequestController {
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-
         List<RequestDto> requestList;
         int amount;
         try {
