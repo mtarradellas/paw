@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {getAdminUsers} from "../../api/admin/user";
 import useLogin from "../useLogin";
+import {getAdminPets} from "../../api/admin/pets";
 
-const useAdminUsers = () => {
-    const [adminUsers, setAdminUsers] = useState(null);
+const useAdminPets = () => {
+    const [adminPets, setAdminPets] = useState(null);
 
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null});
 
@@ -11,25 +11,25 @@ const useAdminUsers = () => {
 
     const {jwt} = useLogin().state;
 
-    const fetchAdminUsers = async filters => {
+    const fetchAdminPets = async filters => {
         setFetching(true);
         try{
-            const {amount, list, pages, pageSize} = await getAdminUsers(filters, jwt);
+            const {amount, list, pages, pageSize} = await getAdminPets(filters,jwt);
 
-            setAdminUsers(list);
+            setAdminPets(list);
             setPaginationInfo({amount, pages, pageSize});
-        }catch (e){
+        }catch (e) {
             console.log(e)
         }
         setFetching(false);
     };
-
     useEffect(()=>{
-        fetchAdminUsers({page: 1});
+        fetchAdminPets({page: 1});
     }, []);
 
     const {amount, pages, pageSize} = paginationInfo;
 
-    return {adminUsers, fetchAdminUsers, fetching, pages, amount, pageSize}
+    return {adminPets, fetchAdminPets, fetching, pages, amount, pageSize};
 }
-export default useAdminUsers;
+
+export default useAdminPets;

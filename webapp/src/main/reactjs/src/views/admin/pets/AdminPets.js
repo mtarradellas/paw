@@ -1,76 +1,22 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useTranslation} from "react-i18next";
 
 import ContentWithSidebar from "../../../components/ContentWithSidebar";
-import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
+import {Button, Col, Divider, Modal, Pagination, Row, Spin} from "antd";
 import {ADMIN_ADD_PET} from "../../../constants/routes";
 
 import AdminFilterPetsForm from "./AdminFilterPetsForm";
 import AdminPetsContainer from "./AdminPetsContainer";
-const dog = {
-    id: 0,
-    name: "Nairobi",
-    specie: "Dog",
-    breed: "Border Collie",
-    price: 3000,
-    sex: "Female",
-    owner: "lenny",
-    ownerId: 0,
-    uploadDate: "05-05-2019",
-    status: "AVAILABLE"
-};
-
-const dog2 = {
-    id: 1,
-    name: "Balto",
-    specie: "Dog",
-    breed: "Border Collie",
-    price: 3000,
-    sex: "Female",
-    owner: "asdad",
-    ownerId: 4,
-    uploadDate: "05-05-2019",
-    status: "REMOVED"
-};
-
-const dog3 = {
-    id: 2,
-    name: "Skeri",
-    specie: "Dog",
-    breed: "Border Collie",
-    price: 3000,
-    sex: "Female",
-    owner: "lenny",
-    ownerId: 0,
-    uploadDate: "05-05-2019",
-    status: "SOLD"
-
-};
-
-const dog1 = {
-    id: 3,
-    name: "Hawk",
-    specie: "Dog",
-    breed: "Border Collie",
-    price: 3000,
-    sex: "Female",
-    owner: "lenny",
-    ownerId: 32,
-    uploadDate: "05-05-2019",
-    status: "UNAVAILABLE"
-};
-
-const samplePets = [];
-samplePets.push(dog);
-samplePets.push(dog1);
-samplePets.push(dog2);
-samplePets.push(dog3);
+import useLogin from "../../../hooks/useLogin";
+import useAdminPets from "../../../hooks/admin/usePets";
+import _ from "lodash";
+import AdminUsersContainer from "../users/AdminUsersContainer";
 
 function SideContent() {
     return <AdminFilterPetsForm/>
 }
 
-function MainContent({pets, petsCount}) {
+function MainContent({pets, petCount, fetching, pages, pageSize, fetchPage, currentPage, setCurrentPage, fetchFilters}) {
     const {t} = useTranslation('admin');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -87,12 +33,23 @@ function MainContent({pets, petsCount}) {
         setIsModalVisible(false);
     };
 
+    const _onChangePagination = newValue => {
+        setCurrentPage(newValue);
+
+        fetchPage(newValue);
+    };
+
     return (
         <div>
             <Row style={{margin: 0, padding: 0}}>
                 <Col span={23}>
                     <Row>
-                        <h1><b>{t('petsList.title', {count: petsCount})}</b></h1>
+                        <h1><b>
+                            {
+                                !_.isNil(petCount) && t('petsList.title', {count: petCount})
+                            }
+                        </b>
+                        </h1>
                         <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
                                 href={ADMIN_ADD_PET}>{t('addPet')}</Button>
                     </Row>
@@ -101,7 +58,6 @@ function MainContent({pets, petsCount}) {
                     <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
                 </Col>
             </Row>
-            <Pagination defaultCurrent={1} total={50}/>
             <Row style={{margin: 0, padding: 0}}>
                 <Col span={12}>
                     <h3><b>{t("petsList.pet")}</b></h3>
@@ -116,9 +72,19 @@ function MainContent({pets, petsCount}) {
                 </Col>
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
-            <AdminPetsContainer pets={pets}/>
-            <Divider/>
-            <Pagination defaultCurrent={1} total={50}/>
+            {
+                _.isNil(pets) || fetching ?
+                    <Spin/>
+                    :
+                    <AdminPetsContainer pets={pets} fetchFilters={fetchFilters}/>
+            }
+            <Divider orientation={"left"}>
+                {
+                    pageSize && petCount &&
+                    <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize}
+                                onChange={_onChangePagination}/>
+                }
+            </Divider>
             <Modal
                 title={t("modals.help.title")}
                 visible={isModalVisible}
@@ -141,13 +107,50 @@ function MainContent({pets, petsCount}) {
 }
 
 function AdminPets() {
-    const pets = samplePets;
-    const petsCount = samplePets.length;
+    const {adminPets, fetchAdminPets, fetching, pages, amount, pageSize} = useAdminPets();
+
+    const {jwt} = useLogin().state;
+
+    const [appliedFilters, setAppliedFilters] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const fetchPage = page => {
+        const params = {
+            ...appliedFilters,
+            page
+        }
+        fetchAdminPets(params)
+    };
+
+    const [filters, setFilters] = useState(null);
+    const fetchFilters = async () => {
+        try {
+            // const newFilters = await getAdminUsersFilters(jwt);
+            console.log("FILTERSSS")
+            // setFilters(newFilters);
+        } catch (e) {
+            //TODO: conn error
+        }
+    };
+
+    useEffect(() => {
+        fetchFilters();
+    }, []);
 
     return (
         <ContentWithSidebar
             mainContent={
-                <MainContent pets={pets} petsCount={petsCount}/>
+                <MainContent
+                    pets={adminPets}
+                    petCount={amount}
+                    fetching={fetching}
+                    pages={pages}
+                    pageSize={pageSize}
+                    fetchPage={fetchPage}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    fetchFilters={fetchFilters}
+                />
             }
             sideContent={
                 <SideContent/>

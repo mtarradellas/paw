@@ -1,55 +1,28 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useTranslation} from "react-i18next";
 
 import ContentWithSidebar from "../../../components/ContentWithSidebar";
-import {Button, Col, Divider, Modal, Pagination, Row} from "antd";
+import {Button, Col, Divider, Modal, Pagination, Row, Spin} from "antd";
 
 import AdminFilterUsersForm from "./AdminFilterUsersForm";
 
 import {ADMIN_ADD_USER} from "../../../constants/routes";
 import AdminUsersContainer from "./AdminUsersContainer";
-import {getUserRequests} from "../../../api/admin/user";
-import useAdminUsers from "../../../hooks/admin/useUser";
+import useAdminUsers from "../../../hooks/admin/useUsers";
+import useLogin from "../../../hooks/useLogin";
+import _ from "lodash";
+import {getAdminUsersFilters} from "../../../api/admin/users";
 
-const user = {
-    id:0,
-    username: "Manu",
-    mail: "manu@manu.com",
-    status: "ACTIVE"
+function SideContent({filters, changeFilters, setCurrentPage, fetchAdminUsers}) {
+    return <AdminFilterUsersForm
+        filters={filters}
+        changeFilters={changeFilters}
+        setCurrentPage={setCurrentPage}
+        fetchAdminUsers={fetchAdminUsers}
+    />
 }
 
-const user1 = {
-    id:1,
-    username: "Pedro",
-    mail: "pedro@pedro.com",
-    status: "INACTIVE"
-}
-
-const user2 = {
-    id:2,
-    username: "Lu",
-    mail: "lu@lu.com",
-    status: "ACTIVE"
-}
-
-const user3 = {
-    id:3,
-    username: "Facu",
-    mail: "facu@facu.com",
-    status: "DELETED"
-}
-
-const sampleUsers = [];
-sampleUsers.push(user);
-sampleUsers.push(user1);
-sampleUsers.push(user2);
-sampleUsers.push(user3);
-
-function SideContent(){
-    return <AdminFilterUsersForm/>
-}
-
-function MainContent({users, userCount}){
+function MainContent({users, userCount, fetching, pages, pageSize, fetchPage, currentPage, setCurrentPage, fetchFilters}) {
     const {t} = useTranslation('admin');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -66,20 +39,31 @@ function MainContent({users, userCount}){
         setIsModalVisible(false);
     };
 
+    const _onChangePagination = newValue => {
+        setCurrentPage(newValue);
+
+        fetchPage(newValue);
+    };
+
     return (
         <div>
             <Row style={{margin: 0, padding: 0}}>
                 <Col span={23}>
                     <Row>
-                        <h1><b>{t('usersList.title', {count: userCount})}</b></h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"} href={ADMIN_ADD_USER}>{t('addUser')}</Button>
+                        <h1><b>
+                            {
+                                !_.isNil(userCount) && t('usersList.title', {count: userCount})
+                            }
+                        </b>
+                        </h1>
+                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
+                                href={ADMIN_ADD_USER}>{t('addUser')}</Button>
                     </Row>
                 </Col>
                 <Col>
                     <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
                 </Col>
             </Row>
-            <Pagination defaultCurrent={1} total={50}/>
             <Row style={{margin: 0, padding: 0}}>
                 <Col span={12}>
                     <h3><b>{t("usersList.user")}</b></h3>
@@ -94,9 +78,19 @@ function MainContent({users, userCount}){
                 </Col>
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
-            <AdminUsersContainer users={users}/>
-            <Divider />
-            <Pagination defaultCurrent={1} total={50}/>
+            {
+                _.isNil(users) || fetching ?
+                    <Spin/>
+                    :
+                    <AdminUsersContainer users={users} fetchFilters={fetchFilters}/>
+            }
+            <Divider orientation={"left"}>
+                {
+                    pageSize && userCount &&
+                    <Pagination showSizeChanger={false} current={currentPage} total={userCount} pageSize={pageSize}
+                                onChange={_onChangePagination}/>
+                }
+            </Divider>
             <Modal
                 title={t("modals.help.title")}
                 visible={isModalVisible}
@@ -115,22 +109,64 @@ function MainContent({users, userCount}){
                 </div>
             </Modal>
         </div>
-    )}
+    )
+}
 
-function AdminUsers(){
+function AdminUsers() {
     const {adminUsers, fetchAdminUsers, fetching, pages, amount, pageSize} = useAdminUsers();
 
-    const users = sampleUsers;
-    const userCount = sampleUsers.length;
+    const {jwt} = useLogin().state;
+
+    const [appliedFilters, setAppliedFilters] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const fetchPage = page => {
+        const params = {
+            ...appliedFilters,
+            page
+        }
+        fetchAdminUsers(params)
+    };
+
+
+    const [filters, setFilters] = useState(null);
+    const fetchFilters = async () => {
+        try {
+            const newFilters = await getAdminUsersFilters(jwt);
+
+            setFilters(newFilters);
+        } catch (e) {
+            //TODO: conn error
+        }
+    };
+
+    useEffect(() => {
+        fetchFilters();
+    }, []);
 
 
     return (
         <ContentWithSidebar
             mainContent={
-                <MainContent users={users} userCount={userCount}/>
+                <MainContent
+                    users={adminUsers}
+                    userCount={amount}
+                    fetching={fetching}
+                    pages={pages}
+                    pageSize={pageSize}
+                    fetchPage={fetchPage}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    fetchFilters={fetchFilters}
+                />
             }
             sideContent={
-                <SideContent/>
+                <SideContent
+                    filters={filters}
+                    changeFilters={setAppliedFilters}
+                    setCurrentPage={setCurrentPage}
+                    fetchAdminUsers={fetchAdminUsers}
+                />
             }
         />
     )
