@@ -35,6 +35,7 @@ import {
     PET,
     REGISTER,
     USER,
+    EDIT_USER,
     REQUESTS,
     INTERESTS,
     ERROR_404,
@@ -52,6 +53,7 @@ import {
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
+import EditUserView from "./views/user/EditUserView";
 import RegisterView from "./views/register/RegisterView";
 import LoginView from "./views/login/LoginView";
 import PetView from "./views/pet/PetView";
@@ -86,6 +88,14 @@ function AppSwitch(){
                     <LoginView/>
                 </BasicLayout>
             </Route>
+
+            <PrivateRoute exact path={EDIT_USER} 
+                        component={
+                            () => (<BasicLayout>
+                                    <EditUserView/>
+                                </BasicLayout>)
+                        }
+            />
 
             <PrivateRoute path={USER + ':id'}
                           component={

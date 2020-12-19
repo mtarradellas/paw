@@ -69,4 +69,38 @@ export async function getMail({userId}, jwt){
 
         throw GET_MAIL_ERRORS.CONN_ERROR;
     }
+};
+
+const EDIT_USERNAME_ENDPOINT = id => "/users/" + id + "/edit/username";
+export const EDIT_USERNAME_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1,
+    BAD_REQ: 2,
+    DUPLICATED_USERNAME: 3
+};
+export async function editUsername({username, id}, jwt) {
+    const config = getAuthConfig(jwt);
+
+    try {
+        await axios.post(SERVER_URL+EDIT_USERNAME_ENDPOINT(id), {username}, config);
+    } catch (e) {
+        throw _.get(e, 'response.data.code', EDIT_USERNAME_ERRORS.CONN_ERROR);
+    }
+}
+
+const EDIT_PASSWORD_ENDPOINT = id => "/users/" + id + "/edit/password";
+export const EDIT_PASSWORD_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1,
+    BAD_REQ: 2,
+    WRONG_PASS: 3
+};
+export async function editPassword({oldPassword, newPassword, id}, jwt) {
+    const config = getAuthConfig(jwt);
+
+    try {
+        axios.post(SERVER_URL+EDIT_PASSWORD_ENDPOINT(id), {oldPassword, newPassword}, config);
+    } catch (e) {
+        throw _.get(e, 'response.data.code', EDIT_PASSWORD_ERRORS.CONN_ERROR);
+    }
 }
