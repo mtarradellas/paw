@@ -68,12 +68,11 @@ public class RequestServiceImpl implements RequestService {
             Optional<User> opUser = userService.findById(targetId);
             if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
             User user = opUser.get();
-
             logInterestsAccess(user);
             return filteredListByPetOwner(user, petId, find, status, searchCriteria, searchOrder, page, pageSize);
         }
-
-        return list(page, pageSize);
+        
+        return filteredListByRequestOwner(null, petId, find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
@@ -155,7 +154,7 @@ public class RequestServiceImpl implements RequestService {
             return getFilteredListByPetOwnerAmount(user, petId, find, status);
         }
 
-        return getListAmount();
+        return getFilteredListByRequestOwnerAmount(null, petId, find, status);
     }
 
     @Override
