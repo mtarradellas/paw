@@ -2,6 +2,9 @@
   "title": "Meet {{name}}!",
   "someInformationAboutHer": "Some information about her",
   "someInformationAboutHim": "Some information about him",
+  "buttons": {
+    "editPet": "Edit"
+  },
   "details": {
     "name": "Name",
     "dateOfBirth": "Date of birth",

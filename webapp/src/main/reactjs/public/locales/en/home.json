@@ -9,7 +9,12 @@
       "department": "Department ¿?",
       "criteria": "Criteria",
       "order": "Order",
-      "any": "Any"
+      "any": "Any",
+      "priceRange": {
+        "range": "${{min}} to ${{max}}",
+        "free": "Free",
+        "max": "More than ${{min}}"
+      }
     },
     "filterButtons": {
       "filter": "Filter",
@@ -31,5 +36,9 @@
     "petsCard": {
       "goToPage": "Go to page"
     }
+  },
+  "sex": {
+    "female": "Female",
+    "male": "Male"
   }
 }

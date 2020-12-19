@@ -4,13 +4,14 @@ import {useTranslation} from "react-i18next";
 import {Button, Divider, List, Spin} from "antd";
 import Questions from "./Questions";
 import {Link} from "react-router-dom";
-import {HOME, USER} from "../../constants/routes";
+import {EDIT_PET, HOME, USER} from "../../constants/routes";
 import _ from 'lodash';
 import {getPet} from "../../api/pets";
 import {useParams} from 'react-router-dom';
 import {petImageSrc} from "../../api/images";
 import ConstantsContext from '../../constants/constantsContext';
 import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
+import useLogin from "../../hooks/useLogin";
 
 const ListItem = List.Item;
 
@@ -117,6 +118,16 @@ function Content({pet, id}){
         </>;
 }
 
+function IsOwnerButtons({petId}){
+    const {t} = useTranslation('petView');
+
+    return <>
+            <Link to={EDIT_PET(petId)}>
+                <Button>{t('buttons.editPet')}</Button>
+            </Link>
+        </>;
+}
+
 const initialStatePet = {
     petName: null,
     birthDate: null,
@@ -136,11 +147,14 @@ const initialStatePet = {
 };
 
 function PetView(){
+    const {state} = useLogin();
     const {id} = useParams();
 
     const [pet, setPet] = useState(initialStatePet);
 
     const {t} = useTranslation('petView');
+
+    const {id: loggedUserId} = state;
 
     const fetchPet = async () => {
         try{
@@ -156,16 +170,19 @@ function PetView(){
         fetchPet();
     }, []);
 
-    const {petName} = pet;
+    const {petName, userId} = pet;
+
+    const isOwner = loggedUserId === userId;
 
     return <ContentWithHeader
         content={
             <Content id={id} pet={pet}/>
         }
         actionComponents={
-            [
-                <Button key={0}>Mascota Ya Solicitada</Button>
-            ]
+            isOwner ?
+                <IsOwnerButtons petId={id}/>
+                :
+                <></>
         }
         title={petName ? t('title', {name: petName}) : <Spin/>}
     />
