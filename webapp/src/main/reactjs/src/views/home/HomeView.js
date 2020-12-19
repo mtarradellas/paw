@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import FilterOptionsForm from "./FilterOptionsForm";
 import {Divider, Pagination, Spin} from 'antd';
 import _ from 'lodash';
@@ -6,12 +6,12 @@ import "../../css/home/home.css";
 import {useTranslation} from "react-i18next";
 import PetCard from "./PetCard";
 import ContentWithSidebar from "../../components/ContentWithSidebar";
-import usePets from "../../hooks/usePets";
+import FilterAndSearchContext from '../../constants/filterAndSearchContext'
 
 
-function SideContent({onChangeFilters, fetching}){
+function SideContent({}){
     return <div className={"home__filter"}>
-        <FilterOptionsForm onChangeFilters={onChangeFilters} fetching={fetching}/>
+        <FilterOptionsForm/>
     </div>;
 }
 
@@ -34,7 +34,7 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
 
         <Divider orientation={"left"}>
             {
-                pageSize && petCount &&
+                !_.isNil(pageSize) && _.isNil(petCount) &&
                     <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
             }
         </Divider>
@@ -62,23 +62,19 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
 
 function HomeView(){
     const [currentPage, setCurrentPage] = useState(1);
-    const [filters, setFilters] = useState({});
 
-    const {pets, fetching, fetchPets, pages, amount, pageSize} = usePets({});
-
-    const fetchPage = page => {
-        fetchPets(Object.assign({page}, filters))
-    };
-
-    const onChangeFilters = newFilters => {
-        setFilters(newFilters);
-
-        fetchPets(Object.assign({page: 1}, newFilters));
-    };
+    const {
+        pets,
+        fetching,
+        pages,
+        amount,
+        pageSize,
+        onChangePage
+    } = useContext(FilterAndSearchContext);
 
     return <ContentWithSidebar
                     sideContent={
-                        <SideContent onChangeFilters={onChangeFilters} fetching={fetching}/>
+                        <SideContent/>
                     }
                     mainContent={
                         <MainContent
@@ -86,7 +82,7 @@ function HomeView(){
                             pets={pets}
                             fetching={fetching}
                             pages={pages}
-                            fetchPage={fetchPage}
+                            fetchPage={onChangePage}
                             pageSize={pageSize}
                             currentPage={currentPage}
                             setCurrentPage={setCurrentPage}

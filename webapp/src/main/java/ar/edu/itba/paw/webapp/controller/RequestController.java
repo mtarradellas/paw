@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -68,7 +69,8 @@ public class RequestController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequestList(@QueryParam("page") @DefaultValue("1") int page,
+    public Response getRequestList(@Context HttpServletRequest request,
+                                   @QueryParam("page") @DefaultValue("1") int page,
                                    @QueryParam("userId") @DefaultValue("0") long userId,
                                    @QueryParam("targetId") @DefaultValue("0") long targetId,
                                    @QueryParam("petId") @DefaultValue("0") long petId,
@@ -95,7 +97,7 @@ public class RequestController {
         }
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
         if (currentUser.getId() != user && currentUser.getId() != target) {
             LOGGER.warn("User has no permissions to perform this action.");
             return Response.status(Response.Status.FORBIDDEN.getStatusCode()).build();
@@ -120,7 +122,7 @@ public class RequestController {
     @GET
     @Path("/{requestId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequest(@PathParam("requestId") long requestId) {
+    public Response getRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
 
         final Optional<Request> opRequest = requestService.findById(requestId);
 
@@ -130,7 +132,7 @@ public class RequestController {
         }
         final Request request = opRequest.get();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if (currentUser.getId() != request.getUser().getId() && currentUser.getId() != request.getTarget().getId()){
             LOGGER.warn("User has no permissions to perform this action.");
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -141,11 +143,11 @@ public class RequestController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createRequest(final RequestDto requestDto) {
+    public Response createRequest(@Context HttpServletRequest httpRequest, final RequestDto requestDto) {
         if (requestDto == null || requestDto.getPetId() == null) return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         Optional<Request> opRequest;
         try {
@@ -170,7 +172,8 @@ public class RequestController {
     @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequestFilters(@QueryParam("petId") @DefaultValue("0") long petId,
+    public Response getRequestFilters(@Context HttpServletRequest httpRequest,
+                                      @QueryParam("petId") @DefaultValue("0") long petId,
                                       @QueryParam("status") @DefaultValue("-1") int status) {
 
         RequestStatus requestStatus;
@@ -185,7 +188,7 @@ public class RequestController {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         List<RequestStatus> statusList;
         if(requestStatus != null)  {
@@ -213,8 +216,9 @@ public class RequestController {
     @GET
     @Path("/interests/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getInterestFilters(@QueryParam("petId") @DefaultValue("0") long petId,
-                                      @QueryParam("status") @DefaultValue("-1") int status) {
+    public Response getInterestFilters(@Context HttpServletRequest httpRequest,
+                                       @QueryParam("petId") @DefaultValue("0") long petId,
+                                       @QueryParam("status") @DefaultValue("-1") int status) {
 
         RequestStatus requestStatus;
         Long pet;
@@ -228,7 +232,7 @@ public class RequestController {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         /** Status Filter */
         List<RequestStatus> statusList;
@@ -269,9 +273,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/cancel")
-    public Response cancelRequest(@PathParam("requestId") long requestId) {
+    public Response cancelRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.cancel(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -287,9 +291,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/recover")
-    public Response recoverRequest(@PathParam("requestId") long requestId) {
+    public Response recoverRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.recover(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -305,9 +309,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/accept")
-    public Response acceptRequest(@PathParam("requestId") long requestId) {
+    public Response acceptRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.accept(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -323,9 +327,9 @@ public class RequestController {
 
     @POST
     @Path("/{requestId}/reject")
-    public Response rejectRequest(@PathParam("requestId") long requestId) {
+    public Response rejectRequest(@Context HttpServletRequest httpRequest, @PathParam("requestId") long requestId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
             if (requestService.reject(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
@@ -341,9 +345,9 @@ public class RequestController {
 
     @GET
     @Path("/notifications")
-    public Response getNotifications() {
+    public Response getNotifications(@Context HttpServletRequest httpRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = ApiUtils.loggedUser(userService, auth);
+        User user = ApiUtils.loggedUser(httpRequest, userService, auth);
         int interests = requestService.interestNotifs(user);
         int requests  = requestService.requestNotifs(user);
         Map<String, Integer> json = new HashMap<>();

@@ -5,5 +5,7 @@
   "interests": "Interests",
   "addPet": "Add pet!",
   "logout": "Logout",
-  "profile": "Profile"
+  "profile": "Profile",
+  "searchButton": "Search",
+  "searchPlaceholder": "Search"
 }

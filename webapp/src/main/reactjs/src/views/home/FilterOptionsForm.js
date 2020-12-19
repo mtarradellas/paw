@@ -7,12 +7,30 @@ import _ from 'lodash';
 import * as Yup from 'yup';
 import {petFilters} from "../../api/pets";
 import ConstantsContext from "../../constants/constantsContext";
+import FilterAndSearchContext from "../../constants/filterAndSearchContext";
 
 const FormItem = Form.Item;
 
 const SelectOption = Select.Option;
 
-const FilterOptionsForm = ({onChangeFilters, fetching}) => {
+const initialValues = {
+        species: -1,
+        breed: -1,
+        priceRange: -1,
+        gender: -1,
+        province: -1,
+        department: -1,
+        searchCriteria: -1,
+        searchOrder: 'asc'
+    };
+
+const FilterOptionsForm = () => {
+    const {
+        filters,
+        onSubmitFilters,
+        fetching
+    } = useContext(FilterAndSearchContext);
+
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
 
     const {t} = useTranslation('home');
@@ -21,21 +39,21 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
         speciesList: null, breedList: null, departmentList: null, provinceList: null, genderList: null, rangeList: null
     });
 
-    const fetchFilters = async filters => {
+    const fetchFilters = async values => {
         try{
-            const newFilters = await petFilters(filters);
+            const newFilters = await petFilters(Object.assign({}, {find: filters.find}, values));
 
             setAvailableFilters(newFilters);
 
-            onChangeFilters(filters);
+            onSubmitFilters(values);
         }catch (e) {
             //TODO: conn error
         }
     };
 
     useEffect(()=>{
-        fetchFilters({});
-    }, []);
+        fetchFilters(filters);
+    }, [filters.find]);
 
     const {speciesList, breedList, departmentList, provinceList, genderList, rangeList} = availableFilters;
 
@@ -50,8 +68,8 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
                 Yup.object().shape({
                     species: Yup.number(),
                     breed: Yup.number(),
-                    price: Yup.number(),
-                    gender: Yup.number(),
+                    priceRange: Yup.number(),
+                    gender: Yup.string(),
                     province: Yup.number(),
                     department: Yup.number(),
                     searchCriteria: Yup.string(),
@@ -59,28 +77,17 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
                 })
             }
             onSubmit={_onSubmit}
-            initialValues={
-                {
-                    species: -1,
-                    breed: -1,
-                    price: -1,
-                    gender: -1,
-                    province: -1,
-                    department: -1,
-                    searchCriteria: -1,
-                    searchOrder: 'asc'
-                }
-            }
+            initialValues={Object.assign({}, initialValues, filters)}
             render={
-                ({setFieldValue, values, resetForm, handleSubmit}) => {
+                ({setFieldValue, values, handleSubmit, setValues}) => {
                     const breedsToShow = values.species && values.species !== -1 && _.intersection(
                         species[values.species].breedIds,
-                        breedList.map(({id}) => id)
+                        breedList && breedList.map(({id}) => id)
                     ).map(id => ({id, name: breeds[id].name}));
 
                     const departmentsToShow = values.province && values.province !== -1 && _.intersection(
                         provinces[values.province].departmentIds,
-                        departmentList.map(({id}) => id)
+                        departmentList && departmentList.map(({id}) => id)
                     ).map(id => ({id, name: departments[id].name}));
 
                     return <Form layout={"vertical"}>
@@ -109,12 +116,18 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
                                 </Select>
                             </FormItem>
 
-                            <FormItem name={"price"} label={t("filterForm.labels.price")}>
-                                <Select name={"price"} disabled={_.isNil(rangeList)}>
+                            <FormItem name={"priceRange"} label={t("filterForm.labels.price")}>
+                                <Select name={"priceRange"} disabled={_.isNil(rangeList)}>
                                     <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
                                     {
-                                        rangeList && rangeList.map(({id, name}) => {
-                                            return <SelectOption value={id}>{name}</SelectOption>;
+                                        rangeList && Object.entries(rangeList).map(([id, {min, max}]) => {
+                                            if(min === 0 && max === 0)
+                                                return <SelectOption value={id}>{t('filterForm.labels.priceRange.free')}</SelectOption>;
+
+                                            if(max === -1)
+                                                return <SelectOption value={id}>{t('filterForm.labels.priceRange.max', {min})}</SelectOption>;
+
+                                            return <SelectOption value={id}>{t('filterForm.labels.priceRange.range', {min, max})}</SelectOption>;
                                         })
                                     }
                                 </Select>
@@ -124,8 +137,8 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
                                 <Select name={"gender"} disabled={_.isNil(genderList)}>
                                     <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
                                     {
-                                        genderList && genderList.map(({id, name}) => {
-                                            return <SelectOption value={id}>{name}</SelectOption>;
+                                        genderList && genderList.map(name => {
+                                            return <SelectOption value={name}>{t('sex.' + name)}</SelectOption>;
                                         })
                                     }
                                 </Select>
@@ -179,7 +192,7 @@ const FilterOptionsForm = ({onChangeFilters, fetching}) => {
 
                             <Button type={"secondary"}
                                 onClick={()=>{
-                                    resetForm();
+                                    setValues(initialValues);
                                     handleSubmit();
                                 }}
                                 loading={fetching}

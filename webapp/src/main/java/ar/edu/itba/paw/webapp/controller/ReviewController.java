@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -129,7 +130,7 @@ public class ReviewController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createReview(final ReviewDto reviewDto) {
+    public Response createReview(@Context HttpServletRequest request, final ReviewDto reviewDto) {
         try {
             ParseUtils.parseReview(reviewDto);
         } catch (BadRequestException ex) {
@@ -139,7 +140,7 @@ public class ReviewController {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
 
         Optional<Review> opReview;
         try {
@@ -168,9 +169,9 @@ public class ReviewController {
     @GET
     @Path("/can-review")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response canReview(@QueryParam("targetId") Long targetId) {
+    public Response canReview(@Context HttpServletRequest request, @QueryParam("targetId") Long targetId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
 
         if (currentUser == null || targetId == null) {
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
@@ -184,9 +185,9 @@ public class ReviewController {
 
     @DELETE
     @Path("/{reviewId}")
-    public Response deleteReview(@PathParam("reviewId") long reviewId) {
+    public Response deleteReview(@Context HttpServletRequest request, @PathParam("reviewId") long reviewId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
         
         try {
             reviewService.removeReview(currentUser.getId(), reviewId);
@@ -202,7 +203,8 @@ public class ReviewController {
     @POST
     @Path("/{reviewId}/edit/score")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response updateScore(@PathParam("reviewId") long reviewId,
+    public Response updateScore(@Context HttpServletRequest request, 
+                                @PathParam("reviewId") long reviewId,
                                 final ReviewDto dto) {
         try {
             ParseUtils.parseReviewScore(dto.getScore());
@@ -213,7 +215,7 @@ public class ReviewController {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
 
         Optional<Review> opReview;
         try {
@@ -235,7 +237,8 @@ public class ReviewController {
     @POST
     @Path("/{reviewId}/edit/description")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response updateDescription(@PathParam("reviewId") long reviewId,
+    public Response updateDescription(@Context HttpServletRequest request,
+                                      @PathParam("reviewId") long reviewId,
                                       final ReviewDto dto) {
         try {
             ParseUtils.parseReviewDescription(dto.getDescription());
@@ -246,7 +249,7 @@ public class ReviewController {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
 
         Optional<Review> opReview;
         try {
