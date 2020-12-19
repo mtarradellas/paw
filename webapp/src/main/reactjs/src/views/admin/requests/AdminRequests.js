@@ -133,7 +133,6 @@ function AdminRequests() {
     };
 
     const [filters, setFilters] = useState(null);
-    console.log(filters)
     const fetchFilters = async () => {
         try{
             const newFilters = await getAdminRequestsFilters(jwt);
@@ -146,7 +145,7 @@ function AdminRequests() {
 
     useEffect(()=>{
         fetchFilters();
-    });
+    },[]);
 
 
     return (

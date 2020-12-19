@@ -87,9 +87,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestStatus> filteredStatusList(Long userId, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
-        Optional<User> opUser = userService.findById(userId);
-        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
-        User user = opUser.get();
+        User user = userService.findById(userId).orElse(null);
         Set<Integer> results = requestDao.searchStatusList(user, pet, find, status );
         List<RequestStatus> toReturn = new ArrayList<>();
         results.forEach(r->toReturn.add(RequestStatus.values()[r]));

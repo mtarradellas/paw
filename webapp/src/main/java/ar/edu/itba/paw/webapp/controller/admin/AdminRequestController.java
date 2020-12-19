@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -118,8 +119,8 @@ public class AdminRequestController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createRequest(final RequestDto requestDto) {
-        final String locale = ApiUtils.getLocale();
+    public Response createRequest(@Context HttpServletRequest httpRequest, final RequestDto requestDto) {
+        final String locale = ApiUtils.getLocale(httpRequest);
        
         if (requestDto == null || requestDto.getPetId() == null || requestDto.getUserId() == null) {
             final ErrorDto body = new ErrorDto(1, "Missing required request fields.");
