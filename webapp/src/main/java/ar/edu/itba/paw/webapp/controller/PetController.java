@@ -16,14 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -416,8 +409,8 @@ public class PetController{
         return Response.ok(imageInByte).build();
     }
 
-    @POST
-    @Path("/{petId}/remove")
+    @DELETE
+    @Path("/{petId}")
     public Response petUpdateRemove(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);

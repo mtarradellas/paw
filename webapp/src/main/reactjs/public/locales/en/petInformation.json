@@ -7,5 +7,10 @@
   "owner": "Owner",
   "uploadDate": "Upload date",
   "female": "Female",
-  "male": "Male"
+  "male": "Male",
+  "statuses": {
+    "unavailable": "Unavailable",
+    "sold": "Sold",
+    "removed": "Removed"
+  }
 }
