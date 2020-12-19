@@ -22,11 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 
 import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import com.google.gson.Gson;
@@ -402,7 +398,10 @@ public class PetController{
         baos.flush();
         byte[] imageInByte = baos.toByteArray();
         baos.close();
-        return Response.ok(imageInByte).build();
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(31536000);
+        cc.setNoCache(false);
+        return Response.ok(imageInByte).header("Access-Control-Max-Age",31536000).cacheControl(cc).build();
     }
 
     @POST
