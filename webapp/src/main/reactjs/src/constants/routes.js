@@ -10,6 +10,8 @@ export const LOGIN = "/login";
 
 export const USER = '/user/';
 
+export const EDIT_USER = '/user/edit';
+
 export const FORGOT_PASSWORD = '/forgot-password';
 
 export const RESET_PASSWORD = '/password-reset/';
