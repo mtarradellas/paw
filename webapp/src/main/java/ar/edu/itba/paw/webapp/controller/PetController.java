@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import com.google.gson.Gson;
 
 import org.slf4j.Logger;
@@ -40,6 +39,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
@@ -54,6 +54,7 @@ import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
 import ar.edu.itba.paw.webapp.dto.DepartmentDto;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
@@ -61,9 +62,9 @@ import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ProvinceDto;
 import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Path("/pets")
@@ -104,7 +105,7 @@ public class PetController{
 
 
         final String locale = ApiUtils.getLocale(httpRequest);
-        int[] range;
+        PriceRange range;
         PetStatus petStatus = null;
         try {
             ownerId = ParseUtils.parseUserId(ownerId);
@@ -119,7 +120,7 @@ public class PetController{
             department = ParseUtils.parseDepartment(department);
             petStatus = ParseUtils.parseStatus(PetStatus.class, status);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
@@ -127,8 +128,8 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
         int amount;
@@ -175,7 +176,7 @@ public class PetController{
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
         final String locale = ApiUtils.getLocale(httpRequest);
-        int[] range;
+        PriceRange range;
         Long owner;
         try {
             owner = ParseUtils.parseUserId(ownerId);
@@ -184,18 +185,18 @@ public class PetController{
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         Set<String> genderList;
-        Set<Integer> rangeList;
+        Set<PriceRange> rangeList;
         List<Department> departments;
         List<Breed> breeds;
         try {
@@ -226,7 +227,11 @@ public class PetController{
         filters.put("departmentList", departmentList);
         filters.put("provinceList", provinceList);
         filters.put("genderList", genderList);
-        filters.put("rangeList", rangeList);
+        
+        Map<String, Object> ranges = new TreeMap<>();
+        rangeList.forEach(r -> ranges.put(String.valueOf(r.ordinal()), r.asMap()));
+
+        filters.put("rangeList", ranges);
 
         return Response.ok().entity(new Gson().toJson(filters)).build();
     }

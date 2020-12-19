@@ -100,23 +100,6 @@ public class ParseUtils {
         return "asc";
     }
 
-    public static int[] parseRange(int range) {
-        int[] price;
-        switch (range) {
-            case 0 : price = new int[]{0, -1}; break; // Any price
-            case 1 : price = new int[]{0, 0}; break;
-            case 2 : price = new int[]{1, 4999}; break;
-            case 3 : price = new int[]{5000, 9999}; break;
-            case 4 : price = new int[]{10000, 14999}; break;
-            case 5 : price = new int[]{15000, 19999}; break;
-            case 6 : price = new int[]{20000, 24999}; break;
-            case 7 : price = new int[]{25000, -1}; break;
-            default  : String hint = "Range must be between 1 and 7 inclusive, or 0 for any range";
-                       throw new BadRequestException("price range", String.valueOf(range), hint);
-        }
-        return price;
-    }
-
     public static void parseReviewScore(Integer score) {
         if (score == null || score < 1 || score > 5) {
             String hint = "Score must be between 1 and 5 inclusive";

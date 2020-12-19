@@ -36,6 +36,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.models.constants.QuestionStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 
@@ -157,7 +158,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Set<Integer> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+    public Set<PriceRange> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                          PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
         User user = null;
         Breed breed = null;
