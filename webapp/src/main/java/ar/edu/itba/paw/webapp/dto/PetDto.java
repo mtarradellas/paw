@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.core.UriInfo;
 import ar.edu.itba.paw.models.Pet;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PetDto {
 
@@ -28,7 +29,7 @@ public class PetDto {
     private List<Long> images;
     private String username;
 
-    //private List<byte[]> photos;
+    private List<MultipartFile> photos;
     private Long userId;
     private Long speciesId;
     private Long breedId;
@@ -300,11 +301,11 @@ public class PetDto {
         this.username = username;
     }
 
-    //    public List<byte[]> getPhotos() {
-//        return photos;
-//    }
-//
-//    public void setPhotos(List<byte[]> photos) {
-//        this.photos = photos;
-//    }
+    public List<MultipartFile> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<MultipartFile> photos) {
+        this.photos = photos;
+    }
 }

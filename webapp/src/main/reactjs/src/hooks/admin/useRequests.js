@@ -9,14 +9,12 @@ const useAdminRequests = () => {
 
     const [fetching, setFetching] = useState(false);
 
-    const {id, jwt} = useLogin().state
+    const {jwt} = useLogin().state
 
     const fetchAdminRequests = async filters => {
         setFetching(true);
-
         try{
-            const params = Object.assign(filters, {});
-            const {amount, list, pages, pageSize} = await getAdminRequests(params,jwt);
+            const {amount, list, pages, pageSize} = await getAdminRequests(filters,jwt);
 
             setAdminRequests(list);
             setPaginationInfo({amount, pages, pageSize})

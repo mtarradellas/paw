@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -55,9 +56,9 @@ public class HomeController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getAvailable() {
+    public Response getAvailable(@Context HttpServletRequest httpRequest) {
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         final List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<SpeciesDto>>(speciesList) {}).build();
     }
@@ -65,7 +66,7 @@ public class HomeController {
     @POST
     @Path("/register")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createUser(final UserDto user) {
+    public Response createUser(@Context HttpServletRequest httpRequest, final UserDto user) {
         try {
             ParseUtils.parseUser(user);
         } catch (BadRequestException ex) {
@@ -74,7 +75,7 @@ public class HomeController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        final String locale = ApiUtils.getLocale();
+        final String locale = ApiUtils.getLocale(httpRequest);
         Optional<User> opNewUser;
         try {
             opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getBaseUri().toString());

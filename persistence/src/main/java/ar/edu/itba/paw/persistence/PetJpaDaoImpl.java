@@ -73,7 +73,7 @@ public class PetJpaDaoImpl implements PetDao {
                                 String searchOrder, int minPrice, int maxPrice, Province province, Department department, int page, int pageSize) {
 
         /* TODO descomentar para deployar*/
-        indexPets();
+        // indexPets();
 
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchQuery(locale, find, user, newOwner, species, breed, gender, status,
                 minPrice,  maxPrice, province,  department, searchCriteria, searchOrder);
@@ -364,6 +364,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public Optional<Pet> update(Pet pet) {
         em.persist(pet);
+        indexPets();
         return Optional.of(pet);
     }
 
@@ -375,6 +376,7 @@ public class PetJpaDaoImpl implements PetDao {
         query.setParameter("new", newStatus.getValue());
         query.setParameter("user", user.getId());
         query.executeUpdate();
+        indexPets();
     }
 
     @Override

@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.google.gson.Gson;
 
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,14 +26,14 @@ import ar.edu.itba.paw.models.User;
 
 public class ApiUtils {
 
-    public static String getLocale() {
-        Locale locale = LocaleContextHolder.getLocale();
-        String lang = locale.getLanguage() + "_" + locale.getCountry();
-        if (lang.startsWith("en")) return "en_US";
+    public static String getLocale(HttpServletRequest request) {
+        Locale locale = request.getLocale();
+        String lang = locale.getLanguage();
+        if (lang.equals("en")) return "en_US";
         else return "es_AR";
     }
 
-    public static User loggedUser(UserService userService, Authentication auth) {
+    public static User loggedUser(HttpServletRequest request, UserService userService, Authentication auth) {
         if (auth == null) return null;
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
             return null;
@@ -41,7 +41,7 @@ public class ApiUtils {
         Optional<User> opUser = userService.findByUsername(auth.getName());
         if (opUser.isPresent()) {
             User user = opUser.get();
-            String locale = getLocale();
+            String locale = getLocale(request);
             if (user.getLocale() == null || !user.getLocale().equalsIgnoreCase(locale)) {
                 userService.updateLocale(user, locale);
             }

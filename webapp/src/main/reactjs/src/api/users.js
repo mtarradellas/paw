@@ -42,3 +42,31 @@ export async function getLoggedUser(jwt){
         throw GET_LOGGED_USER_ERRORS.CONN_ERROR;
     }
 }
+
+
+const GET_MAIL_ENDPOINT = (id) => "/users/" + id + "/mail";
+export const GET_MAIL_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 2,
+    NOT_ALLOWED: 3
+};
+export async function getMail({userId}, jwt){
+    const config = getAuthConfig(jwt);
+
+    try{
+        const response = await axios.get(SERVER_URL + GET_MAIL_ENDPOINT(userId), config);
+
+        return response.data.mail;
+    }catch (e) {
+        if(e.response.status === 403){
+            const code = _.get(e, 'response.data.code', null);
+
+            if(!_.isNil(code) && code === 1)
+                throw GET_MAIL_ERRORS.NOT_ALLOWED;
+
+            throw GET_MAIL_ERRORS.FORBIDDEN;
+        }
+
+        throw GET_MAIL_ERRORS.CONN_ERROR;
+    }
+}

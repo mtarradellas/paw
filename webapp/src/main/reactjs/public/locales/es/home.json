@@ -8,12 +8,22 @@
       "state": "Provincia",
       "department": "Departamento",
       "criteria": "Criterio",
-      "order": "Orden"
+      "order": "Orden",
+      "any": "Cualquiera"
     },
     "filterButtons": {
       "filter": "Filtrar",
       "clear": "Limpiar"
-    }
+    },
+    "criteria": {
+      "uploadDate": "Fecha de subida",
+      "gender": "Género",
+      "species": "Especie",
+      "breed": "Raza",
+      "price": "Precio"
+    },
+    "asc": "Ascendente",
+    "desc": "Descendente"
   },
   "pets": {
     "title": "¡Estas son las mascotas disponibles!",

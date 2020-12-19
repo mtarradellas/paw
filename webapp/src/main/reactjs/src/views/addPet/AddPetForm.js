@@ -9,12 +9,27 @@ import ConstantsContext from '../../constants/constantsContext';
 
 const FormItem = Form.Item;
 
-function AddPetForm({submitting}){
+const defaultTestValues = {
+    petName: 'carlos',
+    price: 100,
+    isAdoption: false,
+    description: 'fdsafdsafd',
+    province: 1,
+    department: 1,
+    specie: '',
+    breed: '',
+    dateOfBirth: '',
+    isVaccinated: '',
+    gender: '',
+    files: []
+}
+
+function AddPetForm({submitting, onSubmit}){
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
     const {t} = useTranslation('addPet');
 
     const _onSubmit = values => {
-        console.log(values);
+        onSubmit(values);
     };
 
     return <Formik
@@ -46,7 +61,7 @@ function AddPetForm({submitting}){
                 isVaccinated: Yup.boolean(),
                 gender: Yup.string()
                     .required(t('form.gender.required')),
-                images: Yup.array()
+                files: Yup.array()
                     .min(1, min => t('form.images.min', {min}))
             })
         }
@@ -64,7 +79,7 @@ function AddPetForm({submitting}){
                 dateOfBirth: '',
                 isVaccinated: '',
                 gender: '',
-                images: []
+                files: []
             }
         }
         render={
@@ -161,7 +176,7 @@ function AddPetForm({submitting}){
                         beforeUpload={()=>false}
                         listType="picture-card"
                         onChange={({fileList}) => {
-                            setFieldValue("images", [...fileList])
+                            setFieldValue("files", [...fileList])
                         }}
                     >
                         <div>
@@ -170,7 +185,7 @@ function AddPetForm({submitting}){
                         </div>
 
                     </Upload>
-                    <p className={"error-message"}><ErrorMessage name={"images"}/></p>
+                    <p className={"error-message"}><ErrorMessage name={"files"}/></p>
 
                     <FormItem name>
                         <Button type="primary" htmlType="submit" loading={submitting}>
