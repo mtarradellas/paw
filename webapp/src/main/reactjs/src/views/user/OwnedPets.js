@@ -8,7 +8,7 @@ import PetCard from "../home/PetCard";
 function OwnedPets({userId, title, filters}){
     const {t} = useTranslation('userView');
 
-    const {pets, fetchPets, fetching, amount, pageSize} = usePets();
+    const {pets, fetchPets, fetching, amount, pageSize} = usePets({});
     const [currentPage, setCurrentPage] = useState(1);
 
     const _onChangePagination = async newValue => {
