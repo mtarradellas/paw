@@ -223,7 +223,6 @@ function AppSwitch(){
 function App() {
     const login = useLoginState();
     const constants = useConstants();
-
     const {loaded} = constants;
 
     return (

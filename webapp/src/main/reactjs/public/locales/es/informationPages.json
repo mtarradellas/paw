@@ -2,5 +2,7 @@
   "emailSent": {
     "checkMail": "Te mandamos un correo. Por favor chequea tu casilla  y segui las instrucciones."
   },
-  "backToHome" : "Devuelta al inicio"
+  "operationSuccessful": "Operacion exitosa!",
+  "backToHome" : "Devuelta al inicio",
+  "goToLogin": "Iniciar sesion"
 }

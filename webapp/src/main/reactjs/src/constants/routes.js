@@ -22,6 +22,8 @@ export const EDIT_PET = id => '/edit-pet/' + id;
 
 export const VERIFY_EMAIL = '/verify-email';
 
+export const SUCCESS = '/success';
+
 //ADMIN
 
 export const ADMIN_HOME = '/admin';

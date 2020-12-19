@@ -124,7 +124,7 @@ public class HomeController {
             LOGGER.warn("Mail parameter null.");
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
-        
+
         final String baseUrl = uriInfo.getBaseUri().toString();
 
         try {
