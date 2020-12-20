@@ -128,9 +128,17 @@
     "mail": "Correo",
     "password": "Contraseña"
   },
+  "editUserView": {
+    "title": "Editar Usuario (Modo Admin)",
+    "username": "Usuario",
+    "oldPassword": "Contraseña Vieja",
+    "newPassword": "Contraseña Nueva",
+    "newPasswordRepeat": "Repetir Contraseña Nueva"
+  },
   "errors": {
     "duplicatedRequest": "Este usuario ya solicitó esta mascota",
     "default": "Error de conexión: la solicitud no pudo ser completada",
-    "unchanged": "Estás cambiando el estado a el estado existente"
+    "unchanged": "Estás cambiando el estado a el estado existente",
+    "noMatch": "Las contraseñas no concuerdan"
   }
 }

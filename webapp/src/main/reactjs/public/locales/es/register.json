@@ -40,5 +40,8 @@
     },
     "submit": "Registrarse",
     "conError": "Se perdió la conexión"
-  }
+  },
+  "changeUsername" : "Cambiar Usuario",
+  "changePassword": "Cambiar Contraseña",
+  "oldPassword": "Contraseña Vieja"
 }

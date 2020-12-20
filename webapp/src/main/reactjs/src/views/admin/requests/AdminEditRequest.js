@@ -13,7 +13,7 @@ import {ADMIN_REQUESTS} from "../../../constants/routes";
 import BigCenteredContent from "../../../components/BigCenteredContent";
 import {Formik} from "formik";
 import {Form, Select} from "formik-antd";
-import {Button, Spin} from "antd";
+import {Button} from "antd";
 
 
 const FormItem = Form.Item;
@@ -50,7 +50,8 @@ function EditRequestForm({status,_onSubmit}){
                 </Button>
             </FormItem>
         </Form>
-    </Formik>}
+    </Formik>
+}
 
 function AdminEditRequest() {
     const {jwt} = useLogin().state;

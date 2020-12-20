@@ -39,6 +39,9 @@
       }
     },
     "submit": "Register",
-    "conError": "Connection lost"
+    "conError": "Connection lost",
+    "changeUsername": "Change Username",
+    "changePassword": "Change Password",
+    "oldPassword": "Old Password"
   }
 }

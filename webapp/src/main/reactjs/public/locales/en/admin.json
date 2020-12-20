@@ -128,9 +128,17 @@
     "mail": "Mail",
     "password": "Password"
   },
+  "editUserView": {
+    "title": "Edit User (Admin Mode)",
+    "username": "Username",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "newPasswordRepeat": "Repeat New Password"
+  },
   "errors": {
     "duplicatedRequest": "This user has already requested this pet",
     "default": "Connection error: the request couldn't be completed",
-    "unchanged": "You are trying to change the status to the existing one"
+    "unchanged": "You are trying to change the status to the existing one",
+    "noMatch": "Passwords don't match"
   }
 }
