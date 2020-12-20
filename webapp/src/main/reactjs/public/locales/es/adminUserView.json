@@ -1,12 +1,11 @@
 {
-  "remove": "Remover",
-  "edit": "Editar",
   "status": {
     "active": "Activo",
     "inactive": "Inactivo",
     "deleted": "Borrado"
   },
   "buttons": {
+    "edit": "Editar",
     "recover": "Recuperar",
     "remove": "Remover",
     "cancel": "Cancelar",

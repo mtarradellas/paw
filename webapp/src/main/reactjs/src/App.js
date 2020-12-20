@@ -74,6 +74,7 @@ import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
 import EmailSent from "./views/information/EmailSent";
 import OperationSuccessful from "./views/information/OperationSuccessful";
 import AdminUserView from "./views/admin/AdminUserView";
+import AdminPetView from "./views/admin/AdminPetView";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -190,8 +191,7 @@ function AppSwitch(){
                           component={
                               () => (
                                   <AdminLayout>
-                                      <div>hola</div>
-                                      {/*<AdminUserView/>*/}
+                                      <AdminPetView/>
                                   </AdminLayout>
                               )
                           }

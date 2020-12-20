@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import {useParams, useHistory, Link} from 'react-router-dom';
 import useLogin from "../../hooks/useLogin";
-import {GET_MAIL_ERRORS, GET_USER_ERRORS, getMail} from "../../api/users";
+import {GET_USER_ERRORS} from "../../api/users";
 import {ADMIN_EDIT_USER, ADMIN_HOME, ERROR_404_USER} from "../../constants/routes";
 import {deleteUserAdmin, getUserAdmin, recoverUserAdmin} from "../../api/admin/users";
 import ContentWithHeader from "../../components/ContentWithHeader";
@@ -67,10 +67,6 @@ function Content({user, id, email}) {
 
         <Divider/>
 
-        <Reviews userId={id} reviewsPagination={reviewsPagination}/>
-
-        <Divider/>
-
         <div>
             <Link to={ADMIN_HOME}>
                 {t('backToHome')}
@@ -88,7 +84,7 @@ function AdminUserView() {
     const {state, promptLogin} = useLogin();
     const history = useHistory();
 
-    const {jwt, id: loggedUserId} = state;
+    const {jwt} = state;
 
     const fetchUser = useCallback(async () => {
         try {
@@ -146,7 +142,7 @@ function AdminUserView() {
         }
         const modalMessage = t("modals.removeUser")
 
-        modalButton = <Button type={"primary"} danger
+        modalButton = <Button type={"primary"} danger key={"remove"}
                               onClick={() => showModal(onConfirm, modalMessage)}>{t("buttons.remove")}</Button>
     } else {
         const onConfirm = async () => {
@@ -159,7 +155,7 @@ function AdminUserView() {
         }
 
         const modalMessage = t("modals.recoverUser")
-        modalButton = <Button type={"primary"} danger
+        modalButton = <Button type={"primary"} danger key={"recover"}
                               onClick={() => showModal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
     }
 
@@ -168,7 +164,7 @@ function AdminUserView() {
         actionComponents={
             [
                 modalButton,
-                <Button href={ADMIN_EDIT_USER + id} key={"edit"}>{t("edit")}</Button>
+                <Button href={ADMIN_EDIT_USER + id} key={"edit"}>{t("buttons.edit")}</Button>
             ]
         }
         content={

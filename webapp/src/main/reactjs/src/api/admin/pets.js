@@ -2,6 +2,7 @@ import axios from "axios";
 import {SERVER_URL} from "../../config";
 import _ from 'lodash';
 import {getAuthConfig} from "../utils";
+import {GET_PET_ERRORS} from "../pets";
 
 const GET_PETS_ENDPOINT = "/admin/pets";
 const REMOVE_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/remove";
@@ -19,6 +20,22 @@ export const RECOVER_PETS_ERRORS = {
 };
 export const GET_PETS_FILTERS = {
     CONN_ERROR:0
+}
+
+export async function getPetAdmin(petId, jwt){
+    const config = getAuthConfig(jwt);
+
+    try{
+        const response = await axios.get(SERVER_URL+GET_PETS_ENDPOINT+"/"+petId, config);
+        return _.pick(response.data,
+            [
+                'petName', 'birthDate', 'gender', 'vaccinated', 'price', 'uploadDate', 'description',
+                'status', 'username', 'userId', 'speciesId', 'breedId', 'provinceId', 'departmentId', 'images'
+            ]
+        );
+    } catch (e){
+        throw GET_PET_ERRORS.CONN_ERROR;
+    }
 }
 
 export async function getAdminPets(
