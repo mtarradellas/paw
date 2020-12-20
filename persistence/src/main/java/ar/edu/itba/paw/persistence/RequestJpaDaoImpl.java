@@ -405,14 +405,29 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    public boolean hasRequest(User user, User target) {
+    public boolean hasRequest(User user, User target, List<RequestStatus> statusList) {
+        String status = String.join(", ", statusList.stream().map(s -> String.valueOf(s.getValue())).collect(Collectors.toList()));
         String qStr = "SELECT count(*) " +
                       "FROM requests " +
-                      "WHERE ownerId = :user AND targetId = :target AND status = 4";
+                      "WHERE ownerId = :user AND targetId = :target AND status in (" + status + ")";
 
         Query query = em.createNativeQuery(qStr);
         query.setParameter("user", user.getId());
         query.setParameter("target", target.getId());
+        Number n = (Number) query.getSingleResult();
+        return n.intValue() > 0;
+    }
+
+    @Override
+    public boolean hasRequest(User user, Pet pet, List<RequestStatus> statusList) {
+        String status = String.join(", ", statusList.stream().map(s -> String.valueOf(s.getValue())).collect(Collectors.toList()));
+        String qStr = "SELECT count(*) " +
+                      "FROM requests " +
+                      "WHERE ownerId = :user AND petId = :pet AND status in (" + status + ")";
+
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("user", user.getId());
+        query.setParameter("pet", pet.getId());
         Number n = (Number) query.getSingleResult();
         return n.intValue() > 0;
     }

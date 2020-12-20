@@ -360,11 +360,11 @@ public class PetServiceImpl implements PetService {
                 species, breed, province, department);
 
         LOGGER.debug("Pet id: {} successfully created", pet);
-if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
-    for (byte[] photo : photos) {
-        imageService.create(pet.getId(), photo, user.getId());
-    }
-}
+
+        for (byte[] photo : photos) {
+            imageService.create(pet.getId(), photo, user.getId());
+        }
+
 
         return Optional.of(pet);
     }
@@ -452,7 +452,7 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
         }
 
         int toDelete;
-        if(imagesToDelete == null){
+        if(imagesToDelete == null || imagesToDelete.get(0) == null){
             toDelete = 0;
         }
         else {
