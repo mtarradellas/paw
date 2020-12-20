@@ -57,6 +57,10 @@
     "images": {
       "min": "Please upload at least one image"
     },
+    "userId": {
+      "label": "User",
+      "required": "User is required"
+    },
     "upload": "Upload image",
     "addPet": "Add pet",
     "send": "Enviar"

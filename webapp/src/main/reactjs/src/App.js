@@ -88,6 +88,7 @@ import AdminAddRequest from "./views/admin/requests/AdminAddRequest";
 import AdminEditRequest from "./views/admin/requests/AdminEditRequest";
 import AdminAddUser from "./views/admin/users/AdminAddUser";
 import AdminEditUser from "./views/admin/users/AdminEditUser";
+import AdminAddPet from "./views/admin/pets/AdminAddPet";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -245,6 +246,27 @@ function AppSwitch(){
                               () => (
                                   <AdminLayout>
                                       <AdminEditUser/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute path={ADMIN_ADD_PET}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminAddPet/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute path={ADMIN_EDIT_PET + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <div>hola</div>
+                                      {/*<AdminAddPet/>*/}
                                   </AdminLayout>
                               )
                           }

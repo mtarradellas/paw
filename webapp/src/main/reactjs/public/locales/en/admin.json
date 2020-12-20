@@ -135,6 +135,9 @@
     "newPassword": "New Password",
     "newPasswordRepeat": "Repeat New Password"
   },
+  "addPetView": {
+    "title": "Add Pet (Admin Mode)"
+  },
   "errors": {
     "duplicatedRequest": "This user has already requested this pet",
     "default": "Connection error: the request couldn't be completed",

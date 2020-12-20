@@ -135,6 +135,9 @@
     "newPassword": "Contraseña Nueva",
     "newPasswordRepeat": "Repetir Contraseña Nueva"
   },
+  "addPetView": {
+    "title": "Añadir Mascota (Modo Admin)"
+  },
   "errors": {
     "duplicatedRequest": "Este usuario ya solicitó esta mascota",
     "default": "Error de conexión: la solicitud no pudo ser completada",

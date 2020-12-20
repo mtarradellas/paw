@@ -2,13 +2,18 @@ import axios from "axios";
 import {SERVER_URL} from "../../config";
 import _ from 'lodash';
 import {getAuthConfig} from "../utils";
-import {GET_PET_ERRORS} from "../pets";
+import { GET_PET_ERRORS} from "../pets";
 
 const GET_PETS_ENDPOINT = "/admin/pets";
 const REMOVE_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/remove";
 const RECOVER_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/recover";
 const GET_PETS_FILTERS_ENDPOINT = "/admin/pets/filters";
+const CREATE_PET_ENDPOINT = "/admin/pets";
 
+export const CREATE_PET_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1
+};
 export const GET_PETS_ERRORS = {
     CONN_ERROR: 0
 };
@@ -20,6 +25,43 @@ export const RECOVER_PETS_ERRORS = {
 };
 export const GET_PETS_FILTERS = {
     CONN_ERROR:0
+}
+
+export async function createAdminPet(values, jwt){
+    const {
+        petName, birthDate, gender, vaccinated, price, uploadDate, description,
+        speciesId, breedId, provinceId, departmentId, userId, files
+    } = values;
+
+    console.log(values)
+    const form = new FormData();
+
+    Object.keys(_.omit(values, ['files'])).forEach(key => {
+        form.append(key, values[key]);
+    });
+
+    files.forEach((file, i) => {
+        form.append('files', file.originFileObj);
+    });
+
+    const {headers: authHeaders} = getAuthConfig(jwt);
+
+    const config = {
+        headers: Object.assign(authHeaders, {
+            'accept': 'application/json',
+            'Content-Type': `multipart/form-data; boundary=${form._boundary}`
+        })
+    };
+
+    try{
+        const response = await axios.post(SERVER_URL + CREATE_PET_ENDPOINT, form, config);
+        return response.data;
+    }catch (e) {
+        if(e.response.status === 403) throw CREATE_PET_ERRORS.FORBIDDEN;
+
+        throw CREATE_PET_ERRORS.CONN_ERROR;
+    }
+
 }
 
 export async function getPetAdmin(petId, jwt){
