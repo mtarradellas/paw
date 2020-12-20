@@ -6,6 +6,8 @@ import {ADMIN_HOME, LOGIN, REGISTER, ADMIN_REQUESTS, ADMIN_PETS, ADMIN_USERS} fr
 import {Button} from "antd";
 import useLogin from "../hooks/useLogin";
 
+import '../css/admin/admin.css'
+
 
 function AdminHeader() {
     const {t} = useTranslation('admin');
@@ -20,34 +22,42 @@ function AdminHeader() {
 
     return (
         <header className={"admin-header"}>
-            <Link to={ADMIN_HOME}>
-                <img className={"header__logo"} src={"/logo.png"} alt={"logo"} width={70} height={70}/>
+            <Link to={ADMIN_HOME} className={"header__logo"} >
+                <img src={"/logo.png"} alt={"logo"}/>
             </Link>
 
-            <Link to={ADMIN_HOME}>
-            <span className={"header__title"}>
+            <Link to={ADMIN_HOME} className={"header__title"}>
+            <span>
                 PET SOCIETY ADMIN
             </span>
             </Link>
 
-            <Link className={"header__subtitle"} to={ADMIN_REQUESTS}>
-                {t('listRequests')}
-            </Link>
+            <div className={"header__menu-items"}>
+                <div className={"header__menu-items__item"}>
+                    <Link to={ADMIN_REQUESTS}>
+                        {t('listRequests')}
+                    </Link>
+                </div>
+                <div className={"header__menu-items__item"}>
+                    <Link to={ADMIN_USERS}>
+                        {t('listUsers')}
+                    </Link>
+                </div>
+                <div className={"header__menu-items__item"}>
+                    <Link to={ADMIN_PETS}>
+                        {t('listPets')}
+                    </Link>
+                </div>
 
-            <Link className={"header__subtitle"} to={ADMIN_USERS}>
-                {t('listUsers')}
-            </Link>
+            </div>
 
-            <Link className={"header__subtitle"} to={ADMIN_PETS}>
-                {t('listPets')}
-            </Link>
 
-            <div className={"header__right header--session"}>
-                <p className={"header--session--username"}>
+            <div className={"header__username-and-logout"}>
+                <p className={"header__username-and-logout__username"}>
                     {username}
                 </p>
 
-                <Button className={"header--session--logout"} onClick={_onLogout}>
+                <Button className={"header__username-and-logout__logout"} onClick={_onLogout}>
                     {t('logout')}
                 </Button>
 

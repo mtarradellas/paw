@@ -111,5 +111,8 @@
       "meaningDesc": "Si un ítem es mas oscuro, significa que fue borrado. Para recuperarlo, presioná el boton \"recuperar\"."
     }
   },
-  "date": "{{day}}-{{month}}-{{year}}"
+  "date": "{{day}}-{{month}}-{{year}}",
+  "addRequestView": {
+    "title": "Añadir Solicitud (Modo Admin)"
+  }
 }

@@ -53,7 +53,16 @@ import {
     ADMIN_PETS,
     ADMIN_USERS,
     ADMIN_REQUESTS,
-    ADD_PET, EDIT_PET, ADMIN_USER, ADMIN_PET
+    ADD_PET,
+    EDIT_PET,
+    ADMIN_USER,
+    ADMIN_PET,
+    ADMIN_ADD_PET,
+    ADMIN_ADD_REQUEST,
+    ADMIN_ADD_USER,
+    ADMIN_EDIT_PET,
+    ADMIN_EDIT_USER,
+    ADMIN_EDIT_REQUEST
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -75,6 +84,7 @@ import EmailSent from "./views/information/EmailSent";
 import OperationSuccessful from "./views/information/OperationSuccessful";
 import AdminUserView from "./views/admin/AdminUserView";
 import AdminPetView from "./views/admin/AdminPetView";
+import AddRequest from "./views/admin/requests/AddRequest";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -192,6 +202,16 @@ function AppSwitch(){
                               () => (
                                   <AdminLayout>
                                       <AdminPetView/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute path={ADMIN_ADD_REQUEST}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AddRequest/>
                                   </AdminLayout>
                               )
                           }

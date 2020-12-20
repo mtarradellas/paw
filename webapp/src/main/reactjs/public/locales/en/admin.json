@@ -111,5 +111,8 @@
       "meaningDesc": "If an item is darker, it means that it was deleted. To recover it, just press on the green \"recover\" button."
     }
   },
-  "date": "{{month}}-{{day}}-{{year}}"
+  "date": "{{month}}-{{day}}-{{year}}",
+  "addRequestView": {
+    "title": "Add Request (Admin Mode)"
+  }
 }
