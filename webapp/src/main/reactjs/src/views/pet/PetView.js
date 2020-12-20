@@ -10,6 +10,7 @@ import {DELETE_PET_ERRORS, getPet, deletePet as deletePetApi} from "../../api/pe
 import {useParams} from 'react-router-dom';
 import {petImageSrc} from "../../api/images";
 import ConstantsContext from '../../constants/constantsContext';
+import {petStatus} from '../../constants/petStatus';
 import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
 import useLogin from "../../hooks/useLogin";
 import {useHistory} from 'react-router-dom';
@@ -39,6 +40,7 @@ function Content({pet, id, isLogged}){
     const {t} = useTranslation('petView');
 
     const [selectedImg, setSelectedImg] = useState(null);
+    const isAvailable = pet.status === petStatus.AVAILABLE; 
 
     const onCloseModal = () => {
         setSelectedImg(null);
@@ -85,10 +87,13 @@ function Content({pet, id, isLogged}){
             <Divider/>
 
             {
-                price === 0 ?
-                    <h2>{t('status.onAdoption')}</h2>
+                isAvailable ? 
+                    price === 0 ?
+                        <h2>{t('status.onAdoption')}</h2>
+                        :
+                        <h2>{t('status.onSale')}: ${price}</h2>
                     :
-                    <h2>{t('status.onSale')}: ${price}</h2>
+                    <h2>{t("status.sold")}</h2>
             }
 
             <Divider/>
@@ -122,7 +127,7 @@ function Content({pet, id, isLogged}){
 
             <h2>{t('questions.header')}:</h2>
 
-            <Questions petId={id} ownerId={userId} isLogged={isLogged}/>
+            <Questions petId={id} ownerId={userId} isLogged={isLogged} isAvailable={isAvailable}/>
 
             <Divider/>
 
@@ -145,18 +150,31 @@ function IsOwnerButtons({petId, petName}){
     const {promptLogin, state} = useLogin();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [maskClose, setMaskClose] = React.useState(true);
+    const [iconClose, setIconClose] = React.useState(true);
+    const [cancelProps, setCancelProps] = React.useState();
 
     const {t} = useTranslation('petView');
 
     const {id: userId, jwt} = state;
 
     const deletePet = async () => {
+        setMaskClose(false);
+        setIconClose(false);
+        setCancelProps({disabled: true});
         setSubmitting(true);
         try {
             await deletePetApi({petId}, jwt);
 
+            setMaskClose(true);
+            setIconClose(true);
+            setCancelProps({disabled: false});
+
             history.push(USER + userId);
         }catch (e) {
+            setMaskClose(true);
+            setIconClose(true);
+            setCancelProps({disabled: false});
             switch (e) {
                 case DELETE_PET_ERRORS.NOT_LOGGED_IN:
                     promptLogin();
@@ -172,11 +190,13 @@ function IsOwnerButtons({petId, petName}){
                     setSubmitting(false);
             }
         }
-
     };
 
     return <>
-            <Button onClick={() => setIsModalVisible(true)} loading={submitting}>{t('buttons.deletePet')}</Button>
+            <Button onClick={() => setIsModalVisible(true)} danger={true} loading={submitting}>
+                {t('buttons.deletePet')}
+            </Button>
+
             <Link to={EDIT_PET(petId)}>
                 <Button>{t('buttons.editPet')}</Button>
             </Link>
@@ -184,15 +204,36 @@ function IsOwnerButtons({petId, petName}){
             <Modal
                 title={t('buttons.deleteModal.title')}
                 visible={isModalVisible}
+                cancelButtonProps={cancelProps}
                 onOk={deletePet}
+                okType='danger'
                 onCancel={() => setIsModalVisible(false)}
                 okText={t('buttons.deleteModal.confirm')}
                 cancelTest={t('buttons.deleteModal.cancel')}
                 confirmLoading={submitting}
+                closable={iconClose}
+                maskClosable={maskClose}
             >
                 <p>{t('buttons.deleteModal.content', {name: petName})}</p>
             </Modal>
         </>;
+}
+
+function RequestButton(petId) {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+
+    const {t} = useTranslation('petView');
+
+    const {userId, jwt} =  useLogin().state;
+
+    const requestPet = async () => {
+        console.log('HIIII'); // TODO
+    }
+
+    return <>
+        <Button onClick={requestPet}>Request</Button>
+    </>
 }
 
 const initialStatePet = {
@@ -224,16 +265,18 @@ function PetView(){
     const {id: loggedUserId} = state;
 
     const {isLoggedIn} = state;
-
+    
     const fetchPet = async () => {
         try{
             const result = await getPet({petId: id});
-
+            
             setPet(result);
         }catch (e) {
             //TODO: conn error
         }
     };
+
+    const isAvailable = pet.status === petStatus.AVAILABLE;
 
     useEffect(()=>{
         fetchPet();
@@ -251,7 +294,7 @@ function PetView(){
             isOwner ?
                 <IsOwnerButtons petId={id} petName={petName}/>
                 :
-                <></>
+                isLoggedIn && isAvailable ? <RequestButton petId={id}/> : <></>
         }
         title={petName ? t('title', {name: petName}) : <Spin/>}
     />

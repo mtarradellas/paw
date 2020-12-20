@@ -1,3 +1,6 @@
 {
-  "title": "Editar mascota: {{name}}"
+  "title": "Editar mascota: {{name}}",
+  "form": {
+    "imageError": "La mascota debe tener entre 1 y 5 imagenes"
+  }
 }

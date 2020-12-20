@@ -49,5 +49,6 @@ public interface RequestService {
     void logRequestsAccess(User user);
     void logInterestsAccess(User user);
 
-    boolean hasRequest(User user, User target);
+    boolean hasRequest(User user, User target, List<RequestStatus> statusList);
+    boolean hasRequestPet(User user, long petId, List<RequestStatus> statusList);
 }

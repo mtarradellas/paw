@@ -3,7 +3,11 @@ import BigCenteredContent from "../../components/BigCenteredContent";
 import {useTranslation} from "react-i18next";
 import AddPetForm from "../addPet/AddPetForm";
 import {useParams} from 'react-router-dom';
-import {getPet} from "../../api/pets";
+import {EDIT_PET_ERRORS, editPet, getPet} from "../../api/pets";
+import {useHistory} from 'react-router-dom';
+import {PET} from "../../constants/routes";
+import useLogin from "../../hooks/useLogin";
+import {message} from "antd";
 
 
 const initialStatePet = {
@@ -48,7 +52,7 @@ const mapPetToForm = ({
         description: description,
         province: provinceId,
         department: departmentId,
-        specie: speciesId,
+        species: speciesId,
         breed: breedId,
         dateOfBirth: birthDate,
         isVaccinated: vaccinated,
@@ -62,8 +66,12 @@ const mapPetToForm = ({
 function EditPetView(){
     const {id} = useParams();
     const [pet, setPet] = useState(initialStatePet);
+    const history = useHistory();
 
     const {t} = useTranslation('editPet');
+
+    const {state, promptLogin} = useLogin();
+    const {jwt} = state;
 
     const fetchPet = async () => {
         try{
@@ -80,7 +88,24 @@ function EditPetView(){
     }, []);
 
     const _onSubmit = async (values) => {
-        console.log(values);
+        try {
+            await editPet(values, id, jwt);
+            history.push(PET + id);
+        }catch (e) {
+            console.error(e)
+            switch (e) {
+                case EDIT_PET_ERRORS.FORBIDDEN:
+                    promptLogin();
+                    break;
+                case EDIT_PET_ERRORS.IMAGE_QUANTITY_ERROR:
+                    message.error(t('form.imageError'));
+                    break;
+                case EDIT_PET_ERRORS.CONN_ERROR:
+                default:
+                    //TODO: conn error message
+                    break;
+            }
+        }
     };
 
     const {petName} = pet;

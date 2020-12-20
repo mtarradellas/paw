@@ -29,9 +29,9 @@
       "placeholder": "Department",
       "required": "Department is required"
     },
-    "specie": {
-      "label": "Specie",
-      "placeholder": "Specie",
+    "species": {
+      "label": "Species",
+      "placeholder": "Species",
       "required": "Specie is required"
     },
     "breed": {
@@ -50,12 +50,15 @@
     "gender": {
       "label": "Gender",
       "placeholder": "Gender",
-      "required": "Gender is required"
+      "required": "Gender is required",
+      "male": "Male",
+      "female": "Female"
     },
     "images": {
       "min": "Please upload at least one image"
     },
     "upload": "Upload image",
-    "addPet": "Add pet"
+    "addPet": "Add pet",
+    "send": "Enviar"
   }
 }

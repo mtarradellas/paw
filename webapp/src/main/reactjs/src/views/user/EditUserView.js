@@ -79,6 +79,9 @@ function EditUserView () {
         setSubmittingRemove(true);
         try {
             await deleteAccount(id, jwt);
+            setMaskClose(true);
+            setIconClose(true);
+            setCancelProps({disabled: false});
         } catch (e) {
             setSubmittingRemove(false);
             message.error(t('deleteError'));

@@ -34,7 +34,7 @@
     "title": "Take a look at the available pets!",
     "results-count": "Total results: {{count}}",
     "petsCard": {
-      "goToPage": "Go to page"
+      "goToPage": "Visit pet"
     }
   },
   "sex": {
