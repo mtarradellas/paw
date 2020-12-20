@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.dto;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.core.UriInfo;
@@ -16,7 +17,7 @@ public class PetDto {
     private String gender;
     private boolean vaccinated;
     private Integer price;
-    private LocalDateTime uploadDate;
+    private String uploadDate;
     private String description;
     private Integer status;
     private URI species;
@@ -53,7 +54,7 @@ public class PetDto {
         dto.gender = pet.getGender();
         dto.vaccinated = pet.isVaccinated();
         dto.price = pet.getPrice();
-        dto.uploadDate = pet.getUploadDate();
+        dto.uploadDate = pet.getUploadDate().toString();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
         dto.images = new ArrayList<>();
@@ -93,7 +94,7 @@ public class PetDto {
         dto.gender = pet.getGender();
         dto.vaccinated = pet.isVaccinated();
         dto.price = pet.getPrice();
-        dto.uploadDate = pet.getUploadDate();
+        dto.uploadDate = pet.getUploadDate().toString();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
         dto.images = new ArrayList<>();
@@ -165,11 +166,20 @@ public class PetDto {
         this.price = price;
     }
 
-    public LocalDateTime getUploadDate() {
+//    public LocalDateTime getUploadDate() {
+//        return uploadDate;
+//    }
+//
+//    public void setUploadDate(LocalDateTime uploadDate) {
+//        this.uploadDate = uploadDate;
+//    }
+
+
+    public String getUploadDate() {
         return uploadDate;
     }
 
-    public void setUploadDate(LocalDateTime uploadDate) {
+    public void setUploadDate(String uploadDate) {
         this.uploadDate = uploadDate;
     }
 

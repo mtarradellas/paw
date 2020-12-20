@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 const FormItem = Form.Item;
 
 const EditPasswordForm = ({onSubmit, submitting}) => {
-    const {t} = useTranslation("EditUser");
+    const {t} = useTranslation("editUser");
     return (
         <Formik 
             validationSchema={

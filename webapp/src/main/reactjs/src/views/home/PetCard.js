@@ -7,6 +7,7 @@ import {PET, USER} from "../../constants/routes";
 import {petImageSrc} from "../../api/images";
 import _ from 'lodash';
 import {petStatus, petStatusToString} from '../../constants/petStatus';
+import moment from "moment";
 
 function PetCard({pet}){
     const {petName, specie, breed, price, gender, username, uploadDate, id, images, userId, status} = pet;
@@ -32,7 +33,7 @@ function PetCard({pet}){
                 <List.Item>{t("price")}: ${price}</List.Item>
                 <List.Item>{t("sex")}: {t(_.toLower(gender))}</List.Item>
                 <List.Item>{t("owner")}: <Link to={USER + userId}>{username}</Link></List.Item>
-                <List.Item>{t("uploadDate")}: {uploadDate.date.year}</List.Item>
+                <List.Item>{t("uploadDate")}: {moment(uploadDate).format("DD/MM/YYYY")}</List.Item>
                 <List.Item>
                     <Link to={PET + id}>
                         <Button type={"primary"}>{t("home:pets.petsCard.goToPage")}</Button>

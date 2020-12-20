@@ -10,7 +10,7 @@ import useLogin from "../../hooks/useLogin";
 import {message, Button, Modal} from 'antd';
 
 function EditUserView () {
-    const {t} = useTranslation("EditUser");
+    const {t} = useTranslation("editUser");
     const {jwt} = useLogin().state;
     const {id} = useLogin().state;
     const {username} = useLogin().state;
