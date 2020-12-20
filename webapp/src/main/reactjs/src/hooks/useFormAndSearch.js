@@ -33,7 +33,14 @@ function useFormAndSearch(){
         await fetchPets(newFilters);
     };
 
+    const clearFilters = async () => {
+        setFilters({page: 1});
+
+        await fetchPets({page: 1});
+    };
+
     return {
+        clearFilters,
         onSubmitSearch,
         onChangePage,
         filters,

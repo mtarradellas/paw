@@ -1,61 +1,151 @@
 header {
- height: 8rem;
- width: 100vw;
- font-family: verdana;
- background-color: #222831;
- display: flex;
-}
+    background-color: #222831;
+    height: 130px;
 
-.header__title {
-    display: none;
-}
+    display: grid;
+    grid-template-areas: "logo title menu-items search login";
+    grid-template-rows: auto;
 
-.header__subtitle {
-    color: white;
-    font-size: 20px;
-    margin: 3.5rem 0rem 0rem 2rem;
-}
-
-.header__login, .header__register {
-    color: white;
-    padding: 1.5rem;
-}
-
-.header__right {
-    margin: 3rem 1rem 0 auto;
-}
-
-header a {
-    text-decoration: none;
-    text-underline: none;
+    grid-auto-columns: 200px 250px 1fr 400px 300px;
 }
 
 .header__logo {
-    margin: 1.5rem 0 0 2rem;
+    grid-area: logo;
+
+    margin: auto auto auto auto;
 }
 
-.header--session {
-    display: flex;
-    flex-flow: row;
+.header__logo > img {
+    width: 100px;
+    height: 100px;
 }
 
-.header--session--logout {
-    margin-right: 2rem;
-}
+.header__title {
+    grid-area: title;
 
-.header--session--username {
-    margin-right: 2rem;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    font-size: 2rem;
+
     color: white;
-    margin-top: 0.5rem;
 }
 
-@media only screen and (min-width: 1000px) {
-    .header__title {
-        display: block;
-        color: white;
-        font-size: 300%;
-        font-family: verdana, serif;
+.header__menu-items {
+    grid-area: menu-items;
 
-        margin: 2.2rem 0 0 3rem;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    display: flex;
+}
+
+.header__menu-items__item a {
+    display: block;
+    margin-left: 0.5rem;
+    color: white;
+}
+
+.header__search-bar {
+    grid-area: search;
+
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.header__username-and-logout,.header__register-and-login {
+    grid-area: login;
+
+    margin-top: auto;
+    margin-bottom: auto;
+
+    display: flex;
+}
+
+.header__username-and-logout,.header__register-and-login a {
+    display: block;
+    margin: 0 1rem 0 1rem;
+}
+
+.header__username-and-logout {
+    color: white;
+    display: flex;
+}
+
+.header__username-and-logout {
+    font-size: 1.5rem;
+    margin: 4rem 3rem auto auto;
+}
+
+.header__username-and-logout__username {
+    margin-right: 1rem;
+}
+
+@media only screen and (max-width: 1400px) {
+    header {
+        height: 200px;
+
+        display: grid;
+        grid-template-areas: "logo        title       login   login" "menu-items  menu-items  search  search";
+
+        grid-template-rows: 130px auto;
+
+        grid-auto-columns: 200px 2fr 1fr 200px;
+    }
+
+    .header__menu-items {
+        margin: 1.5rem auto 0 2rem;
+    }
+
+    .header__username-and-logout, .header__register-and-login a {
+        margin: 3rem auto auto auto;
+    }
+
+    .header__search-bar {
+        margin: 0 auto 0 auto;
+    }
+
+    .header__username-and-logout__username {
+        margin: inherit;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    header {
+        height: 300px;
+
+        display: grid;
+        grid-template-areas: "logo"
+                             "login"
+                             "menu-items"
+                             "search";
+
+        grid-template-rows: 130px 4fr 3fr 3fr;
+
+        grid-auto-columns: 1fr 1fr;
+    }
+
+    .header__logo {
+        margin: 0.5rem auto 0 auto;
+    }
+
+    .header__title {
+        display: none;
+    }
+
+    .header__search-bar {
+        margin: 0 auto 0 auto;
+    }
+
+    .header__menu-items {
+        margin: 0 auto 0 auto;
+    }
+
+    .header__username-and-logout,.header__register-and-login a {
+        margin: 0 auto 0 auto;
+    }
+
+    .header__username-and-logout__username {
+        margin: inherit;
     }
 }

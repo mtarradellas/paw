@@ -81,3 +81,20 @@ export async function getRequestsFilters(jwt){
         throw FILTER_REQUESTS_ERRORS.CONN_ERROR;
     }
 }
+
+
+const GET_NOTIFICATIONS_ENDPOINT = '/requests/notifications';
+export const GET_NOTIFICATIONS_ERRORS = {
+    CONN_ERROR: 0
+};
+export async function getNotifications(jwt){
+    const config = getAuthConfig(jwt);
+
+    try {
+        const response = await axios.get(SERVER_URL + GET_NOTIFICATIONS_ENDPOINT, config);
+
+        return _.pick(response.data, ['interests', 'requests']);
+    }catch (e) {
+        throw GET_NOTIFICATIONS_ERRORS.CONN_ERROR;
+    }
+}

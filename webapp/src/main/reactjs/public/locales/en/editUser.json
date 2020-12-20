@@ -45,5 +45,10 @@
           "submit": "Update",
           "conError": "Connection lost",
           "success": "Password updated!"
-    }
+    },
+    "delete": "Delete account",
+    "deleteModal": "Are you sure? All pets and requests will be removed permanently.",
+    "deletingModal": "Deleting account...",
+    "deleteConfirmBtn": "Delete",
+    "deleteError": "Failed to delete user"
 }
