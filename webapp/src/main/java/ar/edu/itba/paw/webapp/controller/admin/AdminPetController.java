@@ -240,7 +240,11 @@ public class AdminPetController {
 
         String locale = ApiUtils.getLocale(httpRequest);
 
+        LocalDateTime birthDate;
+        List<byte[]> photos;
         try {
+            photos = ParseUtils.parseImages(files);
+            birthDate = ParseUtils.parseDate(dateOfBirth);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
@@ -250,20 +254,9 @@ public class AdminPetController {
         }
 
         Optional<Pet> opNewPet;
-        List<byte[]> photos = new ArrayList<>();
-        InputStream is = null;
-        if(files == null || files.isEmpty()){
-            LOGGER.warn("Photos is empty");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        for(FormDataBodyPart file : files) {
-            byte[] data = file.getEntityAs(byte[].class);
-            photos.add(data);
-        }
         try {
-            opNewPet = petService.create(locale, petName, LocalDateTime.now(), gender, vaccinated,
-                    price, description, PetStatus.AVAILABLE, userId, speciesId, breedId,
-                    provinceId, departmentId, photos);
+            opNewPet = petService.create(locale, petName, birthDate, gender, vaccinated, price, description, PetStatus.AVAILABLE,
+                    userId, speciesId, breedId, provinceId, departmentId, photos);
         } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(3, ex.getMessage());
@@ -289,7 +282,7 @@ public class AdminPetController {
     public Response edit(@Context HttpServletRequest httpRequest,
                          @NotEmpty @FormDataParam("pet") Long petId,
                          @NotEmpty @FormDataParam("files") List<FormDataBodyPart> files,
-                         @NotEmpty @FormDataParam("imagesToDelete") List<Long> toDelete,
+                         @NotEmpty @FormDataParam("imagesToDelete") String toDelete,
                          @NotEmpty @FormDataParam("petName") String petName,
                          @NotEmpty @FormDataParam("price") int price,
                          @NotEmpty @FormDataParam("description") String description,
@@ -302,7 +295,14 @@ public class AdminPetController {
                          @NotEmpty @FormDataParam("gender") String gender) throws IOException {
 
         String locale = ApiUtils.getLocale(httpRequest);
+
+        List<Long> imagesToDelete;
+        LocalDateTime birthDate;
+        List<byte[]> photos;
         try {
+            photos = ParseUtils.parseImages(files);
+            imagesToDelete = ParseUtils.parseImagesToDelete(toDelete);
+            birthDate = ParseUtils.parseDate(dateOfBirth);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
@@ -312,20 +312,9 @@ public class AdminPetController {
         }
 
         Optional<Pet> opPet;
-        List<byte[]> photos = new ArrayList<>();
-        InputStream is = null;
-        if(files == null || files.isEmpty()){
-            LOGGER.warn("Photos is empty");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        for(FormDataBodyPart file : files) {
-            byte[] data = file.getEntityAs(byte[].class);
-            photos.add(data);
-        }
-        LocalDateTime birthDate = LocalDateTime.now();
         try {
             opPet = petService.update(locale, petId, null, petName, birthDate, gender, vaccinated, price,
-                    description, PetStatus.AVAILABLE, speciesId, breedId, provinceId, departmentId,photos, toDelete);
+                    description, PetStatus.AVAILABLE, speciesId, breedId, provinceId, departmentId, photos, imagesToDelete);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();

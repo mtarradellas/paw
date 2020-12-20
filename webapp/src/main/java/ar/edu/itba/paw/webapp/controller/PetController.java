@@ -262,8 +262,11 @@ public class PetController{
             return Response.status(Response.Status.FORBIDDEN.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+
+        List<byte[]> photos;
         LocalDateTime birthDate;
         try {
+            photos = ParseUtils.parseImages(files);
             birthDate = ParseUtils.parseDate(dateOfBirth);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
@@ -274,17 +277,6 @@ public class PetController{
         }
 
         Optional<Pet> opNewPet;
-        List<byte[]> photos = new ArrayList<>();
-        InputStream is = null;
-        if(files == null || files.isEmpty()){
-            LOGGER.warn("Photos is empty");
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
-        }
-        for(FormDataBodyPart file : files) {
-            byte[] data = file.getEntityAs(byte[].class);
-            photos.add(data);
-        }
-
         try {
             opNewPet = petService.create(locale, petName, birthDate, gender, vaccinated,
                     price, description, PetStatus.AVAILABLE, loggedUser.getId(), speciesId, breedId,
@@ -334,8 +326,10 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         List<Long> imagesToDelete;
+        List<byte[]> photos;
         LocalDateTime birthDate;
         try {
+            photos = ParseUtils.parseImages(files);
             birthDate = ParseUtils.parseDate(dateOfBirth);
             imagesToDelete = ParseUtils.parseImagesToDelete(toDelete);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
@@ -345,14 +339,8 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+
         Optional<Pet> opPet;
-        List<byte[]> photos = new ArrayList<>();
-        if(files != null ) {
-            for (FormDataBodyPart file : files) {
-                byte[] data = file.getEntityAs(byte[].class);
-                photos.add(data);
-            }
-        }
         try {
             opPet = petService.update(locale, petId, loggedUser.getId(), petName, birthDate, gender, vaccinated, price,
                     description, PetStatus.AVAILABLE, speciesId, breedId, provinceId, departmentId,photos, imagesToDelete);

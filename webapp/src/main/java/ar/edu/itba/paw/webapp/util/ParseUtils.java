@@ -11,6 +11,9 @@ import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ReviewDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+
+import javax.ws.rs.core.Response;
 
 public class ParseUtils {
 
@@ -246,5 +249,18 @@ public class ParseUtils {
     public static LocalDateTime parseDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
         return LocalDateTime.parse(date, formatter);
+    }
+    public static List<byte[]> parseImages(List<FormDataBodyPart> files) {
+        List<byte[]> photos = new ArrayList<>();
+        if(files == null || files.isEmpty()) throw new BadRequestException("Photos is empty");
+        try {
+            for(FormDataBodyPart file : files) {
+                byte[] data = file.getEntityAs(byte[].class);
+                photos.add(data);
+            }
+        } catch (Exception ex) {
+            throw new BadRequestException("Error loading images");
+        }
+        return photos;
     }
 }
