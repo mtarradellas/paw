@@ -5,17 +5,24 @@ import EditPasswordForm from "./EditPasswordForm"
 import ContentWithHeader from '../../components/ContentWithHeader';
 import {editUsername, EDIT_USERNAME_ERRORS} from '../../api/users';
 import {editPassword, EDIT_PASSWORD_ERRORS} from '../../api/users';
+import {deleteAccount} from '../../api/users';
 import useLogin from "../../hooks/useLogin";
-import {message} from 'antd';
+import {message, Button, Modal} from 'antd';
 
 function EditUserView () {
     const {t} = useTranslation("EditUser");
     const {jwt} = useLogin().state;
     const {id} = useLogin().state;
     const {username} = useLogin().state;
-    const {relog} = useLogin();
+    const {relog, logout} = useLogin();
     const [submittingUsername, setSubmittingUsername] = useState(false);
     const [submittingPassword, setSubmittingPassword] = useState(false);
+    const [visible, setVisible] = React.useState(false);
+    const [submittingRemove, setSubmittingRemove] = React.useState(false);
+    const [modalText, setModalText] = React.useState(t('deleteModal'));
+    const [maskClose, setMaskClose] = React.useState(true);
+    const [iconClose, setIconClose] = React.useState(true);
+    const [cancelProps, setCancelProps] = React.useState();
     
     const onEditUsername = async (username, {setErrors}) => {
         setSubmittingUsername(true);
@@ -60,9 +67,52 @@ function EditUserView () {
         message.success(t('passwordForm.success'));
     }
 
+    const showModal = () => {
+        setVisible(true);
+    }
+
+    const handleOk = async () => {
+        setMaskClose(false);
+        setIconClose(false);
+        setCancelProps({disabled: true});
+        setModalText(t('deletingModal'));
+        setSubmittingRemove(true);
+        try {
+            await deleteAccount(id, jwt);
+        } catch (e) {
+            setSubmittingRemove(false);
+            message.error(t('deleteError'));
+            return;
+        }
+        setSubmittingRemove(false);
+        logout();
+    }
+
+    const handleCancel = () => {
+        setVisible(false);
+    }
+
     return (
         <ContentWithHeader 
         title={t('title')}
+        actionComponents={<>
+            <Button danger={true} type={"primary"} onClick={showModal}>{t('delete')}</Button>
+            <Modal
+              title={t('delete')}
+              visible={visible}
+              cancelButtonProps={cancelProps}
+              onOk={handleOk}
+              okType='danger'
+              okText={t('deleteConfirmBtn')}
+              confirmLoading={submittingRemove}
+              onCancel={handleCancel}
+              closable={iconClose}
+              maskClosable={maskClose}
+            >
+              <p>{modalText}</p>
+            </Modal>
+            
+        </>}
         content={
             <div>
                 <EditUsernameForm oldname={username} onSubmit={onEditUsername} submitting={submittingUsername}/>
