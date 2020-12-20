@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import usePets from "./usePets";
+import {petStatus} from "../constants/petStatus";
 
 function useFormAndSearch(){
     const [filters, setFilters] = useState({page: 1});
 
-    const {pets, fetching, fetchPets, pages, amount, pageSize} = usePets({});
+    const {pets, fetching, fetchPets, pages, amount, pageSize} = usePets({additionalFilters: {status: petStatus.AVAILABLE}});
 
     const onSubmitFilters = async values => {
 

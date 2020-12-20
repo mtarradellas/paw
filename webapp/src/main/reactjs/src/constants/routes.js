@@ -10,13 +10,21 @@ export const LOGIN = "/login";
 
 export const USER = '/user/';
 
+export const EDIT_USER = '/user/edit';
+
 export const FORGOT_PASSWORD = '/forgot-password';
+
+export const RESET_PASSWORD = '/password-reset/';
 
 export const PET = '/pet/';
 
 export const ADD_PET = '/add-pet';
 
+export const EDIT_PET = id => '/edit-pet/' + id;
+
 export const VERIFY_EMAIL = '/verify-email';
+
+export const SUCCESS = '/success';
 
 //ADMIN
 

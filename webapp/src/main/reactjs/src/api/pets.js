@@ -9,7 +9,7 @@ export const GET_PETS_ERRORS = {
 };
 export async function getPets(
     {
-        ownerId, species, breed, province, department, gender,
+        ownerId, species, breed, province, department, gender, status,
         searchCriteria, find, searchOrder, priceRange, page, newOwnerId
     }
     ) {
@@ -17,7 +17,7 @@ export async function getPets(
         const response = await axios.get(SERVER_URL + GET_PETS_ENDPOINT,
             {
                 params: {
-                    ownerId, species, breed, province, department, gender,
+                    ownerId, species, breed, province, department, gender, status,
                     searchCriteria, find, searchOrder, priceRange, page, newOwnerId
                 }
             }
@@ -123,6 +123,31 @@ export async function getPet(
     }
 }
 
+
+const DELETE_PET_ENDPOINT = id => "/pets/" + id;
+export const DELETE_PET_ERRORS = {
+    CONN_ERROR: 0,
+    NO_PERMISSION: 1,
+    NOT_LOGGED_IN: 2,
+    NOT_FOUND: 3
+};
+export async function deletePet({petId}, jwt){
+    const config = getAuthConfig(jwt);
+
+    try{
+        await axios.delete(SERVER_URL + DELETE_PET_ENDPOINT(petId), config);
+    }catch (e) {
+        switch (e.response.status) {
+            case 403:
+                throw _.has(e, 'e.response.data.code') ?
+                    DELETE_PET_ERRORS.NO_PERMISSION : DELETE_PET_ERRORS.NOT_LOGGED_IN;
+            case 404:
+                throw DELETE_PET_ERRORS.NOT_FOUND;
+            default:
+                throw DELETE_PET_ERRORS.CONN_ERROR;
+        }
+    }
+}
 
 
 

@@ -35,6 +35,7 @@ import {
     PET,
     REGISTER,
     USER,
+    EDIT_USER,
     REQUESTS,
     INTERESTS,
     ERROR_404,
@@ -44,14 +45,19 @@ import {
     WRONG_METHOD,
     BAD_REQUEST,
     INTERNAL_SERVER_ERROR,
+    FORGOT_PASSWORD,
+    VERIFY_EMAIL,
+    RESET_PASSWORD,
+    SUCCESS,
     ADMIN_HOME,
     ADMIN_PETS,
     ADMIN_USERS,
     ADMIN_REQUESTS,
-    ADD_PET
+    ADD_PET, EDIT_PET
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
+import EditUserView from "./views/user/EditUserView";
 import RegisterView from "./views/register/RegisterView";
 import LoginView from "./views/login/LoginView";
 import PetView from "./views/pet/PetView";
@@ -61,7 +67,11 @@ import PrivateRoute from "./components/PrivateRoute";
 import AddPetView from "./views/addPet/AddPetView";
 import useFormAndSearch from "./hooks/useFormAndSearch";
 import FilterAndSearchContext from './constants/filterAndSearchContext'
-
+import EditPetView from "./views/editPet/EditPetView";
+import ForgotPasswordView from "./views/forgotPassword/ForgotPasswordView";
+import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
+import EmailSent from "./views/information/EmailSent";
+import OperationSuccessful from "./views/information/OperationSuccessful";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -86,6 +96,40 @@ function AppSwitch(){
                     <LoginView/>
                 </BasicLayout>
             </Route>
+
+            <Route exact path={FORGOT_PASSWORD}>
+                <BasicLayout>
+                    <ForgotPasswordView/>
+                </BasicLayout>
+            </Route>
+            <Route path={RESET_PASSWORD + ':token'}
+                   component={
+                       () => {
+                           return <BasicLayout>
+                               <ResetPasswordView/>
+                           </BasicLayout>
+                       }
+                   }/>
+
+            <Route exact path={VERIFY_EMAIL}>
+                <BasicLayout>
+                    <EmailSent/>
+                </BasicLayout>
+            </Route>
+
+            <Route exact path={SUCCESS}>
+                <BasicLayout>
+                    <OperationSuccessful/>
+                </BasicLayout>
+            </Route>
+
+            <PrivateRoute exact path={EDIT_USER}
+                          component={
+                              () => (<BasicLayout>
+                                  <EditUserView/>
+                              </BasicLayout>)
+                          }
+            />
 
             <PrivateRoute path={USER + ':id'}
                           component={
@@ -147,6 +191,15 @@ function AppSwitch(){
                        () => (
                            <BasicLayout>
                                <PetView/>
+                           </BasicLayout>
+                       )
+                   }
+            />
+            <Route exact path={EDIT_PET(':id')}
+                   render={
+                       () => (
+                           <BasicLayout>
+                               <EditPetView/>
                            </BasicLayout>
                        )
                    }
