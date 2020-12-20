@@ -5,7 +5,7 @@ import usePets from "../../hooks/usePets";
 import {useTranslation} from "react-i18next";
 import PetCard from "../home/PetCard";
 
-function OwnedPets({userId, title, filters}){
+function OwnedPets({userId, title, filters, admin}){
     const {t} = useTranslation('userView');
 
     const {pets, fetchPets, fetching, amount, pageSize} = usePets({});
@@ -20,6 +20,8 @@ function OwnedPets({userId, title, filters}){
     useEffect(()=>{
         _onChangePagination(1);
     }, []);
+
+    const aux = !(admin === null || !admin);
 
     return <>
             <h1><b>{t(title)}</b> {
@@ -41,7 +43,7 @@ function OwnedPets({userId, title, filters}){
                         <Spin/>
                         :
                         pets.length > 0 ?
-                            pets.map(pet => (<PetCard key={pet.id} pet={pet}/>))
+                            pets.map(pet => (<PetCard admin={aux} key={pet.id} pet={pet}/>))
                             :
                             <p>{t('noPets')}</p>
                 }

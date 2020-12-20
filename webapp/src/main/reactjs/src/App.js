@@ -53,7 +53,7 @@ import {
     ADMIN_PETS,
     ADMIN_USERS,
     ADMIN_REQUESTS,
-    ADD_PET, EDIT_PET, ADMIN_USER
+    ADD_PET, EDIT_PET, ADMIN_USER, ADMIN_PET
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -182,6 +182,16 @@ function AppSwitch(){
                               () => (
                                   <AdminLayout>
                                       <AdminUserView/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+            <PrivateRoute path={ADMIN_PET + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <div>hola</div>
+                                      {/*<AdminUserView/>*/}
                                   </AdminLayout>
                               )
                           }

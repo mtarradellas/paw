@@ -61,9 +61,9 @@ function Content({user, id, email}) {
 
         <Divider/>
 
-        <OwnedPets userId={id} title={'offeredPetsTitle'} filters={{ownerId: id}}/>
+        <OwnedPets admin={true} userId={id} title={'offeredPetsTitle'} filters={{ownerId: id}}/>
 
-        <OwnedPets userId={id} title={'adoptedPetsTitle'} filters={{newOwnerId: id}}/>
+        <OwnedPets admin={true} userId={id} title={'adoptedPetsTitle'} filters={{newOwnerId: id}}/>
 
         <Divider/>
 

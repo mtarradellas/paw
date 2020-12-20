@@ -50,7 +50,7 @@ export const ADMIN_EDIT_USER = '/admin/edit-user/';
 
 export const ADMIN_USER = '/admin/user/';
 
-export const ADMIN_PET = 'admin/pet/';
+export const ADMIN_PET = '/admin/pet/';
 
 //ERRORS
 
