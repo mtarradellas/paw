@@ -75,6 +75,7 @@ export async function createPet(values, jwt) {
 
     try{
         const response = await axios.post(SERVER_URL + CREATE_PET_ENDPOINT, form, config);
+        return response.data;
     }catch (e) {
         if(e.response.status === 403) throw CREATE_PET_ERRORS.FORBIDDEN;
 

@@ -365,7 +365,7 @@ public class PetJpaDaoImpl implements PetDao {
     @Override
     public Optional<Pet> update(Pet pet) {
         em.persist(pet);
-        indexPets();
+        //indexPets();
         return Optional.of(pet);
     }
 

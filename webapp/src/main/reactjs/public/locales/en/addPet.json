@@ -58,6 +58,7 @@
       "min": "Please upload at least one image"
     },
     "upload": "Upload image",
-    "addPet": "Add pet"
+    "addPet": "Add pet",
+    "send": "Enviar"
   }
 }

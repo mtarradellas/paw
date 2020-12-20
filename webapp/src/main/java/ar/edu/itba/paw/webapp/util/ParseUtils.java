@@ -1,7 +1,11 @@
 package ar.edu.itba.paw.webapp.util;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ReviewDto;
@@ -224,5 +228,23 @@ public class ParseUtils {
         if (gender == null || speciesId == null || breedId == null || provinceId == null || departmentId == null) {
             throw new BadRequestException("Invalid or missing required fields");
         }
+    }
+    public static List<Long> parseImagesToDelete(String toDelete) {
+        if(toDelete == null || toDelete.length() == 0) return null;
+        List<Long> imagesToDelete = new ArrayList<>();
+        String[] res = toDelete.split("[,]", 0);
+        try {
+            for (String str : res) {
+                imagesToDelete.add(Long.parseLong(str));
+            }
+        } catch (Exception ex) {
+            throw new BadRequestException("Format of images to delete is invalid");
+        }
+        return imagesToDelete;
+    }
+
+    public static LocalDateTime parseDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+        return LocalDateTime.parse(date, formatter);
     }
 }

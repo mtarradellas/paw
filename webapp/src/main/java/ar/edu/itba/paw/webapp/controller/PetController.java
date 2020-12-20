@@ -7,16 +7,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -171,9 +168,7 @@ public class PetController{
         String locale = ApiUtils.getLocale(request);
         Map<String, String> json = new HashMap<>();
         json.put("locale", locale);
-        System.out.println("\n\n" + locale + "\n\n");
-
-        return Response.ok(new Gson().toJson(json)).build();
+        return Response.created(uriInfo.getBaseUri()).entity(new Gson().toJson(json)).build();
 
     }
 
@@ -275,7 +270,9 @@ public class PetController{
             return Response.status(Response.Status.FORBIDDEN.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
+        LocalDateTime birthDate;
         try {
+            birthDate = ParseUtils.parseDate(dateOfBirth);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
@@ -297,7 +294,7 @@ public class PetController{
         }
 
         try {
-            opNewPet = petService.create(locale, petName, LocalDateTime.now(), gender, vaccinated,
+            opNewPet = petService.create(locale, petName, birthDate, gender, vaccinated,
                     price, description, PetStatus.AVAILABLE, loggedUser.getId(), speciesId, breedId,
                     provinceId, departmentId, photos);
         } catch(NotFoundException ex) {
@@ -311,7 +308,10 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
-        return Response.created(petUri).build();
+        Map<String, Object> body = new HashMap<>();
+        body.put("id", opNewPet.get().getId());
+        return Response.created(petUri).entity(new Gson().toJson(body)).build();
+
     }
 
     @POST
@@ -320,7 +320,7 @@ public class PetController{
     public Response edit(@Context HttpServletRequest httpRequest,
                          @NotEmpty @FormDataParam("pet") Long petId,
                          @NotEmpty @FormDataParam("files") List<FormDataBodyPart> files,
-                         @NotEmpty @FormDataParam("filesToDelete") List<Long> toDelete,
+                         @NotEmpty @FormDataParam("filesToDelete") String toDelete,
                          @NotEmpty @FormDataParam("petName") String petName,
                          @NotEmpty @FormDataParam("price") int price,
                          @NotEmpty @FormDataParam("description") String description,
@@ -331,9 +331,6 @@ public class PetController{
                          @NotEmpty @FormDataParam("dateOfBirth") String dateOfBirth,
                          @NotEmpty @FormDataParam("isVaccinated") boolean vaccinated,
                          @NotEmpty @FormDataParam("gender") String gender) throws IOException {
-        System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWW");
-        System.out.println("petid: "+petId + " petname: "+petName +" price: "+ price + " description: "+description +" prov: " + provinceId +
-        " depart: " + departmentId + " species: "+ speciesId + " breed: " +breedId + " vaccinated: "+ vaccinated+ " gender: "+ gender);
 
         String locale = ApiUtils.getLocale(httpRequest);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -344,51 +341,50 @@ public class PetController{
             return Response.status(Response.Status.FORBIDDEN.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        System.out.println("WWWWWIIIIIIIIIIIIIIIII");
+        List<Long> imagesToDelete;
+        LocalDateTime birthDate;
         try {
+            birthDate = ParseUtils.parseDate(dateOfBirth);
+            imagesToDelete = ParseUtils.parseImagesToDelete(toDelete);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
-            System.out.println("WWWWAAAAAAAAAAAAAAAAAAAAAA");
             LOGGER.warn(ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        System.out.println("WWWWWHHHHHHHHHHHHHHHHHHHHHHH");
         Optional<Pet> opPet;
         List<byte[]> photos = new ArrayList<>();
         if(files != null ) {
-            System.out.println(files.size() + "sizzzzzzzzzeee");
             for (FormDataBodyPart file : files) {
                 byte[] data = file.getEntityAs(byte[].class);
                 photos.add(data);
             }
         }
-        LocalDateTime birthDate = LocalDateTime.now();
         try {
-            System.out.println("WWWWWFFFFFFFFFFFFFFF");
             opPet = petService.update(locale, petId, loggedUser.getId(), petName, birthDate, gender, vaccinated, price,
-                    description, PetStatus.AVAILABLE, speciesId, breedId, provinceId, departmentId,photos, toDelete);
-            System.out.println("WWWWWGGGGGGGGGGGGGGGGGGGG");
+                    description, PetStatus.AVAILABLE, speciesId, breedId, provinceId, departmentId,photos, imagesToDelete);
         } catch(NotFoundException ex) {
-            System.out.println("WWWWWBBBBBBBBBBBBBB");
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            System.out.println("WWWWWCCCCCCCCCCCCCCCCCCCCC");
             final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if (!opPet.isPresent()) {
-            System.out.println("WWWWDDDDDDDDDDDDDDDDDDDDDDDDDD");
             LOGGER.warn("Pet update failed");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        System.out.println("WWWWWEEEEEEEEEEEEEEEEEEEEEEEEEE");
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
-        return Response.created(petUri).build();
+
+        System.out.println("SSSSSSSSSSSSSSSSSSSSSS");
+        Map<String, Object> body = new HashMap<>();
+        body.put("id", opPet.get().getId());
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("KKKK"+opPet.get().getId());
+        return Response.created(petUri).entity(new Gson().toJson(body)).build();
     }
 
     @GET

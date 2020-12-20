@@ -184,7 +184,7 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
 
                     <FormItem name>
                         <Button type="primary" htmlType="submit" loading={submitting}>
-                            {t('form.addPet')}
+                            {t('form.send')}
                         </Button>
                     </FormItem>
                 </Form>;

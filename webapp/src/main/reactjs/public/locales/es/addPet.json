@@ -2,27 +2,27 @@
   "title": "Agregar mascota",
   "form": {
     "petName": {
-      "label": "Name",
-      "placeholder": "Pet name",
-      "required": "Pet name is required"
+      "label": "Nombre",
+      "placeholder": "Nombre de la mascota",
+      "required": "El nombre de la mascota es obligatorio"
     },
     "price": {
-      "label": "Price",
-      "placeholder": "Price",
-      "required": "Price is required if pet is not for adoption"
+      "label": "Precio",
+      "placeholder": "Precio",
+      "required": "El precio es obligatorio si la mascota no esta puesta en adopción"
     },
     "isAdoption": {
-      "label": "Put in adoption"
+      "label": "Poner en adopción"
     },
     "description": {
-      "label": "Description",
-      "placeholder": "Description",
-      "required": "Description is required"
+      "label": "Descripción",
+      "placeholder": "Descripción",
+      "required": "La descripción es obligatoria"
     },
     "province": {
-      "label": "Province",
-      "placeholder": "Province",
-      "required": "Province is required"
+      "label": "Provincia",
+      "placeholder": "Provincia",
+      "required": "La provincia es obligatoria"
     },
     "department": {
       "label": "Department",
@@ -30,34 +30,35 @@
       "required": "Department is required"
     },
     "species": {
-      "label": "Species",
-      "placeholder": "Species",
-      "required": "Specie is required"
+      "label": "Especie",
+      "placeholder": "Especie",
+      "required": "La especie es obligatoria"
     },
     "breed": {
-      "label": "Breed",
-      "placeholder": "Breed",
-      "required": "Breed is required"
+      "label": "Raza",
+      "placeholder": "Raza",
+      "required": "La raza es obligatoria"
     },
     "dateOfBirth": {
-      "label": "Date of birth",
-      "placeholder": "Date of birth",
-      "required": "Date of birth is required"
+      "label": "Fecha de nacimiento",
+      "placeholder": "Fecha de nacimiento",
+      "required": "La fecha de nacimiento es obligatoria"
     },
     "isVaccinated": {
-      "label": "Is vaccinated"
+      "label": "Vacunado"
     },
     "gender": {
-      "label": "Gender",
-      "placeholder": "Gender",
-      "required": "Gender is required",
+      "label": "Género",
+      "placeholder": "Género",
+      "required": "El género es obligatorio",
       "male": "Macho",
       "female": "Hembra"
     },
     "images": {
-      "min": "Please upload at least one image"
+      "min": "Pr favor suba como mínimo una imagen"
     },
-    "upload": "Upload image",
-    "addPet": "Add pet"
+    "upload": "Cargar imagen",
+    "addPet": "Agregar mascota",
+    "send": "Enviar"
   }
 }
