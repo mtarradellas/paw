@@ -5,13 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -219,8 +213,10 @@ public class PetController{
                 .map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         List<ProvinceDto> provinceList = departments.stream().map(Department::getProvince).distinct().sorted(Province::compareTo)
                 .map(ProvinceDto::fromProvince).collect(Collectors.toList());
-        List<DepartmentDto> departmentList = departments.stream().map(d -> DepartmentDto.fromDepartment(d,uriInfo)).collect(Collectors.toList());
-        List<BreedDto> breedList = breeds.stream().map(BreedDto::fromBreed).collect(Collectors.toList());
+        List<DepartmentDto> departmentList = departments.stream().map(d -> DepartmentDto.fromDepartment(d,uriInfo))
+                .sorted(Comparator.comparing(DepartmentDto::getName)).collect(Collectors.toList());
+        List<BreedDto> breedList = breeds.stream().map(BreedDto::fromBreed).sorted(Comparator.comparing(BreedDto::getName))
+                .collect(Collectors.toList());
 
         Map<String, Object> filters = new TreeMap<>();
         filters.put("speciesList", speciesList);
