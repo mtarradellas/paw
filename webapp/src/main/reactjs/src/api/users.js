@@ -104,3 +104,14 @@ export async function editPassword({oldPassword, newPassword, id}, jwt) {
         throw _.get(e, 'response.data.code', EDIT_PASSWORD_ERRORS.CONN_ERROR);
     }
 }
+
+const DELETE_ACCOUNT_ENDPOINT = id => "/users/" + id;
+export async function deleteAccount(id, jwt) {
+    const config = getAuthConfig(jwt);
+
+    try {
+        await axios.delete(SERVER_URL+DELETE_ACCOUNT_ENDPOINT(id), config);
+    } catch(e) {
+        throw 0;
+    }
+}
