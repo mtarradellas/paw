@@ -26,7 +26,7 @@ function ListItemRow({name, value}){
     </ListItem>;
 }
 
-function Content({pet, id}){
+function Content({pet, id, isLogged}){
     const {t} = useTranslation('petView');
 
     const {breeds, species, provinces, departments} = useContext(ConstantsContext);
@@ -101,7 +101,7 @@ function Content({pet, id}){
 
             <h2>{t('questions.header')}:</h2>
 
-            <Questions petId={id} ownerId={userId}/>
+            <Questions petId={id} ownerId={userId} isLogged={isLogged}/>
 
             <Divider/>
 
@@ -202,6 +202,8 @@ function PetView(){
 
     const {id: loggedUserId} = state;
 
+    const {isLoggedIn} = state;
+
     const fetchPet = async () => {
         try{
             const result = await getPet({petId: id});
@@ -222,7 +224,7 @@ function PetView(){
 
     return <ContentWithHeader
         content={
-            <Content id={id} pet={pet}/>
+            <Content id={id} pet={pet} isLogged={isLoggedIn}/>
         }
         actionComponents={
             isOwner ?

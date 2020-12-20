@@ -139,7 +139,7 @@ function QuestionsForm({onSubmit, submitting}){
     </Formik>;
 }
 
-function Questions({petId, ownerId}){
+function Questions({petId, ownerId, isLogged}){
     const history = useHistory();
     const {state, promptLogin} = useLogin();
     const [submitting, setSubmitting] = useState(false);
@@ -268,7 +268,7 @@ function Questions({petId, ownerId}){
 
     return <>
         {
-            !isOwner && <QuestionsForm onSubmit={createQuestion} submitting={submitting}/>
+            (!isOwner && isLogged) && <QuestionsForm onSubmit={createQuestion} submitting={submitting}/>
         }
 
         <QuestionList
