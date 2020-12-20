@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import {useParams, useHistory} from 'react-router-dom';
 import '../../css/user/userView.css';
 import {Link} from "react-router-dom";
-import {HOME, ERROR_404_USER} from "../../constants/routes";
+import {HOME, ERROR_404_USER, EDIT_USER} from "../../constants/routes";
 import {GET_MAIL_ERRORS, GET_USER_ERRORS, getMail, getUser} from "../../api/users";
 import useLogin from "../../hooks/useLogin";
 import useReviewsPagination from "../../hooks/useReviewsPagination";
@@ -117,6 +117,7 @@ function UserView(){
     const [user, setUser] = useState({username: null, email: null, id});
     const {state, promptLogin} = useLogin();
     const history = useHistory();
+    const {t} = useTranslation('userView');
 
     const {jwt, id: loggedUserId} = state;
 
@@ -150,13 +151,7 @@ function UserView(){
     return <ContentWithHeader
             title={username ? username : <Spin/>}
             actionComponents={
-                loggedUserId === id ?
-                    [
-                        <Button key={"remove"}>Remover</Button>,
-                        <Button key={"edit"}>Editar perfil</Button>
-                    ]
-                    :
-                    []
+                (loggedUserId === id) && <Link to={EDIT_USER}><Button key={"edit"}>{t('edit')}</Button></Link>
             }
             content={<Content user={user} id={id}/>}
         />

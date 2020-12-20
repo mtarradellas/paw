@@ -242,7 +242,7 @@ public class UserJpaDaoImpl implements UserDao {
         } catch (PersistenceException ex) {
             throw new UserException(ex.getCause().getCause().getMessage());
         }
-        indexUsers();
+        // indexUsers();
         return user;
     }
 
