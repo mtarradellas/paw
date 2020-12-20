@@ -4,9 +4,12 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ws.rs.core.UriInfo;
-import ar.edu.itba.paw.models.Pet;
+
 import org.springframework.web.multipart.MultipartFile;
+
+import ar.edu.itba.paw.models.Pet;
 
 public class PetDto {
 
@@ -31,6 +34,7 @@ public class PetDto {
 
     private List<MultipartFile> photos;
     private Long userId;
+    private Long newOwnerId;
     private Long speciesId;
     private Long breedId;
     private Long provinceId;
@@ -65,7 +69,10 @@ public class PetDto {
         dto.department = uriInfo.getAbsolutePathBuilder().path("location").path("departments").path(String.valueOf(pet.getDepartment().getId())).build();
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
-        if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+        if(pet.getNewOwner() != null) {
+            dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+            dto.newOwnerId = pet.getNewOwner().getId();
+        }
         dto.questionList = uriInfo.getAbsolutePathBuilder().path("questions").build();
 
         dto.userId = pet.getUser().getId();
@@ -105,7 +112,10 @@ public class PetDto {
         dto.department = uriInfo.getAbsolutePathBuilder().path("location").path("departments").path(String.valueOf(pet.getDepartment().getId())).build();
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
-        if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+        if(pet.getNewOwner() != null) {
+            dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+            dto.newOwnerId = pet.getNewOwner().getId();
+        }
         dto.questionList = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("questions").build();
 
         dto.userId = pet.getUser().getId();
@@ -307,5 +317,13 @@ public class PetDto {
 
     public void setPhotos(List<MultipartFile> photos) {
         this.photos = photos;
+    }
+
+    public Long getNewOwnerId() {
+        return newOwnerId;
+    }
+
+    public void setNewOwnerId(Long newOwnerId) {
+        this.newOwnerId = newOwnerId;
     }
 }
