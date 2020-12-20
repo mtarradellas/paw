@@ -28,7 +28,8 @@ const FilterOptionsForm = () => {
     const {
         filters,
         onSubmitFilters,
-        fetching
+        fetching,
+        clearFilters
     } = useContext(FilterAndSearchContext);
 
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
@@ -52,6 +53,9 @@ const FilterOptionsForm = () => {
     };
 
     useEffect(()=>{
+        if(fetching)
+            return;
+        
         fetchFilters(filters);
     }, [filters.find]);
 
@@ -193,7 +197,7 @@ const FilterOptionsForm = () => {
                             <Button type={"secondary"}
                                 onClick={()=>{
                                     setValues(initialValues);
-                                    handleSubmit();
+                                    clearFilters();
                                 }}
                                 loading={fetching}
                             >{t('filterForm.filterButtons.clear')}</Button>
