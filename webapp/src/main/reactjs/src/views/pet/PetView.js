@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
 import {useTranslation} from "react-i18next";
-import {Button, Divider, List, Modal, Spin} from "antd";
+import {Button, Carousel, Divider, List, Modal, Spin} from "antd";
 import Questions from "./Questions";
 import {Link} from "react-router-dom";
 import {EDIT_PET, ERROR_404_PET, HOME, USER} from "../../constants/routes";
@@ -13,6 +13,7 @@ import ConstantsContext from '../../constants/constantsContext';
 import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
 import useLogin from "../../hooks/useLogin";
 import {useHistory} from 'react-router-dom';
+import '../../css/pet/petView.css';
 
 const ListItem = List.Item;
 
@@ -26,8 +27,22 @@ function ListItemRow({name, value}){
     </ListItem>;
 }
 
+function ImgModal({id, onClose}){
+    console.log(id);
+
+    return <Modal onCancel={onClose} visible={!_.isNil(id)} showOk={false} footer={null}>
+        <img className={"pet-view__modal"} src={petImageSrc(id)} alt={""}/>
+    </Modal>
+}
+
 function Content({pet, id}){
     const {t} = useTranslation('petView');
+
+    const [selectedImg, setSelectedImg] = useState(null);
+
+    const onCloseModal = () => {
+        setSelectedImg(null);
+    };
 
     const {breeds, species, provinces, departments} = useContext(ConstantsContext);
 
@@ -49,12 +64,18 @@ function Content({pet, id}){
     } = pet;
 
     return <>
+            <ImgModal id={selectedImg} onClose={onCloseModal}/>
+
             {
                 _.isNil(description) ?
                     <Spin/>
                     :
                     <>
-                        <img alt="example" src={petImageSrc(images[0])}/>
+                        <div className={"pet-view__images"}>
+                            {
+                                images.map(id => <img onClick={() => setSelectedImg(id)} className={"pet-view__images__image"} src={petImageSrc(id)} alt={""}/>)
+                            }
+                        </div>
 
                         <p>{description}</p>
                     </>
