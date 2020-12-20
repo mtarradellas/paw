@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
-import {Route} from "react-router-dom";
+import {Route, Redirect} from "react-router-dom";
 import useLogin from "../hooks/useLogin";
 
 const RedirectPromptLogin = () => {
     const {promptLogin} = useLogin();
 
-    useEffect(()=>{
+    useEffect(() => {
         promptLogin();
     }, []);
 

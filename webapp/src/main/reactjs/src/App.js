@@ -84,7 +84,10 @@ import EmailSent from "./views/information/EmailSent";
 import OperationSuccessful from "./views/information/OperationSuccessful";
 import AdminUserView from "./views/admin/AdminUserView";
 import AdminPetView from "./views/admin/AdminPetView";
-import AddRequest from "./views/admin/requests/AddRequest";
+import AdminAddRequest from "./views/admin/requests/AdminAddRequest";
+import AdminEditRequest from "./views/admin/requests/AdminEditRequest";
+import AdminAddUser from "./views/admin/users/AdminAddUser";
+import AdminEditUser from "./views/admin/users/AdminEditUser";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -211,7 +214,37 @@ function AppSwitch(){
                           component={
                               () => (
                                   <AdminLayout>
-                                      <AddRequest/>
+                                      <AdminAddRequest/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute path={ADMIN_EDIT_REQUEST + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminEditRequest/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute path={ADMIN_ADD_USER}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminAddUser/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute path={ADMIN_EDIT_USER + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminEditUser/>
                                   </AdminLayout>
                               )
                           }
@@ -252,6 +285,9 @@ function AppSwitch(){
                        )
                    }
             />
+            <Route exact path={"/admin"}>
+                <Redirect to={ADMIN_HOME}/>
+            </Route>
             <Route exact path={EDIT_PET(':id')}
                    render={
                        () => (

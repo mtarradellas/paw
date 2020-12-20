@@ -2,7 +2,7 @@ import React from 'react';
 import {useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import useLogin from "../../../hooks/useLogin";
-import {ADMIN_HOME, ADMIN_REQUESTS, PET} from "../../../constants/routes";
+import {ADMIN_REQUESTS, PET} from "../../../constants/routes";
 import {CREATE_REQUEST_ERRORS, createRequestAdmin} from "../../../api/admin/requests";
 import BigCenteredContent from "../../../components/BigCenteredContent";
 import useAdminPets from "../../../hooks/admin/usePets";
@@ -10,7 +10,6 @@ import useAdminUsers from "../../../hooks/admin/useUsers";
 import { Form, Select} from "formik-antd";
 import {Button} from "antd";
 import {Formik} from "formik";
-import {REGISTER_ERRORS} from "../../../api/authentication";
 
 const FormItem = Form.Item;
 
@@ -51,7 +50,7 @@ function AddRequestForm({users, pets, _onSubmit}) {
     </Formik>
 }
 
-function AddRequest() {
+function AdminAddRequest() {
     const history = useHistory();
 
     const {t} = useTranslation('admin');
@@ -87,4 +86,4 @@ function AddRequest() {
     </BigCenteredContent>
 }
 
-export default AddRequest;
+export default AdminAddRequest;

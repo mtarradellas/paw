@@ -118,7 +118,19 @@
     "petName": "Pet Name",
     "username": "Username"
   },
+  "editRequestView": {
+    "title": "Edit Request (Admin Mode)",
+    "status": "Request Status"
+  },
+  "addUserView": {
+    "title": "Add User (Admin Mode)",
+    "username": "Username",
+    "mail": "Mail",
+    "password": "Password"
+  },
   "errors": {
-    "duplicatedRequest": "This user has already requested this pet"
+    "duplicatedRequest": "This user has already requested this pet",
+    "default": "Connection error: the request couldn't be completed",
+    "unchanged": "You are trying to change the status to the existing one"
   }
 }

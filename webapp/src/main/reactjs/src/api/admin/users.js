@@ -12,7 +12,8 @@ const GET_USER_FILTERS_ENDPOINT = "/admin/users/filters";
 export const GET_USERS_ERRORS = {
     CONN_ERROR: 0,
     NOT_FOUND: 1,
-    FORBIDDEN: 2
+    FORBIDDEN: 2,
+    DUPLICATE: 3
 };
 export const DELETE_USER_ERRORS = {
     CON_ERROR:0
@@ -92,5 +93,21 @@ export async function getAdminUsersFilters(jwt){
         return statusList;
     }catch (e){
         throw GET_FILTERS_ERRORS.CON_ERROR
+    }
+}
+
+export async function createUserAdmin(username, mail, password, jwt){
+    try{
+        const config = getAuthConfig(jwt);
+        const response = await axios.post(SERVER_URL + GET_USERS_ENDPOINT,{
+            username:username, password:password, mail:mail
+        },config);
+        return response.data;
+
+    }catch (e) {
+        if(e.response.status === 400){
+            throw GET_USERS_ERRORS.DUPLICATE
+        }
+        throw GET_USERS_ERRORS.CONN_ERROR
     }
 }

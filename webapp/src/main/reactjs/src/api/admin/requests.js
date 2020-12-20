@@ -22,6 +22,16 @@ export const CREATE_REQUEST_ERRORS = {
     DUPLICATE: 1
 };
 
+export async function getRequestAdmin(id,jwt){
+    try{
+        const config = getAuthConfig(jwt);
+        const response = await axios.get(SERVER_URL + ADMIN_REQUESTS_ENDPOINT + "/" + id, config);
+        return response.data;
+    }catch (e){
+        throw GET_REQUESTS_ERROR.CON_ERROR;
+    }
+}
+
 export async function getAdminRequests(
     {page, userId, petId, status, searchCriteria, searchOrder}, jwt
 ) {
@@ -82,7 +92,7 @@ export async function createRequestAdmin(userId, petId, jwt){
         if(e.response.status === 400){
             throw CREATE_REQUEST_ERRORS.DUPLICATE
         }
-
+        throw CREATE_REQUEST_ERRORS.CON_ERROR
 
     }
 }

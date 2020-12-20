@@ -118,7 +118,19 @@
     "petName": "Nombre de Mascota",
     "username": "Nombre de Usuario"
   },
+  "editRequestView": {
+    "title": "Editar Solicitud (Modo Admin)",
+    "status": "Estado de solicitud"
+  },
+  "addUserView": {
+    "title": "Añadir Usuario (Modo Admin)",
+    "username": "Usuario",
+    "mail": "Correo",
+    "password": "Contraseña"
+  },
   "errors": {
-    "duplicatedRequest": "Este usuario ya solicitó esta mascota"
+    "duplicatedRequest": "Este usuario ya solicitó esta mascota",
+    "default": "Error de conexión: la solicitud no pudo ser completada",
+    "unchanged": "Estás cambiando el estado a el estado existente"
   }
 }
