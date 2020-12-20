@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,8 @@ public class LocationController {
     @Path("/provinces")
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getProvinces() {
-        List<ProvinceDto> provinceList = locationService.provinceList().stream().map(ProvinceDto::fromProvince).collect(Collectors.toList());
+        List<ProvinceDto> provinceList = locationService.provinceList().stream().map(ProvinceDto::fromProvince)
+                .sorted(Comparator.comparing(ProvinceDto::getName)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<ProvinceDto>>(provinceList) {}).build();
     }
 
@@ -75,7 +78,8 @@ public class LocationController {
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getDepartments() {
         List<DepartmentDto> departmentList = locationService.departmentList().stream()
-                .map(d -> DepartmentDto.fromDepartment(d, uriInfo)).collect(Collectors.toList());
+                .map(d -> DepartmentDto.fromDepartment(d, uriInfo))
+                .sorted(Comparator.comparing(DepartmentDto::getName)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<DepartmentDto>>(departmentList) {}).build();
     }
 

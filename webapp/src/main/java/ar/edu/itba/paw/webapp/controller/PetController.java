@@ -1,24 +1,18 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
-import javax.swing.*;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -30,15 +24,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -47,9 +33,7 @@ import javax.ws.rs.core.UriInfo;
 
 import com.google.gson.Gson;
 
-import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
@@ -59,7 +43,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import ar.edu.itba.paw.interfaces.ImageService;
 import ar.edu.itba.paw.interfaces.PetService;
@@ -82,7 +65,6 @@ import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ProvinceDto;
 import ar.edu.itba.paw.webapp.dto.SpeciesDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
-import ar.edu.itba.paw.webapp.exception.ImageLoadException;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
 import ar.edu.itba.paw.webapp.util.ParseUtils;
 
@@ -236,8 +218,10 @@ public class PetController{
                 .map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         List<ProvinceDto> provinceList = departments.stream().map(Department::getProvince).distinct().sorted(Province::compareTo)
                 .map(ProvinceDto::fromProvince).collect(Collectors.toList());
-        List<DepartmentDto> departmentList = departments.stream().map(d -> DepartmentDto.fromDepartment(d,uriInfo)).collect(Collectors.toList());
-        List<BreedDto> breedList = breeds.stream().map(BreedDto::fromBreed).collect(Collectors.toList());
+        List<DepartmentDto> departmentList = departments.stream().map(d -> DepartmentDto.fromDepartment(d,uriInfo))
+                .sorted(Comparator.comparing(DepartmentDto::getName)).collect(Collectors.toList());
+        List<BreedDto> breedList = breeds.stream().map(BreedDto::fromBreed).sorted(Comparator.comparing(BreedDto::getName))
+                .collect(Collectors.toList());
 
         Map<String, Object> filters = new TreeMap<>();
         filters.put("speciesList", speciesList);
