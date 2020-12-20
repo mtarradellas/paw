@@ -8,8 +8,8 @@
     "deleteModal": {
       "title": "¿Estás seguro?",
       "content": "Se eliminará su mascota {{name}}, ¿está seguro?",
-      "cancel": "Cancelar",
-      "confirm": "Eliminar"
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
     },
     "requestBtn": {
         "request": "Solicitar",

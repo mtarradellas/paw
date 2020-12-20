@@ -224,7 +224,7 @@ function RequestButton({petId, text, setText, disabled, setDisabled, loading, se
         try {
             setLoading(true);
             await postRequest(petId, jwt);
-            setText(t('buttons.requestBtn.sent'));
+            setText('buttons.requestBtn.sent');
             setLoading(false);
             setDisabled(true);
 
@@ -234,7 +234,7 @@ function RequestButton({petId, text, setText, disabled, setDisabled, loading, se
     }
 
     return <>
-        <Button type="primary" onClick={requestPet} loading={loading} disabled={disabled}>{text}</Button>
+        <Button type="primary" onClick={requestPet} loading={loading} disabled={disabled}>{t(text)}</Button>
     </>
 }
 
@@ -257,16 +257,16 @@ const initialStatePet = {
 };
 
 function PetView() {
+    const {t} = useTranslation('petView');
     const {state} = useLogin();
     const {id} = useParams();
     const [pet, setPet] = useState(initialStatePet);
     const [reqDisabled, setReqDisabled] = useState(true);
-    const [reqText, setReqText] = useState('buttons.requestBtn.loading');
+    const [reqText, setReqText] = useState("buttons.requestBtn.loading");
     const [reqLoading, setReqLoading] = useState(true);
     const {id: loggedUserId} = state;
     const {isLoggedIn} = state; 
     const {jwt} = useLogin().state;
-    const {t} = useTranslation('petView');
 
     const fetchHasRequest = async (available) => {
         try {
@@ -277,28 +277,28 @@ function PetView() {
             const status = req && req.status;
             switch(status) {
                 case requestStatus.SOLD:
-                    setReqText(t('buttons.requestBtn.acquired'));
+                    setReqText('buttons.requestBtn.acquired');
                     break;
                 case requestStatus.CANCELED:
                     if (available) {
-                        setReqText(t('buttons.requestBtn.recover'));
+                        setReqText('buttons.requestBtn.recover');
                         setReqDisabled(false);
                     } else {
-                        setReqText(t('buttons.requestBtn.unavailable'));
+                        setReqText('buttons.requestBtn.unavailable');
                     }
                     break;
                 case requestStatus.PENDING:
-                    setReqText(t('buttons.requestBtn.pending'));
+                    setReqText('buttons.requestBtn.pending');
                     break;
                 case requestStatus.REJECTED:
-                    setReqText(t('buttons.requestBtn.rejected'));
+                    setReqText('buttons.requestBtn.rejected');
                     break;
                 default: // No requests sent
                     if (available) {
                         setReqDisabled(false);
-                        setReqText(t('buttons.requestBtn.request'));
+                        setReqText('buttons.requestBtn.request');
                     } else {
-                        setReqText(t('buttons.requestBtn.unavailable'));
+                        setReqText('buttons.requestBtn.unavailable');
                     }
             }
         } catch (e) {
