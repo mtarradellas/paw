@@ -30,5 +30,7 @@
       },
       "submit": "Calificar"
     }
-  }
+  },
+  "edit": "Editar usuario",
+  "remove": "Eliminar cuenta"
 }
