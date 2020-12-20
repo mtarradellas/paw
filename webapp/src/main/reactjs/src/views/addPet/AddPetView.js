@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import BigCenteredContent from "../../components/BigCenteredContent";
 import {useTranslation} from "react-i18next";
 import AddPetForm from "./AddPetForm";
@@ -9,16 +9,16 @@ import {PET} from "../../constants/routes";
 
 function AddPetView(){
     const history = useHistory();
-
+    const [submittingPet, setSubmittingPet] = useState(false);
     const {t} = useTranslation('addPet');
 
     const {state, promptLogin} = useLogin();
     const {jwt} = state;
 
     const _onSubmit = async (values) => {
+        setSubmittingPet(true);
         try {
-            const id = await createPet(values, jwt);
-
+            const {id} = await createPet(values, jwt);
             history.push(PET + id);
         }catch (e) {
             console.error(e)
@@ -32,12 +32,13 @@ function AddPetView(){
                     break;
             }
         }
+        setSubmittingPet(false);
     };
 
     return <BigCenteredContent>
         <h1>{t('title')}</h1>
 
-        <AddPetForm onSubmit={_onSubmit}/>
+        <AddPetForm onSubmit={_onSubmit} submitting={submittingPet}/>
     </BigCenteredContent>
 }
 

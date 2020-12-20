@@ -452,7 +452,7 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
         }
 
         int toDelete;
-        if(imagesToDelete == null){
+        if(imagesToDelete == null || imagesToDelete.get(0) == null){
             toDelete = 0;
         }
         else {

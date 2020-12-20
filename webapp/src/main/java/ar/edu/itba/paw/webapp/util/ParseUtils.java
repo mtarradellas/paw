@@ -1,7 +1,11 @@
 package ar.edu.itba.paw.webapp.util;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ReviewDto;
@@ -214,5 +218,33 @@ public class ParseUtils {
             pet.getProvinceId() == null || pet.getDepartmentId() == null) {
                 throw new BadRequestException("Invalid or missing required fields");
         }
+    }
+
+    public static void parsePet(String petName, String gender, Long speciesId, Long breedId, Long provinceId, Long departmentId) {
+        petName = (petName.trim().replaceAll(" +", " "));
+        if (petName.length() == 0 || petName.length() > 255) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+        if (gender == null || speciesId == null || breedId == null || provinceId == null || departmentId == null) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+    }
+    public static List<Long> parseImagesToDelete(String toDelete) {
+        if(toDelete == null || toDelete.length() == 0) return null;
+        List<Long> imagesToDelete = new ArrayList<>();
+        String[] res = toDelete.split("[,]", 0);
+        try {
+            for (String str : res) {
+                imagesToDelete.add(Long.parseLong(str));
+            }
+        } catch (Exception ex) {
+            throw new BadRequestException("Format of images to delete is invalid");
+        }
+        return imagesToDelete;
+    }
+
+    public static LocalDateTime parseDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+        return LocalDateTime.parse(date, formatter);
     }
 }

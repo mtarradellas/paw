@@ -1,11 +1,10 @@
 package ar.edu.itba.paw.webapp.controller.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,23 +22,25 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
+import ar.edu.itba.paw.models.*;
 import com.google.gson.Gson;
 
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.paw.interfaces.PetService;
 import ar.edu.itba.paw.interfaces.exceptions.InvalidImageQuantityException;
 import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.PetException;
-import ar.edu.itba.paw.models.Breed;
-import ar.edu.itba.paw.models.Department;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Province;
-import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
@@ -222,29 +223,55 @@ public class AdminPetController {
     }
 
     @POST
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response create(@Context HttpServletRequest httpRequest, final PetDto pet) {
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA})
+    public Response create(@Context HttpServletRequest httpRequest,
+                           @NotEmpty @FormDataParam("files") List<FormDataBodyPart> files,
+                           @NotEmpty @FormDataParam("user") Long userId,
+                           @NotEmpty @FormDataParam("petName") String petName,
+                           @NotEmpty @FormDataParam("price") int price,
+                           @NotEmpty @FormDataParam("description") String description,
+                           @NotEmpty @FormDataParam("province") Long provinceId,
+                           @NotEmpty @FormDataParam("department") Long departmentId,
+                           @NotEmpty @FormDataParam("species") Long speciesId,
+                           @NotEmpty @FormDataParam("breed") Long breedId,
+                           @NotEmpty @FormDataParam("dateOfBirth") String dateOfBirth,
+                           @NotEmpty @FormDataParam("isVaccinated") boolean vaccinated,
+                           @NotEmpty @FormDataParam("gender") String gender) throws IOException {
+
+        String locale = ApiUtils.getLocale(httpRequest);
+
         try {
-            ParseUtils.parsePet(pet);
+            ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opNewPet;
-        /* TODO como recibir las fotos ?*/
-        PetStatus petStatus;
+        List<byte[]> photos = new ArrayList<>();
+        InputStream is = null;
+        if(files == null || files.isEmpty()){
+            LOGGER.warn("Photos is empty");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        }
+        for(FormDataBodyPart file : files) {
+            byte[] data = file.getEntityAs(byte[].class);
+            photos.add(data);
+        }
         try {
-            petStatus = ParseUtils.parseStatus(PetStatus.class, pet.getStatus());
-            opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
-                    pet.getPrice(), pet.getDescription(), petStatus, pet.getUserId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(), null);
-        } catch(NotFoundException ex) {
+            opNewPet = petService.create(locale, petName, LocalDateTime.now(), gender, vaccinated,
+                    price, description, PetStatus.AVAILABLE, userId, speciesId, breedId,
+                    provinceId, departmentId, photos);
+        } catch (NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        } catch (UserException ex) {
+            LOGGER.warn("{}", ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -258,52 +285,47 @@ public class AdminPetController {
 
     @POST
     @Path("/{petId}/edit")
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response edit(@Context HttpServletRequest httpRequest, final PetDto pet) {
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA})
+    public Response edit(@Context HttpServletRequest httpRequest,
+                         @NotEmpty @FormDataParam("pet") Long petId,
+                         @NotEmpty @FormDataParam("files") List<FormDataBodyPart> files,
+                         @NotEmpty @FormDataParam("imagesToDelete") List<Long> toDelete,
+                         @NotEmpty @FormDataParam("petName") String petName,
+                         @NotEmpty @FormDataParam("price") int price,
+                         @NotEmpty @FormDataParam("description") String description,
+                         @NotEmpty @FormDataParam("province") Long provinceId,
+                         @NotEmpty @FormDataParam("department") Long departmentId,
+                         @NotEmpty @FormDataParam("species") Long speciesId,
+                         @NotEmpty @FormDataParam("breed") Long breedId,
+                         @NotEmpty @FormDataParam("dateOfBirth") String dateOfBirth,
+                         @NotEmpty @FormDataParam("isVaccinated") boolean vaccinated,
+                         @NotEmpty @FormDataParam("gender") String gender) throws IOException {
+
+        String locale = ApiUtils.getLocale(httpRequest);
         try {
-            ParseUtils.parsePet(pet);
+            ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet;
-        PetStatus petStatus;
-        
-        try {
-            petStatus = ParseUtils.parseStatus(PetStatus.class, pet.getStatus());
-        } catch (BadRequestException ex) {
-            LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-                    .entity(new GenericEntity<ErrorDto>(body) {
-                    }).build();
+        List<byte[]> photos = new ArrayList<>();
+        InputStream is = null;
+        if(files == null || files.isEmpty()){
+            LOGGER.warn("Photos is empty");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
-        /* TODO como recibir las fotos ?*/
-//        List<byte[]> photos = new ArrayList<>();
-//        try {
-//            for (MultipartFile photo : editPetForm.getPhotos()) {
-//                if(!photo.isEmpty()) {
-//                    try {
-//                        photos.add(photo.getBytes());
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                        throw new ImageLoadException(ex);
-//                    }
-//                }
-//            }
-//        } catch (ImageLoadException ex) {
-//            LOGGER.warn("Image bytes load from pet form failed");
-//            return editPetForm(editPetForm, id).addObject("imageError", true);
-//        }
-
+        for(FormDataBodyPart file : files) {
+            byte[] data = file.getEntityAs(byte[].class);
+            photos.add(data);
+        }
+        LocalDateTime birthDate = LocalDateTime.now();
         try {
-            opPet = petService.update(locale, pet.getId(), null, pet.getPetName(), pet.getBirthDate(), pet.getGender(),
-                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), petStatus, pet.getSpeciesId(),
-                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
+            opPet = petService.update(locale, petId, null, petName, birthDate, gender, vaccinated, price,
+                    description, PetStatus.AVAILABLE, speciesId, breedId, provinceId, departmentId,photos, toDelete);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();

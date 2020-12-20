@@ -57,7 +57,7 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                     .required(t('form.province.required')),
                 department: Yup.number()
                     .required(t('form.department.required')),
-                specie: Yup.number()
+                species: Yup.number()
                     .required(t('form.specie.required')),
                 breed: Yup.number()
                     .required(t('form.breed.required')),
@@ -122,8 +122,8 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                         </Select>
                     </FormItem>
 
-                    <FormItem name={"specie"} label={t('form.specie.label')}>
-                        <Select name={"specie"} placeholder={t('form.specie.placeholder')}
+                    <FormItem name={"species"} label={t('form.species.label')}>
+                        <Select name={"species"} placeholder={t('form.species.placeholder')}
                             onChange={() => setFieldValue('breed', '')}
                         >
                             {
@@ -135,9 +135,9 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                     </FormItem>
 
                     <FormItem name={"breed"} label={t('form.breed.label')}>
-                        <Select name={"breed"} placeholder={t('form.breed.placeholder')} disabled={!values.specie}>
+                        <Select name={"breed"} placeholder={t('form.breed.placeholder')} disabled={!values.species}>
                             {
-                                values.specie && species[values.specie].breedIds.map(breedId => {
+                                values.species && species[values.species].breedIds.map(breedId => {
                                     const {id, name} = breeds[breedId];
 
                                     return <Select.Option value={id}>{name}</Select.Option>
@@ -184,7 +184,7 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
 
                     <FormItem name>
                         <Button type="primary" htmlType="submit" loading={submitting}>
-                            {t('form.addPet')}
+                            {t('form.send')}
                         </Button>
                     </FormItem>
                 </Form>;
