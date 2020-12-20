@@ -29,7 +29,8 @@
     "header": "Status",
     "vaccinated": "Vaccinated",
     "onAdoption": "On adoption",
-    "onSale": "On sale"
+    "onSale": "On sale",
+    "sold": "Sold"
   },
   "questions": {
     "header": "Questions",

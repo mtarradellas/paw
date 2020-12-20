@@ -10,6 +10,7 @@ import {DELETE_PET_ERRORS, getPet, deletePet as deletePetApi} from "../../api/pe
 import {useParams} from 'react-router-dom';
 import {petImageSrc} from "../../api/images";
 import ConstantsContext from '../../constants/constantsContext';
+import {petStatus} from '../../constants/petStatus';
 import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
 import useLogin from "../../hooks/useLogin";
 import {useHistory} from 'react-router-dom';
@@ -39,6 +40,7 @@ function Content({pet, id, isLogged}){
     const {t} = useTranslation('petView');
 
     const [selectedImg, setSelectedImg] = useState(null);
+    const isAvailable = pet.status === petStatus.AVAILABLE; 
 
     const onCloseModal = () => {
         setSelectedImg(null);
@@ -85,10 +87,13 @@ function Content({pet, id, isLogged}){
             <Divider/>
 
             {
-                price === 0 ?
-                    <h2>{t('status.onAdoption')}</h2>
+                isAvailable ? 
+                    price === 0 ?
+                        <h2>{t('status.onAdoption')}</h2>
+                        :
+                        <h2>{t('status.onSale')}: ${price}</h2>
                     :
-                    <h2>{t('status.onSale')}: ${price}</h2>
+                    <h2>{t("status.sold")}</h2>
             }
 
             <Divider/>
@@ -122,7 +127,7 @@ function Content({pet, id, isLogged}){
 
             <h2>{t('questions.header')}:</h2>
 
-            <Questions petId={id} ownerId={userId} isLogged={isLogged}/>
+            <Questions petId={id} ownerId={userId} isLogged={isLogged} isAvailable={isAvailable}/>
 
             <Divider/>
 
@@ -214,6 +219,23 @@ function IsOwnerButtons({petId, petName}){
         </>;
 }
 
+function RequestButton(petId) {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+
+    const {t} = useTranslation('petView');
+
+    const {userId, jwt} =  useLogin().state;
+
+    const requestPet = async () => {
+        console.log('HIIII'); // TODO
+    }
+
+    return <>
+        <Button onClick={requestPet}>Request</Button>
+    </>
+}
+
 const initialStatePet = {
     petName: null,
     birthDate: null,
@@ -243,16 +265,18 @@ function PetView(){
     const {id: loggedUserId} = state;
 
     const {isLoggedIn} = state;
-
+    
     const fetchPet = async () => {
         try{
             const result = await getPet({petId: id});
-
+            
             setPet(result);
         }catch (e) {
             //TODO: conn error
         }
     };
+
+    const isAvailable = pet.status === petStatus.AVAILABLE;
 
     useEffect(()=>{
         fetchPet();
@@ -270,7 +294,7 @@ function PetView(){
             isOwner ?
                 <IsOwnerButtons petId={id} petName={petName}/>
                 :
-                <></>
+                isLoggedIn && isAvailable ? <RequestButton petId={id}/> : <></>
         }
         title={petName ? t('title', {name: petName}) : <Spin/>}
     />

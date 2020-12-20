@@ -29,7 +29,8 @@
     "header": "Estado",
     "vaccinated": "Vacunado",
     "onAdoption": "En adopción",
-    "onSale": "En venta"
+    "onSale": "En venta",
+    "sold": "Vendido"
   },
   "questions": {
     "header": "Preguntas",
