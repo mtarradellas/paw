@@ -27,6 +27,7 @@ import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 
 @Service
@@ -200,7 +201,11 @@ public class RequestServiceImpl implements RequestService {
 
         List<Request> requestList = user.getRequestList();
         for (Request req: requestList) {
-            if(req.getPet().getId().equals(pet.getId()) && !req.getStatus().equals(RequestStatus.CANCELED)) {
+            if (req.getPet().getId().equals(pet.getId())) {
+                if (req.getStatus().equals(RequestStatus.CANCELED)) {
+                    recover(req.getId(), userId, contextURL);
+                    return findById(req.getId());
+                }
                 LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
                 throw new RequestException("Request already exists.");
             }
@@ -490,8 +495,20 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean hasRequest(User user, User target) {
-        return requestDao.hasRequest(user, target);
+    public boolean hasRequest(User user, User target, List<RequestStatus> statusList) {
+        return requestDao.hasRequest(user, target, statusList);
+    }
+
+    @Override
+    public boolean hasRequestPet(User user, long petId, List<RequestStatus> statusList) {
+        Optional<Pet> opPet = petService.findById(petId);
+        if (!opPet.isPresent()) {
+            throw new NotFoundException("Pet not found");
+        }
+        Pet pet = opPet.get();
+
+        if (pet.getStatus() != PetStatus.AVAILABLE) throw new NotFoundException("Pet not found");
+        return requestDao.hasRequest(user, pet, statusList);
     }
 
 }
