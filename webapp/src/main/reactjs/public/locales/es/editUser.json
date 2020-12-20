@@ -44,6 +44,11 @@
           },
           "submit": "Actualizar",
           "conError": "Se perdió la conexión",
-          "success": "Contraseña actualizada!"
-    }
+          "success": "¡Contraseña actualizada!"
+    },
+    "delete": "Eliminar cuenta",
+    "deleteModal": "¿Estás seguro? Todas tus mascotas y solicitudes serán borradas permanentemente.",
+    "deletingModal": "Eliminando cuenta...",
+    "deleteConfirmBtn": "Eliminar",
+    "deleteError": "Error eliminando usuario"
 }

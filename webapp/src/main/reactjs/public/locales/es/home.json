@@ -34,7 +34,7 @@
     "title": "¡Estas son las mascotas disponibles!",
     "results-count": "Resultados totales: {{count}}",
     "petsCard": {
-      "goToPage": "Ir a la página"
+      "goToPage": "Visitar mascota"
     }
   },
   "sex": {

@@ -8,7 +8,7 @@
     "deleteModal": {
       "title": "Are you sure?",
       "content": "You are about to delete {{name}}, are you sure?",
-      "confirm": "Confirm",
+      "confirm": "Delete",
       "cancel": "Cancel"
     }
   },
@@ -29,7 +29,8 @@
     "header": "Status",
     "vaccinated": "Vaccinated",
     "onAdoption": "On adoption",
-    "onSale": "On sale"
+    "onSale": "On sale",
+    "sold": "Sold"
   },
   "questions": {
     "header": "Questions",
