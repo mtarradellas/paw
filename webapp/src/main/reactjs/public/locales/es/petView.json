@@ -9,7 +9,7 @@
       "title": "¿Estás seguro?",
       "content": "Se eliminará su mascota {{name}}, ¿está seguro?",
       "cancel": "Cancelar",
-      "confirm": "Confirmar"
+      "confirm": "Eliminar"
     }
   },
   "details": {

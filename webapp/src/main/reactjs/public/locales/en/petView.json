@@ -8,7 +8,7 @@
     "deleteModal": {
       "title": "Are you sure?",
       "content": "You are about to delete {{name}}, are you sure?",
-      "confirm": "Confirm",
+      "confirm": "Delete",
       "cancel": "Cancel"
     }
   },

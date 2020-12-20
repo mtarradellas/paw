@@ -124,18 +124,31 @@ function IsOwnerButtons({petId, petName}){
     const {promptLogin, state} = useLogin();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [maskClose, setMaskClose] = React.useState(true);
+    const [iconClose, setIconClose] = React.useState(true);
+    const [cancelProps, setCancelProps] = React.useState();
 
     const {t} = useTranslation('petView');
 
     const {id: userId, jwt} = state;
 
     const deletePet = async () => {
+        setMaskClose(false);
+        setIconClose(false);
+        setCancelProps({disabled: true});
         setSubmitting(true);
         try {
             await deletePetApi({petId}, jwt);
 
+            setMaskClose(true);
+            setIconClose(true);
+            setCancelProps({disabled: false});
+
             history.push(USER + userId);
         }catch (e) {
+            setMaskClose(true);
+            setIconClose(true);
+            setCancelProps({disabled: false});
             switch (e) {
                 case DELETE_PET_ERRORS.NOT_LOGGED_IN:
                     promptLogin();
@@ -151,11 +164,13 @@ function IsOwnerButtons({petId, petName}){
                     setSubmitting(false);
             }
         }
-
     };
 
     return <>
-            <Button onClick={() => setIsModalVisible(true)} loading={submitting}>{t('buttons.deletePet')}</Button>
+            <Button onClick={() => setIsModalVisible(true)} danger={true} loading={submitting}>
+                {t('buttons.deletePet')}
+            </Button>
+
             <Link to={EDIT_PET(petId)}>
                 <Button>{t('buttons.editPet')}</Button>
             </Link>
@@ -163,11 +178,15 @@ function IsOwnerButtons({petId, petName}){
             <Modal
                 title={t('buttons.deleteModal.title')}
                 visible={isModalVisible}
+                cancelButtonProps={cancelProps}
                 onOk={deletePet}
+                okType='danger'
                 onCancel={() => setIsModalVisible(false)}
                 okText={t('buttons.deleteModal.confirm')}
                 cancelTest={t('buttons.deleteModal.cancel')}
                 confirmLoading={submitting}
+                closable={iconClose}
+                maskClosable={maskClose}
             >
                 <p>{t('buttons.deleteModal.content', {name: petName})}</p>
             </Modal>
