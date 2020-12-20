@@ -185,7 +185,7 @@ function Header() {
                 </Link>
             </div>
 
-            <LoggedInMenuItems/>
+            {isLoggedIn && <LoggedInMenuItems/>}
         </div>
 
         <div className={"header__search-bar"}>
