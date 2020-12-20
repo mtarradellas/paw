@@ -113,6 +113,12 @@
   },
   "date": "{{day}}-{{month}}-{{year}}",
   "addRequestView": {
-    "title": "Añadir Solicitud (Modo Admin)"
+    "title": "Añadir Solicitud (Modo Admin)",
+    "addRequest": "Añadir Solicitud",
+    "petName": "Nombre de Mascota",
+    "username": "Nombre de Usuario"
+  },
+  "errors": {
+    "duplicatedRequest": "Este usuario ya solicitó esta mascota"
   }
 }

@@ -129,7 +129,7 @@ public class AdminRequestController {
 
         Optional<Request> opRequest;
         try {
-            opRequest = requestService.create(locale, requestDto.getId(), requestDto.getPetId(), uriInfo.getBaseUri().toString());
+            opRequest = requestService.create(locale, requestDto.getUserId(), requestDto.getPetId(), uriInfo.getBaseUri().toString());
         } catch (DataIntegrityViolationException | NotFoundException | RequestException ex) {
             LOGGER.warn("Request creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());

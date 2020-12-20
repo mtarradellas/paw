@@ -18,7 +18,8 @@ export const GET_REQUESTS_FILTERS_ERROR = {
     CON_ERROR: 0
 };
 export const CREATE_REQUEST_ERRORS = {
-    CON_ERROR: 0
+    CON_ERROR: 0,
+    DUPLICATE: 1
 };
 
 export async function getAdminRequests(
@@ -78,6 +79,10 @@ export async function createRequestAdmin(userId, petId, jwt){
         },config);
         return response.data;
     }catch (e) {
-        throw CREATE_PET_ERRORS.CONN_ERROR
+        if(e.response.status === 400){
+            throw CREATE_REQUEST_ERRORS.DUPLICATE
+        }
+
+
     }
 }

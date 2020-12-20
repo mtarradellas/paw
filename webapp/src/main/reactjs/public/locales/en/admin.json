@@ -113,6 +113,12 @@
   },
   "date": "{{month}}-{{day}}-{{year}}",
   "addRequestView": {
-    "title": "Add Request (Admin Mode)"
+    "title": "Add Request (Admin Mode)",
+    "addRequest": "Add Request",
+    "petName": "Pet Name",
+    "username": "Username"
+  },
+  "errors": {
+    "duplicatedRequest": "This user has already requested this pet"
   }
 }

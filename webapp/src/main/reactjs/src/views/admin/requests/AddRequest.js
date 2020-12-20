@@ -2,12 +2,53 @@ import React from 'react';
 import {useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import useLogin from "../../../hooks/useLogin";
-import {PET} from "../../../constants/routes";
+import {ADMIN_HOME, ADMIN_REQUESTS, PET} from "../../../constants/routes";
 import {CREATE_REQUEST_ERRORS, createRequestAdmin} from "../../../api/admin/requests";
 import BigCenteredContent from "../../../components/BigCenteredContent";
+import useAdminPets from "../../../hooks/admin/usePets";
+import useAdminUsers from "../../../hooks/admin/useUsers";
+import { Form, Select} from "formik-antd";
+import {Button} from "antd";
+import {Formik} from "formik";
+import {REGISTER_ERRORS} from "../../../api/authentication";
 
-function AddRequestForm(){
-    return <div>dfkanm</div>
+const FormItem = Form.Item;
+
+function AddRequestForm({users, pets, _onSubmit}) {
+    const {t} = useTranslation('admin');
+    return <Formik
+        onSubmit={_onSubmit}
+        initialValues={{}}
+    >
+        <Form>
+            <FormItem name={"petId"} label={t('addRequestView.petName')}>
+                <Select name={"petId"} placeholder={t('addRequestView.petName')}>
+                    {
+                        pets && pets.map((pet) => {
+                            return <Select.Option value={pet.id}
+                                                  key={pet.id}>{pet.petName}</Select.Option>
+                        })
+                    }
+                </Select>
+            </FormItem>
+            <FormItem name={"userId"} label={t('addRequestView.username')}>
+                <Select name={"userId"} placeholder={t('addRequestView.username')}>
+                    {
+                        users && users.map((user) => {
+                            return <Select.Option value={user.id}
+                                                  key={user.id}>{user.username}</Select.Option>
+                        })
+                    }
+                </Select>
+            </FormItem>
+
+            <FormItem name>
+                <Button type="primary" htmlType="submit">
+                    {t('addRequestView.addRequest')}
+                </Button>
+            </FormItem>
+        </Form>
+    </Formik>
 }
 
 function AddRequest() {
@@ -15,17 +56,23 @@ function AddRequest() {
 
     const {t} = useTranslation('admin');
 
-    const {state, promptLogin} = useLogin();
+    const {state} = useLogin();
     const {jwt} = state;
 
-    const _onSubmit = async (values) => {
-        try {
-            const id = await createRequestAdmin(values, jwt);
+    const pets = useAdminPets();
+    const users = useAdminUsers();
 
-            history.push(PET + id);
+
+    const _onSubmit = async (values, {setErrors}) => {
+        try {
+            await createRequestAdmin(values.userId,values.petId, jwt);
+
+            history.push(ADMIN_REQUESTS);
         } catch (e) {
-            console.error(e)
             switch (e) {
+                case CREATE_REQUEST_ERRORS.DUPLICATE:
+                    setErrors({userId: t('errors.duplicatedRequest')});
+                    break;
                 case CREATE_REQUEST_ERRORS.CONN_ERROR:
                 default:
                     //TODO: conn error message
@@ -36,7 +83,7 @@ function AddRequest() {
     return <BigCenteredContent>
         <h1>{t("addRequestView.title")}</h1>
 
-        <AddRequestForm/>
+        <AddRequestForm pets={pets.adminPets} users={users.adminUsers} _onSubmit={_onSubmit}/>
     </BigCenteredContent>
 }
 
