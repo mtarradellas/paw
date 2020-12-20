@@ -82,6 +82,49 @@ export async function createPet(values, jwt) {
     }
 }
 
+const EDIT_PET_ENDPOINT = id => "/pets/" + id + "/edit";
+export const EDIT_PET_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1,
+    IMAGE_QUANTITY_ERROR: 2
+};
+export async function editPet(values, id, jwt) {
+    const {
+        petName, birthDate, gender, vaccinated, price, uploadDate, description,
+        speciesId, breedId, provinceId, departmentId, files
+    } = values;
+
+    const form = new FormData();
+
+    Object.keys(_.omit(values, ['files'])).forEach(key => {
+        form.append(key, values[key]);
+    });
+    form.append('pet', id);
+
+    files.forEach((file, i) => {
+        form.append('files', file.originFileObj);
+    });
+
+    const {headers: authHeaders} = getAuthConfig(jwt);
+
+    const config = {
+        headers: Object.assign(authHeaders, {
+            'accept': 'application/json',
+            'Content-Type': `multipart/form-data; boundary=${form._boundary}`
+        })
+    };
+
+    try{
+        await axios.post(SERVER_URL + EDIT_PET_ENDPOINT(id), form, config);
+    }catch (e) {
+        console.log(e);
+        if(e.response.status === 403) throw EDIT_PET_ERRORS.FORBIDDEN;
+        if(e.response.status === 403) throw EDIT_PET_ERRORS.FORBIDDEN;
+
+        throw EDIT_PET_ERRORS.CONN_ERROR;
+    }
+}
+
 const PET_FILTERS_ENDPOINT = "/pets/filters";
 export const PET_FILTERS_ERRORS = {
     CONN_ERROR: 0
