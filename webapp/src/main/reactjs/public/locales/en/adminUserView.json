@@ -1,4 +1,20 @@
 {
     "remove": "Remove",
-    "edit": "Edit"
+    "edit": "Edit",
+    "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "deleted": "Deleted"
+    },
+    "buttons": {
+        "recover": "Recover",
+        "remove": "Remove",
+        "cancel": "Cancel",
+        "imSure": "I'm sure"
+    },
+    "modals": {
+        "pleaseConfirm": "Please confirm your action",
+        "removeUser":"Are you sure you want to remove this user?",
+        "recoverUser": "Are you sure you want to recover this user?"
+    }
 }

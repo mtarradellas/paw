@@ -29,7 +29,7 @@ export async function getUserAdmin(userId, jwt){
 
     try{
         const response = await axios.get(SERVER_URL + GET_USERS_ENDPOINT+"/"+userId,config);
-        return _.pick(response.data, ['id', 'status', 'username']);
+        return _.pick(response.data, ['id', 'status', 'username','mail']);
     }catch (e) {
         if(e.response.status === 403) throw GET_USER_ERRORS.FORBIDDEN;
 

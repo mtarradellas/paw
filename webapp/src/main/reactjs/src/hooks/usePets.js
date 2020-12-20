@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {getPets} from "../api/pets";
 import ConstantsContext from '../constants/constantsContext';
 
-const usePets = () => {
+const usePets = ({additionalFilters}) => {
     const [pets, setPets] = useState(null);
 
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null});
@@ -15,7 +15,7 @@ const usePets = () => {
         setFetching(true);
 
         try{
-            const {amount, list, pages, pageSize} = await getPets(filters);
+            const {amount, list, pages, pageSize} = await getPets(Object.assign({}, filters, additionalFilters));
 
             const mappedPets = list.map(
                 pet => {

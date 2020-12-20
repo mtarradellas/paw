@@ -7,5 +7,10 @@
   "owner": "Dueño",
   "uploadDate": "Fecha de subida",
   "female": "Hembra",
-  "male": "Macho"
+  "male": "Macho",
+  "statuses": {
+    "unavailable": "No disponible",
+    "sold": "Vendido",
+    "removed": "Removido"
+  }
 }

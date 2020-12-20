@@ -1,0 +1,49 @@
+{
+    "title": "Editar Perfil",
+    "usernameForm": {
+        "username": {
+            "label": "Nombre de usuario",
+            "errors": {
+                "duplicated": "El nombre de usuario no esta disponible",
+                "tooShort": "El nombre de usuario debe tener al menos {{min}} caracteres",
+                "tooLong": "El nombre de usuario no puede tener más de {{max}} caracteres",
+                "validCharacters": "El nombre de usuario puede contener solo letras y números",
+                "required": "El nombre de usuario no puede estar vacío"
+            }
+        },
+        "conError": "Se perdió la conexión",
+        "submit": "Actualizar"
+    },
+    "passwordForm": {
+        "oldPassword": {
+            "label": "Contraseña Actual",
+            "placeholder": "Ingrese su contraseña actual",
+            "errors": {
+                "tooShort": "La contraseña debe tener al menos {{min}} caracteres",
+                "tooLong": "La contraseña no puede tener más de {{max}} caracteres",
+                "required": "La contraseña no puede estar vacía",
+                "wrong": "Contraseña invalida"
+            }
+          },
+          "password": {
+            "label": "Nueva Contraseña",
+            "placeholder": "Ingrese su nueva contraseña",
+            "errors": {
+                "tooShort": "La contraseña debe tener al menos {{min}} caracteres",
+                "tooLong": "La contraseña no puede tener más de {{max}} caracteres",
+                "required": "La contraseña no puede estar vacía"
+            }
+          },
+          "repeatPassword": {
+            "label": "Repetir contraseña",
+            "placeholder": "Ingrese su contraseña nuevamente",
+            "errors": {
+                "required": "Repetir contraseña no puede estar vacío",
+                "notEqual": "Las contraseñas no coinciden"
+            }
+          },
+          "submit": "Actualizar",
+          "conError": "Se perdió la conexión",
+          "success": "Contraseña actualizada!"
+    }
+}
