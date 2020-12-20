@@ -3,7 +3,7 @@ import {SERVER_URL} from "../config";
 import _ from 'lodash';
 import {getAuthConfig} from "./utils";
 
-const GET_REQUESTS_ENDPOINT = "/requests";
+const REQUESTS_ENDPOINT = "/requests";
 const CANCEL_REQUEST_ENDPOINT = (id) => "/requests/" + id + "/cancel";
 const RECOVER_REQUEST_ENDPOINT = (id) => "/requests/" + id + "/recover";
 const REQUESTS_FILTER_ENDPOINT = "/requests/filters";
@@ -31,7 +31,7 @@ export async function getRequests(
                 page, userId, petId, status, searchCriteria, searchOrder
             }
         });
-        const response = await axios.get(SERVER_URL + GET_REQUESTS_ENDPOINT, config);
+        const response = await axios.get(SERVER_URL + REQUESTS_ENDPOINT, config);
         const {list, pages, amount, pagesize} = response.data;
 
         return {
@@ -45,6 +45,15 @@ export async function getRequests(
         }
     } catch (e) {
         throw GET_REQUESTS_ERRORS.CONN_ERROR;
+    }
+}
+
+export async function postRequest(petId, jwt) {
+    const config = getAuthConfig(jwt);
+    try {
+        await axios.post(SERVER_URL+REQUESTS_ENDPOINT, {petId}, config);
+    } catch(e) {
+        throw _.get(e, 'response.data.code', GET_REQUESTS_ERRORS.CONN_ERROR);
     }
 }
 
