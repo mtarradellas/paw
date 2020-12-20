@@ -32,7 +32,7 @@ export async function getPets(
             list: list.map(pet => {
                 return  _.pick(pet, [
                     'breedId', 'departmentId', 'description', 'id', 'petName', 'price', 'provinceId', 'speciesId',
-                    'status', 'uploadDate', 'userId', 'images', 'username', 'gender'
+                    'status', 'uploadDate', 'userId', 'images', 'username', 'gender', 'newOwnerId'
                 ])})
         };
 

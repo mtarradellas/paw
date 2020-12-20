@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useTranslation} from "react-i18next";
 import {List, Button, Modal} from 'antd';
 import {PET, USER} from '../../constants/routes';
+import {requestStatus as REQUEST_STATUS} from '../../constants/requestStatus';
 
 import useLogin from "../../hooks/useLogin";
 
@@ -15,14 +16,6 @@ function RequestNotification(
     const {t} = useTranslation("requests");
 
     const {jwt} = useLogin().state;
-
-    const REQUEST_STATUS = {
-        PENDING: 0,
-        ACCEPTED: 1,
-        REJECTED: 2,
-        CANCELED: 3,
-        SOLD: 4
-    }
 
     const [petStatus, setStatus] = useState(status)
 

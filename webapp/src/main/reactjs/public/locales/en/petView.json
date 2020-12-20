@@ -10,6 +10,16 @@
       "content": "You are about to delete {{name}}, are you sure?",
       "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "requestBtn": {
+        "request": "Request",
+        "loading": "Loading...",
+        "sent": "Sent!",
+        "acquired": "Pet acquired!",
+        "unavailable": "Pet unavailable",
+        "recover": "Recover request",
+        "pending": "Pending request",
+        "rejected": "Request rejected"
     }
   },
   "details": {
@@ -56,5 +66,6 @@
     }
   },
   "goToOwnersPage": "Go to owner's page",
-  "backToHome": "< Back to home"
+  "backToHome": "< Back to home",
+  "connError": "Connection error"
 }
