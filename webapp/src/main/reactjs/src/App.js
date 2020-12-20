@@ -362,6 +362,9 @@ function AppSwitch(){
                                     text={t('serverError')}/>
                 </BasicLayout>
             </Route>
+            <Route path={'/index.html'}>
+                <Redirect to={HOME}/>
+            </Route>
             <Redirect to={ERROR_404}/>
         </Switch>
     </FilterAndSearchContext.Provider>
