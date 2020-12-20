@@ -146,7 +146,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         if (searchCriteria != null ) {
             String orderBy;
             if (searchCriteria.toLowerCase().contains("pet")) orderBy = "petName";
-            else orderBy = "creationDate";
+            else orderBy = "updateDate";
 
             if (searchOrder.toLowerCase().contains("desc")) {
                 sort = queryBuilder.sort().byField(orderBy).desc().andByField("eid");
@@ -187,7 +187,7 @@ public class RequestJpaDaoImpl implements RequestDao {
             Order order;
             Path<Object> orderBy =root.join("pet").get("petName");
             if (searchCriteria.toLowerCase().contains("date")) {
-                orderBy = root.get("creationDate");
+                orderBy = root.get("updateDate");
             }
 
             if (searchOrder.toLowerCase().contains("desc")) {

@@ -118,7 +118,7 @@ function RequestsView() {
     const {requests, fetching, fetchRequests, pages, amount, pageSize} = useRequests();
     const {jwt} = useLogin().state;
 
-    const [appliedFilters, setAppliedFilters] = useState(null);
+    const [appliedFilters, setAppliedFilters] = useState({searchCriteria:"date", searchOrder:"desc"});
     const [currentPage, setCurrentPage] = useState(1);
 
     const fetchPage = page => {
