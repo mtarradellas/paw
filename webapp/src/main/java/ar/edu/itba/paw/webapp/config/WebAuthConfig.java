@@ -60,7 +60,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .authorizeRequests()
-                .antMatchers("/login", "/register").anonymous()
+                .antMatchers("/login", "/register", "/request-password-reset","/password-reset/**").anonymous()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/questions/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/questions/**").authenticated()

@@ -45,6 +45,10 @@ import {
     WRONG_METHOD,
     BAD_REQUEST,
     INTERNAL_SERVER_ERROR,
+    FORGOT_PASSWORD,
+    VERIFY_EMAIL,
+    RESET_PASSWORD,
+    SUCCESS,
     ADMIN_HOME,
     ADMIN_PETS,
     ADMIN_USERS,
@@ -64,7 +68,10 @@ import AddPetView from "./views/addPet/AddPetView";
 import useFormAndSearch from "./hooks/useFormAndSearch";
 import FilterAndSearchContext from './constants/filterAndSearchContext'
 import EditPetView from "./views/editPet/EditPetView";
-
+import ForgotPasswordView from "./views/forgotPassword/ForgotPasswordView";
+import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
+import EmailSent from "./views/information/EmailSent";
+import OperationSuccessful from "./views/information/OperationSuccessful";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -90,12 +97,38 @@ function AppSwitch(){
                 </BasicLayout>
             </Route>
 
-            <PrivateRoute exact path={EDIT_USER} 
-                        component={
-                            () => (<BasicLayout>
-                                    <EditUserView/>
-                                </BasicLayout>)
-                        }
+            <Route exact path={FORGOT_PASSWORD}>
+                <BasicLayout>
+                    <ForgotPasswordView/>
+                </BasicLayout>
+            </Route>
+            <Route path={RESET_PASSWORD + ':token'}
+                   component={
+                       () => {
+                           return <BasicLayout>
+                               <ResetPasswordView/>
+                           </BasicLayout>
+                       }
+                   }/>
+
+            <Route exact path={VERIFY_EMAIL}>
+                <BasicLayout>
+                    <EmailSent/>
+                </BasicLayout>
+            </Route>
+
+            <Route exact path={SUCCESS}>
+                <BasicLayout>
+                    <OperationSuccessful/>
+                </BasicLayout>
+            </Route>
+
+            <PrivateRoute exact path={EDIT_USER}
+                          component={
+                              () => (<BasicLayout>
+                                  <EditUserView/>
+                              </BasicLayout>)
+                          }
             />
 
             <PrivateRoute path={USER + ':id'}
