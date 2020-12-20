@@ -203,47 +203,95 @@
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
     <finalName>webapp</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <configuration>
-<!--            TODO uncomment for production-->
-<!--            <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
+            <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
           </configuration>
-          <version>3.2.2</version>
         </plugin>
+
+        <!--nuevo-->
         <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>1.7.6</version>
+          <executions>
+            <execution>
+              <id>Install node and npm</id>
+              <goals>
+                <goal>install-node-and-npm</goal>
+              </goals>
+              <phase>generate-resources</phase>
+              <configuration>
+                <nodeVersion>v15.4.0</nodeVersion>
+                <npmVersion>7.0.15</npmVersion>
+              </configuration>
+            </execution>
+
+            <execution>
+              <id>npm install all our dependencies</id>
+              <goals>
+                <goal>npm</goal>
+              </goals>
+
+              <phase>generate-resources</phase>
+
+              <configuration>
+                <arguments>install</arguments>
+              </configuration>
+            </execution>
+
+            <execution>
+              <id>npm build our react application</id>
+              <goals>
+                <goal>npm</goal>
+              </goals>
+              <phase>generate-resources</phase>
+              <configuration>
+                <arguments>run build</arguments>
+              </configuration>
+            </execution>
+          </executions>
+
+          <configuration>
+            <workingDirectory>src/main/reactjs</workingDirectory>
+          </configuration>
         </plugin>
+
         <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+
+          <executions>
+            <execution>
+              <id>Copy my react frontend to the static folder of my spring application target folder</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>target/classes/static</outputDirectory>
+                <resources>
+                  <resource>
+                    <directory>src/main/reactjs/build</directory>
+                    <filtering>true</filtering>
+                  </resource>
+                </resources>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
+
       </plugins>
-    </pluginManagement>
   </build>
 </project>

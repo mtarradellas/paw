@@ -1,12 +1,14 @@
 import React, {useEffect, useState, useContext} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
 import {useTranslation} from "react-i18next";
-import {Button, Carousel, Divider, List, Modal, Spin} from "antd";
+import {Button, Divider, List, message, Modal, Spin} from "antd";
 import Questions from "./Questions";
 import {Link} from "react-router-dom";
 import {EDIT_PET, ERROR_404_PET, HOME, USER} from "../../constants/routes";
+import {requestStatus} from '../../constants/requestStatus';
 import _ from 'lodash';
 import {DELETE_PET_ERRORS, getPet, deletePet as deletePetApi} from "../../api/pets";
+import {postRequest, getRequests} from "../../api/requests";
 import {useParams} from 'react-router-dom';
 import {petImageSrc} from "../../api/images";
 import ConstantsContext from '../../constants/constantsContext';
@@ -28,19 +30,16 @@ function ListItemRow({name, value}){
     </ListItem>;
 }
 
-function ImgModal({id, onClose}){
-    console.log(id);
-
+function ImgModal({id, onClose}) {
     return <Modal onCancel={onClose} visible={!_.isNil(id)} showOk={false} footer={null}>
         <img className={"pet-view__modal"} src={petImageSrc(id)} alt={""}/>
     </Modal>
 }
 
 function Content({pet, id, isLogged}){
-    const {t} = useTranslation('petView');
-
     const [selectedImg, setSelectedImg] = useState(null);
     const isAvailable = pet.status === petStatus.AVAILABLE; 
+    const {t} = useTranslation('petView');
 
     const onCloseModal = () => {
         setSelectedImg(null);
@@ -153,9 +152,7 @@ function IsOwnerButtons({petId, petName}){
     const [maskClose, setMaskClose] = React.useState(true);
     const [iconClose, setIconClose] = React.useState(true);
     const [cancelProps, setCancelProps] = React.useState();
-
     const {t} = useTranslation('petView');
-
     const {id: userId, jwt} = state;
 
     const deletePet = async () => {
@@ -219,20 +216,25 @@ function IsOwnerButtons({petId, petName}){
         </>;
 }
 
-function RequestButton(petId) {
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
-
+function RequestButton({petId, text, setText, disabled, setDisabled, loading, setLoading}) {
+    const {jwt} =  useLogin().state;
     const {t} = useTranslation('petView');
 
-    const {userId, jwt} =  useLogin().state;
-
     const requestPet = async () => {
-        console.log('HIIII'); // TODO
+        try {
+            setLoading(true);
+            await postRequest(petId, jwt);
+            setText('buttons.requestBtn.sent');
+            setLoading(false);
+            setDisabled(true);
+
+        } catch(e) {
+            message.error(t('connError'));
+        }
     }
 
     return <>
-        <Button onClick={requestPet}>Request</Button>
+        <Button type="primary" onClick={requestPet} loading={loading} disabled={disabled}>{t(text)}</Button>
     </>
 }
 
@@ -254,29 +256,71 @@ const initialStatePet = {
     images: null
 };
 
-function PetView(){
+function PetView() {
+    const {t} = useTranslation('petView');
     const {state} = useLogin();
     const {id} = useParams();
-
     const [pet, setPet] = useState(initialStatePet);
-
-    const {t} = useTranslation('petView');
-
+    const [reqDisabled, setReqDisabled] = useState(true);
+    const [reqText, setReqText] = useState("buttons.requestBtn.loading");
+    const [reqLoading, setReqLoading] = useState(true);
     const {id: loggedUserId} = state;
+    const {isLoggedIn} = state; 
+    const {jwt} = useLogin().state;
 
-    const {isLoggedIn} = state;
-    
+    const fetchHasRequest = async (available) => {
+        try {
+            const {list} = await getRequests(
+                {page: 1, userId: loggedUserId, petId: id, status: null, searchCriteria: null, searchOrder: null}, jwt
+            );
+            const req = list[0];
+            const status = req && req.status;
+            switch(status) {
+                case requestStatus.SOLD:
+                    setReqText('buttons.requestBtn.acquired');
+                    break;
+                case requestStatus.CANCELED:
+                    if (available) {
+                        setReqText('buttons.requestBtn.recover');
+                        setReqDisabled(false);
+                    } else {
+                        setReqText('buttons.requestBtn.unavailable');
+                    }
+                    break;
+                case requestStatus.PENDING:
+                    setReqText('buttons.requestBtn.pending');
+                    break;
+                case requestStatus.REJECTED:
+                    setReqText('buttons.requestBtn.rejected');
+                    break;
+                default: // No requests sent
+                    if (available) {
+                        setReqDisabled(false);
+                        setReqText('buttons.requestBtn.request');
+                    } else {
+                        setReqText('buttons.requestBtn.unavailable');
+                    }
+            }
+        } catch (e) {
+            message.error(t('connError'));
+        }
+    }
+
     const fetchPet = async () => {
         try{
             const result = await getPet({petId: id});
-            
+
             setPet(result);
+            const isAvailable = result.status === petStatus.AVAILABLE;
+
+            if (jwt !== null) {
+                await fetchHasRequest(isAvailable);
+            }
+            setReqLoading(false);
         }catch (e) {
-            //TODO: conn error
+            message.error(t('connError'));
         }
     };
-
-    const isAvailable = pet.status === petStatus.AVAILABLE;
 
     useEffect(()=>{
         fetchPet();
@@ -294,7 +338,11 @@ function PetView(){
             isOwner ?
                 <IsOwnerButtons petId={id} petName={petName}/>
                 :
-                isLoggedIn && isAvailable ? <RequestButton petId={id}/> : <></>
+                <RequestButton petId={id} 
+                    text={reqText} setText={setReqText} 
+                    disabled={reqDisabled} setDisabled={setReqDisabled} 
+                    loading={reqLoading} setLoading={setReqLoading}
+                />
         }
         title={petName ? t('title', {name: petName}) : <Spin/>}
     />

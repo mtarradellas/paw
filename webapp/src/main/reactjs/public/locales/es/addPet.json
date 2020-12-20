@@ -1,0 +1,64 @@
+{
+  "title": "Agregar mascota",
+  "form": {
+    "petName": {
+      "label": "Nombre",
+      "placeholder": "Nombre de la mascota",
+      "required": "El nombre de la mascota es obligatorio"
+    },
+    "price": {
+      "label": "Precio",
+      "placeholder": "Precio",
+      "required": "El precio es obligatorio si la mascota no esta puesta en adopción"
+    },
+    "isAdoption": {
+      "label": "Poner en adopción"
+    },
+    "description": {
+      "label": "Descripción",
+      "placeholder": "Descripción",
+      "required": "La descripción es obligatoria"
+    },
+    "province": {
+      "label": "Provincia",
+      "placeholder": "Provincia",
+      "required": "La provincia es obligatoria"
+    },
+    "department": {
+      "label": "Department",
+      "placeholder": "Department",
+      "required": "Department is required"
+    },
+    "species": {
+      "label": "Especie",
+      "placeholder": "Especie",
+      "required": "La especie es obligatoria"
+    },
+    "breed": {
+      "label": "Raza",
+      "placeholder": "Raza",
+      "required": "La raza es obligatoria"
+    },
+    "dateOfBirth": {
+      "label": "Fecha de nacimiento",
+      "placeholder": "Fecha de nacimiento",
+      "required": "La fecha de nacimiento es obligatoria"
+    },
+    "isVaccinated": {
+      "label": "Vacunado"
+    },
+    "gender": {
+      "label": "Género",
+      "placeholder": "Género",
+      "required": "El género es obligatorio",
+      "male": "Macho",
+      "female": "Hembra"
+    },
+    "images": {
+      "min": "Pr favor suba como mínimo una imagen"
+    },
+    "upload": "Cargar imagen",
+    "addPet": "Agregar mascota",
+    "send": "Enviar"
+  }
+}

@@ -8,8 +8,18 @@
     "deleteModal": {
       "title": "¿Estás seguro?",
       "content": "Se eliminará su mascota {{name}}, ¿está seguro?",
-      "cancel": "Cancelar",
-      "confirm": "Eliminar"
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
+    },
+    "requestBtn": {
+        "request": "Solicitar",
+        "loading": "Cargando...",
+        "sent": "Solicitud enviada!",
+        "acquired": "Mascota adquirida",
+        "unavailable": "No disponible",
+        "recover": "Recuperar solicitud",
+        "pending": "Solicitud pendiente",
+        "rejected": "Solicitud rechazada"
     }
   },
   "details": {
@@ -56,5 +66,6 @@
     }
   },
   "goToOwnersPage": "Ir a la página del dueño",
-  "backToHome": "< Volver al inicio"
+  "backToHome": "< Volver al inicio",
+  "connError": "Error de conexión"
 }
