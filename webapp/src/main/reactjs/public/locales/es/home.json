@@ -40,5 +40,7 @@
   "sex": {
     "female": "Hembra",
     "male": "Macho"
-  }
+  },
+  "noResultsText": "No se han encontrado resultados",
+  "noResultsBtn": "Volver a Inicio"
 }
