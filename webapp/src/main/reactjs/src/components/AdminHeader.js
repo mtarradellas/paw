@@ -20,7 +20,6 @@ function SearchBar() {
 
     const {
         onSubmitSearch,
-        fetching,
         find
     } = useContext(FilterAndSearchContext);
 
@@ -59,7 +58,7 @@ function SearchBar() {
             </Form.Item>
 
             <Form.Item name>
-                <Button type="primary" htmlType="submit" loading={fetching}>
+                <Button type="primary" htmlType="submit">
                     {t('searchButton')}
                 </Button>
             </Form.Item>
