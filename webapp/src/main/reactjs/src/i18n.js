@@ -23,7 +23,7 @@ i18n
         fallbackLng: 'en',
         debug: false,
         ns: ['addPet', 'admin', 'editPet', 'editUser', 'error-pages', 'footer', 'forgotPassword', 'header', 'home',
-        'informationPages', 'interests', 'login', 'petInformation', 'petView', 'register', 'requests', 'userView'],
+        'informationPages', 'interests', 'login', 'petInformation', 'petView', 'register', 'requests', 'userView', 'common'],
         backend: {
             loadPath: CONTEXT + '/locales/{{lng}}/{{ns}}.json'
         },

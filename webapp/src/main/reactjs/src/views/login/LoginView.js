@@ -15,7 +15,6 @@ function LoginView(){
     const {login: onLogin} = useLogin();
 
     const _onSubmit = async ({username, password, rememberMe}, {setErrors}) => {
-        console.log(rememberMe)
         setSubmitting(true);
         try{
             const jwt = await login({username, password});

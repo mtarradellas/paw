@@ -5,11 +5,12 @@ const ACTIONS = {
     LOGOUT: "LOGOUT",
     LOGIN: "LOGIN",
     PROMPT_LOGIN: "PROMPT_LOGIN",
-    SET_LOGGED_USER: "SET_LOGGED_USER"
+    SET_LOGGED_USER: "SET_LOGGED_USER",
+    SET_NOT_LOGGED_IN: "SET_NOT_LOGGED_IN"
 };
 
 const initialState = {
-    isLoggedIn: false,
+    isLoggedIn: null,
     username: null,
     jwt: null,
     promptLogin: {index: null, path: null},
@@ -21,6 +22,9 @@ const initialState = {
 
 function reducer(state, action){
     switch (action.type){
+        case ACTIONS.SET_NOT_LOGGED_IN: {
+            return Object.assign({}, state, {isLoggedIn: false, isAdmin: false})
+        }
         case ACTIONS.LOGIN: {
             const {username, jwt} = action;
 
@@ -79,6 +83,8 @@ const useLoginState = () => {
                 mail,
                 isAdmin: isAdmin === 'true',
                 status: parseInt(status)})
+        }else{
+            dispatch({type: ACTIONS.SET_NOT_LOGGED_IN})
         }
     }, []);
 

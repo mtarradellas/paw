@@ -32,7 +32,7 @@ const FilterOptionsForm = () => {
         clearFilters
     } = useContext(FilterAndSearchContext);
 
-    const {species, breeds, provinces, departments} = useContext(ConstantsContext);
+    const {species, breeds, provinces, departments, loaded} = useContext(ConstantsContext);
 
     const {t} = useTranslation('home');
 
@@ -46,16 +46,12 @@ const FilterOptionsForm = () => {
 
             setAvailableFilters(newFilters);
 
-            onSubmitFilters(values);
         }catch (e) {
             //TODO: conn error
         }
     };
 
     useEffect(()=>{
-        if(fetching)
-            return;
-        
         fetchFilters(filters);
     }, [filters.find]);
 
@@ -63,6 +59,8 @@ const FilterOptionsForm = () => {
 
     const _onSubmit = async values => {
         const filledFilters = _.pickBy(values, value => value !== -1);
+
+        onSubmitFilters(filledFilters);
 
         await fetchFilters(filledFilters);
     };

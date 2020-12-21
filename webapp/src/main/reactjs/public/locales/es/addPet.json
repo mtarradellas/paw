@@ -56,7 +56,7 @@
     },
     "images": {
       "min": "Pr favor suba como mínimo una imagen",
-      "errorType": "Las imagenes deben ser Jpeg"
+      "errorType": "Las imagenes deben ser .jpeg or .jpg"
     },
     "userId": {
       "label": "Usuario",
@@ -64,6 +64,9 @@
     },
     "upload": "Cargar imagen",
     "addPet": "Agregar mascota",
-    "send": "Enviar"
+    "send": "Enviar",
+    "filesToDelete": {
+      "atLeastOneImage": "La mascota debe tener al menos una imágen"
+    }
   }
 }

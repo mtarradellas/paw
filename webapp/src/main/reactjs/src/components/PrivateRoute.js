@@ -1,6 +1,9 @@
 import React, {useEffect} from 'react';
-import {Route, Redirect} from "react-router-dom";
+import {Redirect, Route} from "react-router-dom";
 import useLogin from "../hooks/useLogin";
+import {Spin} from "antd";
+import _ from 'lodash';
+import {HOME} from "../constants/routes";
 
 const RedirectPromptLogin = () => {
     const {promptLogin} = useLogin();
@@ -12,16 +15,45 @@ const RedirectPromptLogin = () => {
     return <></>;
 };
 
-const PrivateRoute = ({component: Component, ...rest}) => {
+const Admin = ({component: Component}) => {
+    const {state} = useLogin();
+    const {isLoggedIn, isAdmin} = state;
+
+    if(!isLoggedIn)
+        return <RedirectPromptLogin/>;
+
+    if(_.isNil(isAdmin))
+        return <Spin/>;
+
+    return isAdmin ?
+        <Component/>
+        :
+        <Redirect to={HOME}/>;
+};
+
+const NonAdmin = ({component: Component}) => {
+    const {state} = useLogin();
+    const {isLoggedIn} = state;
+
+    return isLoggedIn ?
+        <Component/>
+        :
+        <RedirectPromptLogin/>
+};
+
+const PrivateRoute = ({adminPage, component, ...rest}) => {
     const {state} = useLogin();
     const {isLoggedIn} = state;
 
     return <Route {...rest}>
         {
-            isLoggedIn ?
-                <Component/>
+            _.isNil(isLoggedIn) ?
+                <Spin/>
                 :
-                <RedirectPromptLogin/>
+                adminPage ?
+                    <Admin component={component}/>
+                    :
+                    <NonAdmin component={component}/>
         }
     </Route>;
 

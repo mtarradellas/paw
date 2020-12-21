@@ -359,11 +359,8 @@ public class PetController{
         }
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
 
-        System.out.println("SSSSSSSSSSSSSSSSSSSSSS");
         Map<String, Object> body = new HashMap<>();
         body.put("id", opPet.get().getId());
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("KKKK"+opPet.get().getId());
         return Response.created(petUri).entity(new Gson().toJson(body)).build();
     }
 

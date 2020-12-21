@@ -8,24 +8,14 @@ const usePets = ({additionalFilters}) => {
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null});
 
     const [fetching, setFetching] = useState(false);
-
-    const {breeds, species} = useContext(ConstantsContext);
-
+    
     const fetchPets = async filters => {
         setFetching(true);
 
         try{
             const {amount, list, pages, pageSize} = await getPets(Object.assign({}, filters, additionalFilters));
 
-            const mappedPets = list.map(
-                pet => {
-                    const {breedId, speciesId} = pet;
-
-                    return Object.assign(pet, {breed: breeds[breedId].name, specie: species[speciesId].name})
-                }
-            );
-
-            setPets(mappedPets);
+            setPets(list);
 
             setPaginationInfo({amount, pages, pageSize});
         }catch (e) {

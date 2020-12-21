@@ -170,6 +170,8 @@ function IsOwnerButtons({petId, petName}){
             setIconClose(true);
             setCancelProps({disabled: false});
 
+            setIsModalVisible(false);
+
             history.push(USER + userId);
         }catch (e) {
             setMaskClose(true);

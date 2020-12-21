@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import usePets from "./usePets";
 import {petStatus} from "../constants/petStatus";
 
@@ -38,6 +38,10 @@ function useFormAndSearch(){
 
         await fetchPets({page: 1});
     };
+
+    useEffect(()=>{
+        fetchPets(filters);
+    }, []);
 
     return {
         clearFilters,

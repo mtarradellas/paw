@@ -68,7 +68,7 @@ function EditPetView(){
     const [pet, setPet] = useState(initialStatePet);
     const history = useHistory();
 
-    const {t} = useTranslation('editPet');
+    const {t} = useTranslation(['editPet', 'common']);
 
     const {state, promptLogin} = useLogin();
     const {jwt} = state;
@@ -92,7 +92,6 @@ function EditPetView(){
             await editPet(values, id, jwt);
             history.push(PET + id);
         }catch (e) {
-            console.error(e)
             switch (e) {
                 case EDIT_PET_ERRORS.FORBIDDEN:
                     promptLogin();
@@ -102,7 +101,7 @@ function EditPetView(){
                     break;
                 case EDIT_PET_ERRORS.CONN_ERROR:
                 default:
-                    //TODO: conn error message
+                    message.error(t('common:connError'));
                     break;
             }
         }

@@ -116,7 +116,7 @@ export async function editPet(values, id, jwt) {
     };
 
     try{
-        await axios.post(SERVER_URL + EDIT_PET_ENDPOINT(id), form, config);
+        await axios.post("aa" + SERVER_URL + EDIT_PET_ENDPOINT(id), form, config);
     }catch (e) {
         console.log(e);
         if(e.response.status === 403) throw EDIT_PET_ERRORS.FORBIDDEN;

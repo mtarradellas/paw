@@ -93,7 +93,7 @@ function RequestNotification(
             </div>
         )
 
-    } else if ( petStatus === REQUEST_STATUS.SOLD || petStatus === REQUEST_STATUS.ACCEPTED) {
+    } else if ( petStatus === REQUEST_STATUS.SOLD) {
         shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: petName})}

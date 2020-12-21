@@ -37,6 +37,15 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
     const {t} = useTranslation('addPet');
 
+    const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg"]
+
+    const typeCheck = (val) => {
+        let bool = true
+        for (let i = 0; i < val.length; i++) {
+            bool = bool && SUPPORTED_FORMATS.includes(val[i].type);
+        }
+        return bool;
+    }
     const _onSubmit = values => {
         onSubmit(values);
     };
@@ -77,6 +86,7 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                 filesToDelete: Yup.array(),
                 files: editing ? Yup.array() : Yup.array()
                     .min(1, min => t('form.images.min', {min}))
+                    .test('fileType', t('form.images.errorType'), value => typeCheck(value))
             })
         }
         onSubmit={_onSubmit}
