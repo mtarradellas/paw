@@ -32,7 +32,7 @@ const FilterOptionsForm = () => {
         clearFilters
     } = useContext(FilterAndSearchContext);
 
-    const {species, breeds, provinces, departments} = useContext(ConstantsContext);
+    const {species, breeds, provinces, departments, loaded} = useContext(ConstantsContext);
 
     const {t} = useTranslation('home');
 
@@ -53,11 +53,11 @@ const FilterOptionsForm = () => {
     };
 
     useEffect(()=>{
-        if(fetching)
+        if(fetching || !loaded)
             return;
         
         fetchFilters(filters);
-    }, [filters.find]);
+    }, [filters.find, loaded]);
 
     const {speciesList, breedList, departmentList, provinceList, genderList, rangeList} = availableFilters;
 

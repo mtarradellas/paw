@@ -376,18 +376,11 @@ function App() {
     const login = useLoginState();
     const constants = useConstants();
 
-    const {loaded} = constants;
-
     return (
         <LoginContext.Provider value={login}>
             <ConstantsContext.Provider value={constants}>
                 <Router basename={CONTEXT}>
-                    {
-                        !loaded ?
-                            <Spin/>
-                            :
                             <AppSwitch/>
-                    }
                 </Router>
             </ConstantsContext.Provider>
         </LoginContext.Provider>
