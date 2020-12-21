@@ -3,7 +3,7 @@ import { useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import useLogin from "../../../hooks/useLogin";
 import {CREATE_REQUEST_ERRORS} from "../../../api/admin/requests";
-import {ADMIN_USER} from "../../../constants/routes";
+import {ADMIN_USERS} from "../../../constants/routes";
 import {createUserAdmin} from "../../../api/admin/users";
 import BigCenteredContent from "../../../components/BigCenteredContent";
 import {Formik} from "formik";
@@ -90,7 +90,7 @@ function AdminAddUser(){
         try {
             await createUserAdmin(values.username,values.email,values.password, jwt);
 
-            history.push(ADMIN_USER + id);
+            history.push(ADMIN_USERS);
         } catch (e) {
             switch (e) {
                 case CREATE_REQUEST_ERRORS.CONN_ERROR:
