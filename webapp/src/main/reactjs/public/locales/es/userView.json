@@ -4,7 +4,9 @@
   "averageClarification": "*Solo puede calificar una vez por usuario, y no puede calificarse a usted o a un usuario a quien no le haya comprado/adoptado una mascota",
   "email": "Email",
   "offeredPetsTitle": "Mascotas que este usuario ofrece",
+  "offeredPetsError": "Este usuario no ofrece ninguna mascota",
   "adoptedPetsTitle": "Mascotas que este usuario adoptó",
+  "adoptedPetsError": "Este usuario no adopto ninguna mascota",
   "totalResults": "Resultados totales: {{count}}",
   "reviewsTitle": "Reseñas hechas a este usuario",
   "reviews": {

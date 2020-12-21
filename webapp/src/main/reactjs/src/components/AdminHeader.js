@@ -1,13 +1,71 @@
-import React from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {ADMIN_HOME, LOGIN, REGISTER, ADMIN_REQUESTS, ADMIN_PETS, ADMIN_USERS} from "../constants/routes";
+import {ADMIN_HOME, LOGIN, REGISTER, ADMIN_REQUESTS, ADMIN_PETS, ADMIN_USERS, HOME} from "../constants/routes";
 import {Button} from "antd";
 import useLogin from "../hooks/useLogin";
 
 import '../css/admin/admin.css'
+import FilterAndSearchContext from "../constants/filterAndSearchContext";
+import {Formik} from "formik";
+import * as Yup from "yup";
+import {Form, Input} from "formik-antd";
 
+
+function SearchBar() {
+    const history = useHistory();
+    const {t} = useTranslation('header');
+    const ref = useRef(null);
+
+    const {
+        onSubmitSearch,
+        fetching,
+        find
+    } = useContext(FilterAndSearchContext);
+
+    const onSubmit = values => {
+        onSubmitSearch(values);
+
+        if(history.location !== HOME)
+            history.push(HOME);
+    };
+
+    useEffect(()=>{
+        if(ref.current){
+            ref.current.setFieldValue('find', find);
+        }
+    }, [find]);
+
+    return <Formik
+        innerRef={ref}
+        onSubmit={onSubmit}
+        initialValues={
+            {
+                find
+            }
+        }
+        validationSchema={
+            Yup.object().shape({
+                find: Yup.string()
+            })
+        }
+        validateOnBlur={false}
+        validateOnChange={false}
+    >
+        <Form layout={'inline'}>
+            <Form.Item name={'find'}>
+                <Input name={'find'} placeholder={t('searchPlaceholder')} allowClear/>
+            </Form.Item>
+
+            <Form.Item name>
+                <Button type="primary" htmlType="submit" loading={fetching}>
+                    {t('searchButton')}
+                </Button>
+            </Form.Item>
+        </Form>
+    </Formik>;
+}
 
 function AdminHeader() {
     const {t} = useTranslation('admin');
@@ -51,6 +109,9 @@ function AdminHeader() {
 
             </div>
 
+            <div className={"header__search-bar"}>
+                <SearchBar/>
+            </div>
 
             <div className={"header__username-and-logout"}>
                 <p className={"header__username-and-logout__username"}>

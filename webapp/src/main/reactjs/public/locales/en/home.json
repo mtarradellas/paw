@@ -40,5 +40,7 @@
   "sex": {
     "female": "Female",
     "male": "Male"
-  }
+  },
+  "noResultsText": "No matching items where found",
+  "noResultsBtn": "Back to Home"
 }

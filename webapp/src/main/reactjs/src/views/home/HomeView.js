@@ -1,6 +1,6 @@
 import React, {useState, useContext} from "react";
 import FilterOptionsForm from "./FilterOptionsForm";
-import {Divider, Pagination, Spin} from 'antd';
+import {Button, Divider, Pagination, Spin} from 'antd';
 import _ from 'lodash';
 import "../../css/home/home.css";
 import {useTranslation} from "react-i18next";
@@ -9,7 +9,7 @@ import ContentWithSidebar from "../../components/ContentWithSidebar";
 import FilterAndSearchContext from '../../constants/filterAndSearchContext'
 
 
-function SideContent({}){
+function SideContent(){
     return <div className={"home__filter"}>
         <FilterOptionsForm/>
     </div>;
@@ -18,13 +18,24 @@ function SideContent({}){
 function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setCurrentPage, currentPage}){
     const {t} = useTranslation("home");
 
+    const {clearFilters} = useContext(FilterAndSearchContext);
+
     const _onChangePagination = newValue => {
         setCurrentPage(newValue);
 
         fetchPage(newValue);
     };
 
-    return <div className={"home__pets"}>
+    return <div className={"home__pets"}>{
+
+        fetching ? <Spin/> 
+        :
+        petCount === 0 ? <div className={"empty-home"}> 
+            <div>{t('noResultsText')}</div> 
+            <Button type='primary' onClick={clearFilters}>{t('noResultsBtn')}</Button>
+        </div>
+        :
+        <>
         <h1><b>{t("pets.title")}</b>
             {
                 !_.isNil(petCount) && " (" + t("pets.results-count", {count: petCount}) + ")"
@@ -55,8 +66,8 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
                     </>
             }
         </div>
-
-    </div>
+        </>
+    }</div>
 }
 
 

@@ -17,7 +17,7 @@ import MakeAReview from "./MakeAReview";
 const ListItem = List.Item;
 
 
-function Content({user, id}){
+function Content({user, id}) {
     const [email, setEmail] = useState(null);
 
     const {state, promptLogin} = useLogin();
@@ -54,24 +54,20 @@ function Content({user, id}){
     }, []);
 
     return <>
-        <h1><b>
-            {t('rating')}:</b>  {reviewsPagination.average === null ?
-                <Spin/>
-                :
-            reviewsPagination.amount === 0 ?
-                    t('noReviews')
-                    :
-                    <Rate allowHalf disabled defaultValue={reviewsPagination.average}/>
-            }
-        </h1>
-
-        <p>
-            {
-                reviewsPagination.amount !== 0 && reviewsPagination.amount !== null &&
-                    '(' + t('average', {rating: (Math.floor(reviewsPagination.average * 10) / 10), reviewCount: reviewsPagination.amount}) + ') '
-            }
-            {t('averageClarification')}
-        </p>
+        {
+            reviewsPagination.average === null ? <Spin/> :
+            reviewsPagination.amount === 0 ? <p><i>{t('noReviews')}</i></p> :
+            <>
+                <h2><b>{t('rating')}:</b>  <Rate allowHalf disabled defaultValue={reviewsPagination.average}/></h2>
+                <p>
+                    {
+                        reviewsPagination.amount !== 0 && reviewsPagination.amount !== null &&
+                            '(' + t('average', {rating: (Math.floor(reviewsPagination.average * 10) / 10), reviewCount: reviewsPagination.amount}) + ') '
+                    }
+                    {t('averageClarification')}
+                </p>
+            </>
+        }
 
         <MakeAReview userId={id} refreshReviews={reviewsPagination.refresh}/>
 
@@ -88,14 +84,16 @@ function Content({user, id}){
                         </ListItem>
                     </List>
                     :
-                    t('sensibleInformation')
+                    <i>{t('sensibleInformation')}</i>
         }
 
         <Divider/>
 
-        <OwnedPets userId={id} title={'offeredPetsTitle'} filters={{ownerId: id}}/>
+        <OwnedPets userId={id} title={'offeredPetsTitle'} error={'offeredPetsError'} filters={{ownerId: id}}/>
 
-        <OwnedPets userId={id} title={'adoptedPetsTitle'} filters={{newOwnerId: id}}/>
+        <Divider/>
+
+        <OwnedPets userId={id} title={'adoptedPetsTitle'} error={'adoptedPetsError'} filters={{newOwnerId: id}}/>
 
         <Divider/>
 
