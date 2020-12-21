@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from 'react';
 
 import {Link, useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {ADMIN_HOME, LOGIN, REGISTER, ADMIN_REQUESTS, ADMIN_PETS, ADMIN_USERS, HOME} from "../constants/routes";
+import {ADMIN_HOME, ADMIN_REQUESTS, ADMIN_PETS, ADMIN_USERS, ADMIN_USER} from "../constants/routes";
 import {Button} from "antd";
 import useLogin from "../hooks/useLogin";
 
@@ -27,8 +27,8 @@ function SearchBar() {
     const onSubmit = values => {
         onSubmitSearch(values);
 
-        if(history.location !== HOME)
-            history.push(HOME);
+        if(history.location !== ADMIN_PETS)
+            history.push(ADMIN_PETS);
     };
 
     useEffect(()=>{
@@ -115,7 +115,7 @@ function AdminHeader() {
 
             <div className={"header__username-and-logout"}>
                 <p className={"header__username-and-logout__username"}>
-                    {username}(Admin)
+                    <Link to={ADMIN_USER+id}>{username} (Admin)</Link>
                 </p>
 
                 <Button className={"header__username-and-logout__logout"} onClick={_onLogout}>

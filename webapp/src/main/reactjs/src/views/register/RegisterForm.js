@@ -70,7 +70,7 @@ function RegisterForm({onSubmit, submitting}){
                 </Button>
             </FormItem>
 
-            <p>¿Ya tiene una cuenta? <Link to={LOGIN}>Iniciar sesión</Link></p>
+            <p>{t("form.existingAccount")} <Link to={LOGIN}>{t("form.login")}</Link></p>
         </Form>
     </Formik>
 }

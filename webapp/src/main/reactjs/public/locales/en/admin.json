@@ -5,6 +5,8 @@
   "addRequest": "+ Add Request",
   "addUser": "+ Add User",
   "addPet": "+ Add Pet",
+  "noResults": "No results were found. ",
+  "fetchAll": "Fetch all options",
   "home": {
     "welcome": "Welcome to the admin control page",
     "listsTitle": "Here you can get lists with all the available pets, users and requests, click a button to go to the corresponding page:",

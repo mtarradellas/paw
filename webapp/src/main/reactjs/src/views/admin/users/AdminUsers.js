@@ -6,12 +6,13 @@ import {Button, Col, Divider, Modal, Pagination, Row, Spin} from "antd";
 
 import AdminFilterUsersForm from "./AdminFilterUsersForm";
 
-import {ADMIN_ADD_USER} from "../../../constants/routes";
+import {ADMIN_ADD_USER, ADMIN_REQUESTS, ADMIN_USERS} from "../../../constants/routes";
 import AdminUsersContainer from "./AdminUsersContainer";
 import useAdminUsers from "../../../hooks/admin/useUsers";
 import useLogin from "../../../hooks/useLogin";
 import _ from "lodash";
 import {getAdminUsersFilters} from "../../../api/admin/users";
+import {Link} from "react-router-dom";
 
 function SideContent({filters, changeFilters, setCurrentPage, fetchAdminUsers}) {
     return <AdminFilterUsersForm
@@ -79,10 +80,13 @@ function MainContent({users, userCount, fetching, pages, pageSize, fetchPage, cu
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
             {
-                _.isNil(users) || fetching ?
+                userCount === 0?
+                    (<p>{t("noResults")} <Link to={ADMIN_USERS}>{t("fetchAll")}</Link></p>)
+                    :
+                    (_.isNil(users) || fetching ?
                     <Spin/>
                     :
-                    <AdminUsersContainer users={users} fetchFilters={fetchFilters}/>
+                    <AdminUsersContainer users={users} fetchFilters={fetchFilters}/>)
             }
             <Divider orientation={"left"}>
                 {

@@ -6,11 +6,12 @@ import AdminFilterRequestsForm from "./AdminFilterRequestsForm";
 import {Button, Col, Divider, Modal, Pagination, Row, Spin} from "antd";
 import AdminRequestsContainer from "./AdminRequestsContainer";
 
-import {ADMIN_ADD_REQUEST} from "../../../constants/routes";
+import {ADMIN_ADD_REQUEST, ADMIN_REQUESTS} from "../../../constants/routes";
 import useAdminRequests from "../../../hooks/admin/useRequests";
 import useLogin from "../../../hooks/useLogin";
 import _ from "lodash";
 import {getAdminRequestsFilters} from "../../../api/admin/requests";
+import {Link} from "react-router-dom";
 
 
 function SideContent({filters, changeFilters, setCurrentPage, fetchAdminRequests}) {
@@ -26,7 +27,7 @@ function SideContent({filters, changeFilters, setCurrentPage, fetchAdminRequests
 
 function MainContent(
     {requestsCount, requests, fetching, pages, pageSize, fetchPage, currentPage, setCurrentPage, fetchFilters}
-    ) {
+) {
     const {t} = useTranslation('admin');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -60,7 +61,8 @@ function MainContent(
                             }
                         </b>
                         </h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"} href={ADMIN_ADD_REQUEST}>{t('addRequest')}</Button>
+                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
+                                href={ADMIN_ADD_REQUEST}>{t('addRequest')}</Button>
                     </Row>
                 </Col>
                 <Col>
@@ -83,10 +85,14 @@ function MainContent(
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
             {
-                _.isNil(requests) || fetching ?
-                    <Spin/>
+                requestsCount === 0 ?
+                    (<p>{t("noResults")} <Link to={ADMIN_REQUESTS}>{t("fetchAll")}</Link></p>)
                     :
-                    <AdminRequestsContainer requests={requests} fetchFilters={fetchFilters}/>
+                    (_.isNil(requests) || fetching ?
+                        <Spin/>
+                        :
+                        <AdminRequestsContainer requests={requests} fetchFilters={fetchFilters}/>
+                    )
             }
             <Divider orientation={"left"}>
                 {
@@ -117,7 +123,7 @@ function MainContent(
 }
 
 function AdminRequests() {
-    const {adminRequests,fetchAdminRequests,fetching, pages, amount, pageSize} = useAdminRequests();
+    const {adminRequests, fetchAdminRequests, fetching, pages, amount, pageSize} = useAdminRequests();
 
     const {jwt} = useLogin().state;
 
@@ -134,18 +140,18 @@ function AdminRequests() {
 
     const [filters, setFilters] = useState(null);
     const fetchFilters = async () => {
-        try{
+        try {
             const newFilters = await getAdminRequestsFilters(jwt);
 
             setFilters(newFilters);
-        }catch (e) {
+        } catch (e) {
             //TODO: conn error
         }
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchFilters();
-    },[]);
+    }, []);
 
 
     return (

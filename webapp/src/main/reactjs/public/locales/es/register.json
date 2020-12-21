@@ -37,11 +37,14 @@
         "invalidEmail": "El email debe ser válido",
         "duplicated": "El email no esta disponible"
       }
-    },
-    "submit": "Registrarse",
-    "conError": "Se perdió la conexión"
+    }
   },
+  "submit": "Registrarse",
+  "conError": "Se perdió la conexión",
   "changeUsername" : "Cambiar Usuario",
   "changePassword": "Cambiar Contraseña",
-  "oldPassword": "Contraseña Vieja"
+  "oldPassword": "Contraseña Vieja",
+  "existingAccount": "¿Ya tiene una cuenta?",
+  "login": "Iniciar sesión"
+
 }

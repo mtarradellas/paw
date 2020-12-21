@@ -42,6 +42,8 @@
     "conError": "Connection lost",
     "changeUsername": "Change Username",
     "changePassword": "Change Password",
-    "oldPassword": "Old Password"
+    "oldPassword": "Old Password",
+    "existingAccount": "Already have an account?",
+    "login": "Log in"
   }
 }

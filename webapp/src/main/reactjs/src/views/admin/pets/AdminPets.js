@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 
 import ContentWithSidebar from "../../../components/ContentWithSidebar";
 import {Button, Col, Divider, Modal, Pagination, Row, Spin} from "antd";
-import {ADMIN_ADD_PET} from "../../../constants/routes";
+import {ADMIN_ADD_PET, ADMIN_PETS, ADMIN_REQUESTS} from "../../../constants/routes";
 
 import AdminFilterPetsForm from "./AdminFilterPetsForm";
 import AdminPetsContainer from "./AdminPetsContainer";
@@ -11,6 +11,7 @@ import useLogin from "../../../hooks/useLogin";
 import useAdminPets from "../../../hooks/admin/usePets";
 import _ from "lodash";
 import {getAdminPetsFilters} from "../../../api/admin/pets";
+import {Link} from "react-router-dom";
 
 function SideContent({filters, changeFilters, setCurrentPage, fetchAdminPets, fetchFilters}) {
     return <AdminFilterPetsForm
@@ -89,10 +90,13 @@ function MainContent({
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
             {
-                _.isNil(pets) || fetching ?
+                petCount === 0?
+                    (<p>{t("noResults")} <Link to={ADMIN_PETS}>{t("fetchAll")}</Link></p>)
+                    :
+                    (_.isNil(pets) || fetching ?
                     <Spin/>
                     :
-                    <AdminPetsContainer pets={pets} fetchFilters={fetchFilters}/>
+                    <AdminPetsContainer pets={pets} fetchFilters={fetchFilters}/>)
             }
             <Divider orientation={"left"}>
                 {

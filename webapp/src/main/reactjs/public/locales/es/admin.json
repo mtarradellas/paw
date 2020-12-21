@@ -5,6 +5,8 @@
   "addRequest": "+ Añadir Solicitud",
   "addUser": "+ Añadir Usuario",
   "addPet": "+ Añadir Mascota",
+  "noResults": "No se encontraron resultados. ",
+  "fetchAll": "Buscar todas las opciones",
   "home": {
     "welcome": "Bienvenido a la página de control de administrador",
     "listsTitle": "Aquí puede obtener todas las listas con las mascotas, los usuarios y solicitudes existentes, haga click en uno de los botones para ir a la página correspondiente:",
