@@ -15,7 +15,6 @@ function InterestNotification(
 
     const INTEREST_STATUS = {
         PENDING: 0,
-        ACCEPTED: 1,
         REJECTED: 2,
         CANCELED: 3,
         SOLD: 4
@@ -49,7 +48,7 @@ function InterestNotification(
             try{
                 await acceptInterest(id,jwt);
                 fetchFilters();
-                setStatus(INTEREST_STATUS.ACCEPTED);
+                setStatus(INTEREST_STATUS.SOLD);
             }catch (e){
                 console.log(e)
             }
@@ -101,7 +100,7 @@ function InterestNotification(
             </div>
         )
 
-    } else if (petStatus === INTEREST_STATUS.SOLD || petStatus === INTEREST_STATUS.ACCEPTED) {
+    } else if (petStatus === INTEREST_STATUS.SOLD) {
         shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: petName, username: username})}

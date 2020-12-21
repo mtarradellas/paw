@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import ContentWithSidebar from "../../components/ContentWithSidebar";
-
 import {useTranslation} from "react-i18next";
-
 import "../../css/requests&interests/requests-interests.css"
 import FilterInterestsForm from "./FilterInterestsForm";
 import {Button, Col, Divider, Modal, Pagination, Row, Spin} from "antd";
@@ -11,6 +9,8 @@ import useInterests from "../../hooks/useInterests";
 import _ from "lodash";
 import useLogin from "../../hooks/useLogin";
 import {getInterestsFilters} from "../../api/interests";
+import {ADD_PET} from "../../constants/routes";
+import {Link} from "react-router-dom";
 
 function SideContent({filters,fetchInterests,changeFilters,setCurrentPage,fetchFilters}) {
     return (<div>
@@ -49,7 +49,12 @@ function MainContent(
         fetchPage(newValue);
     };
 
-    return (<div>
+    return (<>{ fetching ? <Spin/> : 
+        interestsCount === 0 ? <div className={"requests-interests__empty-interests"}> 
+        <div>{t('noResultsText')}</div> 
+        <Link to={ADD_PET}><Button type='primary'>{t('noResultsBtn')}</Button></Link>
+    </div> :
+        <div>
         <Row style={{margin: 0, padding: 0}}>
             <Col span={23}>
                 <h1><b>
@@ -107,7 +112,7 @@ function MainContent(
                 <p>{t("modals.helpModal.secondDesc")}</p>
             </div>
         </Modal>
-    </div>)
+    </div>}</>)
 }
 
 function InterestsView() {
