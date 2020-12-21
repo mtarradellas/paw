@@ -6,6 +6,7 @@ import ListContainer from "../../../components/ListContainer";
 import {ADMIN_PET, ADMIN_USER, ADMIN_EDIT_REQUEST} from "../../../constants/routes";
 import useLogin from "../../../hooks/useLogin";
 import {editAdminRequest} from "../../../api/admin/requests";
+import moment from "moment";
 
 
 function Request(
@@ -26,11 +27,7 @@ function Request(
 
     let reqTarget = (
         <p>{t("requestsList.isInterested", {petName: petName, username: username})}
-            <small className={"date-text"}> {t("date", {
-                day: updateDate.date.day,
-                month: updateDate.date.month,
-                year: updateDate.date.year
-            })} </small>
+            <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             (id: {id})
         </p>
 

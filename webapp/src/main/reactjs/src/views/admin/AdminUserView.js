@@ -40,7 +40,7 @@ function Content({user, id, email}) {
         <p>
             {
                 reviewsPagination.amount !== 0 && reviewsPagination.amount !== null &&
-                '(' + t('average', {rating: reviewsPagination.average, reviewCount: reviewsPagination.amount}) + ') '
+                '(' + t('average', {rating: (Math.floor(reviewsPagination.average * 10) / 10), reviewCount: reviewsPagination.amount}) + ') '
             }
             {t('averageClarification')}
         </p>
