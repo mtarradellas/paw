@@ -3,35 +3,55 @@ import {useTranslation} from "react-i18next";
 import {Button, List, Modal} from "antd";
 
 import {ADMIN_USER, ADMIN_PET, ADMIN_EDIT_PET} from "../../../constants/routes";
-import {Link} from "react-router-dom";
 import ListContainer from "../../../components/ListContainer";
+import useLogin from "../../../hooks/useLogin";
+import {recoverPetAdmin, removePetAdmin} from "../../../api/admin/pets";
 
 
-function Pet({id, name, ownerId, status, modal}){
+function Pet({id, petName, userId, status, modal, fetchFilters}){
     const {t} = useTranslation("admin");
 
+    const imgSrc = "http://pawserver.it.itba.edu.ar/paw-2020a-7/img/"+id;
     let reqTarget = (
 
-        <p> <img width={"70px"} alt="example" src="http://pawserver.it.itba.edu.ar/paw-2020a-7/img/1" />
-            {name} (id: {id})</p>
+        <p>
+            {/*<img width={"70px"} alt="pet_photo" src={imgSrc} />*/}
+            &nbsp;&nbsp;{petName} (id: {id})</p>
 
     );
+
+    const {jwt} = useLogin().state;
+
+    const PET_STATUS = {
+        AVAILABLE: 0,
+        REMOVED: 1,
+        SOLD: 2,
+        UNAVAILABLE: 3
+    }
+
+    const [petStatus, setPetStatus] = useState(status)
+
     let reqStatus = null;
     let reqButtons = null;
     let shaded = false;
 
-    if (status === "AVAILABLE") {
-        const onConfirm = () => {
-            alert("deleted" + id)
+    if (petStatus === PET_STATUS.AVAILABLE || petStatus === PET_STATUS.UNAVAILABLE) {
+        const onConfirm = async () => {
+            try{
+                await removePetAdmin(id, jwt)
+                fetchFilters();
+                setPetStatus(PET_STATUS.REMOVED);
+            }catch (e){
+                console.log(e)
+            }
         }
-
         const modalMessage = t("modals.deletePet")
 
         reqButtons = (
             <div className={"button-container"}>
                 <Button type={"primary"} href={ADMIN_PET + id}>{t("buttons.visitPet")}</Button>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + ownerId}>{t("buttons.visitOwner")}</Button>
+                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitOwner")}</Button>
                 &nbsp;&nbsp;
                 <Button type={"primary"} href={ADMIN_EDIT_PET + id}>{t("buttons.edit")}</Button>
                 &nbsp;&nbsp;
@@ -39,30 +59,16 @@ function Pet({id, name, ownerId, status, modal}){
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.remove")}</Button>
             </div>
         )
-    }else if (status === "UNAVAILABLE") {
+    }else if (petStatus === PET_STATUS.SOLD || petStatus === PET_STATUS.REMOVED) {
         shaded = true
-        const onConfirm = () => {
-            alert("deleted" + id)
-        }
-
-        const modalMessage = t("modals.deletePet")
-
-        reqButtons = (
-            <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + id}>{t("buttons.visitPet")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + ownerId}>{t("buttons.visitOwner")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_PET + id}>{t("buttons.edit")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} danger
-                        onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.remove")}</Button>
-            </div>
-        )
-    } else if (status === "SOLD" || status === "REMOVED") {
-        shaded = true
-        const onConfirm = () => {
-            alert("recovered" + id)
+        const onConfirm = async () => {
+            try{
+                await recoverPetAdmin(id, jwt)
+                fetchFilters();
+                setPetStatus(PET_STATUS.AVAILABLE);
+            }catch (e){
+                console.log(e)
+            }
         }
 
         const modalMessage = t("modals.recoverPet")
@@ -71,7 +77,7 @@ function Pet({id, name, ownerId, status, modal}){
             <div className={"button-container"}>
                 <Button type={"primary"} href={ADMIN_PET + id}>{t("buttons.visitPet")}</Button>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + ownerId}>{t("buttons.visitOwner")}</Button>
+                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitOwner")}</Button>
                 &nbsp;&nbsp;
                 <Button type={"primary"} href={ADMIN_EDIT_PET + id}>{t("buttons.edit")}</Button>
                 &nbsp;&nbsp;
@@ -89,7 +95,7 @@ function Pet({id, name, ownerId, status, modal}){
 }
 
 
-function AdminPetsContainer({pets}){
+function AdminPetsContainer({pets, fetchFilters}){
     const {t} = useTranslation("admin");
 
     const [modalState, setModalState] = useState({show: false, callbackMethod: null, modalMessage: ""});
@@ -112,7 +118,10 @@ function AdminPetsContainer({pets}){
                         .map(
                             (pet) => (
                                 <List.Item key={pet.id}>
-                                    <Pet modal={showModal} {...pet} />
+                                    <Pet
+                                        modal={showModal}
+                                        fetchFilters={fetchFilters}
+                                        {...pet} />
                                 </List.Item>
                             )
                         )

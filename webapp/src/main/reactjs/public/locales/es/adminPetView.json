@@ -1,0 +1,20 @@
+{
+  "status": {
+    "available": "Disponible",
+    "removed": "Removida",
+    "sold": "Vendida",
+    "unavailable": "No Disponible"
+  },
+  "buttons": {
+    "edit": "Editar",
+    "recover": "Recuperar",
+    "remove": "Remover",
+    "cancel": "Cancelar",
+    "imSure": "Estoy Seguro"
+  },
+  "modals": {
+    "pleaseConfirm": "Por favor confirme su acción",
+    "removePet":"¿Estás seguro que deseas remover esta mascota?",
+    "recoverPet": "¿Estás seguro que deseas recuperar esta mascota?"
+  }
+}

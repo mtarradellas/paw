@@ -1,0 +1,20 @@
+{
+  "status": {
+    "available": "Available",
+    "removed": "Removed",
+    "sold": "Sold",
+    "unavailable": "Unavailable"
+  },
+  "buttons": {
+    "edit": "Edit",
+    "recover": "Recover",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "imSure": "I'm sure"
+  },
+  "modals": {
+    "pleaseConfirm": "Please confirm your action",
+    "removePet":"Are you sure you want to remove this pet?",
+    "recoverPet": "Are you sure you want to recover this pet?"
+  }
+}

@@ -67,5 +67,7 @@
     "canceled": "{{username}} estaba interesado en {{petName}} y canceló la solicitud",
     "sold": "{{username}} esta interesado en {{petName}}"
   },
-  "date": "{{day}}-{{month}}-{{year}}"
+  "date": "{{day}}-{{month}}-{{year}}",
+  "noResultsBtn": "Agregar mascota",
+  "noResultsText": "Ningún usuario está interesado en tus mascotas"
 }
