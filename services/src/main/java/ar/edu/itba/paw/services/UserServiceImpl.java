@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import ar.edu.itba.paw.models.constants.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,6 @@ import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
 import ar.edu.itba.paw.interfaces.exceptions.UserException;
 import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.MailArg;
-import ar.edu.itba.paw.models.constants.MailType;
-import ar.edu.itba.paw.models.constants.RequestStatus;
-import ar.edu.itba.paw.models.constants.UserStatus;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -112,8 +109,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Map<MailArg, Object> arguments = new HashMap<>();
-        String urlToken = contextURL + "activate-account";
-        urlToken += "?token=" + uuid;
+        String urlToken = contextURL + MailUrl.ACTIVATE_AC.getUrl() + uuid;
 
         arguments.put(MailArg.TOKEN, urlToken );
         arguments.put(MailArg.USERNAME,user.getUsername());
@@ -237,8 +233,7 @@ public class UserServiceImpl implements UserService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        String urlToken = contextURL + "password-reset";
-        urlToken += "?token=" + token;
+        String urlToken = contextURL + MailUrl.RESET_PASS.getUrl() + token;
 
         arguments.put(MailArg.TOKEN, urlToken );
         arguments.put(MailArg.USERNAME,user.getUsername());

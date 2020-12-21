@@ -100,7 +100,7 @@ public class QuestionController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         try {
-            opNewQuestion = petService.createQuestion(question.getContent(), loggedUser.getId(), question.getPetId(), uriInfo.getBaseUri().toString());
+            opNewQuestion = petService.createQuestion(question.getContent(), loggedUser.getId(), question.getPetId(), ApiUtils.frontUri(uriInfo));
         } catch(NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
@@ -165,7 +165,7 @@ public class QuestionController {
         }
         Optional<Answer> opNewAnswer;
         try {
-            opNewAnswer = petService.createAnswer(questionId, answer.getContent(), loggedUser.getId(), uriInfo.getBaseUri().toString());
+            opNewAnswer = petService.createAnswer(questionId, answer.getContent(), loggedUser.getId(), ApiUtils.frontUri(uriInfo));
         } catch(NotFoundException ex) {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();

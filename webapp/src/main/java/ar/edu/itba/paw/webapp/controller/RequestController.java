@@ -151,7 +151,7 @@ public class RequestController {
 
         Optional<Request> opRequest;
         try {
-             opRequest = requestService.create(locale, currentUser.getId(), requestDto.getPetId(), uriInfo.getBaseUri().toString());
+             opRequest = requestService.create(locale, currentUser.getId(), requestDto.getPetId(), ApiUtils.frontUri(uriInfo));
         } catch (DataIntegrityViolationException | NotFoundException | RequestException ex) {
             LOGGER.warn("Request creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
@@ -278,7 +278,7 @@ public class RequestController {
         User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
-            if (requestService.cancel(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
+            if (requestService.cancel(requestId, currentUser.getId(), ApiUtils.frontUri(uriInfo))) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException | RequestException ex) {
@@ -296,7 +296,7 @@ public class RequestController {
         User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
-            if (requestService.recover(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
+            if (requestService.recover(requestId, currentUser.getId(), ApiUtils.frontUri(uriInfo))) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException | RequestException ex) {
@@ -314,7 +314,7 @@ public class RequestController {
         User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
-            if (requestService.accept(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
+            if (requestService.accept(requestId, currentUser.getId(), ApiUtils.frontUri(uriInfo))) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException | RequestException ex) {
@@ -332,7 +332,7 @@ public class RequestController {
         User currentUser = ApiUtils.loggedUser(httpRequest, userService, auth);
 
         try {
-            if (requestService.reject(requestId, currentUser.getId(), uriInfo.getBaseUri().toString())) {
+            if (requestService.reject(requestId, currentUser.getId(), ApiUtils.frontUri(uriInfo))) {
                 return Response.noContent().build();
             }
         } catch (NotFoundException | RequestException ex) {
