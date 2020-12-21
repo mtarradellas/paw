@@ -42,3 +42,5 @@ target/
 # Local Tomcat Scripts
 launch-tomcat.sh
 stop-tomcat.sh
+
+webapp/src/main/reactjs/node/*
