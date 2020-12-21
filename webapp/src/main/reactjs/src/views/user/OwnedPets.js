@@ -5,7 +5,7 @@ import usePets from "../../hooks/usePets";
 import {useTranslation} from "react-i18next";
 import PetCard from "../home/PetCard";
 
-function OwnedPets({userId, title, filters}){
+function OwnedPets({userId, title, error, filters}){
     const {t} = useTranslation('userView');
 
     const {pets, fetchPets, fetching, amount, pageSize} = usePets({});
@@ -21,13 +21,17 @@ function OwnedPets({userId, title, filters}){
         _onChangePagination(1);
     }, []);
 
-    return <>
-            <h1><b>{t(title)}</b> {
+    return <>{
+        pets === null ? <Spin/> :
+        amount === 0 ? <p><i>{t(error)}</i></p>
+        :
+        <>
+            <h2><b>{t(title)}</b> {
                 pets === null ?
                     <Spin/>
                     :
                     '(' + t('totalResults', {count: amount}) + ')'
-            }</h1>
+            }</h2>
 
             <div className={"user-view--pets-container"}>
                 <Divider orientation={"left"}>
@@ -50,6 +54,7 @@ function OwnedPets({userId, title, filters}){
                 </Divider>
             </div>
         </>
+    }</>
 }
 
 export default OwnedPets;
