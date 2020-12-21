@@ -2,6 +2,9 @@ form.add-pet-form {
     display: flex;
     flex-flow: row;
     flex-wrap: wrap;
+    justify-content: space-between;
+
+    margin-top: 3rem;
 }
 
 .add-pet-form__group {
