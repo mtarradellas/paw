@@ -90,7 +90,7 @@ function AdminAddUser(){
         try {
             await createUserAdmin(values.username,values.email,values.password, jwt);
 
-            history.push(ADMIN_USER + id);
+            history.push(ADMIN_USER);
         } catch (e) {
             switch (e) {
                 case CREATE_REQUEST_ERRORS.CONN_ERROR:

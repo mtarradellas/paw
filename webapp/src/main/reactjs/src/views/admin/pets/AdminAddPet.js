@@ -97,6 +97,11 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                             min={0}
                         />
                     </FormItem>
+
+                    <FormItem name={"isAdoption"} label={t('form.isAdoption.label')}>
+                        <Checkbox name={"isAdoption"} onChange={()=>setFieldValue('price', 0)}/>
+                    </FormItem>
+
                     <FormItem name={"userId"} label={t('form.userId.label')}>
                         <Select name={"userId"} placeholder={t('form.userId.label')}>
                             {
@@ -106,10 +111,6 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                                 })
                             }
                         </Select>
-                    </FormItem>
-
-                    <FormItem name={"isAdoption"} label={t('form.isAdoption.label')}>
-                        <Checkbox name={"isAdoption"} onChange={()=>setFieldValue('price', 0)}/>
                     </FormItem>
 
                     <FormItem name={"description"} label={t('form.description.label')}>
