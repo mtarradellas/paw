@@ -8,6 +8,7 @@ import useLogin from "../../hooks/useLogin";
 
 import {acceptInterest,rejectInterest} from "../../api/interests";
 import moment from "moment";
+import {Link} from "react-router-dom";
 
 function InterestNotification(
     {id,creationDate, updateDate, status, username, userId, petName, petId, modal, fetchFilters}) {
@@ -37,9 +38,13 @@ function InterestNotification(
         reqStatus = <p>{t("status.rejected")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
             </div>
         )
     } else if (petStatus === INTEREST_STATUS.PENDING) {
@@ -73,9 +78,13 @@ function InterestNotification(
         reqStatus = <p>{t("status.pending")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger onClick={() => modal(onConfirmAccept, modalMessageAccept)}>{t("buttons.accept")}</Button>
                 &nbsp;&nbsp;
@@ -92,9 +101,13 @@ function InterestNotification(
         reqStatus = <p>{t("status.canceled")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
             </div>
         )
 
@@ -107,9 +120,13 @@ function InterestNotification(
         reqStatus = <p>{t("status.sold")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
             </div>
         )
     }

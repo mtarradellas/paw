@@ -10,6 +10,7 @@ import {cancelRequest, recoverRequest} from "../../api/requests";
 
 import ListContainer from '../../components/ListContainer'
 import moment from "moment";
+import {Link} from "react-router-dom";
 
 function RequestNotification(
     {id, creationDate, updateDate, status, username, userId, petName, petId, modal, fetchFilters}) {
@@ -33,7 +34,9 @@ function RequestNotification(
         reqStatus = <p>{t("status.rejected")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
             </div>
         )
     } else if (petStatus === REQUEST_STATUS.PENDING) {
@@ -57,7 +60,9 @@ function RequestNotification(
         reqStatus = <p>{t("status.pending")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.cancel")}</Button>
             </div>
@@ -85,7 +90,9 @@ function RequestNotification(
         reqStatus = <p>{t("status.canceled")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
@@ -100,9 +107,13 @@ function RequestNotification(
         reqStatus = <p>{t("status.sold")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={PET + petId}>
+                <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={USER + userId}>{t("buttons.visitOwner")}</Button>
+                <Link to={USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitOwner")}</Button>
+                </Link>
             </div>
         )
     }
