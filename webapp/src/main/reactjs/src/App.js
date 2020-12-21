@@ -213,7 +213,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_ADD_REQUEST}
+            <PrivateRoute adminPage path={ADMIN_ADD_REQUEST}
                           component={
                               () => (
                                   <AdminLayout>

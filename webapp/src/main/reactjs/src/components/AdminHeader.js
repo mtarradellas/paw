@@ -12,6 +12,8 @@ import {Formik} from "formik";
 import * as Yup from "yup";
 import {Form, Input} from "formik-antd";
 
+import Logo from '../images/logo.png'
+
 
 function SearchBar() {
     const history = useHistory();
@@ -80,7 +82,7 @@ function AdminHeader() {
     return (
         <header className={"admin-header"}>
             <Link to={ADMIN_HOME} className={"header__logo"} >
-                <img src={"/logo.png"} alt={"logo"}/>
+                <img src={Logo} alt={"logo"}/>
             </Link>
 
             <Link to={ADMIN_HOME} className={"header__title"}>
