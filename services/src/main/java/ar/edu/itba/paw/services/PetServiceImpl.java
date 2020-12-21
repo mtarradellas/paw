@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import ar.edu.itba.paw.models.constants.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +34,6 @@ import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.MailArg;
-import ar.edu.itba.paw.models.constants.MailType;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.models.constants.PriceRange;
-import ar.edu.itba.paw.models.constants.QuestionStatus;
-import ar.edu.itba.paw.models.constants.UserStatus;
 
 @Service
 public class PetServiceImpl implements PetService {
@@ -510,7 +505,7 @@ public class PetServiceImpl implements PetService {
 
             Map<MailArg, Object> arguments = new HashMap<>();
 
-            arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
+            arguments.put(MailArg.PETURL, contextURL + MailUrl.PET.getUrl() + pet.getId());
             arguments.put(MailArg.PETNAME, pet.getPetName());
             arguments.put(MailArg.OWNERURL, contextURL + "users/" + pet.getUser().getId());
             arguments.put(MailArg.OWNERNAME, pet.getUser().getUsername());
@@ -679,9 +674,8 @@ public class PetServiceImpl implements PetService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + MailUrl.PET.getUrl() + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.USERURL, contextURL + "users/" + user.getId()); // User who asked the question
         arguments.put(MailArg.USERNAME, user.getUsername()); // User who asked the question
         arguments.put(MailArg.QUESTION, content);
 
@@ -718,9 +712,8 @@ public class PetServiceImpl implements PetService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + MailUrl.PET.getUrl() + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.USERURL, contextURL + "users/" + user.getId()); // User who answered the question (pet owner)
         arguments.put(MailArg.USERNAME, user.getUsername()); // User who answered the question (pet owner)
         arguments.put(MailArg.QUESTION, question.getContent());
         arguments.put(MailArg.ANSWER, content);

@@ -87,7 +87,7 @@ function AdminHeader() {
 
             <Link to={ADMIN_HOME} className={"header__title"}>
             <span>
-                PET SOCIETY
+                PS ADMIN
             </span>
             </Link>
 
@@ -116,7 +116,7 @@ function AdminHeader() {
 
             <div className={"header__username-and-logout"}>
                 <p className={"header__username-and-logout__username"}>
-                    <Link to={ADMIN_USER+id}>{username} (Admin)</Link>
+                    <Link to={ADMIN_USER+id}>{username}</Link>
                 </p>
 
                 <Button className={"header__username-and-logout__logout"} onClick={_onLogout}>

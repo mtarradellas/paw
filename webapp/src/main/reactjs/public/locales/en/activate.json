@@ -1,0 +1,6 @@
+{
+  "title": "Account activated",
+  "content": "Congratulations, your account has been activated, please login to access all the site's features",
+  "link": "Go to login",
+  "error": "There was an error when trying to activate your account"
+}

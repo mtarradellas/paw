@@ -25,7 +25,6 @@ function RequestNotification(
     let shaded = false;
 
     if (petStatus === REQUEST_STATUS.REJECTED) {
-        shaded = true;
         reqTarget = (
             <p>{t("messages.rejected", {petName: petName})}
                 <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
@@ -65,7 +64,6 @@ function RequestNotification(
         )
 
     } else if (petStatus === REQUEST_STATUS.CANCELED) {
-        shaded = true;
         const onConfirm = async () => {
             try{
                 await recoverRequest(id, jwt);
@@ -94,7 +92,6 @@ function RequestNotification(
         )
 
     } else if ( petStatus === REQUEST_STATUS.SOLD) {
-        shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: petName})}
                 <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>

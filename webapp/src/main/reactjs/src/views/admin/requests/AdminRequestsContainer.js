@@ -37,7 +37,6 @@ function Request(
     let shaded = false;
 
     if (requestStatus === REQUEST_STATUS.REJECTED) {
-        shaded = true
         const onConfirm = async () => {
             try{
                 await editAdminRequest(REQUEST_STATUS.PENDING, id, jwt)
@@ -91,7 +90,6 @@ function Request(
         )
 
     } else if (requestStatus === REQUEST_STATUS.CANCELED) {
-        shaded = true;
         const onConfirm = async () => {
             try{
                 await editAdminRequest( REQUEST_STATUS.PENDING, id, jwt)
@@ -119,7 +117,6 @@ function Request(
         )
 
     } else if (requestStatus === REQUEST_STATUS.SOLD || requestStatus === REQUEST_STATUS.ACCEPTED) {
-        shaded = true;
         const onConfirm = async () => {
             try{
                 await editAdminRequest(REQUEST_STATUS.PENDING, id, jwt)

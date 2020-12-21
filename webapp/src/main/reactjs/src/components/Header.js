@@ -3,7 +3,7 @@ import '../css/header.css';
 import {Link} from "react-router-dom";
 import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS, ADD_PET, USER} from "../constants/routes";
 import {useTranslation} from "react-i18next";
-import {Badge, Button} from "antd";
+import {Badge, Button, Row} from "antd";
 import useLogin from "../hooks/useLogin";
 import * as Yup from 'yup';
 import {Formik} from "formik";
@@ -26,11 +26,11 @@ function LoggedInMenuItems() {
     const {interests, requests} = notifications;
 
     const fetchNotifications = async () => {
-        try{
+        try {
             const {interests, requests} = await getNotifications(jwt);
 
             setNotifications({interests, requests});
-        }catch (e) {
+        } catch (e) {
             //TODO: conn error
         }
     };
@@ -41,7 +41,7 @@ function LoggedInMenuItems() {
 
     return <>
 
-        <div className={"header__menu-items__item"}>
+        <div className={"header__menu-items__item lower__item"}>
             <Badge count={_.isNil(requests) ? 0 : requests}>
                 <Link to={REQUESTS}>
                     {t('requests')}
@@ -49,7 +49,7 @@ function LoggedInMenuItems() {
             </Badge>
         </div>
 
-        <div className={"header__menu-items__item"}>
+        <div className={"header__menu-items__item lower__item"}>
             <Badge count={_.isNil(interests) ? 0 : interests}>
                 <Link to={INTERESTS}>
                     {t('interests')}
@@ -66,7 +66,7 @@ function LoggedInMenuItems() {
     </>
 }
 
-function RegisterAndLogin(){
+function RegisterAndLogin() {
     const {t} = useTranslation('header');
 
     return <>
@@ -82,26 +82,30 @@ function RegisterAndLogin(){
     </>
 }
 
-function UsernameAndLogout(){
+function UsernameAndLogout() {
     const {t} = useTranslation('header');
     const {state, logout} = useLogin();
 
     const {username} = state;
+
+    const {id} = useLogin().state;
 
     const _onLogout = () => {
         logout();
     };
 
     return <>
-        <div className={"header__username-and-logout"}>
+        <div className={"header__username-and-logout upper__item"}>
 
-            <p className={"header__username-and-logout__username"}>
-                {username}
-            </p>
+            <Row>
+                <p className={"header__username-and-logout__username"}>
+                    <Link style={{margin: '1rem'}} to={USER + id}>{username}</Link>
+                </p>
 
-            <Button className={"header__username-and-logout__logout"} onClick={_onLogout}>
-                {t('logout')}
-            </Button>
+                <Button className={"header__username-and-logout__logout"} onClick={_onLogout}>
+                    {t('logout')}
+                </Button>
+            </Row>
 
         </div>
     </>
@@ -121,12 +125,12 @@ function SearchBar() {
     const onSubmit = values => {
         onSubmitSearch(values);
 
-        if(history.location !== HOME)
+        if (history.location !== HOME)
             history.push(HOME);
     };
 
-    useEffect(()=>{
-        if(ref.current){
+    useEffect(() => {
+        if (ref.current) {
             ref.current.setFieldValue('find', find);
         }
     }, [find]);
@@ -146,18 +150,18 @@ function SearchBar() {
         }
         validateOnBlur={false}
         validateOnChange={false}
-        >
-            <Form layout={'inline'}>
-                <Form.Item name={'find'}>
-                    <Input name={'find'} placeholder={t('searchPlaceholder')} allowClear/>
-                </Form.Item>
+    >
+        <Form layout={'inline'}>
+            <Form.Item name={'find'}>
+                <Input name={'find'} placeholder={t('searchPlaceholder')} allowClear/>
+            </Form.Item>
 
-                <Form.Item name>
-                    <Button type="primary" htmlType="submit" loading={fetching}>
-                        {t('searchButton')}
-                    </Button>
-                </Form.Item>
-            </Form>
+            <Form.Item name>
+                <Button type="primary" htmlType="submit" loading={fetching}>
+                    {t('searchButton')}
+                </Button>
+            </Form.Item>
+        </Form>
     </Formik>;
 }
 
@@ -169,7 +173,8 @@ function Header() {
     const {isLoggedIn} = state;
 
     return <header>
-        <Link to={HOME} className={"header__logo"}>
+
+        <Link to={HOME} className={"header__logo"} >
             <img src={Logo} alt={"logo"} width={70} height={70}/>
         </Link>
 
@@ -178,6 +183,7 @@ function Header() {
                 PET SOCIETY
             </span>
         </Link>
+
 
         <div className={"header__menu-items"}>
             <div className={"header__menu-items__item"}>
@@ -193,8 +199,8 @@ function Header() {
             <SearchBar/>
         </div>
 
-        {isLoggedIn ? <UsernameAndLogout/> : <RegisterAndLogin/>}
 
+        {isLoggedIn ? <UsernameAndLogout/> : <RegisterAndLogin/>}
     </header>;
 }
 

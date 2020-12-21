@@ -1,6 +1,6 @@
 header {
     background-color: #222831;
-    height: 130px;
+    height: 150px;
 
     display: grid;
     grid-template-areas: "logo title menu-items search login";
@@ -42,8 +42,17 @@ header {
 
 .header__menu-items__item a {
     display: block;
-    margin-left: 0.5rem;
+    margin-left: 1rem;
     color: white;
+    font-size: 1.5rem
+}
+
+.lower__item{
+    margin-top: 0.44rem;
+}
+
+.upper__item{
+    margin-bottom:2rem;
 }
 
 .header__search-bar {
@@ -83,7 +92,7 @@ header {
 
 @media only screen and (max-width: 1400px) {
     header {
-        height: 200px;
+        height: 250px;
 
         display: grid;
         grid-template-areas: "logo        title       login   login" "menu-items  menu-items  search  search";
@@ -112,7 +121,7 @@ header {
 
 @media only screen and (max-width: 700px) {
     header {
-        height: 300px;
+        height: 350px;
 
         display: grid;
         grid-template-areas: "logo"
@@ -148,4 +157,5 @@ header {
     .header__username-and-logout__username {
         margin: inherit;
     }
+
 }

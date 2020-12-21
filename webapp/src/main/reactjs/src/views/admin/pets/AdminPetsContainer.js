@@ -11,12 +11,17 @@ import {recoverPetAdmin, removePetAdmin} from "../../../api/admin/pets";
 function Pet({id, petName, userId, status, modal, fetchFilters}){
     const {t} = useTranslation("admin");
 
-    const imgSrc = "http://pawserver.it.itba.edu.ar/paw-2020a-7/img/"+id;
+    const statusLocale = [
+        t("status.available"),
+        t("status.removed"),
+        t("status.sold"),
+        t("status.unavailable")
+    ]
+
     let reqTarget = (
 
         <p>
-            {/*<img width={"70px"} alt="pet_photo" src={imgSrc} />*/}
-            &nbsp;&nbsp;{petName} (id: {id})</p>
+            &nbsp;&nbsp;{petName} (id: {id}, {statusLocale[status]})</p>
 
     );
 
@@ -60,7 +65,6 @@ function Pet({id, petName, userId, status, modal, fetchFilters}){
             </div>
         )
     }else if (petStatus === PET_STATUS.SOLD || petStatus === PET_STATUS.REMOVED) {
-        shaded = true
         const onConfirm = async () => {
             try{
                 await recoverPetAdmin(id, jwt)

@@ -19,10 +19,16 @@ function User({id, username,status, modal, fetchFilters}){
         DELETED: 2
     }
 
+    const statusLocale = [
+        t("status.active"),
+        t("status.inactive"),
+        t("status.deleted")
+    ]
+
     const [userStatus, setUserStatus] = useState(status)
 
     let reqTarget = (
-        <p>{username} (id: {id})</p>
+        <p>{username} (id: {id}, {statusLocale[status]})</p>
 
     );
     let reqStatus = null;
@@ -52,7 +58,6 @@ function User({id, username,status, modal, fetchFilters}){
             </div>
         )
      } else if (userStatus === USER_STATUS.DELETED) {
-        shaded = true;
         const onConfirm = async () => {
             try{
                 await recoverUserAdmin(id, jwt)

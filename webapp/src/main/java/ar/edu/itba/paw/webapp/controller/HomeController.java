@@ -78,7 +78,7 @@ public class HomeController {
         final String locale = ApiUtils.getLocale(httpRequest);
         Optional<User> opNewUser;
         try {
-            opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, uriInfo.getBaseUri().toString());
+            opNewUser = userService.create(user.getUsername(), user.getPassword(), user.getMail(), locale, ApiUtils.frontUri(uriInfo));
         } catch (DataIntegrityViolationException | UserException ex) {
             LOGGER.warn("User creation failed with exception");
             String msg = ex.getMessage();
@@ -98,13 +98,11 @@ public class HomeController {
 
     @POST
     @Path("/activate-account")
-    public Response activateAccount(@QueryParam("token") String token) {
-        
-        if (token == null) {
-            LOGGER.warn("Token parameter null.");
+    public Response activateAccount(final PasswordDto dto) {
+        if (dto == null || dto.getToken() == null) {
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final UUID uuid = UUID.fromString(token);
+        final UUID uuid = UUID.fromString(dto.getToken());
 
         try {
             userService.activateAccountWithToken(uuid);
@@ -126,7 +124,7 @@ public class HomeController {
         }
 
         try {
-            userService.requestPasswordReset(dto.getMail(), uriInfo.getBaseUri().toString());
+            userService.requestPasswordReset(dto.getMail(), ApiUtils.frontUri(uriInfo));
         } catch (NotFoundException ex) {
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
