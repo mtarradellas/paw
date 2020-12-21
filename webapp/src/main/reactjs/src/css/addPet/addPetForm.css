@@ -1,4 +1,4 @@
-form.add-pet-form {
+.add-pet-form {
     display: flex;
     flex-flow: row;
     flex-wrap: wrap;

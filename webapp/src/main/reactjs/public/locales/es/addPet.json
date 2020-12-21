@@ -55,10 +55,13 @@
       "female": "Hembra"
     },
     "images": {
-      "min": "Pr favor suba como mínimo una imagen"
+      "min": "Por favor suba como mínimo una imagen"
     },
     "upload": "Cargar imagen",
     "addPet": "Agregar mascota",
-    "send": "Enviar"
+    "send": "Enviar",
+    "filesToDelete": {
+      "atLeastOneImage": "La mascota debe tener al menos una imágen"
+    }
   }
 }

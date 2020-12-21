@@ -48,7 +48,7 @@ function MakeAReview({userId, refreshReviews}) {
                     break;
                 case CREATE_REVIEW_ERRORS.CONN_ERROR:
                 default:
-                    //TODO: conn error
+                    message.error(t('connError'));
                     break;
             }
         }
