@@ -5,6 +5,8 @@
   "addRequest": "+ Añadir Solicitud",
   "addUser": "+ Añadir Usuario",
   "addPet": "+ Añadir Mascota",
+  "noResults": "No se encontraron resultados. ",
+  "fetchAll": "Buscar todas las opciones",
   "home": {
     "welcome": "Bienvenido a la página de control de administrador",
     "listsTitle": "Aquí puede obtener todas las listas con las mascotas, los usuarios y solicitudes existentes, haga click en uno de los botones para ir a la página correspondiente:",
@@ -46,7 +48,9 @@
     "gender": "Género",
     "breed": "Raza",
     "price": "Precio",
-    "uploadDate": "Fecha de Subida"
+    "uploadDate": "Fecha de Subida",
+    "male": "Masculino",
+    "female": "Femenini"
   },
   "status": {
     "pending": "Pendiente",
@@ -108,5 +112,38 @@
       "meaning": "¿Qué significa el color?",
       "meaningDesc": "Si un ítem es mas oscuro, significa que fue borrado. Para recuperarlo, presioná el boton \"recuperar\"."
     }
+  },
+  "date": "{{day}}-{{month}}-{{year}}",
+  "addRequestView": {
+    "title": "Añadir Solicitud (Modo Admin)",
+    "addRequest": "Añadir Solicitud",
+    "petName": "Nombre de Mascota",
+    "username": "Nombre de Usuario"
+  },
+  "editRequestView": {
+    "title": "Editar Solicitud (Modo Admin)",
+    "status": "Estado de solicitud"
+  },
+  "addUserView": {
+    "title": "Añadir Usuario (Modo Admin)",
+    "username": "Usuario",
+    "mail": "Correo",
+    "password": "Contraseña"
+  },
+  "editUserView": {
+    "title": "Editar Usuario (Modo Admin)",
+    "username": "Usuario",
+    "oldPassword": "Contraseña Vieja",
+    "newPassword": "Contraseña Nueva",
+    "newPasswordRepeat": "Repetir Contraseña Nueva"
+  },
+  "addPetView": {
+    "title": "Añadir Mascota (Modo Admin)"
+  },
+  "errors": {
+    "duplicatedRequest": "Este usuario ya solicitó esta mascota",
+    "default": "Error de conexión: la solicitud no pudo ser completada",
+    "unchanged": "Estás cambiando el estado a el estado existente",
+    "noMatch": "Las contraseñas no concuerdan"
   }
 }

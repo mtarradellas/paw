@@ -2,6 +2,17 @@
     background: #2b5a5d;
 }
 
+.admin__header__title {
+    grid-area: title;
+
+    margin-top: auto;
+    margin-bottom: auto;
+
+    font-size: 2rem;
+
+    color: white;
+}
+
 .admin__container form .form-content {
     display: flex;
     flex-flow: row;

@@ -58,6 +58,10 @@
       "min": "Please upload at least one image",
       "errorType": "Images must be Jpeg"
     },
+    "userId": {
+      "label": "User",
+      "required": "User is required"
+    },
     "upload": "Upload image",
     "addPet": "Add pet",
     "send": "Enviar"

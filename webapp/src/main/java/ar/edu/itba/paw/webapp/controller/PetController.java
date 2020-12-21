@@ -329,7 +329,7 @@ public class PetController{
         List<byte[]> photos;
         LocalDateTime birthDate;
         try {
-            photos = ParseUtils.parseImages(files);
+            photos = ParseUtils.parseImagesEdit(files);
             birthDate = ParseUtils.parseDate(dateOfBirth);
             imagesToDelete = ParseUtils.parseImagesToDelete(toDelete);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
