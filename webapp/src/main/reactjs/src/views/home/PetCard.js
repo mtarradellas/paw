@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {List, Card, Button} from 'antd';
 import {useTranslation} from "react-i18next";
 import "../../css/home/petCard.css";
@@ -8,9 +8,12 @@ import {petImageSrc} from "../../api/images";
 import _ from 'lodash';
 import {petStatus, petStatusToString} from '../../constants/petStatus';
 import moment from "moment";
+import ConstantsContext from "../../constants/constantsContext";
 
 function PetCard({pet, admin}){
-    const {petName, specie, breed, price, gender, username, uploadDate, id, images, userId, status} = pet;
+    const {breeds, species} = useContext(ConstantsContext);
+
+    const {petName, specieId, breedId, price, gender, username, uploadDate, id, images, userId, status} = pet;
 
     const {t} = useTranslation(["petInformation", "home"]);
 
@@ -20,6 +23,9 @@ function PetCard({pet, admin}){
 
     const petPath = isAdmin? ADMIN_PET+id:PET+id;
     const userPath = isAdmin? ADMIN_USER+userId:USER+userId;
+
+    const breed = _.get(breeds, '[' + breedId + '].name', null);
+    const specie = _.get(species, '[' + specieId + '].name', null);
 
     return <Card
             className={"pet-card" + (!isAvailable ? " pet-card--not-available" : '')}

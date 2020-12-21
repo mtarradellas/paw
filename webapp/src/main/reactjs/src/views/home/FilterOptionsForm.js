@@ -46,23 +46,21 @@ const FilterOptionsForm = () => {
 
             setAvailableFilters(newFilters);
 
-            onSubmitFilters(values);
         }catch (e) {
             //TODO: conn error
         }
     };
 
     useEffect(()=>{
-        if(fetching || !loaded)
-            return;
-        
         fetchFilters(filters);
-    }, [filters.find, loaded]);
+    }, [filters.find]);
 
     const {speciesList, breedList, departmentList, provinceList, genderList, rangeList} = availableFilters;
 
     const _onSubmit = async values => {
         const filledFilters = _.pickBy(values, value => value !== -1);
+
+        onSubmitFilters(filledFilters);
 
         await fetchFilters(filledFilters);
     };
