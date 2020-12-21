@@ -13,7 +13,7 @@ import ConstantsContext from "../../constants/constantsContext";
 function PetCard({pet, admin}){
     const {breeds, species} = useContext(ConstantsContext);
 
-    const {petName, specieId, breedId, price, gender, username, uploadDate, id, images, userId, status} = pet;
+    const {petName, speciesId, breedId, price, gender, username, uploadDate, id, images, userId, status} = pet;
 
     const {t} = useTranslation(["petInformation", "home"]);
 
@@ -25,7 +25,7 @@ function PetCard({pet, admin}){
     const userPath = isAdmin? ADMIN_USER+userId:USER+userId;
 
     const breed = _.get(breeds, '[' + breedId + '].name', null);
-    const specie = _.get(species, '[' + specieId + '].name', null);
+    const specie = _.get(species, '[' + speciesId + '].name', null);
 
     return <Card
             className={"pet-card" + (!isAvailable ? " pet-card--not-available" : '')}
