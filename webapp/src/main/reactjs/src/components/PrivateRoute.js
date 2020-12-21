@@ -43,9 +43,7 @@ const NonAdmin = ({component: Component}) => {
 
 const PrivateRoute = ({adminPage, component, ...rest}) => {
     const {state} = useLogin();
-    const {isLoggedIn, isAdmin} = state;
-
-    console.log(isAdmin)
+    const {isLoggedIn} = state;
 
     return <Route {...rest}>
         {
