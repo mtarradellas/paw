@@ -50,7 +50,7 @@ function MainContent(
     };
 
     return (<>{ fetching ? <Spin/> : 
-        interestsCount === 0 ? <div className={"requests-interests__empty-interests"}> 
+        interestsCount === 0 ? <div className={"requests-interests__empty"}> 
         <div>{t('noResultsText')}</div> 
         <Link to={ADD_PET}><Button type='primary'>{t('noResultsBtn')}</Button></Link>
     </div> :
