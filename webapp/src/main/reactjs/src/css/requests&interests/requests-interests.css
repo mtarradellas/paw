@@ -15,7 +15,7 @@
     padding: 0.5rem 0 0.5rem 0;
 }
 
-.requests-interests__container .form-buttons button{
+.requests-interests__container .form-buttons button {
     margin-right: 1rem;
 }
 
@@ -31,11 +31,11 @@
     color: darkorange;
 }
 
-.button-container{
+.button-container {
     width: 100%;
 }
 
-.button-container button{
+.button-container button {
     padding-right: 1rem;
     color: black;
 }
@@ -50,9 +50,21 @@
     }
 }
 
-
 @media only screen and (min-width: 1000px) {
     .requests-interests__container form .ant-row {
         width: 100%;
     }
+}
+
+.requests-interests__empty-interests {
+    background-color: #dbe2ef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.requests-interests__empty-interests div {
+    margin-bottom: 1rem;
 }

@@ -67,5 +67,7 @@
     "canceled": "{{username}} was interested in {{petName}} and he canceled the request",
     "sold": "{{username}} was interested in {{petName}}"
   },
-  "date": "{{month}}-{{day}}-{{year}}"
+  "date": "{{month}}-{{day}}-{{year}}",
+  "noResultsBtn": "Add pet",
+  "noResultsText": "No user is interested in your pets"
 }
