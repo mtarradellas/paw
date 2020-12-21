@@ -1,16 +1,14 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.RequestStatus;
-import org.hibernate.search.backend.impl.LocalBackendQueueProcessor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
+
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 
 public interface RequestDao {
 
@@ -41,5 +39,8 @@ public interface RequestDao {
 
     int interestNotifs(User user);
     int requestNotifs(User user);
+
+    boolean hasRequest(User user, User target, List<RequestStatus> statusList);
+    boolean hasRequest(User user, Pet pet, List<RequestStatus> statusList);
 }
 

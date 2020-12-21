@@ -1,0 +1,38 @@
+{
+  "rating": "Calificación del Usuario",
+  "average": "Promedio de {{rating}} basado en {{reviewCount}} reseñas",
+  "averageClarification": "*Solo puede calificar una vez por usuario, y no puede calificarse a usted o a un usuario a quien no le haya comprado/adoptado una mascota",
+  "email": "Email",
+  "offeredPetsTitle": "Mascotas que este usuario ofrece",
+  "offeredPetsError": "Este usuario no ofrece ninguna mascota",
+  "adoptedPetsTitle": "Mascotas que este usuario adoptó",
+  "adoptedPetsError": "Este usuario no adopto ninguna mascota",
+  "totalResults": "Resultados totales: {{count}}",
+  "reviewsTitle": "Reseñas hechas a este usuario",
+  "reviews": {
+    "user": "Usuario",
+    "rating": "Calificación",
+    "description": "Descripción"
+  },
+  "backToHome": "< Volver al inicio",
+  "noReviews": "Este usuario aún no ha recibido reseñas",
+  "sensibleInformation": "Información sensible sobre otros usuarios no es mostrada, para contactar a este usuario, él debe aceptar una solicitud suya a uno de sus animales",
+  "noPets": "No hay resultados",
+  "makeAReview": {
+    "title": "Calificar al usuario",
+    "form": {
+      "score": {
+        "label": "Calificación",
+        "required": "Porfavor ingrese una calificación"
+      },
+      "description": {
+        "label": "Descripción",
+        "required": "Porfavor ingrese una descripción",
+        "max": "La descripción no debe superar los {{max}} caracteres"
+      },
+      "submit": "Calificar"
+    },
+    "connError": "Error de conexion"
+  },
+  "edit": "Editar usuario"
+}

@@ -1,0 +1,19 @@
+.pet-card{
+    max-width: 18rem;
+    margin: 1rem 1rem 1rem 1rem;
+}
+
+.pet-card--img{
+    width: 100%;
+}
+
+.ant-card.ant-card-bordered.pet-card.pet-card--not-available .ant-card-body:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    right: -1px;
+    background: rgba(204, 204, 204, 0.65);
+}

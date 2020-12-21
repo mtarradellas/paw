@@ -1,0 +1,10 @@
+
+.user-view--pets-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.user-view .ant-rate-star-first,.ant-rate-star-second {
+    color: #c7c7c7;
+}

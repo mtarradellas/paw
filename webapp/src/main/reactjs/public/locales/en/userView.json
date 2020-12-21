@@ -1,0 +1,38 @@
+{
+  "rating": "User rating",
+  "average": "Average of {{rating}} on {{reviewCount}} reviews",
+  "averageClarification": "*You can only rate once per user, and cannot rate yourself or a user you did not buy/adopt a pet from",
+  "email": "Email",
+  "offeredPetsTitle": "Pets this user offers",
+  "offeredPetsError": "This user does not offer any pets",
+  "adoptedPetsTitle": "Pets this user adopted",
+  "adoptedPetsError": "This user has no adopted pets",
+  "totalResults": "Total results: {{count}}",
+  "reviewsTitle": "Reviews made to this user",
+  "reviews": {
+    "user": "User",
+    "rating": "Rating",
+    "description": "Description"
+  },
+  "backToHome": "< Back to home",
+  "noReviews": "This user has not received reviews yet",
+  "sensibleInformation": "Sensitive data about other users is not displayed, to contact this user, they must first accept a request for one of their animals",
+  "noPets": "No results",
+  "makeAReview": {
+    "title": "Rate user",
+    "form": {
+      "score": {
+        "label": "Score",
+        "required": "Please enter a score"
+      },
+      "description": {
+        "label": "Description",
+        "required": "Please enter a description",
+        "max": "Description cannot be more than {{max}} characters long"
+      },
+      "submit": "Rate"
+    },
+    "connError": "Connection error"
+  },
+  "edit": "Edit user"
+}

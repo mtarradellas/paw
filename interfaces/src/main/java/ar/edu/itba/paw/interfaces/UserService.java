@@ -1,14 +1,13 @@
 package ar.edu.itba.paw.interfaces;
 
-import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
-import ar.edu.itba.paw.models.Review;
-import ar.edu.itba.paw.models.Token;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.ReviewStatus;
-import ar.edu.itba.paw.models.constants.UserStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
+import ar.edu.itba.paw.models.Token;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.UserStatus;
 
 public interface UserService {
 
@@ -32,19 +31,11 @@ public interface UserService {
     Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException;
     Optional<User> requestPasswordReset(String mail, String contextURL);
     Optional<User> resetPassword(UUID token, String password);
-
-    List<Review> reviewList(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status,
-                            String criteria, String order, int page, int pageSize);
-    int getReviewListAmount(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status);
-    Optional<Review> findReviewById(long id);
-    boolean addReview(User owner, long targetId, int score, String description);
-    Optional<Review> updateReview(Review review);
-    Optional<Review> updateReview(long id, long ownerId, long targetId, int score, String description);
-    Optional<Review> updateReview(long id, User owner, long targetId, int score, String description);
-    double getReviewAverage(long userId);
+    String getMail(User user, long userId);
 
     Optional<User> adminCreate(String username, String password, String mail, String locale);
     boolean isAdmin(User user);
+    boolean isAdminUsername(String username);
     boolean recoverUser(long id);
     boolean removeUser(long id);
 
@@ -52,5 +43,5 @@ public interface UserService {
     Optional<Token> createToken(UUID token, User user);
     boolean deleteToken(UUID token);
     Optional<User> activateAccountWithToken(UUID token);
-
+    void cleanOldTokens();
 }

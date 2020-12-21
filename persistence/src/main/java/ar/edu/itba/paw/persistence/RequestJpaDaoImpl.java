@@ -1,28 +1,42 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.RequestDao;
-import ar.edu.itba.paw.models.Pet;
-import ar.edu.itba.paw.models.Request;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.RequestStatus;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.sort.SortTermination;
-import org.springframework.stereotype.Repository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
+
+import ar.edu.itba.paw.interfaces.RequestDao;
+import ar.edu.itba.paw.models.Pet;
+import ar.edu.itba.paw.models.Request;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 
 @Repository
 public class RequestJpaDaoImpl implements RequestDao {
@@ -44,13 +58,12 @@ public class RequestJpaDaoImpl implements RequestDao {
         List<? extends Number> resultList = nativeQuery.getResultList();
         List<Long> ids = resultList.stream().map(Number::longValue).collect(Collectors.toList());
         if(ids.size() == 0) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
-        final TypedQuery<Request> query = em.createQuery("from Request where id in :ids", Request.class);
+        final TypedQuery<Request> query = em.createQuery("from Request where id in :filteredIds", Request.class);
         query.setParameter("filteredIds", ids);
         return query.getResultList();
-
     }
 
     @Override
@@ -66,8 +79,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public Set<Integer> searchStatusList(User user, Pet pet, List<String> find, RequestStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsQuery(find, status, user, pet, null ,null);
         jpaQuery.setProjection("status");
         @SuppressWarnings("unchecked")
@@ -83,8 +94,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public List<Pet> searchPetListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet, null, null);
         jpaQuery.setProjection("pet.eid");
         @SuppressWarnings("unchecked")
@@ -137,7 +146,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         if (searchCriteria != null ) {
             String orderBy;
             if (searchCriteria.toLowerCase().contains("pet")) orderBy = "petName";
-            else orderBy = "creationDate";
+            else orderBy = "updateDate";
 
             if (searchOrder.toLowerCase().contains("desc")) {
                 sort = queryBuilder.sort().byField(orderBy).desc().andByField("eid");
@@ -178,7 +187,7 @@ public class RequestJpaDaoImpl implements RequestDao {
             Order order;
             Path<Object> orderBy =root.join("pet").get("petName");
             if (searchCriteria.toLowerCase().contains("date")) {
-                orderBy = root.get("creationDate");
+                orderBy = root.get("updateDate");
             }
 
             if (searchOrder.toLowerCase().contains("desc")) {
@@ -206,8 +215,6 @@ public class RequestJpaDaoImpl implements RequestDao {
 
     @Override
     public Set<Integer> searchStatusListByPetOwner(User user, Pet pet, List<String> find, RequestStatus status) {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-
         org.hibernate.search.jpa.FullTextQuery jpaQuery = searchIdsByPetOwnerQuery(find, status, user, pet, null, null);
         jpaQuery.setProjection("status");
         @SuppressWarnings("unchecked")
@@ -275,13 +282,6 @@ public class RequestJpaDaoImpl implements RequestDao {
         return jpaQuery;
     }
 
-    private void indexRequests() {
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-        try {
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch(InterruptedException ignored) {}
-    }
-
     @Override
     @Deprecated
     public List<Request> filteredListByPetOwner(User user, Pet pet, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize) {
@@ -291,7 +291,8 @@ public class RequestJpaDaoImpl implements RequestDao {
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM requests");
-        return nativeQuery.getFirstResult();
+        Number n = (Number) nativeQuery.getSingleResult();
+        return n.intValue();
     }
 
     @Override
@@ -402,5 +403,33 @@ public class RequestJpaDaoImpl implements RequestDao {
         query.setParameter("lastOnline", date);
         Number n = (Number) query.getSingleResult();
         return n.intValue();
+    }
+
+    @Override
+    public boolean hasRequest(User user, User target, List<RequestStatus> statusList) {
+        String status = String.join(", ", statusList.stream().map(s -> String.valueOf(s.getValue())).collect(Collectors.toList()));
+        String qStr = "SELECT count(*) " +
+                      "FROM requests " +
+                      "WHERE ownerId = :user AND targetId = :target AND status in (" + status + ")";
+
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("user", user.getId());
+        query.setParameter("target", target.getId());
+        Number n = (Number) query.getSingleResult();
+        return n.intValue() > 0;
+    }
+
+    @Override
+    public boolean hasRequest(User user, Pet pet, List<RequestStatus> statusList) {
+        String status = String.join(", ", statusList.stream().map(s -> String.valueOf(s.getValue())).collect(Collectors.toList()));
+        String qStr = "SELECT count(*) " +
+                      "FROM requests " +
+                      "WHERE ownerId = :user AND petId = :pet AND status in (" + status + ")";
+
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("user", user.getId());
+        query.setParameter("pet", pet.getId());
+        Number n = (Number) query.getSingleResult();
+        return n.intValue() > 0;
     }
 }

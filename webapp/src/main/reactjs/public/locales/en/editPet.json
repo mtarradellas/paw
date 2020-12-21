@@ -1,0 +1,6 @@
+{
+  "title": "Edit pet: {{name}}",
+  "form": {
+    "imageError": "Pet must have between 1 and 5 images"
+  }
+}

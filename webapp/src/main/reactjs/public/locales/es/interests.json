@@ -1,0 +1,73 @@
+{
+  "filterForm": {
+    "labels": {
+      "status": "Estado de Solicitud",
+      "criteria": "Criterio",
+      "order": "Orden",
+      "pet": "Mascota"
+    },
+    "values": {
+      "any": "Cualquiera",
+      "date": "Fecha",
+      "petName": "Nombre de Mascota",
+      "asc": "Ascendiente",
+      "desc": "Descendiente"
+    },
+    "filterButtons": {
+      "filter": "Filter",
+      "clear": "Clear"
+    }
+  },
+  "interests":{
+    "title": "Usuarios interesados en tus mascotas (Resultados totales: {{count}})",
+    "interest": "Interés",
+    "status": "Estado del Interés",
+    "actions": "Acciones"
+  },
+  "status": {
+    "accepted": "Aceptada",
+    "rejected": "Rechazada",
+    "pending": "Pendiente",
+    "canceled": "Cancelada",
+    "sold": "Vendida",
+    "notSold": "Aceptada (No vendida)",
+    "soldTo": "Vendida a {{ownerName}}",
+    "removed": "Removida",
+    "unavailable": "No Disponible",
+    "available": "Disponible"
+  },
+  "buttons": {
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "imSure": "Estoy seguro",
+    "reserve": "Reservar para Usuario",
+    "visitPet": "Visitar Mascota",
+    "visitOwner": "Visitar Dueño",
+    "visitUser": "Visitar Usuario",
+    "accept": "Aceptar",
+    "reject": "Rechazar"
+  },
+  "modals": {
+    "helpModal": {
+      "title": "Ayuda",
+      "firstTitle": "Página de Intereses",
+      "firstDesc": "Bienvenido a la página de intereses, aquí puede ver estado de todas las solicitudes que otros usuarios le hicieron. Hay cuatro estados: pendiente (significa que el usted no ha decidido todavía), vendida o rechazada (usted ha decidido si desea darle la mascota mediante el uso de los botones correspondientes) y cancelada (el usuario ha decidido cancelar la solicitud).",
+      "secondTitle": "Herramientas de Filtrado",
+      "secondDesc": "Para asistirlo en la organización de los intereses, utilize el menú de filtrado encontrado a la izquierda."
+    },
+    "pleaseConfirm": "Por favor confirme su acción",
+    "reserve": "¿Estás seguro que deseas reservar esta mascota para este usuario? Esta acción es irreversible, por favor elegir con cuidado.",
+    "acceptRequest": "POR FAVOR LEER CUIDADOSAMENTE: Elegir esta opción le enviara un correo a este usuario con su dirección de correo, así pueden arreglar los términos de la adopción. Luego de clickear \"Estoy Seguro\", no se puede deshacer, por lo que se completa el proceso.",
+    "rejectRequest": "¿Estás seguro que deseas rechazar esta solicitud? Esta acción es irreversible, por favor elegir con cuidado."
+  },
+  "messages": {
+    "accepted": "{{username}} estaba interesado en {{petName}} y aceptaste su solicitud",
+    "rejected": "{{username}} estaba interesado en {{petName}} y rechazaste su solicitud",
+    "pending": "{{username}} esta interesado en {{petName}}",
+    "canceled": "{{username}} estaba interesado en {{petName}} y canceló la solicitud",
+    "sold": "{{username}} esta interesado en {{petName}}"
+  },
+  "date": "{{day}}-{{month}}-{{year}}",
+  "noResultsBtn": "Agregar mascota",
+  "noResultsText": "Ningún usuario está interesado en tus mascotas"
+}

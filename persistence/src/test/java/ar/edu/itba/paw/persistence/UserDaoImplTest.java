@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.ReviewStatus;
@@ -35,6 +34,9 @@ public class UserDaoImplTest {
     @PersistenceContext
     private EntityManager em;
 
+    private final String IMAGES_TABLE = "images";
+    private final String PETS_TABLE = "pets";
+    private static final String REQUESTS_TABLE = "requests";
     private static final String USER_TABLE = "users";
     private static final String REVIEW_TABLE = "reviews";
 
@@ -55,7 +57,6 @@ public class UserDaoImplTest {
     private static final String O_LOCALE = "en_US";
 
     /* REVIEW */
-    private static Long REVIEW_ID;
     private static final int SCORE = 5;
     private static final String DESC = "GREATEST_USER_OF_ALL_TIME";
     private static final ReviewStatus REVIEW_STATUS = ReviewStatus.VALID;
@@ -76,6 +77,9 @@ public class UserDaoImplTest {
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(USER_TABLE);
 
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, REQUESTS_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
     }
 

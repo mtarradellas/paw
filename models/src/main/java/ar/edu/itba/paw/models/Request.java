@@ -27,6 +27,8 @@ public class Request {
     private LocalDateTime creationDate;
 
     @Column
+    @Field
+    @SortableField
     private LocalDateTime updateDate;
 
     @Field(store = Store.YES)

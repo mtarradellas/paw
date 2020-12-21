@@ -13,12 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -92,6 +90,8 @@ public class PetServiceImplTest {
     @Mock
     private PetDao petDao;
     @Mock
+    private UserDao userDao;
+    @Mock
     private LocationService locationService;
     @Mock
     private UserService userService;
@@ -145,11 +145,11 @@ public class PetServiceImplTest {
     public void testFilteredListSpecies() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), eq(PET.getSpecies()), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
+        when(petDao.searchList(any(), any(), any(), any(), eq(PET.getSpecies()), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
                 any(), anyInt(), anyInt())).thenReturn(petList);
         when(speciesService.findSpeciesById(eq(PET.getSpecies().getId()))).thenReturn(Optional.of(PET.getSpecies()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, PET.getSpecies().getId(), null, null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, PET.getSpecies().getId(), null, null,
                 null, null, null, 0, -1, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
@@ -162,12 +162,12 @@ public class PetServiceImplTest {
     public void testFilteredListBreed() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), eq(PET.getSpecies()), eq(PET.getBreed()), any(), any(), any(), any(), anyInt(), anyInt(), any(),
+        when(petDao.searchList(any(), any(), any(), any(), eq(PET.getSpecies()), eq(PET.getBreed()), any(), any(), any(), any(), anyInt(), anyInt(), any(),
                 any(), anyInt(), anyInt())).thenReturn(petList);
         when(speciesService.findSpeciesById(eq(PET.getSpecies().getId()))).thenReturn(Optional.of(PET.getSpecies()));
         when(speciesService.findBreedById(eq(PET.getBreed().getId()))).thenReturn(Optional.of(PET.getBreed()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, PET.getSpecies().getId(), PET.getBreed().getId(), null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, PET.getSpecies().getId(), PET.getBreed().getId(), null,
                 null, null, null, 0, -1, null, null, PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
@@ -180,11 +180,11 @@ public class PetServiceImplTest {
     public void testFilteredListProvince() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
+        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
                 any(), anyInt(), anyInt())).thenReturn(petList);
         when(locationService.findProvinceById(eq(PET.getProvince().getId()))).thenReturn(Optional.of(PET.getProvince()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, null, null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null,null, null, null,
                 null, null, null, 0, -1, PET.getProvince().getId(), null, PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
@@ -197,12 +197,12 @@ public class PetServiceImplTest {
     public void testFilteredListDepartment() {
         List<Pet> petList = new ArrayList<>();
         petList.add(PET);
-        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
+        when(petDao.searchList(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), eq(PET.getProvince()),
                 eq(PET.getDepartment()), anyInt(), anyInt())).thenReturn(petList);
         when(locationService.findProvinceById(eq(PET.getProvince().getId()))).thenReturn(Optional.of(PET.getProvince()));
         when(locationService.findDepartmentById(eq(PET.getDepartment().getId()))).thenReturn(Optional.of(PET.getDepartment()));
 
-        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null, null, null,
+        List<Pet> returnList = petServiceImpl.filteredList(LOCALE, null, null, null,null, null, null,
                 null, null, null, 0, -1, PET.getProvince().getId(), PET.getDepartment().getId(), PAGE, PAGE_SIZE);
 
         assertEquals(1, returnList.size());
@@ -275,11 +275,12 @@ public class PetServiceImplTest {
     public void testCreateQuestion() {
         when(petDao.createQuestion(eq(QUESTION.getContent()), eq(QUESTION.getUser()), eq(QUESTION.getTarget()),
                 eq(QUESTION.getPet()), eq(QUESTION.getStatus()))).thenReturn(QUESTION);
+        when(userService.findById(anyLong())).thenReturn(Optional.of(QUESTION.getUser()));
         when(petDao.findById(eq(QUESTION.getPet().getId()))).thenReturn(Optional.of(PET));
 
         Optional<Question> opQuestion = Optional.empty();
         try {
-            opQuestion = petServiceImpl.createQuestion(QUESTION.getContent(), QUESTION.getUser(), QUESTION.getPet().getId(), null);
+            opQuestion = petServiceImpl.createQuestion(QUESTION.getContent(), QUESTION.getUser().getId(), QUESTION.getPet().getId(), null);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("unexpected error during operation create question");
@@ -299,11 +300,12 @@ public class PetServiceImplTest {
     public void testCreateAnswer() {
         when(petDao.createAnswer(eq(QUESTION), eq(ANSWER.getContent()), eq(ANSWER.getUser()), eq(ANSWER.getTarget()),
                 eq(ANSWER.getPet()), eq(ANSWER.getStatus()))).thenReturn(ANSWER);
+        when(userService.findById(anyLong())).thenReturn(Optional.of(ANSWER.getUser()));
         when(petDao.findQuestionById(eq(QUESTION.getId().longValue()))).thenReturn(Optional.of(QUESTION));
 
         Optional<Answer> opAnswer = Optional.empty();
         try {
-            opAnswer = petServiceImpl.createAnswer(QUESTION.getId(), ANSWER.getContent(), ANSWER.getUser(), null);
+            opAnswer = petServiceImpl.createAnswer(QUESTION.getId(), ANSWER.getContent(), ANSWER.getUser().getId(), null);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("unexpected error during operation create answer");

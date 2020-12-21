@@ -1,11 +1,15 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.*;
-import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.constants.MailType;
-import ar.edu.itba.paw.models.constants.ReviewStatus;
-import ar.edu.itba.paw.models.constants.UserStatus;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +18,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import ar.edu.itba.paw.interfaces.MailService;
+import ar.edu.itba.paw.interfaces.PetService;
+import ar.edu.itba.paw.interfaces.RequestService;
+import ar.edu.itba.paw.interfaces.UserDao;
+import ar.edu.itba.paw.interfaces.UserService;
+import ar.edu.itba.paw.interfaces.exceptions.InvalidPasswordException;
+import ar.edu.itba.paw.interfaces.exceptions.NotFoundException;
+import ar.edu.itba.paw.interfaces.exceptions.UserException;
+import ar.edu.itba.paw.models.Token;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.constants.MailArg;
+import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.RequestStatus;
+import ar.edu.itba.paw.models.constants.UserStatus;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -48,7 +64,7 @@ public class UserServiceImpl implements UserService {
     public List<UserStatus> filteredStatusList( List<String> find, UserStatus status) {
         Set<Integer> results = userDao.searchStatusList(find, status);
         List<UserStatus> toReturn = new ArrayList<>();
-        results.stream().forEach(r->toReturn.add(UserStatus.values()[r]));
+        results.forEach(r->toReturn.add(UserStatus.values()[r]));
         return toReturn;
     }
 
@@ -83,7 +99,6 @@ public class UserServiceImpl implements UserService {
         return userDao.findByToken(token);
     }
 
-
     @Transactional
     @Override
     public Optional<User> create(String username, String password, String mail, String locale, String contextURL) {
@@ -96,12 +111,12 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
 
-        Map<String, Object> arguments = new HashMap<>();
-        String urlToken = contextURL + "/account-activation";
+        Map<MailArg, Object> arguments = new HashMap<>();
+        String urlToken = contextURL + "activate-account";
         urlToken += "?token=" + uuid;
 
-        arguments.put("URLToken", urlToken );
-        arguments.put("username",user.getUsername());
+        arguments.put(MailArg.TOKEN, urlToken );
+        arguments.put(MailArg.USERNAME,user.getUsername());
 
         String userLocale = user.getLocale();
 
@@ -123,10 +138,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Attempting user {} update with username: {}", id, username);
 
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
 
         user.setUsername(username);
@@ -146,10 +158,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Attempting user {} update with status: {}", id, status.getValue());
 
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
 
         user.setStatus(status);
@@ -169,10 +178,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Attempting userID {} update with locale: {}", id, locale);
 
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         return updateLocale(opUser.get(), locale);
     }
 
@@ -196,10 +202,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> updatePassword(long id, String oldPassword, String newPassword) throws InvalidPasswordException {
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) {
-            LOGGER.warn("User {} not found", id);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
 
         if(oldPassword != null){
@@ -226,22 +229,19 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Requesting password reset for mail {}", mail);
 
         Optional<User> opUser = userDao.findByMail(mail);
-        if (!opUser.isPresent()) {
-            LOGGER.debug("User with mail {} not found", mail);
-            return Optional.empty();
-        }
+        if (!opUser.isPresent()) throw new NotFoundException("User with mail " + mail + " not found.");
         final User user = opUser.get();
 
         UUID token = UUID.randomUUID();
         createToken(token, user);
 
-        Map<String, Object> arguments = new HashMap<>();
+        Map<MailArg, Object> arguments = new HashMap<>();
 
-        String urlToken = contextURL + "/password-reset";
+        String urlToken = contextURL + "password-reset";
         urlToken += "?token=" + token;
 
-        arguments.put("URLToken", urlToken );
-        arguments.put("username",user.getUsername());
+        arguments.put(MailArg.TOKEN, urlToken );
+        arguments.put(MailArg.USERNAME,user.getUsername());
 
         String userLocale = user.getLocale();
 
@@ -252,26 +252,23 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Optional<User> resetPassword(UUID uuid, String password) {
-        LOGGER.debug("Resetting password for token {}", uuid);
+        LOGGER.debug("Resetting password for token");
 
         Optional<Token> opToken = getToken(uuid);
-        if (!opToken.isPresent()) {
-            LOGGER.warn("Token {} not found", uuid);
-            return Optional.empty();
-        }
+        if (!opToken.isPresent()) throw new NotFoundException("Token not found.");
         final Token token = opToken.get();
 
         if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
-            LOGGER.warn("Token {} has expired", uuid);
+            LOGGER.warn("Token has expired", uuid);
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Token has expired.");
         }
-
+        
         Optional<User> opUser = findByToken(uuid);
         if (!opUser.isPresent()) {
-            LOGGER.warn("User of token {} not found", uuid);
+            LOGGER.warn("User of token not found");
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Token not found.");
         }
         final User user = opUser.get();
         Optional<User> updatedUser = Optional.empty();
@@ -284,86 +281,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Review> reviewList(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status,
-                                   String criteria, String order, int page, int pageSize) {
-        return userDao.reviewList(ownerId, targetId, minScore, maxScore, status,  criteria, order, page, pageSize);
-    }
+    public String getMail(User user, long userId) {
+        final Optional<User> opTarget = userDao.findById(userId);
+        if (!opTarget.isPresent()) throw new NotFoundException("User not found.");
+        final User target = opTarget.get();
 
-    @Override
-    public int getReviewListAmount(Long ownerId, Long targetId, int minScore, int maxScore, ReviewStatus status) {
-        return userDao.getReviewListAmount(ownerId, targetId, minScore, maxScore, status);
-    }
-
-    @Override
-    public Optional<Review> findReviewById(long id) {
-        return userDao.findReviewById(id);
-    }
-
-    @Transactional
-    @Override
-    public boolean addReview(User owner, long targetId, int score, String description) {
-        Optional<User> opTarget = userDao.findById(targetId);
-        if (!opTarget.isPresent()) {
-            LOGGER.warn("Review target {} was not found", targetId);
-            return false;
-        }
-        User target = opTarget.get();
-
-        if (owner.getId().equals(target.getId())) {
-            LOGGER.warn("Target of review is the same as the owner, ignoring review {}", owner.getId());
-            return false;
-        }
-        userDao.addReview(owner, target, score, description, ReviewStatus.VALID);
-        return true;
-    }
-
-    @Override
-    public Optional<Review> updateReview(Review review) {
-        return userDao.updateReview(review);
-    }
-
-    @Override
-    public Optional<Review> updateReview(long id, long ownerId, long targetId, int score, String description) {
-        Optional<User> owner = userDao.findById(ownerId);
-        if (!owner.isPresent()) {
-            LOGGER.warn("Owner {} of review not found", ownerId);
-            return Optional.empty();
-        }
-        return updateReview(id, owner.get(), targetId, score, description);
-    }
-
-    @Override
-    public Optional<Review> updateReview(long id, User owner, long targetId, int score, String description) {
-        Optional<Review> opReview = userDao.findReviewById(id);
-        if (!opReview.isPresent()) {
-            LOGGER.warn("Review {} not found", id);
-            return Optional.empty();
-        }
-        Review review = opReview.get();
-
-        Optional<User> opTarget = userDao.findById(targetId);
-        if (!opTarget.isPresent()) {
-            LOGGER.warn("Target {} of review not found", targetId);
-            return Optional.empty();
-        }
-        User target = opTarget.get();
-
-        if (owner.getId().equals(target.getId())) {
-            LOGGER.warn("User {} cannot review itself!", targetId);
-            return Optional.empty();
+        if (target.getStatus() == UserStatus.ACTIVE && (user.getId() == userId || 
+                requestService.hasRequest(user, target, Arrays.asList(RequestStatus.SOLD)))) {
+            return target.getMail();
         }
 
-        review.setOwner(owner);
-        review.setTarget(target);
-        review.setScore(score);
-        review.setDescription(description);
-
-        return userDao.updateReview(review);
-    }
-
-    @Override
-    public double getReviewAverage(long userId) {
-        return userDao.getReviewAverage(userId);
+        throw new UserException("User has no permissions to view mail.");
     }
 
     @Transactional
@@ -379,11 +307,17 @@ public class UserServiceImpl implements UserService {
         return userDao.isAdmin(user);
     }
 
+    @Override
+    public boolean isAdminUsername(String username) {
+        User user = userDao.findByUsername(username).orElseThrow(NotFoundException::new);
+        return userDao.isAdmin(user);
+    }
+
     @Transactional
     @Override
     public boolean recoverUser(long id) {
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) return false;
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
         return updateStatus(user.getId(), UserStatus.ACTIVE).isPresent();
     }
@@ -392,7 +326,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean removeUser(long id) {
         Optional<User> opUser = userDao.findById(id);
-        if (!opUser.isPresent()) return false;
+        if (!opUser.isPresent()) throw new NotFoundException("User " + id + " not found.");
         User user = opUser.get();
         requestService.rejectAllByPetOwner(user.getId()); //cancels all (pending) requests made to pets this user owns
         requestService.cancelAllByUser(user);
@@ -423,35 +357,33 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Activating account token {}", uuid);
 
         Optional<Token> opToken = getToken(uuid);
-        if (!opToken.isPresent()) {
-            LOGGER.warn("Token {} not found", uuid);
-            return Optional.empty();
-        }
+        if (!opToken.isPresent()) throw new NotFoundException("Token not found.");
         final Token token = opToken.get();
         if (LocalDateTime.now().isAfter(token.getExpirationDate())) {
             LOGGER.warn("Token {} has expired", uuid);
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Token has expired");
         }
 
         Optional<User> opUser = findByToken(uuid);
         if (!opUser.isPresent()) {
-            LOGGER.warn("User of token {} not found", uuid);
+            LOGGER.warn("User not found");
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new NotFoundException("User not found.");
         }
         User user = opUser.get();
 
         if(!updateStatus(user.getId(), UserStatus.ACTIVE).isPresent()) {
             LOGGER.warn("Could not activate user {} account", user.getId());
             userDao.deleteToken(uuid);
-            return Optional.empty();
+            throw new UserException("Error activating account.");
         }
 
         deleteToken(uuid);
         return opUser;
     }
 
+    @Override
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
     public void cleanOldTokens() {

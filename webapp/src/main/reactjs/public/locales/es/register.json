@@ -1,0 +1,50 @@
+{
+  "title": "Registrarse",
+  "form": {
+    "username": {
+      "label": "Usuario",
+      "placeholder": "Ingrese su nombre de usuario",
+      "errors": {
+        "tooShort": "El nombre de usuario debe tener al menos {{min}} caracteres",
+        "tooLong": "El nombre de usuario no puede tener más de {{max}} caracteres",
+        "validCharacters": "El nombre de usuario puede contener solo letras y números",
+        "required": "El nombre de usuario no puede estar vacío",
+        "duplicated": "El nombre de usuario no esta disponible"
+      }
+    },
+    "password": {
+      "label": "Contraseña",
+      "placeholder": "Ingrese su contraseña",
+      "errors": {
+        "tooShort": "La contraseña debe tener al menos {{min}} caracteres",
+        "tooLong": "La contraseña no puede tener más de {{max}} caracteres",
+        "required": "La contraseña no puede estar vacía"
+      }
+    },
+    "repeatPassword": {
+      "label": "Repetir contraseña",
+      "placeholder": "Ingrese su contraseña nuevamente",
+      "errors": {
+        "required": "Repetir contraseña no puede estar vacío",
+        "notEqual": "Las contraseñas no coinciden"
+      }
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Ingrese su email",
+      "errors": {
+        "required": "El email no puede estar vacío",
+        "invalidEmail": "El email debe ser válido",
+        "duplicated": "El email no esta disponible"
+      }
+    }
+  },
+  "submit": "Registrarse",
+  "conError": "Se perdió la conexión",
+  "changeUsername" : "Cambiar Usuario",
+  "changePassword": "Cambiar Contraseña",
+  "oldPassword": "Contraseña Vieja",
+  "existingAccount": "¿Ya tiene una cuenta?",
+  "login": "Iniciar sesión"
+
+}

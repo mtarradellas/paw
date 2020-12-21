@@ -1,22 +1,25 @@
 package ar.edu.itba.paw.interfaces;
 
+import java.util.List;
+import java.util.Optional;
+
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.RequestStatus;
-import java.util.List;
-import java.util.Optional;
 
 public interface RequestService {
 
     List<Request> list(int page, int pageSize);
-    List<Request> filteredList(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-    List<RequestStatus> filteredStatusList(User user, Long petId, List<String> find, RequestStatus status);
-    List<Pet> filteredPetListByPetOwner(User user, Long petId, List<String> find, RequestStatus status);
+    List<Request> filteredList(Long userId, Long targetId, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+    List<Request> filteredListByRequestOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
+    List<RequestStatus> filteredStatusList(Long userId, Long petId, List<String> find, RequestStatus status);
+    List<Pet> filteredPetListByPetOwner(Long userId, Long petId, List<String> find, RequestStatus status);
     List<Request> filteredListByPetOwner(User user, Long petId, List<String> find, RequestStatus status, String searchCriteria, String searchOrder, int page, int pageSize);
-    List<RequestStatus> filteredStatusListByPetOwner(User user, Long petId, List<String> find, RequestStatus status);
+    List<RequestStatus> filteredStatusListByPetOwner(Long userId, Long petId, List<String> find, RequestStatus status);
     int getListAmount();
-    int getFilteredListAmount(User user, Long petId, List<String> find, RequestStatus status);
+    int getFilteredListAmount(Long userId, Long targetId, Long petId, List<String> find, RequestStatus status);
+    int getFilteredListByRequestOwnerAmount(User user, Long petId, List<String> find, RequestStatus status);
     int getFilteredListByPetOwnerAmount(User user, Long petId, List<String> find, RequestStatus status);
 
     Optional<Request> findById(long id);
@@ -24,10 +27,10 @@ public interface RequestService {
     Optional<Request> create(String locale, long user, long pet, String contextURL);
     Optional<Request> update(Request request);
 
-    boolean  cancel(long id, User user, String contextURL);
-    boolean  accept(long id, User user, String contextURL);
-    boolean  reject(long id, User user, String contextURL);
-    boolean recover(long id, User user, String contextURL);
+    boolean  cancel(long id, long userId, String contextURL);
+    boolean  accept(long id, long userId, String contextURL);
+    boolean  reject(long id, long userId, String contextURL);
+    boolean recover(long id, long userId, String contextURL);
     boolean sell(Pet pet, User user);
 
     void adminUpdateStatus(long id, RequestStatus status);
@@ -45,4 +48,7 @@ public interface RequestService {
 
     void logRequestsAccess(User user);
     void logInterestsAccess(User user);
+
+    boolean hasRequest(User user, User target, List<RequestStatus> statusList);
+    boolean hasRequestPet(User user, long petId, List<RequestStatus> statusList);
 }

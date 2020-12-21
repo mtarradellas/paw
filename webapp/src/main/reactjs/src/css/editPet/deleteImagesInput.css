@@ -1,0 +1,12 @@
+
+.delete-images-input {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    margin-bottom: 2rem;
+}
+
+.delete-images-input div {
+    margin: 0 1rem 0 1rem;
+}

@@ -63,6 +63,7 @@ public class Pet {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "soldto")
+    @IndexedEmbedded(depth = 2)
     private User newOwner;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)

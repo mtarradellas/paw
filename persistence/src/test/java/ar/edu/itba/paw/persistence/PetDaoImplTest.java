@@ -37,6 +37,7 @@ public class PetDaoImplTest {
     private final String SPECIES_TABLE = "species";
     private final String BREEDS_TABLE = "breeds";
     private final String IMAGES_TABLE = "images";
+    private static final String REQUESTS_TABLE = "requests";
 
     private static final String LOCALE = "en_US";
 
@@ -121,11 +122,7 @@ public class PetDaoImplTest {
 
     /* OTHER PET */
     private static final Long O_PET_ID = 2L;
-    private static final String O_PET_NAME = "petname";
-    private static final Boolean O_VACCINATED = false;
     private static final String O_GENDER = "another";
-    private static final String O_DESCRIPTION = "other_description";
-    private static final LocalDateTime O_BIRTH_DATE = LocalDateTime.now().minusMonths(2);
     private static final int O_PRICE = 100;
     private static final PetStatus O_STATUS = PetStatus.UNAVAILABLE;
 
@@ -183,6 +180,7 @@ public class PetDaoImplTest {
 
     private void setUpTablePetContext() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, REQUESTS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, DEPARTMENTS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PROVINCES_TABLE);
@@ -405,7 +403,7 @@ public class PetDaoImplTest {
                 USER, O_SPECIES, BREED, PROVINCE, DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, SPECIES, null, null,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null,  SPECIES, null, null,
                 null, null, null, 0, -1, null, null,
                 PAGE, PAGE_SIZE);
 
@@ -423,7 +421,7 @@ public class PetDaoImplTest {
                 USER, O_SPECIES, O_BREED, PROVINCE, DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, SPECIES, BREED, null,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, SPECIES, BREED, null,
                 null, null, null, 0, -1, null, null,
                 PAGE, PAGE_SIZE);
 
@@ -441,7 +439,7 @@ public class PetDaoImplTest {
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, GENDER,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null, GENDER,
                 null, null, null, 0, -1, null, null,
                 PAGE, PAGE_SIZE);
 
@@ -459,7 +457,7 @@ public class PetDaoImplTest {
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null, null,
                 STATUS, null, null, 0, -1, null, null,
                 PAGE, PAGE_SIZE);
 
@@ -477,7 +475,7 @@ public class PetDaoImplTest {
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null,  null,null, null, null,
                 null, null, null, O_PRICE, -1, null, null,
                 PAGE, PAGE_SIZE);
 
@@ -495,7 +493,7 @@ public class PetDaoImplTest {
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null,null, null, null,
                 null, null, null, 0, PRICE, null, null,
                 PAGE, PAGE_SIZE);
 
@@ -509,11 +507,11 @@ public class PetDaoImplTest {
     public void testFilteredListProvince() {
         Pet pet = insertPet(PET_ID, PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
                 USER, SPECIES, BREED, PROVINCE, DEPARTMENT);
-        Pet tep = insertPet(O_PET_ID, PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
+        insertPet(O_PET_ID, PET_NAME, BIRTH_DATE, GENDER, VACCINATED, PRICE, UPLOAD_DATE, DESCRIPTION, STATUS,
                 USER, SPECIES, BREED, O_PROVINCE, O_DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null, null,
                 null, null, null, 0, -1, PROVINCE, null,
                 PAGE, PAGE_SIZE);
 
@@ -531,7 +529,7 @@ public class PetDaoImplTest {
                 USER, SPECIES, BREED, O_PROVINCE, O_DEPARTMENT);
         indexTables();
 
-        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null, null, null,
+        List<Pet> petList = petDaoImpl.searchList(LOCALE, null, null, null,null, null, null,
                 null, null, null, 0, -1, PROVINCE, DEPARTMENT,
                 PAGE, PAGE_SIZE);
 

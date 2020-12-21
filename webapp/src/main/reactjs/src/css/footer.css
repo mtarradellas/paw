@@ -1,0 +1,32 @@
+footer {
+    width: 100vw;
+    background-color: #222831;
+}
+
+.footer__content {
+    padding: 3rem 0 4rem 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    color: white;
+    font-family: verdana, serif;
+}
+
+.footer__content > div {
+    width: 20rem;
+    margin-top: 1rem;
+}
+
+.footer__content h3 {
+    color: white;
+}
+
+.footer__about-us {
+
+}
+
+.footer__find-us {
+
+}
