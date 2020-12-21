@@ -64,6 +64,9 @@
     },
     "upload": "Cargar imagen",
     "addPet": "Agregar mascota",
-    "send": "Enviar"
+    "send": "Enviar",
+    "filesToDelete": {
+      "atLeastOneImage": "La mascota debe tener al menos una imágen"
+    }
   }
 }

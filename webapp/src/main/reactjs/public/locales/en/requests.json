@@ -63,5 +63,7 @@
     "canceled": "You canceled your request for {{petName}}",
     "sold": "The pet {{petName}} was sold"
   },
-  "date": "{{month}}-{{day}}-{{year}}"
+  "date": "{{month}}-{{day}}-{{year}}",
+  "noResultsBtn": "Search for pets",
+  "noResultsText": "You have no requests for pets, search for some in the home page!"
 }

@@ -1,20 +1,16 @@
 import React, {useState, useEffect} from "react";
 import {Button, Modal, Row, Col, Divider, Pagination, Spin} from 'antd';
-
 import {useTranslation} from "react-i18next";
 import ContentWithSidebar from "../../components/ContentWithSidebar";
 import FilterRequestsForm from "./FilterRequestsForm";
-
 import RequestContainer from "./RequestContainer";
-
 import "../../css/requests&interests/requests-interests.css"
-
 import useRequests from "../../hooks/useRequests";
 import _ from "lodash";
-
 import {getRequestsFilters} from "../../api/requests";
 import useLogin from "../../hooks/useLogin";
-
+import {HOME} from "../../constants/routes";
+import {Link} from "react-router-dom";
 
 function SideContent({filters,fetchRequests,changeFilters,setCurrentPage}) {
     return (<div>
@@ -50,7 +46,13 @@ function MainContent(
         fetchPage(newValue);
     };
 
-    return (<div>
+    return (<>{
+        fetching ? <Spin/> :
+        requestsCount === 0 ? <div className={"requests-interests__empty"}> 
+            <div>{t('noResultsText')}</div> 
+            <Link to={HOME}><Button type='primary'>{t('noResultsBtn')}</Button></Link>
+        </div> :        
+        <div>
         <Row style={{margin: 0, padding: 0}}>
             <Col span={23}>
                 <h1><b>
@@ -110,7 +112,7 @@ function MainContent(
                 <p>{t("modals.helpModal.secondDesc")}</p>
             </div>
         </Modal>
-    </div>)
+    </div>}</>)
 }
 
 

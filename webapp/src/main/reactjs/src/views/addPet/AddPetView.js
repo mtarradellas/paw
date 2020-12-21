@@ -6,11 +6,12 @@ import {CREATE_PET_ERRORS, createPet} from "../../api/pets";
 import useLogin from "../../hooks/useLogin";
 import {useHistory} from 'react-router-dom';
 import {PET} from "../../constants/routes";
+import {message} from 'antd';
 
 function AddPetView(){
     const history = useHistory();
     const [submittingPet, setSubmittingPet] = useState(false);
-    const {t} = useTranslation('addPet');
+    const {t} = useTranslation(['addPet', 'common']);
 
     const {state, promptLogin} = useLogin();
     const {jwt} = state;
@@ -23,14 +24,14 @@ function AddPetView(){
             const {id} = await createPet(values, jwt);
             history.push(PET + id);
         }catch (e) {
-            console.error(e)
+
             switch (e) {
                 case CREATE_PET_ERRORS.FORBIDDEN:
                     promptLogin();
                     break;
                 case CREATE_PET_ERRORS.CONN_ERROR:
                 default:
-                    //TODO: conn error message
+                    message.error(t('common:connError'));
                     break;
             }
         }

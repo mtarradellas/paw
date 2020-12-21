@@ -3,7 +3,7 @@ import {Formik} from "formik";
 import * as Yup from 'yup';
 import {Form, Input} from "formik-antd";
 import {useTranslation} from "react-i18next";
-import {List, Button, Spin} from "antd";
+import {List, Button, Spin, message} from "antd";
 import {
     CREATE_ANSWER_ERRORS,
     CREATE_QUESTION_ERRORS,
@@ -142,6 +142,7 @@ function QuestionsForm({onSubmit, submitting}){
 function Questions({petId, ownerId, isLogged, isAvailable}){
     const history = useHistory();
     const {state, promptLogin} = useLogin();
+    const {t} = useTranslation("common");
     const [submitting, setSubmitting] = useState(false);
 
     const [questions, setQuestions] = useState([]);
@@ -167,7 +168,8 @@ function Questions({petId, ownerId, isLogged, isAvailable}){
                     break;
                 case CREATE_QUESTION_ERRORS.CONN_ERROR:
                 default:
-                    //TODO. con error
+                    message.error(t('connError'));
+                    setSubmitting(false);
             }
             return;
         }
@@ -224,7 +226,7 @@ function Questions({petId, ownerId, isLogged, isAvailable}){
                     break;
                 case CREATE_ANSWER_ERRORS.CONN_ERROR:
                 default:
-                    //TODO: con error
+                    message.error(t('connError'));
             }
             return;
         }

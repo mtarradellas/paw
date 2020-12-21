@@ -63,5 +63,7 @@
     "canceled": "Cancelaste tu solicitud de {{petName}}",
     "sold": "La mascota {{petName}} fue vendida"
   },
-  "date": "{{day}}-{{month}}-{{year}}"
+  "date": "{{day}}-{{month}}-{{year}}",
+  "noResultsBtn": "Buscar mascotas",
+  "noResultsText": "No enviaste ninguna solicitud, busca una mascota en la página principal"
 }
