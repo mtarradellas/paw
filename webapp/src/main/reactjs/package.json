@@ -1,7 +1,7 @@
 {
   "name": "final-paw",
   "version": "0.1.0",
-  "homepage": "http://localhost:8080/paw-2020a-7",
+  "homepage": "http://localhost:3000/",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.3.0",

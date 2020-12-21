@@ -88,6 +88,8 @@ function UsernameAndLogout(){
 
     const {username} = state;
 
+    const {id} = useLogin().state;
+
     const _onLogout = () => {
         logout();
     };
@@ -96,7 +98,7 @@ function UsernameAndLogout(){
         <div className={"header__username-and-logout"}>
 
             <p className={"header__username-and-logout__username"}>
-                {username}
+                <Link to={USER + id}>{username}</Link>
             </p>
 
             <Button className={"header__username-and-logout__logout"} onClick={_onLogout}>
