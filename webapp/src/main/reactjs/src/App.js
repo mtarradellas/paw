@@ -375,7 +375,7 @@ function AppSwitch(){
 function App() {
     const login = useLoginState();
     const constants = useConstants();
-    
+
     return (
         <LoginContext.Provider value={login}>
             <ConstantsContext.Provider value={constants}>
