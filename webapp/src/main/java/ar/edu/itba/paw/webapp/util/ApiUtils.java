@@ -51,6 +51,12 @@ public class ApiUtils {
         return null;
     }
 
+    public static String frontUri(UriInfo uriInfo) {
+        String str = uriInfo.getBaseUri().toString();
+        int idx = str.lastIndexOf("api/");
+        return str.substring(0, idx);
+    }
+
     public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Collection<?> list, Map<String, Object> data) {
         int lastPage = (int) Math.ceil((double) amount / (double) pageSize);
         if (lastPage == 0) lastPage = 1;

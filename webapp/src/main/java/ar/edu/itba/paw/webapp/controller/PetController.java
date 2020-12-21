@@ -391,7 +391,7 @@ public class PetController{
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
         List<Long> images = new ArrayList<>();
-        opPet.get().getImages().stream().map(img -> images.add(img.getId()));
+        opPet.get().getImages().forEach(img -> images.add(img.getId()));
         return Response.ok(new GenericEntity<List<Long>>(images) {}).build();
     }
 
