@@ -321,6 +321,8 @@ function PetView() {
 
             if (jwt !== null) {
                 await fetchHasRequest(isAvailable);
+            }else{
+                setReqText('buttons.requestBtn.request');
             }
             setReqLoading(false);
         }catch (e) {
