@@ -29,7 +29,6 @@ function InterestNotification(
     let shaded = false;
 
     if (petStatus === INTEREST_STATUS.REJECTED) {
-        shaded = true;
         reqTarget = (
             <p>{t("messages.rejected", {petName: petName, username: username})}
                 <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
@@ -85,7 +84,6 @@ function InterestNotification(
         )
 
     } else if (petStatus === INTEREST_STATUS.CANCELED) {
-        shaded = true;
         reqTarget = (
             <p>{t("messages.canceled", {petName: petName, username: username})}
                 <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
@@ -101,7 +99,6 @@ function InterestNotification(
         )
 
     } else if (petStatus === INTEREST_STATUS.SOLD) {
-        shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: petName, username: username})}
                 <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
