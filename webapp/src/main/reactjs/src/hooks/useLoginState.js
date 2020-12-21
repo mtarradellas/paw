@@ -81,7 +81,7 @@ const useLoginState = () => {
 
             setUserInfo({id: parseInt(id),
                 mail,
-                isAdmin: isAdmin === 'true',
+                isAdmin: isAdmin,
                 status: parseInt(status)})
         }else{
             dispatch({type: ACTIONS.SET_NOT_LOGGED_IN})

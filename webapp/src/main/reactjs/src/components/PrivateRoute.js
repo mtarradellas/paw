@@ -3,7 +3,7 @@ import {Redirect, Route} from "react-router-dom";
 import useLogin from "../hooks/useLogin";
 import {Spin} from "antd";
 import _ from 'lodash';
-import {HOME} from "../constants/routes";
+import {ACCESS_DENIED} from "../constants/routes";
 
 const RedirectPromptLogin = () => {
     const {promptLogin} = useLogin();
@@ -28,7 +28,7 @@ const Admin = ({component: Component}) => {
     return isAdmin ?
         <Component/>
         :
-        <Redirect to={HOME}/>;
+        <Redirect to={ACCESS_DENIED}/>;
 };
 
 const NonAdmin = ({component: Component}) => {
