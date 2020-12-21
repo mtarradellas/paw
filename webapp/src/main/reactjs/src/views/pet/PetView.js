@@ -39,7 +39,9 @@ function ImgModal({id, onClose}) {
 
 function Content({pet, id, isLogged}){
     const [selectedImg, setSelectedImg] = useState(null);
-    const isAvailable = pet.status === petStatus.AVAILABLE; 
+    const isAvailable = pet.status === petStatus.AVAILABLE;
+    const sold = pet.status === petStatus.SOLD;
+
     const {t} = useTranslation('petView');
 
     const onCloseModal = () => {
@@ -93,7 +95,7 @@ function Content({pet, id, isLogged}){
                         :
                         <h2>{t('status.onSale')}: ${price}</h2>
                     :
-                    <h2>{t("status.sold")}</h2>
+                    sold ? <h2>{t("status.sold")}</h2> : <h2>{t("status.removed")}</h2>
             }
 
             <Divider/>
@@ -184,7 +186,7 @@ function IsOwnerButtons({petId, petName}){
                     history.push(ERROR_404_PET);
                     break;
                 default:
-                //TODO: con error
+                    message.error(t('connError'));
                     setSubmitting(false);
             }
         }
@@ -262,12 +264,13 @@ function PetView() {
     const {state} = useLogin();
     const {id} = useParams();
     const [pet, setPet] = useState(initialStatePet);
-    const [reqDisabled, setReqDisabled] = useState(true);
-    const [reqText, setReqText] = useState("buttons.requestBtn.loading");
-    const [reqLoading, setReqLoading] = useState(true);
     const {id: loggedUserId} = state;
     const {isLoggedIn} = state; 
     const {jwt} = useLogin().state;
+
+    const [reqDisabled, setReqDisabled] = useState(true);
+    const [reqText, setReqText] = useState("buttons.requestBtn.loading");
+    const [reqLoading, setReqLoading] = useState(true);
 
     const fetchHasRequest = async (available) => {
         try {

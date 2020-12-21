@@ -12,6 +12,7 @@ import FilterAndSearchContext from "../constants/filterAndSearchContext";
 import {useHistory} from 'react-router-dom';
 import {getNotifications} from "../api/requests";
 import _ from 'lodash';
+import Logo from '../images/logo.png';
 
 
 function LoggedInMenuItems() {
@@ -169,7 +170,7 @@ function Header() {
 
     return <header>
         <Link to={HOME} className={"header__logo"}>
-            <img src={"/logo.png"} alt={"logo"} width={70} height={70}/>
+            <img src={Logo} alt={"logo"} width={70} height={70}/>
         </Link>
 
         <Link to={HOME} className={"header__title"}>

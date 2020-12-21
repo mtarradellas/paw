@@ -72,6 +72,7 @@ import ForgotPasswordView from "./views/forgotPassword/ForgotPasswordView";
 import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
 import EmailSent from "./views/information/EmailSent";
 import OperationSuccessful from "./views/information/OperationSuccessful";
+import {CONTEXT} from "./config";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -139,11 +140,11 @@ function AppSwitch(){
                           }
             />
 
-            {/*<Route exact path={ADMIN_HOME}>*/}
-            {/*    <AdminLayout>*/}
-            {/*        <AdminHome/>*/}
-            {/*    </AdminLayout>*/}
-            {/*</Route>*/}
+            <PrivateRoute adminPage exact path={ADMIN_HOME}>
+                <AdminLayout>
+                    <AdminHome/>
+                </AdminLayout>
+            </PrivateRoute>
             {/*<Route exact path={ADMIN_REQUESTS}>*/}
             {/*    <AdminLayout>*/}
             {/*        <AdminRequests/>*/}
@@ -265,7 +266,7 @@ function App() {
     return (
         <LoginContext.Provider value={login}>
             <ConstantsContext.Provider value={constants}>
-                <Router>
+                <Router basename={CONTEXT}>
                     {
                         !loaded ?
                             <Spin/>

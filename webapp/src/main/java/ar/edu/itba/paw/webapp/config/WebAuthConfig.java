@@ -59,7 +59,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .addFilterBefore(new CORSFilter(), (Class<? extends Filter>) ChannelProcessingFilter.class)
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
-                .formLogin().loginProcessingUrl("/api/login").and()
             .authorizeRequests()
                 .antMatchers("/api/login", "/api/register", "/api/request-password-reset","/api/password-reset/**").anonymous()
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
