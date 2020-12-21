@@ -19,7 +19,7 @@ function EditUserView () {
     const [submittingPassword, setSubmittingPassword] = useState(false);
     const [visible, setVisible] = React.useState(false);
     const [submittingRemove, setSubmittingRemove] = React.useState(false);
-    const [modalText, setModalText] = React.useState(t('deleteModal'));
+    const [modalText, setModalText] = React.useState('deleteModal');
     const [maskClose, setMaskClose] = React.useState(true);
     const [iconClose, setIconClose] = React.useState(true);
     const [cancelProps, setCancelProps] = React.useState();
@@ -75,7 +75,7 @@ function EditUserView () {
         setMaskClose(false);
         setIconClose(false);
         setCancelProps({disabled: true});
-        setModalText(t('deletingModal'));
+        setModalText('deletingModal');
         setSubmittingRemove(true);
         try {
             await deleteAccount(id, jwt);
@@ -112,7 +112,7 @@ function EditUserView () {
               closable={iconClose}
               maskClosable={maskClose}
             >
-              <p>{modalText}</p>
+              <p>{t(modalText)}</p>
             </Modal>
             
         </>}

@@ -90,6 +90,7 @@ import AdminAddUser from "./views/admin/users/AdminAddUser";
 import AdminEditUser from "./views/admin/users/AdminEditUser";
 import AdminAddPet from "./views/admin/pets/AdminAddPet";
 import AdminEditPet from "./views/admin/pets/AdminEditPet";
+import {CONTEXT} from "./config";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -157,7 +158,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_HOME}
+            <PrivateRoute adminPage path={ADMIN_HOME}
                           component={
                               () => (
                                   <AdminLayout>
@@ -166,7 +167,7 @@ function AppSwitch(){
                               )
                           }
             />
-            <PrivateRoute path={ADMIN_REQUESTS}
+            <PrivateRoute adminPage path={ADMIN_REQUESTS}
                           component={
                               () => (
                                   <AdminLayout>
@@ -174,7 +175,7 @@ function AppSwitch(){
                                   </AdminLayout>
                               )}
             />
-            <PrivateRoute path={ADMIN_USERS}
+            <PrivateRoute adminPage path={ADMIN_USERS}
                           component={
                               () => (
                                   <AdminLayout>
@@ -183,7 +184,7 @@ function AppSwitch(){
                               )
                           }
             />
-            <PrivateRoute path={ADMIN_PETS}
+            <PrivateRoute adminPage path={ADMIN_PETS}
                           component={
                               () => (
                                   <AdminLayout>
@@ -193,7 +194,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_USER + ':id'}
+            <PrivateRoute adminPage path={ADMIN_USER + ':id'}
                           component={
                               () => (
                                   <AdminLayout>
@@ -202,7 +203,7 @@ function AppSwitch(){
                               )
                           }
             />
-            <PrivateRoute path={ADMIN_PET + ':id'}
+            <PrivateRoute adminPage path={ADMIN_PET + ':id'}
                           component={
                               () => (
                                   <AdminLayout>
@@ -222,7 +223,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_EDIT_REQUEST + ':id'}
+            <PrivateRoute adminPage path={ADMIN_EDIT_REQUEST + ':id'}
                           component={
                               () => (
                                   <AdminLayout>
@@ -232,7 +233,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_ADD_USER}
+            <PrivateRoute adminPage path={ADMIN_ADD_USER}
                           component={
                               () => (
                                   <AdminLayout>
@@ -242,7 +243,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_EDIT_USER + ':id'}
+            <PrivateRoute adminPage path={ADMIN_EDIT_USER + ':id'}
                           component={
                               () => (
                                   <AdminLayout>
@@ -252,7 +253,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_ADD_PET}
+            <PrivateRoute adminPage path={ADMIN_ADD_PET}
                           component={
                               () => (
                                   <AdminLayout>
@@ -262,7 +263,7 @@ function AppSwitch(){
                           }
             />
 
-            <PrivateRoute path={ADMIN_EDIT_PET + ':id'}
+            <PrivateRoute adminPage path={ADMIN_EDIT_PET + ':id'}
                           component={
                               () => (
                                   <AdminLayout>
@@ -380,7 +381,7 @@ function App() {
     return (
         <LoginContext.Provider value={login}>
             <ConstantsContext.Provider value={constants}>
-                <Router>
+                <Router basename={CONTEXT}>
                     {
                         !loaded ?
                             <Spin/>

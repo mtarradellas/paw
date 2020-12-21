@@ -40,7 +40,8 @@
     "vaccinated": "Vacunado",
     "onAdoption": "En adopción",
     "onSale": "En venta",
-    "sold": "Vendido"
+    "sold": "Vendido",
+    "removed": "No disponible"
   },
   "questions": {
     "header": "Preguntas",

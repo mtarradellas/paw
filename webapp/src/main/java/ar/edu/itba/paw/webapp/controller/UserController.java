@@ -75,10 +75,6 @@ public class UserController {
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
         final User user = opUser.get();
-        if (user.getStatus() != UserStatus.ACTIVE) {
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        } 
-
         return Response.ok(new GenericEntity<UserDto>(UserDto.fromUser(user, uriInfo)){}).build();
     }
 

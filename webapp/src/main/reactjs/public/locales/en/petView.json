@@ -40,7 +40,8 @@
     "vaccinated": "Vaccinated",
     "onAdoption": "On adoption",
     "onSale": "On sale",
-    "sold": "Sold"
+    "sold": "Sold",
+    "removed": "Unavailable"
   },
   "questions": {
     "header": "Questions",
