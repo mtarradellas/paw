@@ -3,6 +3,19 @@ import {SERVER_URL} from '../config';
 import _ from 'lodash';
 const qs = require('querystring');
 
+const ACTIVATE_ENDPOINT = '/activate-account';
+export const ACTIVATE_ERRORS = {
+    INVALID_TOKEN: 2,
+    CONN_ERROR: 1
+};
+export async function activateAccount(token){
+    try{
+        await axios.post(SERVER_URL + ACTIVATE_ENDPOINT, {token: token},{});
+    }catch (e){
+        throw e.response.status === 400 ? ACTIVATE_ERRORS.INVALID_TOKEN : ACTIVATE_ERRORS.CONN_ERROR;
+    }
+}
+
 
 const REGISTER_ENDPOINT = '/register';
 export const REGISTER_ERRORS = {

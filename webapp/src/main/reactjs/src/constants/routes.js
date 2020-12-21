@@ -26,6 +26,8 @@ export const VERIFY_EMAIL = '/verify-email';
 
 export const SUCCESS = '/success';
 
+export const ACTIVATE_ACCOUNT = '/activate-account/'
+
 //ADMIN
 
 export const ADMIN_HOME = '/admin/home';
