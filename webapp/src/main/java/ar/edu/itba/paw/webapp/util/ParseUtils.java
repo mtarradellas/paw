@@ -251,6 +251,7 @@ public class ParseUtils {
         DateTimeFormatter formatter;
         try {
             if(date.contains("Z") || date.length() == 24) formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+            if(date.length() == 23) formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
             else formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
             dateTime = LocalDateTime.parse(date, formatter);
         } catch (Exception ex) {

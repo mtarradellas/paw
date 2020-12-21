@@ -55,8 +55,8 @@
       "female": "Hembra"
     },
     "images": {
-      "min": "Por favor suba como mínimo una imagen",
-      "errorType": "Las imagenes deben ser Jpeg"
+      "min": "Pr favor suba como mínimo una imagen",
+      "errorType": "Las imagenes deben ser .jpeg or .jpg"
     },
     "userId": {
       "label": "Usuario",

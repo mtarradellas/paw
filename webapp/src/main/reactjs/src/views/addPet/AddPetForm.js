@@ -11,6 +11,16 @@ import '../../css/addPet/addPetForm.css';
 
 const FormItem = Form.Item;
 
+const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg"]
+
+const typeCheck = (val) => {
+    let bool = true
+    for (let i = 0; i < val.length; i++) {
+        bool = bool && SUPPORTED_FORMATS.includes(val[i].type);
+    }
+    return bool;
+}
+
 const defaultValues = {
     petName: '',
     price: '',
@@ -30,7 +40,7 @@ const defaultValues = {
 function AddPetForm({submitting, onSubmit, editing, initialValues}){
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
     const {t} = useTranslation('addPet');
-    const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg"]
+
 
     const _onSubmit = values => {
         onSubmit(values);
@@ -69,14 +79,15 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                 isVaccinated: Yup.boolean(),
                 gender: Yup.string()
                     .required(t('form.gender.required')),
+                files: editing ? (Yup.array().test('fileType', t('form.images.errorType'), value => typeCheck(value)))
+                    : Yup.array()
+                        .min(1, min => t('form.images.min', {min}))
+                        .test('fileType', t('form.images.errorType'), value => typeCheck(value)),
                 filesToDelete: Yup.array()
                     .when('files', {
                         is: (files) => editing && files.length === 0,
                         then: Yup.array().max(initialValues && initialValues.images.length-1, t('form.filesToDelete.atLeastOneImage'))
                     }),
-                files: editing ? Yup.array() : Yup.array()
-                    .min(1, min => t('form.images.min', {min}))
-                    .test('fileType', t('form.images.errorType'), value => SUPPORTED_FORMATS.includes(value.type))
             })
         }
         onSubmit={_onSubmit}

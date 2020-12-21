@@ -20,7 +20,6 @@ function PetCard({pet, admin}){
 
     const petPath = isAdmin? ADMIN_PET+id:PET+id;
     const userPath = isAdmin? ADMIN_USER+userId:USER+userId;
-    console.log(petPath)
 
     return <Card
             className={"pet-card" + (!isAvailable ? " pet-card--not-available" : '')}

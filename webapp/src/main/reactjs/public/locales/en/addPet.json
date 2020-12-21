@@ -56,7 +56,7 @@
     },
     "images": {
       "min": "Please upload at least one image",
-      "errorType": "Images must be Jpeg"
+      "errorType": "Images must be .jpeg or .jpg"
     },
     "userId": {
       "label": "User",
