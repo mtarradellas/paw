@@ -9,6 +9,8 @@ const REMOVE_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/remove";
 const RECOVER_PET_ENDPOINT = (id) => "/admin/pets/"+id+"/recover";
 const GET_PETS_FILTERS_ENDPOINT = "/admin/pets/filters";
 const CREATE_PET_ENDPOINT = "/admin/pets";
+const EDIT_PET_ENDPOINT = id => "/admin/pets/" + id + "/edit";
+
 
 export const CREATE_PET_ERRORS = {
     CONN_ERROR: 0,
@@ -26,7 +28,47 @@ export const RECOVER_PETS_ERRORS = {
 export const GET_PETS_FILTERS = {
     CONN_ERROR:0
 }
+export const EDIT_PET_ERRORS = {
+    CONN_ERROR: 0,
+    FORBIDDEN: 1,
+    IMAGE_QUANTITY_ERROR: 2
+};
+export async function editPetAdmin(values, id, jwt) {
+    const {
+        petName, birthDate, gender, isVaccinated, price, uploadDate, description,
+        speciesId, breedId, provinceId, departmentId, files
+    } = values;
 
+    const form = new FormData();
+
+    Object.keys(_.omit(values, ['files'])).forEach(key => {
+        form.append(key, values[key]);
+    });
+    form.append('pet', id);
+
+    files.forEach((file, i) => {
+        form.append('files', file.originFileObj);
+    });
+
+    const {headers: authHeaders} = getAuthConfig(jwt);
+
+    const config = {
+        headers: Object.assign(authHeaders, {
+            'accept': 'application/json',
+            'Content-Type': `multipart/form-data; boundary=${form._boundary}`
+        })
+    };
+
+    try{
+        await axios.post(SERVER_URL + EDIT_PET_ENDPOINT(id), form, config);
+    }catch (e) {
+        console.log(e);
+        if(e.response.status === 403) throw EDIT_PET_ERRORS.FORBIDDEN;
+        if(e.response.status === 403) throw EDIT_PET_ERRORS.FORBIDDEN;
+
+        throw EDIT_PET_ERRORS.CONN_ERROR;
+    }
+}
 export async function createAdminPet(values, jwt){
     const {
         petName, birthDate, gender, isVaccinated, price, uploadDate, description,
@@ -62,6 +104,7 @@ export async function createAdminPet(values, jwt){
     }
 
 }
+
 
 export async function getPetAdmin(petId, jwt){
     const config = getAuthConfig(jwt);

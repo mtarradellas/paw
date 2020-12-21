@@ -89,6 +89,7 @@ import AdminEditRequest from "./views/admin/requests/AdminEditRequest";
 import AdminAddUser from "./views/admin/users/AdminAddUser";
 import AdminEditUser from "./views/admin/users/AdminEditUser";
 import AdminAddPet from "./views/admin/pets/AdminAddPet";
+import AdminEditPet from "./views/admin/pets/AdminEditPet";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -265,8 +266,7 @@ function AppSwitch(){
                           component={
                               () => (
                                   <AdminLayout>
-                                      <div>hola</div>
-                                      {/*<AdminAddPet/>*/}
+                                      <AdminEditPet/>
                                   </AdminLayout>
                               )
                           }
