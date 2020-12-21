@@ -3,7 +3,7 @@ import {useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import useLogin from "../../../hooks/useLogin";
 import {CREATE_PET_ERRORS, createPet} from "../../../api/pets";
-import {ADMIN_PET} from "../../../constants/routes";
+import { ADMIN_PETS} from "../../../constants/routes";
 import {createAdminPet} from "../../../api/admin/pets";
 import BigCenteredContent from "../../../components/BigCenteredContent";
 import {Checkbox, DatePicker, Form, Input, InputNumber, Select} from "formik-antd";
@@ -58,7 +58,7 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                         then: Yup.number().typeError(t('form.price.required'))
                     }),
                 isAdoption: Yup.boolean(),
-                userId: Yup.number().required(t('form.userId.required')),
+                user: Yup.number().required(t('form.userId.required')),
                 description: Yup.string()
                     .required(t('form.description.required')),
                 province: Yup.number()
@@ -97,8 +97,13 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                             min={0}
                         />
                     </FormItem>
-                    <FormItem name={"userId"} label={t('form.userId.label')}>
-                        <Select name={"userId"} placeholder={t('form.userId.label')}>
+
+                    <FormItem name={"isAdoption"} label={t('form.isAdoption.label')}>
+                        <Checkbox name={"isAdoption"} onChange={()=>setFieldValue('price', 0)}/>
+                    </FormItem>
+
+                    <FormItem name={"user"} label={t('form.userId.label')}>
+                        <Select name={"user"} placeholder={t('form.userId.label')}>
                             {
                                 users && users.map((user) => {
                                     return <Select.Option value={user.id}
@@ -106,10 +111,6 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                                 })
                             }
                         </Select>
-                    </FormItem>
-
-                    <FormItem name={"isAdoption"} label={t('form.isAdoption.label')}>
-                        <Checkbox name={"isAdoption"} onChange={()=>setFieldValue('price', 0)}/>
                     </FormItem>
 
                     <FormItem name={"description"} label={t('form.description.label')}>
@@ -220,8 +221,8 @@ function AdminAddPets(){
 
     const _onSubmit = async (values) => {
         try {
-            const {id} = await createAdminPet(values, jwt);
-            history.push(ADMIN_PET + id);
+            await createAdminPet(values, jwt);
+            history.push(ADMIN_PETS);
         }catch (e) {
             console.error(e)
             switch (e) {

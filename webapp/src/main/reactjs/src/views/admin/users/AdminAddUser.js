@@ -91,6 +91,7 @@ function AdminAddUser(){
             await createUserAdmin(values.username,values.email,values.password, jwt);
 
             history.push(ADMIN_USERS);
+
         } catch (e) {
             switch (e) {
                 case CREATE_REQUEST_ERRORS.CONN_ERROR:

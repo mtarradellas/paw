@@ -29,11 +29,10 @@ export const GET_PETS_FILTERS = {
 
 export async function createAdminPet(values, jwt){
     const {
-        petName, birthDate, gender, vaccinated, price, uploadDate, description,
-        speciesId, breedId, provinceId, departmentId, userId, files
+        petName, birthDate, gender, isVaccinated, price, uploadDate, description,
+        speciesId, breedId, provinceId, departmentId, user, files
     } = values;
 
-    console.log(values)
     const form = new FormData();
 
     Object.keys(_.omit(values, ['files'])).forEach(key => {
