@@ -55,7 +55,12 @@
       "female": "Hembra"
     },
     "images": {
-      "min": "Pr favor suba como mínimo una imagen"
+      "min": "Pr favor suba como mínimo una imagen",
+      "errorType": "Las imagenes deben ser Jpeg"
+    },
+    "userId": {
+      "label": "Usuario",
+      "required": "El usuario es obligatorio"
     },
     "upload": "Cargar imagen",
     "addPet": "Agregar mascota",

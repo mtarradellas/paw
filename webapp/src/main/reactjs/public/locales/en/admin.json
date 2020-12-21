@@ -5,6 +5,8 @@
   "addRequest": "+ Add Request",
   "addUser": "+ Add User",
   "addPet": "+ Add Pet",
+  "noResults": "No results were found. ",
+  "fetchAll": "Fetch all options",
   "home": {
     "welcome": "Welcome to the admin control page",
     "listsTitle": "Here you can get lists with all the available pets, users and requests, click a button to go to the corresponding page:",
@@ -46,7 +48,9 @@
     "gender": "Gender",
     "breed": "Breed",
     "price": "Price",
-    "uploadDate": "Upload Date"
+    "uploadDate": "Upload Date",
+    "male": "Male",
+    "female": "Female"
   },
   "status": {
     "pending": "Pending",
@@ -108,5 +112,38 @@
       "meaning": "What does the color mean?",
       "meaningDesc": "If an item is darker, it means that it was deleted. To recover it, just press on the green \"recover\" button."
     }
+  },
+  "date": "{{month}}-{{day}}-{{year}}",
+  "addRequestView": {
+    "title": "Add Request (Admin Mode)",
+    "addRequest": "Add Request",
+    "petName": "Pet Name",
+    "username": "Username"
+  },
+  "editRequestView": {
+    "title": "Edit Request (Admin Mode)",
+    "status": "Request Status"
+  },
+  "addUserView": {
+    "title": "Add User (Admin Mode)",
+    "username": "Username",
+    "mail": "Mail",
+    "password": "Password"
+  },
+  "editUserView": {
+    "title": "Edit User (Admin Mode)",
+    "username": "Username",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "newPasswordRepeat": "Repeat New Password"
+  },
+  "addPetView": {
+    "title": "Add Pet (Admin Mode)"
+  },
+  "errors": {
+    "duplicatedRequest": "This user has already requested this pet",
+    "default": "Connection error: the request couldn't be completed",
+    "unchanged": "You are trying to change the status to the existing one",
+    "noMatch": "Passwords don't match"
   }
 }

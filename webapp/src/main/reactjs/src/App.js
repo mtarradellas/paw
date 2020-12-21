@@ -53,7 +53,16 @@ import {
     ADMIN_PETS,
     ADMIN_USERS,
     ADMIN_REQUESTS,
-    ADD_PET, EDIT_PET
+    ADD_PET,
+    EDIT_PET,
+    ADMIN_USER,
+    ADMIN_PET,
+    ADMIN_ADD_PET,
+    ADMIN_ADD_REQUEST,
+    ADMIN_ADD_USER,
+    ADMIN_EDIT_PET,
+    ADMIN_EDIT_USER,
+    ADMIN_EDIT_REQUEST
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -68,10 +77,20 @@ import AddPetView from "./views/addPet/AddPetView";
 import useFormAndSearch from "./hooks/useFormAndSearch";
 import FilterAndSearchContext from './constants/filterAndSearchContext'
 import EditPetView from "./views/editPet/EditPetView";
+
 import ForgotPasswordView from "./views/forgotPassword/ForgotPasswordView";
 import ResetPasswordView from "./views/passwordReset/ResetPasswordView";
 import EmailSent from "./views/information/EmailSent";
 import OperationSuccessful from "./views/information/OperationSuccessful";
+import AdminUserView from "./views/admin/AdminUserView";
+import AdminPetView from "./views/admin/AdminPetView";
+import AdminAddRequest from "./views/admin/requests/AdminAddRequest";
+import AdminEditRequest from "./views/admin/requests/AdminEditRequest";
+import AdminAddUser from "./views/admin/users/AdminAddUser";
+import AdminEditUser from "./views/admin/users/AdminEditUser";
+import AdminAddPet from "./views/admin/pets/AdminAddPet";
+import AdminEditPet from "./views/admin/pets/AdminEditPet";
+import {CONTEXT} from "./config";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -139,26 +158,120 @@ function AppSwitch(){
                           }
             />
 
-            {/*<Route exact path={ADMIN_HOME}>*/}
-            {/*    <AdminLayout>*/}
-            {/*        <AdminHome/>*/}
-            {/*    </AdminLayout>*/}
-            {/*</Route>*/}
-            {/*<Route exact path={ADMIN_REQUESTS}>*/}
-            {/*    <AdminLayout>*/}
-            {/*        <AdminRequests/>*/}
-            {/*    </AdminLayout>*/}
-            {/*</Route>*/}
-            {/*<Route exact path={ADMIN_USERS}>*/}
-            {/*    <AdminLayout>*/}
-            {/*        <AdminUsers/>*/}
-            {/*    </AdminLayout>*/}
-            {/*</Route>*/}
-            {/*<Route exact path={ADMIN_PETS}>*/}
-            {/*    <AdminLayout>*/}
-            {/*        <AdminPets/>*/}
-            {/*    </AdminLayout>*/}
-            {/*</Route>*/}
+            <PrivateRoute adminPage path={ADMIN_HOME}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminHome/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+            <PrivateRoute adminPage path={ADMIN_REQUESTS}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminRequests/>
+                                  </AdminLayout>
+                              )}
+            />
+            <PrivateRoute adminPage path={ADMIN_USERS}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminUsers/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+            <PrivateRoute adminPage path={ADMIN_PETS}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminPets/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute adminPage path={ADMIN_USER + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminUserView/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+            <PrivateRoute adminPage path={ADMIN_PET + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminPetView/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute adminPage path={ADMIN_ADD_REQUEST}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminAddRequest/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute adminPage path={ADMIN_EDIT_REQUEST + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminEditRequest/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute adminPage path={ADMIN_ADD_USER}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminAddUser/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute adminPage path={ADMIN_EDIT_USER + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminEditUser/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute adminPage path={ADMIN_ADD_PET}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminAddPet/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
+
+            <PrivateRoute adminPage path={ADMIN_EDIT_PET + ':id'}
+                          component={
+                              () => (
+                                  <AdminLayout>
+                                      <AdminEditPet/>
+                                  </AdminLayout>
+                              )
+                          }
+            />
 
             <PrivateRoute path={ADD_PET}
                           component={
@@ -195,6 +308,9 @@ function AppSwitch(){
                        )
                    }
             />
+            <Route exact path={"/admin"}>
+                <Redirect to={ADMIN_HOME}/>
+            </Route>
             <Route exact path={EDIT_PET(':id')}
                    render={
                        () => (
@@ -265,7 +381,7 @@ function App() {
     return (
         <LoginContext.Provider value={login}>
             <ConstantsContext.Provider value={constants}>
-                <Router>
+                <Router basename={CONTEXT}>
                     {
                         !loaded ?
                             <Spin/>

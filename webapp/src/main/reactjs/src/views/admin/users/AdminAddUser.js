@@ -1,18 +1,22 @@
 import React from 'react';
-import {Form, Input} from "formik-antd";
-import {Formik} from "formik";
-import {Button} from "antd";
+import { useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import * as Yup from 'yup';
-import {Link} from "react-router-dom";
-import {LOGIN} from "../../constants/routes";
+import useLogin from "../../../hooks/useLogin";
+import {CREATE_REQUEST_ERRORS} from "../../../api/admin/requests";
+import {ADMIN_USERS} from "../../../constants/routes";
+import {createUserAdmin} from "../../../api/admin/users";
+import BigCenteredContent from "../../../components/BigCenteredContent";
+import {Formik} from "formik";
+import * as Yup from "yup";
+import {Form, Input} from "formik-antd";
+import {Button} from "antd";
 
-const FormItem = Form.Item;
+const FormItem = Form.Item
 
 const VALID_CHARACTERS = "^[a-zA-Z0-9\u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\u00E1\u00E9\u00ED" +
-                        "\u00F3\u00FA\u00F1\u00FC]*$";
+    "\u00F3\u00FA\u00F1\u00FC]*$";
 
-function RegisterForm({onSubmit, submitting}){
+function AddUserForm({_onSubmit}) {
     const {t} = useTranslation("register");
 
     return <Formik
@@ -35,7 +39,7 @@ function RegisterForm({onSubmit, submitting}){
                     .required(t('form.email.errors.required'))
             })
         }
-        onSubmit={onSubmit}
+        onSubmit={_onSubmit}
         initialValues={
             {
                 username: '',
@@ -44,7 +48,7 @@ function RegisterForm({onSubmit, submitting}){
                 email: ''
             }
         }
-        >
+    >
         <Form
             layout={"vertical"}
         >
@@ -65,14 +69,46 @@ function RegisterForm({onSubmit, submitting}){
             </FormItem>
 
             <FormItem name>
-                <Button type="primary" htmlType="submit" loading={submitting}>
+                <Button type="primary" htmlType="submit">
                     {t('form.submit')}
                 </Button>
             </FormItem>
 
-            <p>{t("form.existingAccount")} <Link to={LOGIN}>{t("form.login")}</Link></p>
         </Form>
     </Formik>
 }
 
-export default RegisterForm;
+function AdminAddUser(){
+    const history = useHistory();
+
+    const {t} = useTranslation('admin');
+
+    const {state} = useLogin();
+    const {jwt} = state;
+
+    const _onSubmit = async (values, {setErrors}) => {
+        try {
+            await createUserAdmin(values.username,values.email,values.password, jwt);
+
+            history.push(ADMIN_USERS);
+
+        } catch (e) {
+            switch (e) {
+                case CREATE_REQUEST_ERRORS.CONN_ERROR:
+                default:
+                    setErrors({userId: t('errors.default')});
+                    //TODO: conn error message
+                    break;
+            }
+        }
+    }
+
+    return <BigCenteredContent>
+        <h1>{t("addUserView.title")}</h1>
+
+        <AddUserForm _onSubmit={_onSubmit}/>
+    </BigCenteredContent>
+}
+
+
+export default AdminAddUser;

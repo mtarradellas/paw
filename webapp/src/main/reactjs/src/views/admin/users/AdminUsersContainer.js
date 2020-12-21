@@ -4,24 +4,41 @@ import {Button, List, Modal} from "antd";
 
 import {ADMIN_USER, ADMIN_EDIT_USER} from "../../../constants/routes";
 import ListContainer from "../../../components/ListContainer";
+import useLogin from "../../../hooks/useLogin";
+import {deleteUserAdmin, recoverUserAdmin} from "../../../api/admin/users";
 
 
-function User({id, username, mail,status, modal}){
+function User({id, username,status, modal, fetchFilters}){
     const {t} = useTranslation("admin");
 
+    const {jwt} = useLogin().state;
+
+    const USER_STATUS = {
+        ACTIVE: 0,
+        INACTIVE: 1,
+        DELETED: 2
+    }
+
+    const [userStatus, setUserStatus] = useState(status)
+
     let reqTarget = (
-        <p>{username} - {mail}  (id: {id})</p>
+        <p>{username} (id: {id})</p>
 
     );
     let reqStatus = null;
     let reqButtons = null;
     let shaded = false;
 
-    if (status === "ACTIVE") {
-        const onConfirm = () => {
-            alert("deleted" + id)
+    if (userStatus === USER_STATUS.ACTIVE || userStatus === USER_STATUS.INACTIVE) {
+        const onConfirm = async () => {
+            try{
+                await deleteUserAdmin(id, jwt)
+                fetchFilters();
+                setUserStatus(USER_STATUS.DELETED);
+            }catch (e){
+                console.log(e)
+            }
         }
-
         const modalMessage = t("modals.deleteUser")
 
         reqButtons = (
@@ -34,28 +51,16 @@ function User({id, username, mail,status, modal}){
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.remove")}</Button>
             </div>
         )
-     } else if (status === "INACTIVE") {
+     } else if (userStatus === USER_STATUS.DELETED) {
         shaded = true;
-        const onConfirm = () => {
-            alert("deleted" + id)
-        }
-
-        const modalMessage = t("modals.deleteUser")
-
-        reqButtons = (
-            <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_USER + id}>{t("buttons.visitUser")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_USER + id}>{t("buttons.edit")}</Button>
-                &nbsp;&nbsp;
-                <Button type={"primary"} danger
-                        onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.remove")}</Button>
-            </div>
-        )
-    } else if (status === "DELETED") {
-        shaded = true;
-        const onConfirm = () => {
-            alert("recovered" + id)
+        const onConfirm = async () => {
+            try{
+                await recoverUserAdmin(id, jwt)
+                fetchFilters();
+                setUserStatus(USER_STATUS.ACTIVE);
+            }catch (e){
+                console.log(e)
+            }
         }
 
         const modalMessage = t("modals.recoverUser")
@@ -76,7 +81,7 @@ function User({id, username, mail,status, modal}){
 
     )}
 
-function AdminUsersContainer({users}){
+function AdminUsersContainer({users,fetchFilters}){
     const {t} = useTranslation("admin");
 
     const [modalState, setModalState] = useState({show: false, callbackMethod: null, modalMessage: ""});
@@ -99,7 +104,10 @@ function AdminUsersContainer({users}){
                         .map(
                             (user) => (
                                 <List.Item key={user.id}>
-                                    <User modal={showModal} {...user} />
+                                    <User
+                                        modal={showModal}
+                                        fetchFilters={fetchFilters}
+                                        {...user} />
                                 </List.Item>
                             )
                         )

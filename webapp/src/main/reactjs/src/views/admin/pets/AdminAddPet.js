@@ -1,12 +1,19 @@
 import React, {useContext} from 'react';
+import {useHistory} from "react-router-dom";
 import {useTranslation} from "react-i18next";
+import useLogin from "../../../hooks/useLogin";
+import {CREATE_PET_ERRORS, createPet} from "../../../api/pets";
+import { ADMIN_PETS} from "../../../constants/routes";
+import {createAdminPet} from "../../../api/admin/pets";
+import BigCenteredContent from "../../../components/BigCenteredContent";
+import {Checkbox, DatePicker, Form, Input, InputNumber, Select} from "formik-antd";
+import ConstantsContext from "../../../constants/constantsContext";
+import {Button, Spin, Upload} from "antd";
 import {ErrorMessage, Formik} from "formik";
-import {Form, Input, InputNumber, Checkbox, Select, DatePicker} from "formik-antd";
-import {Button, Spin, Upload} from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import * as Yup from 'yup';
-import ConstantsContext from '../../constants/constantsContext';
-import DeleteImagesInput from "../editPet/DeleteImagesInput";
+import * as Yup from "yup";
+import DeleteImagesInput from "../../editPet/DeleteImagesInput";
+import {PlusOutlined} from "@ant-design/icons";
+import useAdminUsers from "../../../hooks/admin/useUsers";
 
 const FormItem = Form.Item;
 
@@ -26,10 +33,9 @@ const defaultValues = {
     files: []
 };
 
-function AddPetForm({submitting, onSubmit, editing, initialValues}){
+function AddPetForm({ onSubmit, editing, initialValues, users}){
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
     const {t} = useTranslation('addPet');
-    const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg"]
 
     const _onSubmit = values => {
         onSubmit(values);
@@ -52,6 +58,7 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                         then: Yup.number().typeError(t('form.price.required'))
                     }),
                 isAdoption: Yup.boolean(),
+                user: Yup.number().required(t('form.userId.required')),
                 description: Yup.string()
                     .required(t('form.description.required')),
                 province: Yup.number()
@@ -70,7 +77,6 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                 filesToDelete: Yup.array(),
                 files: editing ? Yup.array() : Yup.array()
                     .min(1, min => t('form.images.min', {min}))
-                    .test('fileType', t('form.images.errorType'), value => SUPPORTED_FORMATS.includes(value.type))
             })
         }
         onSubmit={_onSubmit}
@@ -94,6 +100,17 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
 
                     <FormItem name={"isAdoption"} label={t('form.isAdoption.label')}>
                         <Checkbox name={"isAdoption"} onChange={()=>setFieldValue('price', 0)}/>
+                    </FormItem>
+
+                    <FormItem name={"user"} label={t('form.userId.label')}>
+                        <Select name={"user"} placeholder={t('form.userId.label')}>
+                            {
+                                users && users.map((user) => {
+                                    return <Select.Option value={user.id}
+                                                          key={user.id}>{user.username}</Select.Option>
+                                })
+                            }
+                        </Select>
                     </FormItem>
 
                     <FormItem name={"description"} label={t('form.description.label')}>
@@ -126,7 +143,7 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
 
                     <FormItem name={"species"} label={t('form.species.label')}>
                         <Select name={"species"} placeholder={t('form.species.placeholder')}
-                            onChange={() => setFieldValue('breed', '')}
+                                onChange={() => setFieldValue('breed', '')}
                         >
                             {
                                 Object.values(species).map(({id, name}) => {
@@ -185,14 +202,45 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                     <p className={"error-message"}><ErrorMessage name={"files"}/></p>
 
                     <FormItem name>
-                        <Button type="primary" htmlType="submit" loading={submitting}>
+                        <Button type="primary" htmlType="submit" >
                             {t('form.send')}
                         </Button>
                     </FormItem>
                 </Form>;
             }
         }
-        />
+    />
 }
 
-export default AddPetForm;
+function AdminAddPets(){
+    const history = useHistory();
+    const {t} = useTranslation('admin');
+
+    const {state} = useLogin();
+    const {jwt} = state;
+
+    const _onSubmit = async (values) => {
+        try {
+            await createAdminPet(values, jwt);
+            history.push(ADMIN_PETS);
+        }catch (e) {
+            console.error(e)
+            switch (e) {
+                case CREATE_PET_ERRORS.CONN_ERROR:
+                default:
+                    //TODO: conn error message
+                    break;
+            }
+        }
+    };
+
+    const users = useAdminUsers();
+
+    return<BigCenteredContent>
+        <h1>{t('addPetView.title')}</h1>
+
+        <AddPetForm onSubmit={_onSubmit} users={users.adminUsers} />
+    </BigCenteredContent>
+}
+
+export default AdminAddPets;
