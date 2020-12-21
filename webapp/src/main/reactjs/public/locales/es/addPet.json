@@ -56,7 +56,7 @@
     },
     "images": {
       "min": "Pr favor suba como mínimo una imagen",
-      "errorType": "Las imagenes deben ser Jpeg"
+      "errorType": "Las imagenes deben ser .jpeg or .jpg"
     },
     "userId": {
       "label": "Usuario",
