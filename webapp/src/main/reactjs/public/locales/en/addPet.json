@@ -55,7 +55,8 @@
       "female": "Female"
     },
     "images": {
-      "min": "Please upload at least one image"
+      "min": "Please upload at least one image",
+      "errorType": "Images must be Jpeg"
     },
     "upload": "Upload image",
     "addPet": "Add pet",

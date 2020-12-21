@@ -29,6 +29,7 @@ const defaultValues = {
 function AddPetForm({submitting, onSubmit, editing, initialValues}){
     const {species, breeds, provinces, departments} = useContext(ConstantsContext);
     const {t} = useTranslation('addPet');
+    const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg"]
 
     const _onSubmit = values => {
         onSubmit(values);
@@ -69,6 +70,7 @@ function AddPetForm({submitting, onSubmit, editing, initialValues}){
                 filesToDelete: Yup.array(),
                 files: editing ? Yup.array() : Yup.array()
                     .min(1, min => t('form.images.min', {min}))
+                    .test('fileType', t('form.images.errorType'), value => SUPPORTED_FORMATS.includes(value.type))
             })
         }
         onSubmit={_onSubmit}
