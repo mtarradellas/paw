@@ -40,6 +40,7 @@ public interface RequestDao {
     int interestNotifs(User user);
     int requestNotifs(User user);
 
-    boolean hasRequest(User user, User target);
+    boolean hasRequest(User user, User target, List<RequestStatus> statusList);
+    boolean hasRequest(User user, Pet pet, List<RequestStatus> statusList);
 }
 

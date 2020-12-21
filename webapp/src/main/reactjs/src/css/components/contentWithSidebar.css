@@ -1,0 +1,29 @@
+.content-with-sidebar__container {
+    width: 100vw;
+    display: grid;
+    grid-template-areas: "sidebar"
+                         "."
+                         "main-content";
+    grid-template-rows: auto 2rem auto;
+    padding: 3rem 0 3rem 0;
+}
+
+.content-with-sidebar__sidebar {
+    grid-area: sidebar;
+}
+
+.content-with-sidebar__content {
+    grid-area: main-content;
+}
+
+@media only screen and (min-width: 1000px) {
+    .content-with-sidebar__container {
+        grid-template-areas: "sidebar . main-content"
+                             ".       . main-content";
+        grid-template-rows: auto auto;
+        grid-template-columns: 2fr 2rem 10fr;
+
+        padding: 3rem 2rem 3rem 2rem;
+
+    }
+}

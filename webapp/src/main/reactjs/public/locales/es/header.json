@@ -1,0 +1,11 @@
+{
+  "register": "Registrarse",
+  "login": "Iniciar sesión",
+  "requests": "Solicitudes",
+  "interests": "Intereses",
+  "addPet": "¡Añadir mascota!",
+  "logout": "Cerrar sesión",
+  "profile": "Mi perfil",
+  "searchButton": "Buscar",
+  "searchPlaceholder": "Buscar"
+}

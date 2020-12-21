@@ -1,12 +1,19 @@
 package ar.edu.itba.paw.webapp.util;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import ar.edu.itba.paw.webapp.dto.PetDto;
 import ar.edu.itba.paw.webapp.dto.ReviewDto;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+
+import javax.ws.rs.core.Response;
 
 public class ParseUtils {
 
@@ -98,23 +105,6 @@ public class ParseUtils {
     public static String parseOrder(String order) {
         if (order != null && order.equalsIgnoreCase("desc")) return "desc";
         return "asc";
-    }
-
-    public static int[] parseRange(int range) {
-        int[] price;
-        switch (range) {
-            case 0 : price = new int[]{0, -1}; break; // Any price
-            case 1 : price = new int[]{0, 0}; break;
-            case 2 : price = new int[]{1, 4999}; break;
-            case 3 : price = new int[]{5000, 9999}; break;
-            case 4 : price = new int[]{10000, 14999}; break;
-            case 5 : price = new int[]{15000, 19999}; break;
-            case 6 : price = new int[]{20000, 24999}; break;
-            case 7 : price = new int[]{25000, -1}; break;
-            default  : String hint = "Range must be between 1 and 7 inclusive, or 0 for any range";
-                       throw new BadRequestException("price range", String.valueOf(range), hint);
-        }
-        return price;
     }
 
     public static void parseReviewScore(Integer score) {
@@ -231,5 +221,69 @@ public class ParseUtils {
             pet.getProvinceId() == null || pet.getDepartmentId() == null) {
                 throw new BadRequestException("Invalid or missing required fields");
         }
+    }
+
+    public static void parsePet(String petName, String gender, Long speciesId, Long breedId, Long provinceId, Long departmentId) {
+        petName = (petName.trim().replaceAll(" +", " "));
+        if (petName.length() == 0 || petName.length() > 255) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+        if (gender == null || speciesId == null || breedId == null || provinceId == null || departmentId == null) {
+            throw new BadRequestException("Invalid or missing required fields");
+        }
+    }
+    public static List<Long> parseImagesToDelete(String toDelete) {
+        if(toDelete == null || toDelete.length() == 0) return null;
+        List<Long> imagesToDelete = new ArrayList<>();
+        String[] res = toDelete.split("[,]", 0);
+        try {
+            for (String str : res) {
+                imagesToDelete.add(Long.parseLong(str));
+            }
+        } catch (Exception ex) {
+            throw new BadRequestException("Format of images to delete is invalid");
+        }
+        return imagesToDelete;
+    }
+
+    public static LocalDateTime parseDate(String date) {
+        LocalDateTime dateTime;
+        DateTimeFormatter formatter;
+        try {
+            if(date.contains("Z") || date.length() == 24) formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+            if(date.length() == 23) formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
+            else formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
+            dateTime = LocalDateTime.parse(date, formatter);
+        } catch (Exception ex) {
+            throw new BadRequestException("Could not parse date");
+        }
+        return dateTime;
+    }
+    public static List<byte[]> parseImages(List<FormDataBodyPart> files) {
+        List<byte[]> photos = new ArrayList<>();
+        if(files == null || files.isEmpty()) throw new BadRequestException("Photos is empty");
+        try {
+            for(FormDataBodyPart file : files) {
+                byte[] data = file.getEntityAs(byte[].class);
+                photos.add(data);
+            }
+        } catch (Exception ex) {
+            throw new BadRequestException("Error loading images");
+        }
+        return photos;
+    }
+
+    public static List<byte[]> parseImagesEdit(List<FormDataBodyPart> files) {
+        List<byte[]> photos = new ArrayList<>();
+        if(files == null || files.isEmpty()) return photos;
+        try {
+            for(FormDataBodyPart file : files) {
+                byte[] data = file.getEntityAs(byte[].class);
+                photos.add(data);
+            }
+        } catch (Exception ex) {
+            throw new BadRequestException("Error loading images");
+        }
+        return photos;
     }
 }

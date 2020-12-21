@@ -1,0 +1,72 @@
+{
+  "title": "¡Conozca a {{name}}!",
+  "someInformationAboutHer": "Algunos datos de ella",
+  "someInformationAboutHim": "Algunos datos de él",
+  "buttons": {
+    "editPet": "Editar",
+    "deletePet": "Eliminar",
+    "deleteModal": {
+      "title": "¿Estás seguro?",
+      "content": "Se eliminará su mascota {{name}}, ¿está seguro?",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
+    },
+    "requestBtn": {
+        "request": "Solicitar",
+        "loading": "Cargando...",
+        "sent": "Solicitud enviada!",
+        "acquired": "Mascota adquirida",
+        "unavailable": "No disponible",
+        "recover": "Recuperar solicitud",
+        "pending": "Solicitud pendiente",
+        "rejected": "Solicitud rechazada"
+    }
+  },
+  "details": {
+    "name": "Nombre",
+    "dateOfBirth": "Fecha de nacimiento",
+    "specie": "Especie",
+    "breed": "Raza",
+    "sex": "Género",
+    "province": "Provincia",
+    "department": "Departamento",
+    "uploadDate": "Fecha de subida",
+    "owner": "Dueño",
+    "female": "Hembra",
+    "male": "Macho"
+  },
+  "status": {
+    "header": "Estado",
+    "vaccinated": "Vacunado",
+    "onAdoption": "En adopción",
+    "onSale": "En venta",
+    "sold": "Vendido",
+    "removed": "No disponible"
+  },
+  "questions": {
+    "header": "Preguntas",
+    "askSomething": "Pregunta algo",
+    "noQuestionsYet": "No hay preguntas todavía",
+    "noAnswerYet": "No hay respuesta todavía",
+    "askButton": "Preguntar",
+    "owner": "Dueño",
+    "errors": {
+      "min": "La pregunta debe tener al menos {{min}} caracteres",
+      "max": "La pregunta debe tener a lo sumo {{max}} caracteres",
+      "required": "Por favor ingrese una pregunta"
+    },
+    "loadMore": "Cargar más"
+  },
+  "answers": {
+    "answer": "Respuesta",
+    "answerButton": "Responder",
+    "errors": {
+      "min": "La respuesta debe tener al menos {{min}} caracteres",
+      "max": "La respuesta debe tener a lo sumo {{max}} caracteres",
+      "required": "Por favor ingrese una respuesta"
+    }
+  },
+  "goToOwnersPage": "Ir a la página del dueño",
+  "backToHome": "< Volver al inicio",
+  "connError": "Error de conexión"
+}

@@ -1,0 +1,70 @@
+.requests-interests__container form .form-content {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+.requests-interests__container form .ant-row {
+    width: 10rem;
+    margin: 0 1rem 0 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+.requests-interests__container .form-buttons {
+    margin: 0.5rem 1rem 0 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+.requests-interests__container .form-buttons button {
+    margin-right: 1rem;
+}
+
+.requests-container {
+    margin-left: 0.5rem;
+}
+
+.request-notification {
+    width: 100%;
+}
+
+.date-text {
+    color: darkorange;
+}
+
+.button-container {
+    width: 100%;
+}
+
+.button-container button {
+    padding-right: 1rem;
+    color: black;
+}
+
+.shaded-div {
+    opacity: 40%;
+}
+
+@media only screen and (max-width: 480px) {
+    .requests-interests__container form .ant-row {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .requests-interests__container form .ant-row {
+        width: 100%;
+    }
+}
+
+.requests-interests__empty {
+    background-color: #dbe2ef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.requests-interests__empty div {
+    margin-bottom: 1rem;
+}

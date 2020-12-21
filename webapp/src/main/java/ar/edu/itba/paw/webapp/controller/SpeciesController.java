@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -40,9 +42,10 @@ public class SpeciesController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getSpecies() {
-        String locale = ApiUtils.getLocale();
-        List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
+    public Response getSpecies(@Context HttpServletRequest request) {
+        String locale = ApiUtils.getLocale(request);
+        List<SpeciesDto> speciesList = speciesService.speciesList(locale).stream().map(s -> SpeciesDto.fromSpecies(s, uriInfo))
+                                        .sorted(Comparator.comparing(SpeciesDto::getName)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<SpeciesDto>>(speciesList) {}).build();
     }
 
@@ -75,9 +78,10 @@ public class SpeciesController {
     @GET
     @Path("/breeds")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getBreeds() {
-        String locale = ApiUtils.getLocale();
-        List<BreedDto> breedList = speciesService.breedList(locale).stream().map(BreedDto::fromBreed).collect(Collectors.toList());
+    public Response getBreeds(@Context HttpServletRequest request) {
+        String locale = ApiUtils.getLocale(request);
+        List<BreedDto> breedList = speciesService.breedList(locale).stream().map(BreedDto::fromBreed)
+                .sorted(Comparator.comparing(BreedDto::getName)).collect(Collectors.toList());
         return Response.ok(new GenericEntity<List<BreedDto>>(breedList) {}).build();
     }
 

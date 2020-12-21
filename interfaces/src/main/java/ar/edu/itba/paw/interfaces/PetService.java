@@ -13,6 +13,7 @@ import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Question;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 
 public interface PetService {
 
@@ -23,7 +24,7 @@ public interface PetService {
                                   PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
     List<Department> filteredDepartmentList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                             PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
-    Set<Integer> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+    Set<PriceRange> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                   PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);
     Set<String> filteredGenderList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                     PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId);

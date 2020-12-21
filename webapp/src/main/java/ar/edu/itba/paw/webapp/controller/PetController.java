@@ -4,13 +4,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -22,6 +21,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -30,6 +33,9 @@ import javax.ws.rs.core.UriInfo;
 
 import com.google.gson.Gson;
 
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +57,7 @@ import ar.edu.itba.paw.models.Province;
 import ar.edu.itba.paw.models.Species;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.webapp.dto.BreedDto;
 import ar.edu.itba.paw.webapp.dto.DepartmentDto;
 import ar.edu.itba.paw.webapp.dto.ErrorDto;
@@ -83,7 +90,8 @@ public class PetController{
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPets(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getPets(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("newOwnerId") @DefaultValue("0") Long newOwnerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
@@ -98,8 +106,8 @@ public class PetController{
                             @QueryParam("page") @DefaultValue("1") int page) {
 
 
-        final String locale = ApiUtils.getLocale();
-        int[] range;
+        final String locale = ApiUtils.getLocale(httpRequest);
+        PriceRange range;
         PetStatus petStatus = null;
         try {
             ownerId = ParseUtils.parseUserId(ownerId);
@@ -114,7 +122,7 @@ public class PetController{
             department = ParseUtils.parseDepartment(department);
             petStatus = ParseUtils.parseStatus(PetStatus.class, status);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
@@ -122,8 +130,8 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         List<PetDto> petList;
         int amount;
@@ -144,9 +152,21 @@ public class PetController{
     }
 
     @GET
+    @Path("/locale")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response locale(@Context HttpServletRequest request) {
+        String locale = ApiUtils.getLocale(request);
+        Map<String, String> json = new HashMap<>();
+        json.put("locale", locale);
+        return Response.created(uriInfo.getBaseUri()).entity(new Gson().toJson(json)).build();
+
+    }
+
+    @GET
     @Path("/filters")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getFilters(@QueryParam("ownerId") @DefaultValue("0") Long ownerId,
+    public Response getFilters(@Context HttpServletRequest httpRequest,
+                            @QueryParam("ownerId") @DefaultValue("0") Long ownerId,
                             @QueryParam("species") @DefaultValue("0") Long species,
                             @QueryParam("breed") @DefaultValue("0") Long breed,
                             @QueryParam("province") @DefaultValue("0") Long province,
@@ -155,8 +175,8 @@ public class PetController{
                             @QueryParam("find") String find,
                             @QueryParam("priceRange") @DefaultValue("0") int priceRange) {
 
-        final String locale = ApiUtils.getLocale();
-        int[] range;
+        final String locale = ApiUtils.getLocale(httpRequest);
+        PriceRange range;
         Long owner;
         try {
             owner = ParseUtils.parseUserId(ownerId);
@@ -165,18 +185,18 @@ public class PetController{
             province = ParseUtils.parseProvince(province);
             department = ParseUtils.parseDepartment(department);
             gender = ParseUtils.parseGender(gender);
-            range = ParseUtils.parseRange(priceRange);
+            range = ParseUtils.parseStatus(PriceRange.class, priceRange);
         } catch (BadRequestException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-        int minPrice = range[0];
-        int maxPrice = range[1];
+        int minPrice = range.min();
+        int maxPrice = range.max();
         List<String> findList = ParseUtils.parseFind(find);
         Set<String> genderList;
-        Set<Integer> rangeList;
+        Set<PriceRange> rangeList;
         List<Department> departments;
         List<Breed> breeds;
         try {
@@ -198,8 +218,10 @@ public class PetController{
                 .map(s -> SpeciesDto.fromSpecies(s, uriInfo)).collect(Collectors.toList());
         List<ProvinceDto> provinceList = departments.stream().map(Department::getProvince).distinct().sorted(Province::compareTo)
                 .map(ProvinceDto::fromProvince).collect(Collectors.toList());
-        List<DepartmentDto> departmentList = departments.stream().map(d -> DepartmentDto.fromDepartment(d,uriInfo)).collect(Collectors.toList());
-        List<BreedDto> breedList = breeds.stream().map(BreedDto::fromBreed).collect(Collectors.toList());
+        List<DepartmentDto> departmentList = departments.stream().map(d -> DepartmentDto.fromDepartment(d,uriInfo))
+                .sorted(Comparator.comparing(DepartmentDto::getName)).collect(Collectors.toList());
+        List<BreedDto> breedList = breeds.stream().map(BreedDto::fromBreed).sorted(Comparator.comparing(BreedDto::getName))
+                .collect(Collectors.toList());
 
         Map<String, Object> filters = new TreeMap<>();
         filters.put("speciesList", speciesList);
@@ -207,17 +229,33 @@ public class PetController{
         filters.put("departmentList", departmentList);
         filters.put("provinceList", provinceList);
         filters.put("genderList", genderList);
-        filters.put("rangeList", rangeList);
+        
+        Map<String, Object> ranges = new TreeMap<>();
+        rangeList.forEach(r -> ranges.put(String.valueOf(r.ordinal()), r.asMap()));
+
+        filters.put("rangeList", ranges);
 
         return Response.ok().entity(new Gson().toJson(filters)).build();
     }
 
     @POST
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response create(final PetDto pet) {
-        String locale = ApiUtils.getLocale();
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA})
+    public Response create(@Context HttpServletRequest httpRequest,
+                           @NotEmpty @FormDataParam("files") List<FormDataBodyPart> files,
+                           @NotEmpty @FormDataParam("petName") String petName,
+                           @NotEmpty @FormDataParam("price") int price,
+                           @NotEmpty @FormDataParam("description") String description,
+                           @NotEmpty @FormDataParam("province") Long provinceId,
+                           @NotEmpty @FormDataParam("department") Long departmentId,
+                           @NotEmpty @FormDataParam("species") Long speciesId,
+                           @NotEmpty @FormDataParam("breed") Long breedId,
+                           @NotEmpty @FormDataParam("dateOfBirth") String dateOfBirth,
+                           @NotEmpty @FormDataParam("isVaccinated") boolean vaccinated,
+                           @NotEmpty @FormDataParam("gender") String gender) throws IOException {
+
+        String locale = ApiUtils.getLocale(httpRequest);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if(loggedUser == null) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
@@ -225,8 +263,12 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
+        List<byte[]> photos;
+        LocalDateTime birthDate;
         try {
-            ParseUtils.parsePet(pet);
+            photos = ParseUtils.parseImages(files);
+            birthDate = ParseUtils.parseDate(dateOfBirth);
+            ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
             final ErrorDto body = new ErrorDto(2, ex.getMessage());
@@ -235,16 +277,14 @@ public class PetController{
         }
 
         Optional<Pet> opNewPet;
-
-        /* TODO como recibir las fotos ?*/
         try {
-            opNewPet = petService.create(locale, pet.getPetName(), pet.getBirthDate(), pet.getGender(), pet.isVaccinated(),
-                    pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, loggedUser.getId(), pet.getSpeciesId(), pet.getBreedId(),
-                    pet.getProvinceId(), pet.getDepartmentId(), null);
+            opNewPet = petService.create(locale, petName, birthDate, gender, vaccinated,
+                    price, description, PetStatus.AVAILABLE, loggedUser.getId(), speciesId, breedId,
+                    provinceId, departmentId, photos);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             final ErrorDto body = new ErrorDto(3, ex.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
         if (!opNewPet.isPresent()) {
@@ -252,55 +292,64 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opNewPet.get().getId())).build();
-        return Response.created(petUri).build();
+        Map<String, Object> body = new HashMap<>();
+        body.put("id", opNewPet.get().getId());
+        return Response.created(petUri).entity(new Gson().toJson(body)).build();
+
     }
 
     @POST
     @Path("/{petId}/edit")
-    @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response edit(final PetDto pet) {
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA})
+    public Response edit(@Context HttpServletRequest httpRequest,
+                         @NotEmpty @FormDataParam("pet") Long petId,
+                         @NotEmpty @FormDataParam("files") List<FormDataBodyPart> files,
+                         @NotEmpty @FormDataParam("filesToDelete") String toDelete,
+                         @NotEmpty @FormDataParam("petName") String petName,
+                         @NotEmpty @FormDataParam("price") int price,
+                         @NotEmpty @FormDataParam("description") String description,
+                         @NotEmpty @FormDataParam("province") Long provinceId,
+                         @NotEmpty @FormDataParam("department") Long departmentId,
+                         @NotEmpty @FormDataParam("species") Long speciesId,
+                         @NotEmpty @FormDataParam("breed") Long breedId,
+                         @NotEmpty @FormDataParam("dateOfBirth") String dateOfBirth,
+                         @NotEmpty @FormDataParam("isVaccinated") boolean vaccinated,
+                         @NotEmpty @FormDataParam("gender") String gender) throws IOException {
+
+        String locale = ApiUtils.getLocale(httpRequest);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
+        if(loggedUser == null) {
+            LOGGER.warn("User has no permission to perform this action.");
+            final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode())
+                    .entity(new GenericEntity<ErrorDto>(body){}).build();
+        }
+        List<Long> imagesToDelete;
+        List<byte[]> photos;
+        LocalDateTime birthDate;
         try {
-            ParseUtils.parsePet(pet);
+            photos = ParseUtils.parseImagesEdit(files);
+            birthDate = ParseUtils.parseDate(dateOfBirth);
+            imagesToDelete = ParseUtils.parseImagesToDelete(toDelete);
+            ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
         } catch (BadRequestException ex) {
             LOGGER.warn(ex.getMessage());
-            final ErrorDto body = new ErrorDto(1, ex.getMessage());
+            final ErrorDto body = new ErrorDto(2, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        String locale = ApiUtils.getLocale();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
-
-        /* TODO como recibir las fotos ?*/
-        //        List<byte[]> photos = new ArrayList<>();
-        //        try {
-            //            for (MultipartFile photo : editPetForm.getPhotos()) {
-                //                if(!photo.isEmpty()) {
-                    //                    try {
-                        //                        photos.add(photo.getBytes());
-                        //                    } catch (IOException ex) {
-                            //                        ex.printStackTrace();
-                            //                        throw new ImageLoadException(ex);
-                            //                    }
-                            //                }
-                            //            }
-                            //        } catch (ImageLoadException ex) {
-                                //            LOGGER.warn("Image bytes load from pet form failed");
-                                //            return editPetForm(editPetForm, id).addObject("imageError", true);
-                                //        }
-                                
         Optional<Pet> opPet;
         try {
-            opPet = petService.update(locale, pet.getId(), loggedUser.getId(), pet.getPetName(), pet.getBirthDate(), pet.getGender(),
-                    pet.isVaccinated(), pet.getPrice(), pet.getDescription(), PetStatus.AVAILABLE, pet.getSpeciesId(),
-                    pet.getBreedId(), pet.getProvinceId(), pet.getDepartmentId(),null, null);
+            opPet = petService.update(locale, petId, loggedUser.getId(), petName, birthDate, gender, vaccinated, price,
+                    description, PetStatus.AVAILABLE, speciesId, breedId, provinceId, departmentId,photos, imagesToDelete);
         } catch(NotFoundException ex) {
             LOGGER.warn("{}", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         } catch (InvalidImageQuantityException | DataIntegrityViolationException ex) {
             LOGGER.warn("{}", ex.getMessage());
-            final ErrorDto body = new ErrorDto(2, ex.getMessage());
+            final ErrorDto body = new ErrorDto(3, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -309,32 +358,24 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
-        return Response.created(petUri).build();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("id", opPet.get().getId());
+        return Response.created(petUri).entity(new Gson().toJson(body)).build();
     }
 
     @GET
     @Path("/{petId}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getPet(@PathParam("petId") Long petId) {
-        String locale = ApiUtils.getLocale();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+    public Response getPet(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
+        
         Pet pet = opPet.get();
-
-        //pets are only visible to the public if they are available, only the owners can see them with a different status
-        if(pet.getStatus() != PetStatus.AVAILABLE) {
-            if (loggedUser == null || 
-                (!loggedUser.getId().equals(pet.getUser().getId()) && pet.getNewOwner() != null && !loggedUser.getId().equals(pet.getNewOwner().getId())) ||
-                !loggedUser.getId().equals(pet.getUser().getId())) {
-                return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-            }
-
-        }
         PetDto petDto = PetDto.fromPet(pet, uriInfo);
         return Response.ok(new GenericEntity<PetDto>(petDto) {}).build();
     }
@@ -342,8 +383,8 @@ public class PetController{
     @GET
     @Path("/{petId}/images")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getImages(@PathParam("petId") long petId) {
-        String locale = ApiUtils.getLocale();
+    public Response getImages(@Context HttpServletRequest httpRequest, @PathParam("petId") long petId) {
+        String locale = ApiUtils.getLocale(httpRequest);
         Optional<Pet> opPet = petService.findById(locale, petId);
         if(!opPet.isPresent()) {
             LOGGER.debug("Pet {} not found", petId);
@@ -379,16 +420,19 @@ public class PetController{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(cropped, "jpg", baos );
         baos.flush();
-        byte[] imageInByte = baos.toByteArray();
+        byte[] imageInByte = baos.toByteArray(); 
         baos.close();
-        return Response.ok(imageInByte).build();
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(31536000);
+        cc.setNoCache(false);
+        return Response.ok(imageInByte).header("Access-Control-Max-Age",31536000).cacheControl(cc).build();
     }
 
-    @POST
-    @Path("/{petId}/remove")
-    public Response petUpdateRemove(@PathParam("petId") Long petId) {
+    @DELETE
+    @Path("/{petId}")
+    public Response petUpdateRemove(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if(loggedUser == null) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
@@ -423,9 +467,9 @@ public class PetController{
 
     @POST
     @Path("/{petId}/recover")
-    public Response petUpdateRecover(@PathParam("petId") Long petId) {
+    public Response petUpdateRecover(@Context HttpServletRequest httpRequest, @PathParam("petId") Long petId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = ApiUtils.loggedUser(userService, auth);
+        User loggedUser = ApiUtils.loggedUser(httpRequest, userService, auth);
         if(loggedUser == null) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");

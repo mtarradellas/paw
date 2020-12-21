@@ -1,0 +1,15 @@
+{
+  "error400": "400 Bad Request Detected",
+  "error404": "404 Not Found",
+  "error403": "403 Access Denied",
+  "error405": "405 Method Not Allowed",
+  "error500": "500 Internal Server Error",
+  "backToHome": "< Go back to Home",
+  "pageNotFound": "The page you were looking for doesn't exist",
+  "petNotFound": "The pet you were looking for doesn't exist",
+  "userNotFound": "The user you were looking for doesn't exist",
+  "accessDenied": "We're sorry, you don't have permission to see this page",
+  "wrongMethod": "We're sorry, the method you're trying to use is not allowed",
+  "badRequest": "The request you sent doesn't exist, please try with another",
+  "serverError": "We're sorry, something went wrong on our side, please try again later"
+}

@@ -10,8 +10,8 @@ import ar.edu.itba.paw.models.Request;
 public class RequestDto {
 
     private Long id;
-    private LocalDateTime creationDate;
-    private LocalDateTime updateDate;
+    private String creationDate;
+    private String updateDate;
     private Integer status;
 
     private URI user;
@@ -20,18 +20,25 @@ public class RequestDto {
 
     private Long userId;
     private Long petId;
+    private String username;
+    private String petName;
 
     public static RequestDto fromRequest(Request request, UriInfo uriInfo) {
         final RequestDto dto = new RequestDto();
 
         dto.id = request.getId();
-        dto.creationDate = request.getCreationDate();
-        dto.updateDate = request.getUpdateDate();
+        dto.creationDate = request.getCreationDate().toString();
+        dto.updateDate = request.getUpdateDate().toString();
         dto.status = request.getStatus().getValue();
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(request.getUser().getId())).build();
         dto.target = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(request.getTarget().getId())).build();
         dto.pet = uriInfo.getBaseUriBuilder().path("pets").path(String.valueOf(request.getPet().getId())).build();
+
+        dto.userId = request.getUser().getId();
+        dto.petId = request.getPet().getId();
+        dto.username = request.getUser().getUsername();
+        dto.petName = request.getPet().getPetName();
 
         return dto;
     }
@@ -44,19 +51,36 @@ public class RequestDto {
         this.id = id;
     }
 
-    public LocalDateTime getCreationDate() {
+//    public LocalDateTime getCreationDate() {
+//        return creationDate;
+//    }
+//
+//    public void setCreationDate(LocalDateTime creationDate) {
+//        this.creationDate = creationDate;
+//    }
+//
+//    public LocalDateTime getUpdateDate() {
+//        return updateDate;
+//    }
+//
+//    public void setUpdateDate(LocalDateTime updateDate) {
+//        this.updateDate = updateDate;
+//    }
+
+
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 
-    public LocalDateTime getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(LocalDateTime updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
@@ -106,5 +130,21 @@ public class RequestDto {
 
     public void setPetId(Long petId) {
         this.petId = petId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPetName() {
+        return petName;
+    }
+
+    public void setPetName(String petName) {
+        this.petName = petName;
     }
 }

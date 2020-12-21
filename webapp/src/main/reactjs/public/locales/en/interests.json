@@ -1,0 +1,73 @@
+{
+  "filterForm": {
+    "labels": {
+      "status": "Request Status",
+      "criteria": "Criteria",
+      "order": "Order",
+      "pet": "Pet"
+    },
+    "values": {
+      "any": "Any",
+      "date": "Date",
+      "petName": "Pet Name",
+      "asc": "Ascending",
+      "desc": "Descending"
+    },
+    "filterButtons": {
+      "filter": "Filter",
+      "clear": "Clear"
+    }
+  },
+  "interests": {
+    "title": "Users interested in your pets (Total results: {{count}})",
+    "interest": "Interest",
+    "status": "Interest Status",
+    "actions": "Actions"
+  },
+  "status": {
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "pending": "Pending",
+    "canceled": "Canceled",
+    "sold": "Sold",
+    "notSold": "Accepted (Not Sold)",
+    "soldTo": "Sold to {{ownerName}}",
+    "removed": "Removed",
+    "unavailable": "Unavailable",
+    "available": "Available"
+  },
+  "buttons": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "reserve": "Reserve for User",
+    "imSure": "I'm sure",
+    "visitPet": "Visit Pet",
+    "visitOwner": "Visit Owner",
+    "visitUser": "Visit User",
+    "accept": "Accept",
+    "reject": "Reject"
+  },
+  "modals": {
+    "helpModal": {
+      "title": "Help",
+      "firstTitle": "Interests page",
+      "firstDesc": "Welcome to the interests page, here you can see the status of all the requests you were made by other users. There are four states: pending (it means you have not decided yet), sold or rejected (you have decided to give the user that made the request the pet, using the corresponding buttons) and canceled (user has decided to cancel the request).",
+      "secondTitle": "Filter Tools",
+      "secondDesc": "To aid you in organizing the interests, fell free to use the filter tools on the left side."
+    },
+    "pleaseConfirm": "Please confirm your action",
+    "reserve": "Are you sure you want to reserve this pet for this user? This action is irreversible, please choose carefully.",
+    "acceptRequest": "PLEASE READ CAREFULLY:\nChoosing this option will send an email to this user with your email, so you can directly arrange the terms of adoption. After clicking \"I'm sure\", you can't unaccept this request, thus completing the adoption process.",
+    "rejectRequest": "Are you sure you want to reject this request? This action is irreversible, please choose carefully."
+  },
+  "messages": {
+    "accepted": "{{username}} was interested in {{petName}} and you accepted the request",
+    "rejected": "{{username}} was interested in {{petName}} and you rejected the request",
+    "pending": "{{username}} is interested in {{petName}}",
+    "canceled": "{{username}} was interested in {{petName}} and he canceled the request",
+    "sold": "{{username}} was interested in {{petName}}"
+  },
+  "date": "{{month}}-{{day}}-{{year}}",
+  "noResultsBtn": "Add pet",
+  "noResultsText": "No user is interested in your pets"
+}

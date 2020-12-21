@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import ar.edu.itba.paw.models.Token;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.RequestStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 
 @Service
@@ -235,7 +237,7 @@ public class UserServiceImpl implements UserService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        String urlToken = contextURL + "/password-reset";
+        String urlToken = contextURL + "password-reset";
         urlToken += "?token=" + token;
 
         arguments.put(MailArg.TOKEN, urlToken );
@@ -284,7 +286,8 @@ public class UserServiceImpl implements UserService {
         if (!opTarget.isPresent()) throw new NotFoundException("User not found.");
         final User target = opTarget.get();
 
-        if (target.getStatus() == UserStatus.ACTIVE && (user.getId() == userId || requestService.hasRequest(user, target))) {
+        if (target.getStatus() == UserStatus.ACTIVE && (user.getId() == userId || 
+                requestService.hasRequest(user, target, Arrays.asList(RequestStatus.SOLD)))) {
             return target.getMail();
         }
 

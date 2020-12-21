@@ -1,0 +1,46 @@
+{
+  "filterForm": {
+    "labels": {
+      "specie": "Especie",
+      "breed": "Raza",
+      "price": "Precio",
+      "sex": "Sexo",
+      "state": "Provincia",
+      "department": "Departamento",
+      "criteria": "Criterio",
+      "order": "Orden",
+      "any": "Cualquiera",
+      "priceRange": {
+        "range": "${{min}} a ${{max}}",
+        "free": "Gratis",
+        "max": "Más de ${{min}}"
+      }
+    },
+    "filterButtons": {
+      "filter": "Filtrar",
+      "clear": "Limpiar"
+    },
+    "criteria": {
+      "uploadDate": "Fecha de subida",
+      "gender": "Género",
+      "species": "Especie",
+      "breed": "Raza",
+      "price": "Precio"
+    },
+    "asc": "Ascendente",
+    "desc": "Descendente"
+  },
+  "pets": {
+    "title": "¡Estas son las mascotas disponibles!",
+    "results-count": "Resultados totales: {{count}}",
+    "petsCard": {
+      "goToPage": "Visitar mascota"
+    }
+  },
+  "sex": {
+    "female": "Hembra",
+    "male": "Macho"
+  },
+  "noResultsText": "No se han encontrado resultados",
+  "noResultsBtn": "Volver a Inicio"
+}

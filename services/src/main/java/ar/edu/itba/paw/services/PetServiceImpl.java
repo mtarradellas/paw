@@ -36,6 +36,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
 import ar.edu.itba.paw.models.constants.PetStatus;
+import ar.edu.itba.paw.models.constants.PriceRange;
 import ar.edu.itba.paw.models.constants.QuestionStatus;
 import ar.edu.itba.paw.models.constants.UserStatus;
 
@@ -157,7 +158,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Set<Integer> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
+    public Set<PriceRange> filteredRangesList(String locale, List<String> find, Long userId, Long speciesId, Long breedId, String gender,
                                          PetStatus status, int minPrice, int maxPrice, Long provinceId, Long departmentId) {
         User user = null;
         Breed breed = null;
@@ -359,11 +360,11 @@ public class PetServiceImpl implements PetService {
                 species, breed, province, department);
 
         LOGGER.debug("Pet id: {} successfully created", pet);
-if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
-    for (byte[] photo : photos) {
-        imageService.create(pet.getId(), photo, user.getId());
-    }
-}
+
+        for (byte[] photo : photos) {
+            imageService.create(pet.getId(), photo, user.getId());
+        }
+
 
         return Optional.of(pet);
     }
@@ -451,7 +452,7 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
         }
 
         int toDelete;
-        if(imagesToDelete == null){
+        if(imagesToDelete == null || imagesToDelete.get(0) == null){
             toDelete = 0;
         }
         else {
@@ -509,9 +510,9 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
             Map<MailArg, Object> arguments = new HashMap<>();
 
-            arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+            arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
             arguments.put(MailArg.PETNAME, pet.getPetName());
-            arguments.put(MailArg.OWNERURL, contextURL + "user/" + pet.getUser().getId());
+            arguments.put(MailArg.OWNERURL, contextURL + "users/" + pet.getUser().getId());
             arguments.put(MailArg.OWNERNAME, pet.getUser().getUsername());
             arguments.put(MailArg.USERNAME, newOwner.getUsername());
 
@@ -678,9 +679,9 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.USERURL, contextURL + "user/" + user.getId()); // User who asked the question
+        arguments.put(MailArg.USERURL, contextURL + "users/" + user.getId()); // User who asked the question
         arguments.put(MailArg.USERNAME, user.getUsername()); // User who asked the question
         arguments.put(MailArg.QUESTION, content);
 
@@ -717,9 +718,9 @@ if(photos != null) { //TODO sacar esto, las imagene no pueden ser nulll
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.USERURL, contextURL + "user/" + user.getId()); // User who answered the question (pet owner)
+        arguments.put(MailArg.USERURL, contextURL + "users/" + user.getId()); // User who answered the question (pet owner)
         arguments.put(MailArg.USERNAME, user.getUsername()); // User who answered the question (pet owner)
         arguments.put(MailArg.QUESTION, question.getContent());
         arguments.put(MailArg.ANSWER, content);

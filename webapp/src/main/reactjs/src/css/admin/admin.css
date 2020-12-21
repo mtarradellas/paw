@@ -1,0 +1,74 @@
+.admin-header {
+    background: #2b5a5d;
+}
+
+.admin__header__title {
+    grid-area: title;
+
+    margin-top: auto;
+    margin-bottom: auto;
+
+    font-size: 2rem;
+
+    color: white;
+}
+
+.admin__container form .form-content {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+.admin__container form .ant-row {
+    width: 10rem;
+    margin: 0 1rem 0 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+.admin__container .form-buttons {
+    margin: 0.5rem 1rem 0 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+.admin__container .form-buttons button{
+    margin-right: 1rem;
+}
+
+.admin-container {
+    margin-left: 0.5rem;
+}
+
+.generic-notification {
+    width: 100%;
+}
+
+
+.button-container{
+    width: 100%;
+}
+
+.button-container button{
+    padding-right: 1rem;
+    color: black;
+}
+
+.shaded-div {
+    opacity: 40%;
+}
+
+@media only screen and (max-width: 480px) {
+    .admin__container form .ant-row {
+        width: 100%;
+    }
+}
+
+
+@media only screen and (min-width: 1000px) {
+    .admin__container form .ant-row {
+        width: 100%;
+    }
+}
+
+.date-text {
+    color: #5f5f5f;
+}

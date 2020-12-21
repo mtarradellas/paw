@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -84,7 +85,6 @@ public class AdminRequestController {
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-
         List<RequestDto> requestList;
         int amount;
         try {
@@ -119,8 +119,8 @@ public class AdminRequestController {
 
     @POST
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response createRequest(final RequestDto requestDto) {
-        final String locale = ApiUtils.getLocale();
+    public Response createRequest(@Context HttpServletRequest httpRequest, final RequestDto requestDto) {
+        final String locale = ApiUtils.getLocale(httpRequest);
        
         if (requestDto == null || requestDto.getPetId() == null || requestDto.getUserId() == null) {
             final ErrorDto body = new ErrorDto(1, "Missing required request fields.");
@@ -129,7 +129,7 @@ public class AdminRequestController {
 
         Optional<Request> opRequest;
         try {
-            opRequest = requestService.create(locale, requestDto.getId(), requestDto.getPetId(), uriInfo.getBaseUri().toString());
+            opRequest = requestService.create(locale, requestDto.getUserId(), requestDto.getPetId(), uriInfo.getBaseUri().toString());
         } catch (DataIntegrityViolationException | NotFoundException | RequestException ex) {
             LOGGER.warn("Request creation failed with exception");
             LOGGER.warn("{}", ex.getMessage());
@@ -166,7 +166,6 @@ public class AdminRequestController {
             final ErrorDto body = new ErrorDto(1, ex.getMessage());
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
-
         List<RequestStatus> statusList;
         if(requestStatus != null)  {
             statusList = new ArrayList<>();
@@ -253,8 +252,9 @@ public class AdminRequestController {
     @POST
     @Path("/{requestId}/edit")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response editRequest(final RequestDto requestDto) {
-        if (requestDto == null || requestDto.getId() == null || requestDto.getStatus() == null) {
+    public Response editRequest(final RequestDto requestDto,
+                                @PathParam("requestId") long requestId) {
+        if (requestDto == null || requestDto.getStatus() == null) {
             final ErrorDto body = new ErrorDto(1, "Missing required fields.");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
@@ -268,7 +268,7 @@ public class AdminRequestController {
         }
 
         try {
-            requestService.adminUpdateStatus(requestDto.getId(), status);
+            requestService.adminUpdateStatus(requestId, status);
         } catch (NotFoundException | RequestException ex) {
             LOGGER.warn(ex.getMessage());
             final ErrorDto body = new ErrorDto(3, ex.getMessage());

@@ -1,0 +1,28 @@
+{
+  "title": "Iniciar sesión",
+  "form": {
+    "username": {
+      "label": "Usuario",
+      "placeholder": "Nombre de usuario",
+      "errors": {
+        "required": "Ingrese su usuario"
+      }
+    },
+    "password": {
+      "label": "Contraseña",
+      "placeholder": "Contraseña",
+      "errors": {
+        "required": "Ingrese su contraseña"
+      }
+    },
+    "submit": "Iniciar sesión",
+    "dontHaveAnAccount": "¿No tiene una cuenta?",
+    "registerButton": "Regístrese",
+    "forgotPassword": "¿Olvidó su contraseña?",
+    "conError": "Se perdió la conexión",
+    "invalidUsernameOrPassword": "Usuario o contraseña incorrectos",
+    "rememberMe": {
+      "label": "Recuérdame"
+    }
+  }
+}

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -51,10 +52,10 @@ public class UserController {
     @GET
     @Path("/logged-user")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getLoggedUser() {
+    public Response getLoggedUser(@Context HttpServletRequest request) {
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final User user = ApiUtils.loggedUser(userService, auth);
+        final User user = ApiUtils.loggedUser(request, userService, auth);
 
         final boolean isAdmin = userService.isAdmin(user);
         UserDto userDto = UserDto.fromUser(user, uriInfo);
@@ -74,19 +75,15 @@ public class UserController {
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
         final User user = opUser.get();
-        if (user.getStatus() != UserStatus.ACTIVE) {
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
-        } 
-
         return Response.ok(new GenericEntity<UserDto>(UserDto.fromUser(user, uriInfo)){}).build();
     }
 
     @GET
     @Path("/{userId}/mail")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getUserMail(@PathParam("userId") long userId) {
+    public Response getUserMail(@Context HttpServletRequest request, @PathParam("userId") long userId) {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final User user = ApiUtils.loggedUser(userService, auth);
+        final User user = ApiUtils.loggedUser(request, userService, auth);
 
         String mail;
         try {
@@ -108,9 +105,9 @@ public class UserController {
 
     @DELETE
     @Path("/{userId}")
-    public Response deleteUser(@PathParam("userId") long userId) {
+    public Response deleteUser(@Context HttpServletRequest request, @PathParam("userId") long userId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = ApiUtils.loggedUser(userService, auth);
+        User user = ApiUtils.loggedUser(request, userService, auth);
         if (user == null || user.getId() != userId) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
@@ -130,11 +127,12 @@ public class UserController {
     @POST
     @Path("/{userId}/edit/username")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response updateUsername(@PathParam("userId") long userId,
+    public Response updateUsername(@Context HttpServletRequest request,
+                                   @PathParam("userId") long userId,
                                    final UserDto user) {
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
         if (currentUser == null || currentUser.getId() != userId) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");
@@ -173,12 +171,13 @@ public class UserController {
     @POST
     @Path("/{userId}/edit/password")
     @Consumes(value = { MediaType.APPLICATION_JSON})
-    public Response updatePassword(@PathParam("userId") long userId,
+    public Response updatePassword(@Context HttpServletRequest request,
+                                   @PathParam("userId") long userId,
                                    final PasswordDto dto) {
         
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = ApiUtils.loggedUser(userService, auth);
+        User currentUser = ApiUtils.loggedUser(request, userService, auth);
         if (currentUser == null || currentUser.getId() != userId) {
             LOGGER.warn("User has no permission to perform this action.");
             final ErrorDto body = new ErrorDto(1, "User has no permissions to perform this action.");

@@ -22,6 +22,7 @@ import ar.edu.itba.paw.webapp.auth.JwtAuthenticationFilter;
 import ar.edu.itba.paw.webapp.auth.JwtAuthorizationFilter;
 import ar.edu.itba.paw.webapp.auth.PSUserDetailsService;
 import ar.edu.itba.paw.webapp.util.ApiUtils;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -42,6 +43,11 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
+    @Bean
+    CORSFilter getCorsFilter(){
+        return new CORSFilter();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         final String jwtAudience = "Pet Society";
@@ -50,20 +56,21 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
         http.sessionManagement()
             .and().csrf().disable()
+            .addFilterBefore(new CORSFilter(), (Class<? extends Filter>) ChannelProcessingFilter.class)
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .authorizeRequests()
-                .antMatchers("/login", "/register").anonymous()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST, "/questions/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/questions/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/pets/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/pets/**").authenticated()
-                .antMatchers("/users/**").authenticated()
-                .antMatchers("/reviews/**").authenticated()
-                .antMatchers("/pets/upload").authenticated()
-                .antMatchers("/pets/*/question", "/pet/*/answer").authenticated()
-                .antMatchers("/pets/*/request","/interests/**","/requests/**").authenticated()
+                .antMatchers("/api/login", "/api/register", "/api/request-password-reset","/api/password-reset/**").anonymous()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/questions/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/questions/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/pets/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/pets/**").authenticated()
+                .antMatchers("/api/users/**").authenticated()
+                .antMatchers("/api/reviews/**").authenticated()
+                .antMatchers("/api/pets/upload").authenticated()
+                .antMatchers("/api/pets/*/question", "/api/pet/*/answer").authenticated()
+                .antMatchers("/api/pets/*/request","/api/interests/**","/api/requests/**").authenticated()
                 .anyRequest().permitAll()
             .and().exceptionHandling()
                 .accessDeniedPage("/403")

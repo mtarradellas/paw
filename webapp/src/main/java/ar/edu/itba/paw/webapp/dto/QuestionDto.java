@@ -19,6 +19,8 @@ public class QuestionDto {
     private URI pet;
     private URI answer;
     private URI user;
+    private String username;
+    private String answerContent;
 
     public static QuestionDto fromQuestion(Question question, UriInfo uriInfo) {
         QuestionDto dto = new QuestionDto();
@@ -31,6 +33,10 @@ public class QuestionDto {
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(question.getUser().getId())).build();
         dto.target = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(question.getTarget().getId())).build();
         dto.pet = uriInfo.getBaseUriBuilder().path("pets").path(String.valueOf(question.getPet().getId())).build();
+        dto.username = question.getUser().getUsername();
+        if (question.getAnswer() != null) {
+            dto.answerContent = question.getAnswer().getContent();
+        }
 
         return dto;
     }
@@ -113,5 +119,21 @@ public class QuestionDto {
 
     public void setUser(URI user) {
         this.user = user;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getAnswerContent() {
+        return answerContent;
+    }
+    
+    public void setAnswerContent(String answerContent) {
+        this.answerContent = answerContent;
     }
 }

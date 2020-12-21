@@ -1,22 +1,23 @@
 package ar.edu.itba.paw.webapp.util;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import com.google.gson.Gson;
 
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,14 +27,14 @@ import ar.edu.itba.paw.models.User;
 
 public class ApiUtils {
 
-    public static String getLocale() {
-        Locale locale = LocaleContextHolder.getLocale();
-        String lang = locale.getLanguage() + "_" + locale.getCountry();
-        if (lang.startsWith("en")) return "en_US";
+    public static String getLocale(HttpServletRequest request) {
+        Locale locale = request.getLocale();
+        String lang = locale.getLanguage();
+        if (lang.equals("en")) return "en_US";
         else return "es_AR";
     }
 
-    public static User loggedUser(UserService userService, Authentication auth) {
+    public static User loggedUser(HttpServletRequest request, UserService userService, Authentication auth) {
         if (auth == null) return null;
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
             return null;
@@ -41,7 +42,7 @@ public class ApiUtils {
         Optional<User> opUser = userService.findByUsername(auth.getName());
         if (opUser.isPresent()) {
             User user = opUser.get();
-            String locale = getLocale();
+            String locale = getLocale(request);
             if (user.getLocale() == null || !user.getLocale().equalsIgnoreCase(locale)) {
                 userService.updateLocale(user, locale);
             }
@@ -87,5 +88,35 @@ public class ApiUtils {
             e.printStackTrace();
         }
         return contentBuilder.toString();
+    }
+
+    public static List<byte[]> cropImages(List<byte[]> photos) {
+        List<byte[]> croppedList = new ArrayList<>();
+        photos.forEach(photo ->{
+            ByteArrayInputStream bis = new ByteArrayInputStream(photo);
+            BufferedImage bufferedImage;
+            try {
+                bufferedImage = ImageIO.read(bis);
+                int height = bufferedImage.getHeight(), width = bufferedImage.getWidth();
+
+                BufferedImage cropped = bufferedImage;
+                int diff = Math.abs(height-width);
+                if(width>height){
+                    cropped = bufferedImage.getSubimage(diff/2, 0, width-diff, height);
+                }
+                else{ if(width<height)
+                    cropped = bufferedImage.getSubimage(0, diff/2, width, height-diff);
+                }
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(cropped, "jpg", baos );
+                baos.flush();
+                byte[] imageInByte = baos.toByteArray();
+                baos.close();
+                croppedList.add(imageInByte);
+            } catch (IOException e) {
+                throw new BadRequestException("Error cropping image");
+            }
+        });
+        return croppedList;
     }
 }

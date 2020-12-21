@@ -1,0 +1,63 @@
+.content-with-header--container {
+    margin: 2rem auto 2rem auto;
+    background: white;
+    max-width: 80rem;
+}
+
+.content-with-header--header {
+    background-color: #343a40;
+    padding: 1rem 2rem 1rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    height: 8rem;
+}
+
+.content-with-header--header .content-with-header--header--buttons {
+    margin: 0 auto 0 auto;
+}
+
+.content-with-header--header h1 {
+    color: white;
+    text-align: center;
+}
+
+.content-with-header--header .content-with-header--header--title {
+    width: 100%;
+}
+
+.content-with-header--content {
+    padding: 2rem;
+}
+
+.content-with-header--header .content-with-header--header--buttons button {
+    margin: 0.5rem;
+}
+
+@media only screen and (min-width: 400px) {
+    .content-with-header--header h1 {
+        margin-left: 1rem;
+        text-align: left;
+    }
+
+    .content-with-header--header{
+
+    }
+
+    .content-with-header--header {
+        height: 5rem;
+        margin: inherit;
+    }
+
+    .content-with-header--header .content-with-header--header--buttons {
+        margin: 0 1rem 0 auto;
+    }
+
+    .content-with-header--header .content-with-header--header--buttons button {
+        margin-left: 1rem;
+    }
+
+    .content-with-header--header .content-with-header--header--title {
+        width: inherit;
+    }
+}

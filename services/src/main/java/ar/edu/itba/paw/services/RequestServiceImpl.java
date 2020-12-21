@@ -27,6 +27,7 @@ import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.PetStatus;
 import ar.edu.itba.paw.models.constants.RequestStatus;
 
 @Service
@@ -68,12 +69,11 @@ public class RequestServiceImpl implements RequestService {
             Optional<User> opUser = userService.findById(targetId);
             if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
             User user = opUser.get();
-
             logInterestsAccess(user);
             return filteredListByPetOwner(user, petId, find, status, searchCriteria, searchOrder, page, pageSize);
         }
-
-        return list(page, pageSize);
+        
+        return filteredListByRequestOwner(null, petId, find, status, searchCriteria, searchOrder, page, pageSize);
     }
 
     @Override
@@ -88,9 +88,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestStatus> filteredStatusList(Long userId, Long petId, List<String> find, RequestStatus status) {
         Pet pet = parsePet(petId);
-        Optional<User> opUser = userService.findById(userId);
-        if (!opUser.isPresent()) throw new NotFoundException("User " + userId + " not found.");
-        User user = opUser.get();
+        User user = userService.findById(userId).orElse(null);
         Set<Integer> results = requestDao.searchStatusList(user, pet, find, status );
         List<RequestStatus> toReturn = new ArrayList<>();
         results.forEach(r->toReturn.add(RequestStatus.values()[r]));
@@ -157,7 +155,7 @@ public class RequestServiceImpl implements RequestService {
             return getFilteredListByPetOwnerAmount(user, petId, find, status);
         }
 
-        return getListAmount();
+        return getFilteredListByRequestOwnerAmount(null, petId, find, status);
     }
 
     @Override
@@ -203,7 +201,11 @@ public class RequestServiceImpl implements RequestService {
 
         List<Request> requestList = user.getRequestList();
         for (Request req: requestList) {
-            if(req.getPet().getId().equals(pet.getId()) && !req.getStatus().equals(RequestStatus.CANCELED)) {
+            if (req.getPet().getId().equals(pet.getId())) {
+                if (req.getStatus().equals(RequestStatus.CANCELED)) {
+                    recover(req.getId(), userId, contextURL);
+                    return findById(req.getId());
+                }
                 LOGGER.warn("Request from user {} to pet {} already exists, ignoring request creation", user.getId(), pet.getId());
                 throw new RequestException("Request already exists.");
             }
@@ -213,9 +215,9 @@ public class RequestServiceImpl implements RequestService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + user.getId());
         arguments.put(MailArg.OWNERNAME, request.getUser().getUsername());
         arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + pet.getUser().getId());
 
@@ -262,9 +264,9 @@ public class RequestServiceImpl implements RequestService {
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
         arguments.put(MailArg.REQUESTURL, contextURL + "interests" + "?targetId=" + recipient.getId());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
@@ -336,9 +338,9 @@ public class RequestServiceImpl implements RequestService {
         Map<MailArg, Object> arguments = new HashMap<>();
 
         arguments.put(MailArg.URL, contextURL);
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
@@ -379,9 +381,9 @@ public class RequestServiceImpl implements RequestService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pet/" + pet.getId());
+        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "user/" + + user.getId());
+        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
         arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + recipient.getId());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
@@ -493,8 +495,20 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean hasRequest(User user, User target) {
-        return requestDao.hasRequest(user, target);
+    public boolean hasRequest(User user, User target, List<RequestStatus> statusList) {
+        return requestDao.hasRequest(user, target, statusList);
+    }
+
+    @Override
+    public boolean hasRequestPet(User user, long petId, List<RequestStatus> statusList) {
+        Optional<Pet> opPet = petService.findById(petId);
+        if (!opPet.isPresent()) {
+            throw new NotFoundException("Pet not found");
+        }
+        Pet pet = opPet.get();
+
+        if (pet.getStatus() != PetStatus.AVAILABLE) throw new NotFoundException("Pet not found");
+        return requestDao.hasRequest(user, pet, statusList);
     }
 
 }

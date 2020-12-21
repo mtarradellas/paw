@@ -1,0 +1,149 @@
+{
+  "listRequests": "List Requests",
+  "listPets": "List Pets",
+  "listUsers": "List Users",
+  "addRequest": "+ Add Request",
+  "addUser": "+ Add User",
+  "addPet": "+ Add Pet",
+  "noResults": "No results were found. ",
+  "fetchAll": "Fetch all options",
+  "home": {
+    "welcome": "Welcome to the admin control page",
+    "listsTitle": "Here you can get lists with all the available pets, users and requests, click a button to go to the corresponding page:",
+    "addTitle": "Also, if you wish to add a pet/user/request to the database, click on the corresponding button:"
+  },
+  "requestsFilterForm": {
+    "labels": {
+      "status": "Request Status",
+      "criteria": "Criteria",
+      "order": "Order"
+    }
+  },
+  "usersFilterForm": {
+    "labels": {
+      "status": "User Status",
+      "criteria": "Criteria",
+      "order": "Order"
+    }
+  },
+  "petsFilterForm": {
+    "labels": {
+      "species": "Species",
+      "breed": "Breed",
+      "gender": "Gender",
+      "status": "Status",
+      "criteria": "Criteria",
+      "order": "Order"
+    }
+  },
+  "values": {
+    "any": "Any",
+    "date": "Date",
+    "petName": "Pet Name",
+    "asc": "Ascending",
+    "desc": "Descending",
+    "username": "Username",
+    "mail": "Email",
+    "species": "Species",
+    "gender": "Gender",
+    "breed": "Breed",
+    "price": "Price",
+    "uploadDate": "Upload Date",
+    "male": "Male",
+    "female": "Female"
+  },
+  "status": {
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "sold": "Sold",
+    "canceled": "Canceled",
+    "notSold": "Accepted (Not Sold)",
+    "soldTo": "Sold to {{ownerName}}",
+    "active": "Active",
+    "inactive": "Inactive",
+    "deleted": "Deleted",
+    "available": "Available",
+    "removed": "Removed",
+    "unavailable": "Unavailable"
+  },
+  "buttons": {
+    "filter": "Filter",
+    "clear": "Clear",
+    "close": "Close",
+    "imSure": "I'm Sure",
+    "visitPet": "Visit Pet",
+    "visitUser": "Visit User",
+    "visitOwner": "Visit Owner",
+    "recover": "Recover",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "remove": "Remove"
+  },
+  "requestsList": {
+    "title": "Listing all existing requests (Total results: {{count}})",
+    "request": "Request",
+    "status": "Request Status",
+    "actions": "Actions",
+    "isInterested": "{{username}} is interested in {{petName}}"
+  },
+  "usersList": {
+    "title": "Listing all existing users (Total results: {{count}})",
+    "user": "User",
+    "actions": "Actions"
+  },
+  "petsList": {
+    "title": "Listing all existing pets (Total results: {{count}})",
+    "pet": "Pet",
+    "actions": "Actions"
+  },
+  "modals": {
+    "pleaseConfirm": "Please confirm your action",
+    "cancelRequest": "Are you sure you want to cancel this request?",
+    "recoverRequest": "Are you sure you want to recover this request?",
+    "deleteUser": "Are you sure you want to delete this user?",
+    "recoverUser": "Are you sure you want to recover this user?",
+    "deletePet": "Are you sure you want to delete this pet?",
+    "recoverPet": "Are you sure you want to recover this pet?",
+    "help": {
+      "title": "Help",
+      "myRole": "My Role",
+      "myRoleDesc": "As admin, you posess an array of tools to aid you in the management of the pets, users and requests in the website. You have the power to create, delete, recover and update them.",
+      "meaning": "What does the color mean?",
+      "meaningDesc": "If an item is darker, it means that it was deleted. To recover it, just press on the green \"recover\" button."
+    }
+  },
+  "date": "{{month}}-{{day}}-{{year}}",
+  "addRequestView": {
+    "title": "Add Request (Admin Mode)",
+    "addRequest": "Add Request",
+    "petName": "Pet Name",
+    "username": "Username"
+  },
+  "editRequestView": {
+    "title": "Edit Request (Admin Mode)",
+    "status": "Request Status"
+  },
+  "addUserView": {
+    "title": "Add User (Admin Mode)",
+    "username": "Username",
+    "mail": "Mail",
+    "password": "Password"
+  },
+  "editUserView": {
+    "title": "Edit User (Admin Mode)",
+    "username": "Username",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "newPasswordRepeat": "Repeat New Password"
+  },
+  "addPetView": {
+    "title": "Add Pet (Admin Mode)"
+  },
+  "errors": {
+    "duplicatedRequest": "This user has already requested this pet",
+    "default": "Connection error: the request couldn't be completed",
+    "unchanged": "You are trying to change the status to the existing one",
+    "noMatch": "Passwords don't match"
+  }
+}

@@ -146,7 +146,7 @@ public class RequestJpaDaoImpl implements RequestDao {
         if (searchCriteria != null ) {
             String orderBy;
             if (searchCriteria.toLowerCase().contains("pet")) orderBy = "petName";
-            else orderBy = "creationDate";
+            else orderBy = "updateDate";
 
             if (searchOrder.toLowerCase().contains("desc")) {
                 sort = queryBuilder.sort().byField(orderBy).desc().andByField("eid");
@@ -187,7 +187,7 @@ public class RequestJpaDaoImpl implements RequestDao {
             Order order;
             Path<Object> orderBy =root.join("pet").get("petName");
             if (searchCriteria.toLowerCase().contains("date")) {
-                orderBy = root.get("creationDate");
+                orderBy = root.get("updateDate");
             }
 
             if (searchOrder.toLowerCase().contains("desc")) {
@@ -291,7 +291,8 @@ public class RequestJpaDaoImpl implements RequestDao {
     @Override
     public int getListAmount() {
         Query nativeQuery = em.createNativeQuery("SELECT count(*) FROM requests");
-        return nativeQuery.getFirstResult();
+        Number n = (Number) nativeQuery.getSingleResult();
+        return n.intValue();
     }
 
     @Override
@@ -405,14 +406,29 @@ public class RequestJpaDaoImpl implements RequestDao {
     }
 
     @Override
-    public boolean hasRequest(User user, User target) {
+    public boolean hasRequest(User user, User target, List<RequestStatus> statusList) {
+        String status = String.join(", ", statusList.stream().map(s -> String.valueOf(s.getValue())).collect(Collectors.toList()));
         String qStr = "SELECT count(*) " +
                       "FROM requests " +
-                      "WHERE ownerId = :user AND targetId = :target AND status = 1";
+                      "WHERE ownerId = :user AND targetId = :target AND status in (" + status + ")";
 
         Query query = em.createNativeQuery(qStr);
         query.setParameter("user", user.getId());
         query.setParameter("target", target.getId());
+        Number n = (Number) query.getSingleResult();
+        return n.intValue() > 0;
+    }
+
+    @Override
+    public boolean hasRequest(User user, Pet pet, List<RequestStatus> statusList) {
+        String status = String.join(", ", statusList.stream().map(s -> String.valueOf(s.getValue())).collect(Collectors.toList()));
+        String qStr = "SELECT count(*) " +
+                      "FROM requests " +
+                      "WHERE ownerId = :user AND petId = :pet AND status in (" + status + ")";
+
+        Query query = em.createNativeQuery(qStr);
+        query.setParameter("user", user.getId());
+        query.setParameter("pet", pet.getId());
         Number n = (Number) query.getSingleResult();
         return n.intValue() > 0;
     }
