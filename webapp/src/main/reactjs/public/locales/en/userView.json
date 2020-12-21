@@ -4,7 +4,9 @@
   "averageClarification": "*You can only rate once per user, and cannot rate yourself or a user you did not buy/adopt a pet from",
   "email": "Email",
   "offeredPetsTitle": "Pets this user offers",
+  "offeredPetsError": "This user does not offer any pets",
   "adoptedPetsTitle": "Pets this user adopted",
+  "adoptedPetsError": "This user has no adopted pets",
   "totalResults": "Total results: {{count}}",
   "reviewsTitle": "Reviews made to this user",
   "reviews": {
@@ -14,7 +16,7 @@
   },
   "backToHome": "< Back to home",
   "noReviews": "This user has not received reviews yet",
-  "sensibleInformation": "Sensitive data about other users is not displayed, to contact this user, he must first accept a request for one of his animals",
+  "sensibleInformation": "Sensitive data about other users is not displayed, to contact this user, they must first accept a request for one of their animals",
   "noPets": "No results",
   "makeAReview": {
     "title": "Rate user",
