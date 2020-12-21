@@ -7,6 +7,7 @@ import ListContainer from '../../components/ListContainer'
 import useLogin from "../../hooks/useLogin";
 
 import {acceptInterest,rejectInterest} from "../../api/interests";
+import moment from "moment";
 
 function InterestNotification(
     {id,creationDate, updateDate, status, username, userId, petName, petId, modal, fetchFilters}) {
@@ -32,7 +33,7 @@ function InterestNotification(
         shaded = true;
         reqTarget = (
             <p>{t("messages.rejected", {petName: petName, username: username})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.rejected")}</p>
@@ -68,7 +69,7 @@ function InterestNotification(
 
         reqTarget = (
             <p>{t("messages.pending", {petName: petName, username: username})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.pending")}</p>
@@ -88,7 +89,7 @@ function InterestNotification(
         shaded = true;
         reqTarget = (
             <p>{t("messages.canceled", {petName: petName, username: username})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.canceled")}</p>
@@ -104,7 +105,7 @@ function InterestNotification(
         shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: petName, username: username})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.sold")}</p>

@@ -2,11 +2,15 @@ package ar.edu.itba.paw.webapp.dto;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ws.rs.core.UriInfo;
-import ar.edu.itba.paw.models.Pet;
+
 import org.springframework.web.multipart.MultipartFile;
+
+import ar.edu.itba.paw.models.Pet;
 
 public class PetDto {
 
@@ -16,7 +20,7 @@ public class PetDto {
     private String gender;
     private boolean vaccinated;
     private Integer price;
-    private LocalDateTime uploadDate;
+    private String uploadDate;
     private String description;
     private Integer status;
     private URI species;
@@ -31,6 +35,7 @@ public class PetDto {
 
     private List<MultipartFile> photos;
     private Long userId;
+    private Long newOwnerId;
     private Long speciesId;
     private Long breedId;
     private Long provinceId;
@@ -53,7 +58,7 @@ public class PetDto {
         dto.gender = pet.getGender();
         dto.vaccinated = pet.isVaccinated();
         dto.price = pet.getPrice();
-        dto.uploadDate = pet.getUploadDate();
+        dto.uploadDate = pet.getUploadDate().toString();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
         dto.images = new ArrayList<>();
@@ -65,7 +70,10 @@ public class PetDto {
         dto.department = uriInfo.getAbsolutePathBuilder().path("location").path("departments").path(String.valueOf(pet.getDepartment().getId())).build();
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
-        if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+        if(pet.getNewOwner() != null) {
+            dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+            dto.newOwnerId = pet.getNewOwner().getId();
+        }
         dto.questionList = uriInfo.getAbsolutePathBuilder().path("questions").build();
 
         dto.userId = pet.getUser().getId();
@@ -93,7 +101,7 @@ public class PetDto {
         dto.gender = pet.getGender();
         dto.vaccinated = pet.isVaccinated();
         dto.price = pet.getPrice();
-        dto.uploadDate = pet.getUploadDate();
+        dto.uploadDate = pet.getUploadDate().toString();
         dto.description = pet.getDescription();
         dto.status = pet.getStatus().getValue();
         dto.images = new ArrayList<>();
@@ -105,7 +113,10 @@ public class PetDto {
         dto.department = uriInfo.getAbsolutePathBuilder().path("location").path("departments").path(String.valueOf(pet.getDepartment().getId())).build();
 
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getUser().getId())).build();
-        if(pet.getNewOwner() != null) dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+        if(pet.getNewOwner() != null) {
+            dto.newOwner = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(pet.getNewOwner().getId())).build();
+            dto.newOwnerId = pet.getNewOwner().getId();
+        }
         dto.questionList = uriInfo.getAbsolutePathBuilder().path(String.valueOf(dto.id)).path("questions").build();
 
         dto.userId = pet.getUser().getId();
@@ -165,11 +176,20 @@ public class PetDto {
         this.price = price;
     }
 
-    public LocalDateTime getUploadDate() {
+//    public LocalDateTime getUploadDate() {
+//        return uploadDate;
+//    }
+//
+//    public void setUploadDate(LocalDateTime uploadDate) {
+//        this.uploadDate = uploadDate;
+//    }
+
+
+    public String getUploadDate() {
         return uploadDate;
     }
 
-    public void setUploadDate(LocalDateTime uploadDate) {
+    public void setUploadDate(String uploadDate) {
         this.uploadDate = uploadDate;
     }
 
@@ -307,5 +327,13 @@ public class PetDto {
 
     public void setPhotos(List<MultipartFile> photos) {
         this.photos = photos;
+    }
+
+    public Long getNewOwnerId() {
+        return newOwnerId;
+    }
+
+    public void setNewOwnerId(Long newOwnerId) {
+        this.newOwnerId = newOwnerId;
     }
 }

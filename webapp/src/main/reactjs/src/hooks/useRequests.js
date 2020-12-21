@@ -29,7 +29,7 @@ const useRequests = () => {
     };
 
     useEffect(()=>{
-        fetchRequests({page: 1});
+        fetchRequests({searchCriteria:"date", searchOrder:"desc", page: 1});
     }, []);
 
     const {amount, pages, pageSize} = paginationInfo;

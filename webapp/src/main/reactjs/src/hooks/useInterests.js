@@ -29,7 +29,7 @@ const useInterests = () => {
     };
 
     useEffect(()=>{
-        fetchInterests({page: 1});
+        fetchInterests({searchCriteria:"date", searchOrder:"desc", page: 1});
     }, []);
 
     const {amount, pages, pageSize} = paginationInfo;

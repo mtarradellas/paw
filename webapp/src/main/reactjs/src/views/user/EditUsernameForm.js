@@ -10,7 +10,7 @@ const VALID_CHARACTERS = "^[a-zA-Z0-9\u00C1\u00C9\u00CD\u00D3\u00DA\u00D1\u00DC\
                         "\u00F3\u00FA\u00F1\u00FC]*$";
 
 const EditUsernameForm = ({oldname,  onSubmit, submitting}) => {
-    const {t} = useTranslation("EditUser");
+    const {t} = useTranslation("editUser");
     return (
         <Formik 
             validationSchema={

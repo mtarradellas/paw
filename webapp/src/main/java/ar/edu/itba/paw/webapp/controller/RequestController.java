@@ -56,7 +56,7 @@ public class RequestController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestController.class);
 
-    private static final int REQ_PAGE_SIZE = 24;
+    private static final int REQ_PAGE_SIZE = 30;
 
     @Autowired
     private RequestService requestService;

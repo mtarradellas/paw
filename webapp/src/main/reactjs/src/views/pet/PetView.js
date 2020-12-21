@@ -17,6 +17,7 @@ import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
 import useLogin from "../../hooks/useLogin";
 import {useHistory} from 'react-router-dom';
 import '../../css/pet/petView.css';
+import moment from 'moment';
 
 const ListItem = List.Item;
 
@@ -104,13 +105,13 @@ function Content({pet, id, isLogged}){
 
             <List bordered={true}>
                 <ListItemRow name={t('details.name')} value={petName}/>
-                <ListItemRow name={t('details.dateOfBirth')} value={birthDate}/>
+                <ListItemRow name={t('details.dateOfBirth')} value={moment(birthDate).format("DD/MM/YYYY")}/>
                 <ListItemRow name={t('details.specie')} value={speciesId && species[speciesId].name}/>
                 <ListItemRow name={t('details.breed')} value={breedId && breeds[breedId].name}/>
                 <ListItemRow name={t('details.sex')} value={t('details.' + _.toLower(gender))}/>
                 <ListItemRow name={t('details.province')} value={provinceId && provinces[provinceId].name}/>
                 <ListItemRow name={t('details.department')} value={departmentId && departments[departmentId].name}/>
-                <ListItemRow name={t('details.uploadDate')} value={uploadDate}/>
+                <ListItemRow name={t('details.uploadDate')} value={moment(uploadDate).format("DD/MM/YYYY")}/>
                 <ListItemRow name={t('details.owner')} value={<Link to={USER + userId}>{username}</Link>}/>
                 <ListItemRow name={t('status.vaccinated')}
                              value={

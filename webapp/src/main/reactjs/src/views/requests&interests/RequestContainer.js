@@ -9,6 +9,7 @@ import useLogin from "../../hooks/useLogin";
 import {cancelRequest, recoverRequest} from "../../api/requests";
 
 import ListContainer from '../../components/ListContainer'
+import moment from "moment";
 
 function RequestNotification(
     {id, creationDate, updateDate, status, username, userId, petName, petId, modal, fetchFilters}) {
@@ -27,7 +28,7 @@ function RequestNotification(
         shaded = true;
         reqTarget = (
             <p>{t("messages.rejected", {petName: petName})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.rejected")}</p>
@@ -51,7 +52,7 @@ function RequestNotification(
 
         reqTarget = (
             <p>{t("messages.pending", {petName: petName})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.pending")}</p>
@@ -80,7 +81,7 @@ function RequestNotification(
 
         reqTarget = (
             <p>{t("messages.canceled", {petName: petName})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.canceled")}</p>
@@ -96,7 +97,7 @@ function RequestNotification(
         shaded = true;
         reqTarget = (
             <p>{t("messages.sold", {petName: petName})}
-                <small className={"date-text"}> {t("date",{day: updateDate.date.day,month: updateDate.date.month, year: updateDate.date.year})}</small>
+                <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
             </p>
         )
         reqStatus = <p>{t("status.sold")}</p>

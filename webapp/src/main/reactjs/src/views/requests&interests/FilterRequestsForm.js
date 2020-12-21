@@ -27,7 +27,7 @@ const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPa
     }
 
     return <Formik
-        initialValues={{status: -1, searchCriteria: "any", searchOrder: "asc"}}
+        initialValues={{status: -1, searchCriteria: "date", searchOrder: "desc"}}
         onSubmit={_onSubmit}
         validationSchema={
             Yup.object().shape({
@@ -40,8 +40,8 @@ const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPa
 
             const resetFields = () => {
                 setFieldValue("status", -1);
-                setFieldValue("searchCriteria", "any");
-                setFieldValue("searchOrder", "asc");
+                setFieldValue("searchCriteria", "date");
+                setFieldValue("searchOrder", "desc");
             }
 
             return <Form layout={"vertical"} className={"requests-interests__container"}>
