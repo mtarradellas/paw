@@ -300,7 +300,7 @@ public class AdminPetController {
         LocalDateTime birthDate;
         List<byte[]> photos;
         try {
-            photos = ParseUtils.parseImages(files);
+            photos = ParseUtils.parseImagesEdit(files);
             imagesToDelete = ParseUtils.parseImagesToDelete(toDelete);
             birthDate = ParseUtils.parseDate(dateOfBirth);
             ParseUtils.parsePet(petName, gender, speciesId, breedId, provinceId, departmentId);
