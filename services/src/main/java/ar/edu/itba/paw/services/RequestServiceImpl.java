@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import ar.edu.itba.paw.models.constants.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,6 @@ import ar.edu.itba.paw.interfaces.exceptions.RequestException;
 import ar.edu.itba.paw.models.Pet;
 import ar.edu.itba.paw.models.Request;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.constants.MailArg;
-import ar.edu.itba.paw.models.constants.MailType;
-import ar.edu.itba.paw.models.constants.PetStatus;
-import ar.edu.itba.paw.models.constants.RequestStatus;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -215,11 +212,9 @@ public class RequestServiceImpl implements RequestService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "users/" + user.getId());
         arguments.put(MailArg.OWNERNAME, request.getUser().getUsername());
-        arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + pet.getUser().getId());
+        arguments.put(MailArg.REQUESTURL, contextURL + MailUrl.INTERESTS.getUrl());
 
         String userLocale = pet.getUser().getLocale();
 
@@ -264,10 +259,8 @@ public class RequestServiceImpl implements RequestService {
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
-        arguments.put(MailArg.REQUESTURL, contextURL + "interests" + "?targetId=" + recipient.getId());
+        arguments.put(MailArg.REQUESTURL, contextURL + MailUrl.REQUESTS.getUrl());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
@@ -338,9 +331,7 @@ public class RequestServiceImpl implements RequestService {
         Map<MailArg, Object> arguments = new HashMap<>();
 
         arguments.put(MailArg.URL, contextURL);
-        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
@@ -381,10 +372,8 @@ public class RequestServiceImpl implements RequestService {
 
         Map<MailArg, Object> arguments = new HashMap<>();
 
-        arguments.put(MailArg.PETURL, contextURL + "pets/" + pet.getId());
         arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERURL, contextURL + "users/" + + user.getId());
-        arguments.put(MailArg.REQUESTURL, contextURL + "interests?targetId=" + recipient.getId());
+        arguments.put(MailArg.REQUESTURL, contextURL + MailUrl.REQUESTS.getUrl());
         arguments.put(MailArg.OWNERNAME, contact.getUsername());
 
         String userLocale = recipient.getLocale();
