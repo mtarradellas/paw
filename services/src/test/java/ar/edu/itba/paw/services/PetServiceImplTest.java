@@ -90,6 +90,8 @@ public class PetServiceImplTest {
     @Mock
     private PetDao petDao;
     @Mock
+    private UserDao userDao;
+    @Mock
     private LocationService locationService;
     @Mock
     private UserService userService;
@@ -273,6 +275,7 @@ public class PetServiceImplTest {
     public void testCreateQuestion() {
         when(petDao.createQuestion(eq(QUESTION.getContent()), eq(QUESTION.getUser()), eq(QUESTION.getTarget()),
                 eq(QUESTION.getPet()), eq(QUESTION.getStatus()))).thenReturn(QUESTION);
+        when(userService.findById(anyLong())).thenReturn(Optional.of(QUESTION.getUser()));
         when(petDao.findById(eq(QUESTION.getPet().getId()))).thenReturn(Optional.of(PET));
 
         Optional<Question> opQuestion = Optional.empty();
@@ -297,6 +300,7 @@ public class PetServiceImplTest {
     public void testCreateAnswer() {
         when(petDao.createAnswer(eq(QUESTION), eq(ANSWER.getContent()), eq(ANSWER.getUser()), eq(ANSWER.getTarget()),
                 eq(ANSWER.getPet()), eq(ANSWER.getStatus()))).thenReturn(ANSWER);
+        when(userService.findById(anyLong())).thenReturn(Optional.of(ANSWER.getUser()));
         when(petDao.findQuestionById(eq(QUESTION.getId().longValue()))).thenReturn(Optional.of(QUESTION));
 
         Optional<Answer> opAnswer = Optional.empty();

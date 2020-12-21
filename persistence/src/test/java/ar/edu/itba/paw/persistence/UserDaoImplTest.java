@@ -34,6 +34,9 @@ public class UserDaoImplTest {
     @PersistenceContext
     private EntityManager em;
 
+    private final String IMAGES_TABLE = "images";
+    private final String PETS_TABLE = "pets";
+    private static final String REQUESTS_TABLE = "requests";
     private static final String USER_TABLE = "users";
     private static final String REVIEW_TABLE = "reviews";
 
@@ -74,6 +77,9 @@ public class UserDaoImplTest {
         jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(USER_TABLE);
 
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, REQUESTS_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USER_TABLE);
     }
 

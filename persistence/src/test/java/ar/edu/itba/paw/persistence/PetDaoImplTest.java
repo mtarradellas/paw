@@ -37,6 +37,7 @@ public class PetDaoImplTest {
     private final String SPECIES_TABLE = "species";
     private final String BREEDS_TABLE = "breeds";
     private final String IMAGES_TABLE = "images";
+    private static final String REQUESTS_TABLE = "requests";
 
     private static final String LOCALE = "en_US";
 
@@ -179,6 +180,7 @@ public class PetDaoImplTest {
 
     private void setUpTablePetContext() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGES_TABLE);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, REQUESTS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PETS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, DEPARTMENTS_TABLE);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, PROVINCES_TABLE);
