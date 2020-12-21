@@ -1,0 +1,10 @@
+form.add-pet-form {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+.add-pet-form__group {
+    min-width: 20rem;
+    margin: 0 1rem 0 1rem;
+}
