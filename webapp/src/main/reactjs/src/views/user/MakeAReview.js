@@ -4,11 +4,13 @@ import useLogin from "../../hooks/useLogin";
 import {CAN_REVIEW_ERRORS, CREATE_REVIEW_ERRORS, createReview} from "../../api/reviews";
 import {canReview as canReviewApi} from "../../api/reviews";
 import MakeAReviewForm from "./MakeAReviewForm";
+import {useTranslation} from "react-i18next";
+import {message} from "antd"
 
 function MakeAReview({userId, refreshReviews}) {
     const [canReview, setCanReview] = useState(false);
     const {state, promptLogin} = useLogin();
-
+    const {t} = useTranslation('userView')
     const {jwt} = state;
 
     const fetchCanReview = async () => {
@@ -48,7 +50,7 @@ function MakeAReview({userId, refreshReviews}) {
                     break;
                 case CREATE_REVIEW_ERRORS.CONN_ERROR:
                 default:
-                    message.error(t('connError'));
+                    message.error(t('makeAReview.connError'));
                     break;
             }
         }

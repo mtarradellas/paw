@@ -358,7 +358,7 @@ public class PetController{
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
         }
         final URI petUri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(opPet.get().getId())).build();
-        
+
         Map<String, Object> body = new HashMap<>();
         body.put("id", opPet.get().getId());
         return Response.created(petUri).entity(new Gson().toJson(body)).build();

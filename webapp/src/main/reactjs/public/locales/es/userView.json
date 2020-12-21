@@ -31,7 +31,8 @@
         "max": "La descripción no debe superar los {{max}} caracteres"
       },
       "submit": "Calificar"
-    }
+    },
+    "connError": "Error de conexion"
   },
   "edit": "Editar usuario"
 }

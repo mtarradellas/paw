@@ -31,7 +31,8 @@
         "max": "Description cannot be more than {{max}} characters long"
       },
       "submit": "Rate"
-    }
+    },
+    "connError": "Connection error"
   },
   "edit": "Edit user"
 }
