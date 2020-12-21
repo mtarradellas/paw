@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -249,11 +250,14 @@ public class ParseUtils {
     public static LocalDateTime parseDate(String date) {
         LocalDateTime dateTime;
         DateTimeFormatter formatter;
+        System.out.println("AAAAAA  "+date);
+        date = date.substring(0,10); //yyyy-MM-dd
+        System.out.println("AAAAAA  "+date);
         try {
-            if(date.contains("Z") || date.length() == 24) formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
-            if(date.length() == 23) formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
-            else formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
-            dateTime = LocalDateTime.parse(date, formatter);
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+            LocalDate ld = LocalDate.parse(date, formatter);
+            dateTime = LocalDateTime.of(ld, LocalDateTime.now().toLocalTime());
+            //dateTime = LocalDateTime.parse(date, formatter);
         } catch (Exception ex) {
             throw new BadRequestException("Could not parse date");
         }

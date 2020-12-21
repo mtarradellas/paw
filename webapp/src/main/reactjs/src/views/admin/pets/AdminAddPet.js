@@ -132,7 +132,7 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                                 onChange={() => setFieldValue('department', '')}
                         >
                             {
-                                Object.values(provinces).map(({id, name}) => {
+                                provinces && Object.values(provinces).map(({id, name}) => {
                                     return <Select.Option value={id}>{name}</Select.Option>
                                 })
                             }
@@ -142,7 +142,7 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                     <FormItem name={"department"} label={t('form.department.label')}>
                         <Select name={"department"} placeholder={t('form.department.placeholder')} disabled={!values.province}>
                             {
-                                values.province && provinces[values.province].departmentIds.map(departmentId => {
+                                values.province && provinces && provinces[values.province].departmentIds.map(departmentId => {
                                     const {id, name} = departments[departmentId];
 
                                     return <Select.Option value={id}>{name}</Select.Option>
@@ -156,7 +156,7 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                                 onChange={() => setFieldValue('breed', '')}
                         >
                             {
-                                Object.values(species).map(({id, name}) => {
+                                species && Object.values(species).map(({id, name}) => {
                                     return <Select.Option value={id}>{name}</Select.Option>
                                 })
                             }
@@ -166,7 +166,7 @@ function AddPetForm({ onSubmit, editing, initialValues, users}){
                     <FormItem name={"breed"} label={t('form.breed.label')}>
                         <Select name={"breed"} placeholder={t('form.breed.placeholder')} disabled={!values.species}>
                             {
-                                values.species && species[values.species].breedIds.map(breedId => {
+                                values.species && species && species[values.species].breedIds.map(breedId => {
                                     const {id, name} = breeds[breedId];
 
                                     return <Select.Option value={id}>{name}</Select.Option>
