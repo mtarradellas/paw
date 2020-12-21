@@ -1,3 +1,3 @@
 
 
-export const SERVER_URL = 'http://192.168.56.102:8080/webapp/api';
+export const SERVER_URL = 'http://localhost:8080/api';
