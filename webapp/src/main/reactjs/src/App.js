@@ -62,7 +62,7 @@ import {
     ADMIN_ADD_USER,
     ADMIN_EDIT_PET,
     ADMIN_EDIT_USER,
-    ADMIN_EDIT_REQUEST
+    ADMIN_EDIT_REQUEST, ACTIVATE_ACCOUNT
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -91,6 +91,7 @@ import AdminEditUser from "./views/admin/users/AdminEditUser";
 import AdminAddPet from "./views/admin/pets/AdminAddPet";
 import AdminEditPet from "./views/admin/pets/AdminEditPet";
 import {CONTEXT} from "./config";
+import ActivateAccountView from "./views/ActivateAccountView";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -121,11 +122,21 @@ function AppSwitch(){
                     <ForgotPasswordView/>
                 </BasicLayout>
             </Route>
+
             <Route path={RESET_PASSWORD + ':token'}
                    component={
                        () => {
                            return <BasicLayout>
                                <ResetPasswordView/>
+                           </BasicLayout>
+                       }
+                   }/>
+
+            <Route path={ACTIVATE_ACCOUNT + ':token'}
+                   component={
+                       () => {
+                           return <BasicLayout>
+                               <ActivateAccountView/>
                            </BasicLayout>
                        }
                    }/>

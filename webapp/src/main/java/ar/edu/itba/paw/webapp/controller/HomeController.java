@@ -98,13 +98,11 @@ public class HomeController {
 
     @POST
     @Path("/activate-account")
-    public Response activateAccount(@QueryParam("token") String token) {
-        
-        if (token == null) {
-            LOGGER.warn("Token parameter null.");
+    public Response activateAccount(final PasswordDto dto) {
+        if (dto == null || dto.getToken() == null) {
             return Response.status(Status.BAD_REQUEST.getStatusCode()).build();
         }
-        final UUID uuid = UUID.fromString(token);
+        final UUID uuid = UUID.fromString(dto.getToken());
 
         try {
             userService.activateAccountWithToken(uuid);
