@@ -21,17 +21,17 @@ public class SpeciesJpaDaoImpl implements SpeciesDao {
 
     @Override
     public List<Species> speciesList(int page, int pageSize) {
-    Query nativeQuery = em.createNativeQuery("SELECT id FROM species");
-    nativeQuery.setFirstResult((page - 1) * pageSize);
-    nativeQuery.setMaxResults(pageSize);
-    @SuppressWarnings("unchecked")
-    List<? extends Number> resultList = nativeQuery.getResultList();
-    List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
-    if (filteredIds.size() == 0) return new ArrayList<>();
-
-    final TypedQuery<Species> query = em.createQuery("from Species where id IN :filteredIds", Species.class);
-    query.setParameter("filteredIds", filteredIds);
-    return query.getResultList();
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM species");
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
+        List<? extends Number> resultList = nativeQuery.getResultList();
+        List<Long> filteredIds = resultList.stream().map(Number::longValue).collect(Collectors.toList());
+        if (filteredIds.size() == 0) return new ArrayList<>();
+        
+        final TypedQuery<Species> query = em.createQuery("from Species where id IN :filteredIds", Species.class);
+        query.setParameter("filteredIds", filteredIds);
+        return query.getResultList();
     }
 
     @Override

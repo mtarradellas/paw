@@ -12,8 +12,8 @@ import java.util.Optional;
 @Service
 public class SpeciesServiceImpl implements SpeciesService {
 
-    static final int PAGE = 1;
-    static final int PAGE_SIZE = 200;
+    private static final int PAGE = 1;
+    private static final int PAGE_SIZE = 200;
 
     @Autowired
     private SpeciesDao speciesDao;
