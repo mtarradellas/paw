@@ -4,22 +4,37 @@ import _ from "lodash";
 import usePets from "../../hooks/usePets";
 import {useTranslation} from "react-i18next";
 import PetCard from "../home/PetCard";
+import {useLocation, useHistory} from 'react-router-dom';
+import queryString from "query-string";
 
-function OwnedPets({userId, title, filters, admin,error}){
+function parseQuery(location, paramKey){
+    return parseInt(queryString.parse(location.search)[paramKey]);
+}
+
+function OwnedPets({paramKey, userId, title, filters, admin, error}){
     const {t} = useTranslation('userView');
+
+    const history = useHistory();
+    const location = useLocation();
 
     const {pets, fetchPets, fetching, amount, pageSize} = usePets({});
     const [currentPage, setCurrentPage] = useState(1);
 
     const _onChangePagination = async newValue => {
-        setCurrentPage(newValue);
+        history.push({search: '?' + queryString.stringify({[paramKey]: newValue})});
 
-        await fetchPets(Object.assign({page: newValue}, filters));
+        await onFetchPets(newValue);
+    };
+
+    const onFetchPets = async page => {
+        setCurrentPage(page);
+
+        await fetchPets(Object.assign({page}, filters));
     };
 
     useEffect(()=>{
-        _onChangePagination(1);
-    }, []);
+        onFetchPets(parseQuery(location, paramKey) || 1);
+    }, [userId]);
 
     const aux = !(admin === null || !admin);
 

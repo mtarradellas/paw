@@ -57,7 +57,7 @@ const FilterOptionsForm = () => {
 
     useEffect(()=>{
         fetchFilters(filters);
-    }, [filters.find]);
+    }, []);
 
     const {speciesList, breedList, departmentList, provinceList, genderList, rangeList} = availableFilters;
 
@@ -65,8 +65,6 @@ const FilterOptionsForm = () => {
         const filledFilters = _.pickBy(values, value => value !== -1);
 
         onSubmitFilters(filledFilters);
-
-        await fetchFilters(filledFilters);
     };
 
     return <Formik
@@ -84,21 +82,18 @@ const FilterOptionsForm = () => {
             }
             onSubmit={_onSubmit}
             initialValues={Object.assign({}, initialValues, filters)}
-            render={
+            >
+            {
                 ({setFieldValue, values, handleSubmit, setValues}) => {
                     const breedsToShow = species && breeds && values.species && values.species !== -1 && _.intersection(
                         species[values.species].breedIds,
                         breedList && breedList.map(({id}) => id)
                     ).map(id => ({id, name: breeds[id].name}));
 
-                    console.log(breedsToShow)
-
                     const departmentsToShow = provinces && departments && values.province && values.province !== -1 && _.intersection(
                         provinces[values.province].departmentIds,
                         departmentList && departmentList.map(({id}) => id)
                     ).map(id => ({id, name: departments[id].name}));
-
-                    console.log(values)
 
                     return <Form layout={"vertical"}>
                         <div className={"form-content"}>
@@ -108,16 +103,16 @@ const FilterOptionsForm = () => {
                                         <Spin/>
                                         :
                                         speciesList &&
-                                            <Select name={"species"} disabled={_.isNil(speciesList)}
-                                                    onChange={() => setFieldValue('breed', -1)}
-                                            >
-                                                <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
-                                                {
-                                                    speciesList.map(({id, name}) => {
-                                                        return <SelectOption key={id} value={'' + id}>{name}</SelectOption>;
-                                                    })
-                                                }
-                                            </Select>
+                                        <Select name={"species"} disabled={_.isNil(speciesList)}
+                                                onChange={() => setFieldValue('breed', -1)}
+                                        >
+                                            <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
+                                            {
+                                                speciesList.map(({id, name}) => {
+                                                    return <SelectOption key={id} value={'' + id}>{name}</SelectOption>;
+                                                })
+                                            }
+                                        </Select>
                                 }
                             </FormItem>
 
@@ -147,12 +142,12 @@ const FilterOptionsForm = () => {
                                             {
                                                 rangeList && Object.entries(rangeList).map(([id, {min, max}]) => {
                                                     if(min === 0 && max === 0)
-                                                        return <SelectOption value={'' + id}>{t('filterForm.labels.priceRange.free')}</SelectOption>;
+                                                        return <SelectOption key={id} value={'' + id}>{t('filterForm.labels.priceRange.free')}</SelectOption>;
 
                                                     if(max === -1)
-                                                        return <SelectOption value={'' + id}>{t('filterForm.labels.priceRange.max', {min})}</SelectOption>;
+                                                        return <SelectOption key={id} value={'' + id}>{t('filterForm.labels.priceRange.max', {min})}</SelectOption>;
 
-                                                    return <SelectOption value={'' + id}>{t('filterForm.labels.priceRange.range', {min, max})}</SelectOption>;
+                                                    return <SelectOption key={id} value={'' + id}>{t('filterForm.labels.priceRange.range', {min, max})}</SelectOption>;
                                                 })
                                             }
                                         </Select>
@@ -168,7 +163,7 @@ const FilterOptionsForm = () => {
                                             <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
                                             {
                                                 genderList && genderList.map(name => {
-                                                    return <SelectOption value={name}>{t('sex.' + name)}</SelectOption>;
+                                                    return <SelectOption key={name} value={name}>{t('sex.' + name)}</SelectOption>;
                                                 })
                                             }
                                         </Select>
@@ -186,7 +181,7 @@ const FilterOptionsForm = () => {
                                             <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
                                             {
                                                 provinceList && provinceList.map(({id, name}) => {
-                                                    return <SelectOption value={'' + id}>{name}</SelectOption>;
+                                                    return <SelectOption key={id} value={'' + id}>{name}</SelectOption>;
                                                 })
                                             }
                                         </Select>
@@ -202,7 +197,7 @@ const FilterOptionsForm = () => {
                                             <SelectOption value={-1}>{t('filterForm.labels.any')}</SelectOption>
                                             {
                                                 departmentsToShow && departmentsToShow.map(({id, name}) => {
-                                                    return <SelectOption value={'' + id}>{name}</SelectOption>;
+                                                    return <SelectOption key={id} value={'' + id}>{name}</SelectOption>;
                                                 })
                                             }
                                         </Select>
@@ -247,17 +242,17 @@ const FilterOptionsForm = () => {
                             <Button type={"primary"} htmlType={"submit"} loading={fetching || fetchingFilters}>{t('filterForm.filterButtons.filter')}</Button>
 
                             <Button type={"secondary"}
-                                onClick={()=>{
-                                    setValues(initialValues);
-                                    clearFilters();
-                                }}
-                                loading={fetching || fetchingFilters}
+                                    onClick={()=>{
+                                        setValues(initialValues);
+                                        clearFilters();
+                                    }}
+                                    loading={fetching || fetchingFilters}
                             >{t('filterForm.filterButtons.clear')}</Button>
                         </div>
                     </Form>;
                 }
             }
-        />
+     </Formik>
 };
 
 export default FilterOptionsForm;

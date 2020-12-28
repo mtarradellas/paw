@@ -92,6 +92,7 @@ import AdminAddPet from "./views/admin/pets/AdminAddPet";
 import AdminEditPet from "./views/admin/pets/AdminEditPet";
 import {CONTEXT} from "./config";
 import ActivateAccountView from "./views/ActivateAccountView";
+import ScrollToTop from "./components/ScrollToTop";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -166,9 +167,7 @@ function AppSwitch(){
                         </Route>
 
                         <Route exact path={REGISTER}>
-                            <BasicLayout>
                                 <RegisterView/>
-                            </BasicLayout>
                         </Route>
 
                         <Route exact path={LOGIN}>
@@ -197,7 +196,7 @@ function AppSwitch(){
                                       component={EditUserView}
                         />
 
-                        <PrivateRoute path={USER + ':id'}
+                        <PrivateRoute exact path={USER + ':id'}
                                       component={UserView}
                         />
 
@@ -212,11 +211,11 @@ function AppSwitch(){
                                       component={InterestsView}
                         />
                         <Route exact path={PET + ':id'}
-                               render={PetView}
+                               component={PetView}
                         />
 
                         <Route exact path={EDIT_PET(':id')}
-                               render={EditPetView}
+                               component={EditPetView}
                         />
                         <Route path={ERROR_404}>
                             <ErrorWithImage title={t('error404')} image={"/images/page_not_found.png"}
@@ -269,7 +268,8 @@ function App() {
         <LoginContext.Provider value={login}>
             <ConstantsContext.Provider value={constants}>
                 <Router basename={CONTEXT}>
-                            <AppSwitch/>
+                    <ScrollToTop/>
+                    <AppSwitch/>
                 </Router>
             </ConstantsContext.Provider>
         </LoginContext.Provider>

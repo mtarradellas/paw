@@ -29,7 +29,7 @@ function Reviews({userId, reviewsPagination}){
         }
     ];
 
-    const shouldShowPagination = _.isNil(reviewsPagination.amount) && _.isNil(reviewsPagination.pageSize) &&
+    const shouldShowPagination = !_.isNil(reviewsPagination.amount) && !_.isNil(reviewsPagination.pageSize) &&
         reviewsPagination.amount > reviewsPagination.pageSize;
 
     return <>
@@ -42,7 +42,7 @@ function Reviews({userId, reviewsPagination}){
                         {
                             shouldShowPagination &&
                                 <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
-                                        pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                                        pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.changePage}/>
                         }
                     </Divider>
 
@@ -58,7 +58,7 @@ function Reviews({userId, reviewsPagination}){
                         {
                             shouldShowPagination &&
                                 <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
-                                        pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                                        pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.changePage}/>
                         }
                     </Divider>
 
