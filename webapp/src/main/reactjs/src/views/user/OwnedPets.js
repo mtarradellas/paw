@@ -23,6 +23,9 @@ function OwnedPets({userId, title, filters, admin,error}){
 
     const aux = !(admin === null || !admin);
 
+    const shouldShowPagination = !_.isNil(pageSize) && !_.isNil(amount) && amount > pageSize;
+
+    console.log('details', amount, pageSize)
 
     return <>{
         pets === null ? <Spin/> :
@@ -39,7 +42,7 @@ function OwnedPets({userId, title, filters, admin,error}){
             <div className={"user-view--pets-container"}>
                 <Divider orientation={"left"}>
                     {
-                        !_.isNil(pageSize) && !_.isNil(amount) &&
+                        shouldShowPagination &&
                             <Pagination showSizeChanger={false} current={currentPage} total={amount} pageSize={pageSize} onChange={_onChangePagination}/>
                     }
                 </Divider>
@@ -53,7 +56,10 @@ function OwnedPets({userId, title, filters, admin,error}){
                             <p>{t('noPets')}</p>
                 }
                 <Divider orientation={"left"}>
-                    <Pagination showSizeChanger={false} current={currentPage} total={amount} pageSize={pageSize} onChange={_onChangePagination}/>
+                    {
+                        shouldShowPagination &&
+                            <Pagination showSizeChanger={false} current={currentPage} total={amount} pageSize={pageSize} onChange={_onChangePagination}/>
+                    }
                 </Divider>
             </div>
         </>

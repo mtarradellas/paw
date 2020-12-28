@@ -3,6 +3,7 @@ import {Divider, Pagination, Rate, Table} from "antd";
 import {useTranslation} from "react-i18next";
 import {USER} from "../../constants/routes";
 import {Link} from "react-router-dom";
+import _ from 'lodash';
 
 function Reviews({userId, reviewsPagination}){
     const {t} = useTranslation('userView');
@@ -28,6 +29,9 @@ function Reviews({userId, reviewsPagination}){
         }
     ];
 
+    const shouldShowPagination = _.isNil(reviewsPagination.amount) && _.isNil(reviewsPagination.pageSize) &&
+        reviewsPagination.amount > reviewsPagination.pageSize;
+
     return <>
             {
                 reviewsPagination.reviews !== null && reviewsPagination.reviews.length > 0 &&
@@ -35,8 +39,11 @@ function Reviews({userId, reviewsPagination}){
                     <h1><b>{t('reviewsTitle')}:</b></h1>
 
                     <Divider orientation={"left"}>
-                        <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
-                                    pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                        {
+                            shouldShowPagination &&
+                                <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
+                                        pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                        }
                     </Divider>
 
                     <Table
@@ -48,8 +55,11 @@ function Reviews({userId, reviewsPagination}){
                     />
 
                     <Divider orientation={"left"}>
-                        <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
-                                    pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                        {
+                            shouldShowPagination &&
+                                <Pagination current={reviewsPagination.currentPage} total={reviewsPagination.amount}
+                                        pageSize={reviewsPagination.pageSize} onChange={reviewsPagination.onPageChange}/>
+                        }
                     </Divider>
 
                 </>
