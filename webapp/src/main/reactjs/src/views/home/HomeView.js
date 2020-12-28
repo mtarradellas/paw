@@ -15,14 +15,12 @@ function SideContent(){
     </div>;
 }
 
-function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setCurrentPage, currentPage}){
+function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, currentPage}){
     const {t} = useTranslation("home");
 
     const {clearFilters} = useContext(FilterAndSearchContext);
 
     const _onChangePagination = newValue => {
-        setCurrentPage(newValue);
-
         fetchPage(newValue);
     };
 
@@ -78,7 +76,6 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
 
 
 function HomeView(){
-    const [currentPage, setCurrentPage] = useState(1);
 
     const {
         pets,
@@ -86,7 +83,8 @@ function HomeView(){
         pages,
         amount,
         pageSize,
-        onChangePage
+        onChangePage,
+        currentPage,
     } = useContext(FilterAndSearchContext);
 
     return <ContentWithSidebar
@@ -102,7 +100,6 @@ function HomeView(){
                             fetchPage={onChangePage}
                             pageSize={pageSize}
                             currentPage={currentPage}
-                            setCurrentPage={setCurrentPage}
                         />
                     }
                 />;

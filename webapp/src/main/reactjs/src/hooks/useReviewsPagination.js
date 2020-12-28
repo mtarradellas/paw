@@ -12,7 +12,6 @@ function useReviewsPagination({userId}){
     const {jwt} = state;
 
     const fetchReviews = async filters => {
-        console.log("bbb")
         setFetching(true);
 
         try{
@@ -29,7 +28,6 @@ function useReviewsPagination({userId}){
     };
 
     const changePage = async page => {
-        console.log("aaaa")
         setCurrentPage(page);
 
         await fetchReviews({page, targetId: userId});

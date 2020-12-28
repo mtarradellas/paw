@@ -25,8 +25,6 @@ function OwnedPets({userId, title, filters, admin,error}){
 
     const shouldShowPagination = !_.isNil(pageSize) && !_.isNil(amount) && amount > pageSize;
 
-    console.log('details', amount, pageSize)
-
     return <>{
         pets === null ? <Spin/> :
         amount === 0 ? <p><i>{t(error)}</i></p>
