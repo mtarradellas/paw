@@ -10,9 +10,10 @@ import _ from "lodash";
 import useLogin from "../../hooks/useLogin";
 import {getInterestsFilters} from "../../api/interests";
 import {ADD_PET} from "../../constants/routes";
-import {Link} from "react-router-dom";
+import {Link, useLocation, useHistory} from "react-router-dom";
+import queryString from "query-string";
 
-function SideContent({filters,fetchInterests,changeFilters,setCurrentPage,fetchFilters}) {
+function SideContent({filters,fetchInterests,changeFilters,setCurrentPage,fetchFilters, initialFilters}) {
     return (<div>
         <FilterInterestsForm
             filters={filters}
@@ -20,6 +21,7 @@ function SideContent({filters,fetchInterests,changeFilters,setCurrentPage,fetchF
             changeFilters={changeFilters}
             setCurrentPage={setCurrentPage}
             fetchFilters={fetchFilters}
+            initialFilters={initialFilters}
         />
     </div>)
 }
@@ -115,12 +117,35 @@ function MainContent(
     </div>}</>)
 }
 
+function parseQuery(location){
+    const params = queryString.parse(location.search);
+
+    return Object.assign(params, {page: parseInt(params.page || 1)})
+}
+
 function InterestsView() {
-    const {interests, fetching, fetchInterests, pages, amount, pageSize} = useInterests();
+    const location = useLocation();
+    const history = useHistory();
     const {jwt} = useLogin().state;
 
-    const [appliedFilters, setAppliedFilters] = useState({searchCriteria:"date", searchOrder:"desc"});
-    const [currentPage, setCurrentPage] = useState(1);
+    const params = parseQuery(location);
+    const [appliedFilters, setAppliedFilters] = useState(Object.assign({searchCriteria:"date", searchOrder:"desc"}, params));
+
+    const {interests, fetching, fetchInterests, pages, amount, pageSize} = useInterests(appliedFilters);
+
+    const [currentPage, setCurrentPage] = useState(params.page);
+
+    const onSetAppliedFilters = filters => {
+        setAppliedFilters(filters);
+
+        history.replace({search: '?' + queryString.stringify(Object.assign({}, filters, {page: 1}))});
+    };
+
+    const onSetPage = page => {
+        setCurrentPage(page);
+
+        history.replace({search: '?' + queryString.stringify(Object.assign({}, appliedFilters, {page}))});
+    };
 
     const fetchPage = page => {
         const params = {
@@ -150,9 +175,10 @@ function InterestsView() {
             <SideContent
                 filters={filters}
                 fetchInterests={fetchInterests}
-                changeFilters={setAppliedFilters}
-                setCurrentPage={setCurrentPage}
+                changeFilters={onSetAppliedFilters}
+                setCurrentPage={onSetPage}
                 fetchFilters={fetchFilters}
+                initialFilters={appliedFilters}
             />
         }
         mainContent={
@@ -165,7 +191,7 @@ function InterestsView() {
                 fetchPage={fetchPage}
                 fetchFilters={fetchFilters}
                 currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
+                setCurrentPage={onSetPage}
             />
         }
     />;

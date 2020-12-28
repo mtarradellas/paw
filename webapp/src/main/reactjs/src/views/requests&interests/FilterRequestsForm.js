@@ -27,7 +27,7 @@ const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPa
     };
 
     return <Formik
-        initialValues={Object.assign({status: -1}, initialFilters)}
+        initialValues={Object.assign({status: '' + -1}, initialFilters)}
         onSubmit={_onSubmit}
         validationSchema={
             Yup.object().shape({
