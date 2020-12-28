@@ -90,7 +90,7 @@ function MainContent(
                 <InterestContainer interests={interests} fetchFilters={fetchFilters} />
         }        <Divider orientation={"left"}>
             {
-                pageSize && interestsCount &&
+                pageSize && interestsCount && interestsCount > pageSize &&
                 <Pagination showSizeChanger={false} current={currentPage} total={interestsCount} pageSize={pageSize}
                             onChange={_onChangePagination}/>
             }

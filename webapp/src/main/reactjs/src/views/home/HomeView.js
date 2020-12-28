@@ -26,6 +26,8 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
         fetchPage(newValue);
     };
 
+    const shouldShowPagination = !_.isNil(pageSize) && !_.isNil(petCount) && petCount > pageSize;
+
     return <div className={"home__pets"}>{
 
         fetching ? <Spin/> 
@@ -45,7 +47,7 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
 
         <Divider orientation={"left"}>
             {
-                !_.isNil(pageSize) && !_.isNil(petCount) &&
+                shouldShowPagination &&
                     <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
             }
         </Divider>
@@ -60,8 +62,12 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
                                 (pet) => <PetCard key={pet.id} pet={pet}/>
                             )
                         }
+
                         <Divider orientation={"left"}>
-                            <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
+                            {
+                                shouldShowPagination &&
+                                    <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
+                            }
                         </Divider>
                     </>
             }

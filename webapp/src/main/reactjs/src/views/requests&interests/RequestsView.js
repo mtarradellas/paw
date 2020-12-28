@@ -90,7 +90,7 @@ function MainContent(
 
         <Divider orientation={"left"}>
             {
-                pageSize && requestsCount &&
+                pageSize && requestsCount && requestsCount > pageSize &&
                 <Pagination showSizeChanger={false} current={currentPage} total={requestsCount} pageSize={pageSize}
                             onChange={_onChangePagination}/>
             }
