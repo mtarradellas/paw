@@ -43,11 +43,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
-    @Bean
-    CORSFilter getCorsFilter(){
-        return new CORSFilter();
-    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         final String jwtAudience = "Pet Society";
@@ -56,7 +51,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
         http.sessionManagement()
             .and().csrf().disable()
-            .addFilterBefore(new CORSFilter(), (Class<? extends Filter>) ChannelProcessingFilter.class)
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .authorizeRequests()
@@ -80,7 +74,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(final WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/resources/**", "/img/**", "/favicon.ico", "/403");
+                .antMatchers("/static/**", "/index.html", "/", "/**");
     }
 
     @Bean
