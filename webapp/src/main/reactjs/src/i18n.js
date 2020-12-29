@@ -20,23 +20,18 @@ i18n
     // init i18next
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
-        fallbackLng: 'en',
         debug: false,
-        ns: ['addPet', 'admin', 'editPet', 'editUser', 'error-pages', 'footer', 'forgotPassword', 'header', 'home',
-        'informationPages', 'interests', 'login', 'petInformation', 'petView', 'register', 'requests', 'userView', 'common'],
+        react: {
+            useSuspense: true,
+        },
+        interpolation: {
+            escapeValue: false,
+        },
+        whitelist: ['en', 'es'],
         backend: {
             loadPath: CONTEXT + '/locales/{{lng}}/{{ns}}.json'
         },
-        interpolation: {
-            escapeValue: false, // not needed for react as it escapes by default
-        },
-        load: 'unspecific',
-
-
-        react: {
-            useSuspense: false,
-            wait: true
-        }
+        ns: []
     });
 
 
