@@ -49,7 +49,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         final String jwtIssuer = "Pet Society Inc.";
         final String jwtType = "JWT";
 
-        http.sessionManagement()
+        http.headers().cacheControl().disable().and().sessionManagement()
             .and().csrf().disable()
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
@@ -74,7 +74,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(final WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/static/**", "/index.html", "/", "/**");
+                .antMatchers("/static/**", "/index.html", "/", "/locales/**")
+                .antMatchers("/**.png", "/**.ico", "/**.json", "/**.txt");
     }
 
     @Bean
