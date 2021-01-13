@@ -4,7 +4,7 @@
         "username": {
             "label": "Nombre de usuario",
             "errors": {
-                "duplicated": "El nombre de usuario no esta disponible",
+                "duplicated": "El nombre de usuario no está disponible",
                 "tooShort": "El nombre de usuario debe tener al menos {{min}} caracteres",
                 "tooLong": "El nombre de usuario no puede tener más de {{max}} caracteres",
                 "validCharacters": "El nombre de usuario puede contener solo letras y números",

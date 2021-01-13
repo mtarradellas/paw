@@ -54,9 +54,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         final String jwtIssuer = "Pet Society Inc.";
         final String jwtType = "JWT";
 
-        http.sessionManagement()
+        http.headers().cacheControl().disable().and().sessionManagement()
             .and().csrf().disable()
-            .addFilterBefore(new CORSFilter(), (Class<? extends Filter>) ChannelProcessingFilter.class)
+                //TODO: remove on deployment
+                .addFilterBefore(new CORSFilter(), (Class<? extends Filter>) ChannelProcessingFilter.class)
             .addFilter((Filter) new JwtAuthenticationFilter(authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .addFilter((Filter) new JwtAuthorizationFilter (authenticationManager(), jwtAudience, jwtIssuer, ApiUtils.readToken(secretPath), jwtType))
             .authorizeRequests()
@@ -80,7 +81,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(final WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/resources/**", "/img/**", "/favicon.ico", "/403");
+                .antMatchers("/static/**", "/index.html", "/", "/locales/**")
+                .antMatchers("/**.png", "/**.ico", "/**.json", "/**.txt");
     }
 
     @Bean

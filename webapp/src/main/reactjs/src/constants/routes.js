@@ -30,6 +30,8 @@ export const ACTIVATE_ACCOUNT = '/activate-account/'
 
 //ADMIN
 
+export const ADMIN = '/admin';
+
 export const ADMIN_HOME = '/admin/home';
 
 export const ADMIN_REQUESTS = '/admin/requests';

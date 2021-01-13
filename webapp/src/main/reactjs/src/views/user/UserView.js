@@ -2,7 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import ContentWithHeader from "../../components/ContentWithHeader";
 import {Button, Divider, List, Rate, Spin} from "antd";
 import {useTranslation} from "react-i18next";
-import {useParams, useHistory} from 'react-router-dom';
+import {useParams, useHistory, useLocation} from 'react-router-dom';
 import '../../css/user/userView.css';
 import {Link} from "react-router-dom";
 import {HOME, ERROR_404_USER, EDIT_USER} from "../../constants/routes";
@@ -50,8 +50,9 @@ function Content({user, id}) {
     };
 
     useEffect(()=>{
+        setEmail(null);
         fetchEmail()
-    }, []);
+    }, [id]);
 
     return <>
         {
@@ -89,11 +90,11 @@ function Content({user, id}) {
 
         <Divider/>
 
-        <OwnedPets userId={id} title={'offeredPetsTitle'} error={'offeredPetsError'} filters={{ownerId: id}}/>
+        <OwnedPets paramKey={"offeredPetsPage"} userId={id} title={'offeredPetsTitle'} error={'offeredPetsError'} filters={{ownerId: id}}/>
 
         <Divider/>
 
-        <OwnedPets userId={id} title={'adoptedPetsTitle'} error={'adoptedPetsError'} filters={{newOwnerId: id}}/>
+        <OwnedPets paramKey={"adoptedPetsPage"} userId={id} title={'adoptedPetsTitle'} error={'adoptedPetsError'} filters={{newOwnerId: id}}/>
 
         <Divider/>
 
@@ -141,6 +142,7 @@ function UserView(){
     }, [setUser, id, history, jwt]);
 
     useEffect(() => {
+        setUser({username: null, email: null, id});
         fetchUser();
     }, [fetchUser]);
 

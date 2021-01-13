@@ -9,8 +9,8 @@
       "any": "Cualquiera",
       "date": "Fecha",
       "petName": "Nombre de Mascota",
-      "asc": "Ascendiente",
-      "desc": "Descendiente"
+      "asc": "Ascendente",
+      "desc": "Descendente"
     },
     "filterButtons": {
       "filter": "Filter",
@@ -47,9 +47,9 @@
     "helpModal": {
       "title": "Ayuda",
       "firstTitle": "Página de Solicitudes",
-      "firstDesc": "Bienvenido a la página de solicitudes, aquí puede ver estado de todas las mascotas que ha solicitado. Hay cuatro estados: pendiente (significa que el dueño no ha decidido todavía), vendida o rechazada (dueño ha decidido si desea o no darle el animal, no puede recuperar esta solicitud) y cancelada (puede cancelar una solicitud haciendo click en 'cancelar', y recupetarlo haciendo click en 'recuperar'). ",
+      "firstDesc": "Bienvenido a la página de solicitudes, aquí puede ver estado de todas las mascotas que ha solicitado. Hay cuatro estados: pendiente (significa que el dueño no ha decidido todavía), vendida o rechazada (dueño ha decidido si desea o no darle el animal, no puede recuperar esta solicitud) y cancelada (puede cancelar una solicitud haciendo click en 'cancelar', y recuperarlo haciendo click en 'recuperar'). ",
       "secondTitle": "Herramientas de Filtrado",
-      "secondDesc": "Para asistirlo en la organización de sus solicitudes, utilize el menú de filtrado encontrado a la izquierda."
+      "secondDesc": "Para asistirlo en la organización de sus solicitudes, utilice el menú de filtrado encontrado a la izquierda."
     },
     "pleaseConfirm": "Por favor confirme su acción",
     "cancel":"¿Estás seguro que deseas cancelar esta solicitud?",

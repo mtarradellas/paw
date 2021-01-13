@@ -124,9 +124,6 @@ function SearchBar() {
 
     const onSubmit = values => {
         onSubmitSearch(values);
-
-        if (history.location !== HOME)
-            history.push(HOME);
     };
 
     useEffect(() => {

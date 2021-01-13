@@ -7,8 +7,8 @@
   "pageNotFound": "La página que estabas buscando no existe",
   "petNotFound": "La mascota que estabas buscando no existe",
   "userNotFound": "El usuario que estabas buscando no existe",
-  "accessDenied": "Lo sentimos, no tenes permiso para ver esta página",
-  "wrongMethod": "Lo sentimos, el metodo que estas intentando usar no esta permitido",
+  "accessDenied": "Lo sentimos, no tienes permiso para ver esta página",
+  "wrongMethod": "Lo sentimos, el método que estas intentando usar no está permitido",
   "badRequest": "La solicitud que mandaste no existe, por favor intente con otra",
   "serverError": "Lo sentimos, algo salió mal de nuestro lado, por favor intente nuevamente en un rato"
 }

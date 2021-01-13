@@ -10,15 +10,17 @@ import _ from "lodash";
 import {getRequestsFilters} from "../../api/requests";
 import useLogin from "../../hooks/useLogin";
 import {HOME} from "../../constants/routes";
-import {Link} from "react-router-dom";
+import {Link, useLocation, useHistory} from "react-router-dom";
+import queryString from "query-string";
 
-function SideContent({filters,fetchRequests,changeFilters,setCurrentPage}) {
+function SideContent({filters,fetchRequests,changeFilters,setCurrentPage, initialFilters}) {
     return (<div>
         <FilterRequestsForm
             filters={filters}
             fetchRequests={fetchRequests}
             changeFilters={changeFilters}
             setCurrentPage={setCurrentPage}
+            initialFilters={initialFilters}
         />
     </div>)
 }
@@ -90,7 +92,7 @@ function MainContent(
 
         <Divider orientation={"left"}>
             {
-                pageSize && requestsCount &&
+                pageSize && requestsCount && requestsCount > pageSize &&
                 <Pagination showSizeChanger={false} current={currentPage} total={requestsCount} pageSize={pageSize}
                             onChange={_onChangePagination}/>
             }
@@ -115,13 +117,35 @@ function MainContent(
     </div>}</>)
 }
 
+function parseQuery(location){
+    const params = queryString.parse(location.search);
+
+    return Object.assign(params, {page: parseInt(params.page || 1)})
+}
 
 function RequestsView() {
-    const {requests, fetching, fetchRequests, pages, amount, pageSize} = useRequests();
+    const location = useLocation();
+    const history = useHistory();
     const {jwt} = useLogin().state;
 
-    const [appliedFilters, setAppliedFilters] = useState({searchCriteria:"date", searchOrder:"desc"});
-    const [currentPage, setCurrentPage] = useState(1);
+    const params = parseQuery(location);
+
+    const [appliedFilters, setAppliedFilters] = useState(Object.assign({searchCriteria:"date", searchOrder:"desc"}, params));
+    const {requests, fetching, fetchRequests, pages, amount, pageSize} = useRequests(appliedFilters);
+
+    const [currentPage, setCurrentPage] = useState(params.page);
+
+    const onSetAppliedFilters = filters => {
+        setAppliedFilters(filters);
+
+        history.replace({search: '?' + queryString.stringify(Object.assign({}, filters, {page: 1}))});
+    };
+
+    const onSetPage = page => {
+        setCurrentPage(page);
+
+        history.replace({search: '?' + queryString.stringify(Object.assign({}, appliedFilters, {page}))});
+    };
 
     const fetchPage = page => {
         const params = {
@@ -145,14 +169,15 @@ function RequestsView() {
     useEffect(()=>{
         fetchFilters();
     }, []);
-
+    
     return <ContentWithSidebar
         sideContent={
             <SideContent
                 filters={filters}
                 fetchRequests={fetchRequests}
-                changeFilters={setAppliedFilters}
-                setCurrentPage={setCurrentPage}
+                changeFilters={onSetAppliedFilters}
+                setCurrentPage={onSetPage}
+                initialFilters={appliedFilters}
             />
         }
         mainContent={
@@ -165,7 +190,7 @@ function RequestsView() {
                 fetchPage={fetchPage}
                 fetchFilters={fetchFilters}
                 currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
+                setCurrentPage={onSetPage}
             />
         }
     />;

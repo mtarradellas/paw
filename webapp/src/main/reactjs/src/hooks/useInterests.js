@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import useLogin from "./useLogin";
 import {getInterests} from "../api/interests";
 
-const useInterests = () => {
+const useInterests = (initialFilters) => {
     const [interests, setInterests] = useState(null);
 
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null});
@@ -29,7 +29,7 @@ const useInterests = () => {
     };
 
     useEffect(()=>{
-        fetchInterests({searchCriteria:"date", searchOrder:"desc", page: 1});
+        fetchInterests(initialFilters);
     }, []);
 
     const {amount, pages, pageSize} = paginationInfo;

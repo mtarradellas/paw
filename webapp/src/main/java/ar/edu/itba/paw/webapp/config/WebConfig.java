@@ -159,25 +159,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/js/**")
-                .addResourceLocations("/WEB-INF/classes/static/static/js/")
-                .setCacheControl(CacheControl.maxAge(15, TimeUnit.DAYS));
-
-        registry.addResourceHandler("/static/css/**")
-                .addResourceLocations("/WEB-INF/classes/static/static/css/")
-                .setCacheControl(CacheControl.maxAge(15, TimeUnit.DAYS));
-
-        registry.addResourceHandler("/static/media/**")
-                .addResourceLocations("/WEB-INF/classes/static/static/media/")
-                .setCacheControl(CacheControl.maxAge(15, TimeUnit.DAYS));
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("/WEB-INF/classes/static/static/");
 
         registry.addResourceHandler("/locales/**")
-                .addResourceLocations("/WEB-INF/classes/static/locales/")
-                .setCacheControl(CacheControl.maxAge(15, TimeUnit.DAYS));
+                .addResourceLocations("/WEB-INF/classes/static/locales/");
 
         registry.addResourceHandler("*.png", "/**.ico", "*.json", "*.txt")
-                .addResourceLocations("/WEB-INF/classes/static/")
-                .setCacheControl(CacheControl.maxAge(15, TimeUnit.DAYS));
+                .addResourceLocations("/WEB-INF/classes/static/");
 
         registry.addResourceHandler("/**", "", "/")
                 .resourceChain(false)

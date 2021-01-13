@@ -7,7 +7,7 @@ import * as Yup from "yup";
 
 const FormItem = Form.Item;
 
-const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrentPage, fetchFilters}) => {
+const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrentPage, fetchFilters, initialFilters}) => {
     const {t} = useTranslation('interests');
 
     const statusLocale = [
@@ -25,23 +25,25 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
     }
 
     return <Formik
-        initialValues={{status: -1, petId:0, searchCriteria: "date", searchOrder: "desc"}}
+        initialValues={Object.assign({status: "-1", petId: "0"}, initialFilters)}
         onSubmit={_onSubmit}
         validationSchema={
             Yup.object().shape({
-                status: Yup.number(),
-                petId: Yup.number(),
+                status: Yup.string(),
+                petId: Yup.string(),
                 searchOrder: Yup.string(),
                 searchCriteria: Yup.string()
             })
         }
         render={({values, setFieldValue}) => {
             const resetFields = () => {
-                setFieldValue("status", -1);
-                setFieldValue("petId",0);
+                setFieldValue("status", "-1");
+                setFieldValue("petId","0");
                 setFieldValue("searchCriteria", "date");
                 setFieldValue("searchOrder", "desc");
                 fetchFilters({petId:0, status:-1})
+
+                _onSubmit({status: '-1', petId: '0', searchCriteria: 'date', searchOrder: 'desc'});
             }
 
             const filterOtherValue = (value, filter) => {
@@ -64,10 +66,10 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
                 <div className={"form-content"}>
                     <FormItem name={"status"} label={t("filterForm.labels.status")}>
                         <Select name={"status"} >
-                            <Select.Option value={-1}>{t("filterForm.values.any")}</Select.Option>
+                            <Select.Option value={'' + -1}>{t("filterForm.values.any")}</Select.Option>
                             {
                                 filters && filters.statusList.map((status) => {
-                                    return <Select.Option value={status}
+                                    return <Select.Option value={'' + status}
                                                           key={status}>{statusLocale[status]}</Select.Option>
                                 })
                             }
@@ -76,10 +78,10 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
 
                     <FormItem name={"petId"} label={t("filterForm.labels.pet")}>
                         <Select name={"petId"} onSelect={(value) => filterOtherValue(value, "petId")}>
-                            <Select.Option value={0}>{t("filterForm.values.any")}</Select.Option>
+                            <Select.Option value={'' + 0}>{t("filterForm.values.any")}</Select.Option>
                             {
                                 filters && filters.petList.map((pet) => {
-                                    return <Select.Option value={pet.id} key={pet.id}>{pet.petName}</Select.Option>
+                                    return <Select.Option value={'' + pet.id} key={pet.id}>{pet.petName}</Select.Option>
                                 })
                             }
                         </Select>

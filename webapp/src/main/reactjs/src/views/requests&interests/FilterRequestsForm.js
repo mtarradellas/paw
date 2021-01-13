@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 
 const FormItem = Form.Item;
 
-const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPage}) => {
+const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPage, initialFilters}) => {
 
     const {t} = useTranslation('requests');
 
@@ -18,20 +18,20 @@ const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPa
         t("status.rejected"),
         t("status.canceled"),
         t("status.sold")
-    ]
+    ];
 
     const _onSubmit = (values) => {
         fetchRequests({...values, page: 1})
         setCurrentPage(1)
         changeFilters(values)
-    }
+    };
 
     return <Formik
-        initialValues={{status: -1, searchCriteria: "date", searchOrder: "desc"}}
+        initialValues={Object.assign({status: '' + -1}, initialFilters)}
         onSubmit={_onSubmit}
         validationSchema={
             Yup.object().shape({
-                status: Yup.number(),
+                status: Yup.string(),
                 searchOrder: Yup.string(),
                 searchCriteria: Yup.string()
             })
@@ -39,19 +39,21 @@ const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPa
         render={({values, setFieldValue}) => {
 
             const resetFields = () => {
-                setFieldValue("status", -1);
+                setFieldValue("status", "-1");
                 setFieldValue("searchCriteria", "date");
                 setFieldValue("searchOrder", "desc");
-            }
+
+                _onSubmit({status: -1, searchCriteria: "date", searchOrder: "desc"});
+            };
 
             return <Form layout={"vertical"} className={"requests-interests__container"}>
                 <div className={"form-content"}>
                     <FormItem name={"status"} label={t("filterForm.labels.status")}>
                         <Select name={"status"}>
-                            <Select.Option value={-1}>{t("filterForm.values.any")}</Select.Option>
+                            <Select.Option value={'' + -1}>{t("filterForm.values.any")}</Select.Option>
                             {
                                 filters && filters.map((status) => {
-                                    return <Select.Option value={status}
+                                    return <Select.Option value={'' + status}
                                                           key={status}>{statusLocale[status]}</Select.Option>
                                 })
                             }
@@ -82,6 +84,6 @@ const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPa
             </Form>
         }
         }/>
-}
+};
 
 export default FilterRequestsForm;

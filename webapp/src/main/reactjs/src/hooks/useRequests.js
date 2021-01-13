@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {getRequests} from "../api/requests";
 import useLogin from "./useLogin";
 
-const useRequests = () => {
+const useRequests = (initialFilters) => {
     const [requests, setRequests] = useState(null);
 
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null});
@@ -29,7 +29,7 @@ const useRequests = () => {
     };
 
     useEffect(()=>{
-        fetchRequests({searchCriteria:"date", searchOrder:"desc", page: 1});
+        fetchRequests(initialFilters);
     }, []);
 
     const {amount, pages, pageSize} = paginationInfo;

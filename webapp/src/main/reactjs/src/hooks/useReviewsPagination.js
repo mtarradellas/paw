@@ -1,10 +1,19 @@
 import React, {useState, useEffect} from 'react';
 import {getReviews} from "../api/reviews";
 import useLogin from "./useLogin";
+import {useLocation, useHistory} from 'react-router-dom';
+import queryString from 'query-string';
+
+
+function parseQuery(location){
+    return parseInt(queryString.parse(location.search)['reviewsPage']);
+}
 
 function useReviewsPagination({userId}){
+    const location = useLocation();
+    const history = useHistory();
     const [reviews, setReviews] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(parseQuery(location));
     const [fetching, setFetching] = useState(false);
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null, average: null});
     const {state} = useLogin();
@@ -12,7 +21,6 @@ function useReviewsPagination({userId}){
     const {jwt} = state;
 
     const fetchReviews = async filters => {
-        console.log("bbb")
         setFetching(true);
 
         try{
@@ -29,8 +37,9 @@ function useReviewsPagination({userId}){
     };
 
     const changePage = async page => {
-        console.log("aaaa")
         setCurrentPage(page);
+
+        history.replace({search: '?' + queryString.stringify({reviewsPage: page})});
 
         await fetchReviews({page, targetId: userId});
     };
@@ -41,7 +50,7 @@ function useReviewsPagination({userId}){
 
     useEffect(()=>{
         fetchReviews({page: 1, targetId: userId});
-    }, []);
+    }, [userId]);
 
     const {amount, pageSize, average} = paginationInfo;
 
