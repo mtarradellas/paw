@@ -60,7 +60,8 @@ public class AdminRequestController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getRequestList(@QueryParam("page") @DefaultValue("1") int page,
+    public Response getRequestList(@Context HttpServletRequest httpRequest,
+                                   @QueryParam("page") @DefaultValue("1") int page,
                                    @QueryParam("userId") @DefaultValue("0") long userId,
                                    @QueryParam("targetId") @DefaultValue("0") long targetId,
                                    @QueryParam("petId") @DefaultValue("0") long petId,
@@ -98,7 +99,9 @@ public class AdminRequestController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, requestList, null);
+        String query = httpRequest.getQueryString();
+        query = query == null? null : query.replaceAll("&?page=.*&?", "");
+        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, requestList, query, null);
     }
 
     @GET

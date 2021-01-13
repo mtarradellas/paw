@@ -116,7 +116,9 @@ public class RequestController {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, requestList, null);
+        String query = request.getQueryString();
+        query = query == null? null : query.replaceAll("&?page=.*&?", "");
+        return ApiUtils.paginatedListResponse(amount, REQ_PAGE_SIZE, page, uriInfo, requestList, query, null);
     }
 
     @GET

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -55,7 +56,8 @@ public class AdminReviewController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getReviewList(@QueryParam("page") @DefaultValue("1") int page,
+    public Response getReviewList(@Context HttpServletRequest httpRequest,
+                                  @QueryParam("page") @DefaultValue("1") int page,
                                   @QueryParam("userId") @DefaultValue("0") long userId,
                                   @QueryParam("targetId") @DefaultValue("0") long targetId,
                                   @QueryParam("minScore") @DefaultValue("1") int minScore,
@@ -99,7 +101,9 @@ public class AdminReviewController {
         Map<String, Object> json = new HashMap<>();
         json.put("average", average);
 
-        return ApiUtils.paginatedListResponse(amount, REV_PAGE_SIZE, page, uriInfo, reviewList, json);
+        String query = httpRequest.getQueryString();
+        query = query == null? null : query.replaceAll("&?page=.*&?", "");
+        return ApiUtils.paginatedListResponse(amount, REV_PAGE_SIZE, page, uriInfo, reviewList, null, json);
     }
 
     @GET

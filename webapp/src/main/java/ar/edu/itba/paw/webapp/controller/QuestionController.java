@@ -60,7 +60,9 @@ public class QuestionController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestions(@QueryParam("petId") @DefaultValue("0") Long petId, @QueryParam("page") @DefaultValue("1") int page) {
+    public Response getQuestions(@Context HttpServletRequest httpRequest,
+                                 @QueryParam("petId") @DefaultValue("0") Long petId,
+                                 @QueryParam("page") @DefaultValue("1") int page) {
         try {
             petId = ParseUtils.parsePetId(petId);
             ParseUtils.parsePage(page);
@@ -83,7 +85,9 @@ public class QuestionController {
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
 
-        return ApiUtils.paginatedListResponse(amount, QUESTION_PAGE_SIZE, page, uriInfo, questions, null);
+        String query = httpRequest.getQueryString();
+        query = query == null? null : query.replaceAll("&?page=.*&?", "");
+        return ApiUtils.paginatedListResponse(amount, QUESTION_PAGE_SIZE, page, uriInfo, questions, query, null);
     }
 
     @POST
