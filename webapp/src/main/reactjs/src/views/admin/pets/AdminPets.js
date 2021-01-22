@@ -67,8 +67,11 @@ function MainContent({
                             }
                         </b>
                         </h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
-                                href={ADMIN_ADD_PET}>{t('addPet')}</Button>
+                        <Link to={ADMIN_ADD_PET}>
+                            <Button
+                                style={{marginTop: "0.5rem", marginLeft: "1rem"}}
+                                type={"primary"}>{t('addPet')}</Button>
+                        </Link>
                     </Row>
                 </Col>
                 <Col>
@@ -90,13 +93,13 @@ function MainContent({
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
             {
-                petCount === 0?
+                petCount === 0 ?
                     (<p>{t("noResults")} <Link to={ADMIN_PETS}>{t("fetchAll")}</Link></p>)
                     :
                     (_.isNil(pets) || fetching ?
-                    <Spin/>
-                    :
-                    <AdminPetsContainer pets={pets} fetchFilters={fetchFilters}/>)
+                        <Spin/>
+                        :
+                        <AdminPetsContainer pets={pets} fetchFilters={fetchFilters}/>)
             }
             <Divider orientation={"left"}>
                 {

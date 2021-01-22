@@ -94,7 +94,10 @@ function RequestNotification(
                     <Button type={"primary"}>{t("buttons.visitPet")}</Button>
                 </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
+                <Button
+                    type={"primary"}
+                    style={{background: 'limegreen', borderColor: 'limegreen'}}
+                    onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )
 
@@ -145,6 +148,9 @@ function RequestContainer({requests, fetchFilters}) {
             <List split={false}>
                 {
                     requests
+                        .filter(req => (
+                            req.status !== 1
+                        ))
                         .map(
                             (request) => (
                                 <List.Item key={request.id}>

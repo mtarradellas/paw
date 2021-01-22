@@ -31,7 +31,7 @@ function AdminHome() {
             </Link>
             &nbsp;
             <Link to={ADMIN_PETS}>
-                <Button href={ADMIN_PETS} block>{t('listPets')}</Button>
+                <Button block>{t('listPets')}</Button>
             </Link>
             &nbsp;&nbsp;
             <p>{t('home.addTitle')}</p>

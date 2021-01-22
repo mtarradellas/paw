@@ -61,8 +61,11 @@ function MainContent(
                             }
                         </b>
                         </h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
-                                href={ADMIN_ADD_REQUEST}>{t('addRequest')}</Button>
+                        <Link to={ADMIN_ADD_REQUEST}>
+                            <Button
+                                style={{marginTop: "0.5rem", marginLeft: "1rem"}}
+                                type={"primary"}>{t('addRequest')}</Button>
+                        </Link>
                     </Row>
                 </Col>
                 <Col>
