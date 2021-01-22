@@ -33,14 +33,16 @@ projectFilesBackup
 *.project
 *.classpath
 
-# Custom paw projects (spring) 
-target/
-
 # VScode
 .vscode/
+
+# Custom paw projects (spring) 
+target/
 
 # Local Tomcat Scripts
 launch-tomcat.sh
 stop-tomcat.sh
 
+# Node
 webapp/src/main/reactjs/node/*
+package-lock.json
