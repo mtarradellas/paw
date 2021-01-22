@@ -119,7 +119,7 @@ function AppSwitch(){
                         />
 
                         <PrivateRoute adminPage path={ADMIN_USER + ':id'}
-                                      component={AdminLayout}
+                                      component={AdminUserView}
                         />
                         <PrivateRoute adminPage path={ADMIN_PET + ':id'}
                                       component={AdminPetView}
