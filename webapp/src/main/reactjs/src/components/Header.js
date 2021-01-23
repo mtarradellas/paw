@@ -61,11 +61,10 @@ function LoggedInMenuItems() {
 
         <li className={"header__menu-items__item"}>
             <Badge className={"badge"} count={0}>
-                <Link to={USER + id}>
-                    {t('profile')}
-                </Link>
+                    <Link to={USER + id}>
+                        {t('profile')}
+                    </Link>
             </Badge>
-
         </li>
 
     </>
@@ -253,7 +252,7 @@ function Header() {
                 {isLoggedIn ?
                     (
                         <li className={"header__menu-items__item"}>
-                            <Link to="#" onClick={_onLogout} ><strong>{t('logout')}</strong></Link>
+                            <Link to="#" onClick={_onLogout && onClose}><strong>{t('logout')}</strong></Link>
                         </li>
                     )
                     :
