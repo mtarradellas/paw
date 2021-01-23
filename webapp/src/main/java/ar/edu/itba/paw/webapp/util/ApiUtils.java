@@ -71,23 +71,28 @@ public class ApiUtils {
         if (data != null) json.putAll(data);
 
         final int firstPage = 1;
-        final int prevPage  = (page == 1) ? lastPage : page - 1;
-        final int nextPage  = (page == lastPage) ? firstPage : page + 1;
+        final int prevPage  = (page == 1) ? 0 : page - 1;
+        final int nextPage  = (page == lastPage) ? 0 : page + 1;
 
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
         if (query != null) uriBuilder.replaceQuery(query);
 
         final URI first = uriBuilder.clone().queryParam("page", firstPage).build();
         final URI last  = uriBuilder.clone().queryParam("page", lastPage).build();
-        final URI prev  = uriBuilder.clone().queryParam("page", prevPage).build();
-        final URI next  = uriBuilder.clone().queryParam("page", nextPage).build();
 
-        return javax.ws.rs.core.Response.ok(new Gson().toJson(json))
-                .link(first, "first")
-                .link(last, "last")
-                .link(prev, "prev")
-                .link(next, "next")
-                .build();
+        Response.ResponseBuilder responseBuilder = Response.ok(new Gson().toJson(json));
+        responseBuilder = responseBuilder.link(first, "first").link(last, "last");
+
+        if (prevPage != 0 ) {
+            final URI prev  = uriBuilder.clone().queryParam("page", prevPage).build();
+            responseBuilder = responseBuilder.link(prev, "prev");
+        }
+        if (nextPage != 0 ) {
+            final URI next  = uriBuilder.clone().queryParam("page", nextPage).build();
+            responseBuilder = responseBuilder.link(next, "next");
+        }
+
+        return responseBuilder.build();
     }
 
     public static String readToken(Resource token) {
