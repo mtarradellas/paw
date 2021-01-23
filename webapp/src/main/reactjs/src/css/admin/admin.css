@@ -1,16 +1,5 @@
-.admin-header {
+.admin__header {
     background: #2b5a5d;
-}
-
-.admin__header__title {
-    grid-area: title;
-
-    margin-top: auto;
-    margin-bottom: auto;
-
-    font-size: 2rem;
-
-    color: white;
 }
 
 .admin__container form .form-content {
@@ -56,14 +45,14 @@
     opacity: 40%;
 }
 
-@media only screen and (max-width: 480px) {
+@media (max-width: 480px) {
     .admin__container form .ant-row {
         width: 100%;
     }
 }
 
 
-@media only screen and (min-width: 1000px) {
+@media (min-width: 1000px) {
     .admin__container form .ant-row {
         width: 100%;
     }
@@ -72,3 +61,4 @@
 .date-text {
     color: #5f5f5f;
 }
+

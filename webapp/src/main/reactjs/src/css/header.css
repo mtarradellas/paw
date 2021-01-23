@@ -112,7 +112,7 @@ header {
 
 }
 
-@media(max-width: 1000px) {
+@media(max-width: 1200px) {
     .desktop__nav {
         display: none;
     }
@@ -132,8 +132,19 @@ header {
     }
 
     .searchbar input{
-        width: 60px;
+        width: 150px;
     }
 
 }
 
+@media(max-width: 600px) {
+    .searchbar {
+        margin-top: 1.5rem;
+        padding-left: 1.2rem;
+    }
+
+    .searchbar input{
+        width: 60px;
+    }
+
+}

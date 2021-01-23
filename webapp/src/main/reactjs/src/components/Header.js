@@ -169,10 +169,6 @@ function Header() {
 
     const onClose = () => setDrawerVisible(false);
 
-    const {username} = state;
-
-    const {id} = useLogin().state;
-
     const _onLogout = () => {
         logout();
     };
@@ -257,7 +253,7 @@ function Header() {
                 {isLoggedIn ?
                     (
                         <li className={"header__menu-items__item"}>
-                            <Link to="#" onClick={_onLogout}><strong>{t('logout')}</strong></Link>
+                            <Link to="#" onClick={_onLogout} ><strong>{t('logout')}</strong></Link>
                         </li>
                     )
                     :
