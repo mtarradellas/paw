@@ -210,15 +210,9 @@ public class RequestServiceImpl implements RequestService {
 
         Request request = requestDao.create(user, pet, RequestStatus.PENDING, LocalDateTime.now());
 
-        Map<MailArg, Object> arguments = new HashMap<>();
-
-        arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERNAME, request.getUser().getUsername());
-        arguments.put(MailArg.REQUESTURL, contextURL + MailUrl.INTERESTS.getUrl());
-
         String userLocale = pet.getUser().getLocale();
 
-        mailService.sendMail(pet.getUser().getMail(), userLocale, arguments, MailType.REQUEST);
+        mailService.sendRequestMail(pet.getUser().getMail(), userLocale, pet.getPetName(), request.getUser().getUsername(), contextURL + MailUrl.INTERESTS.getUrl());
 
         return Optional.of(request);
     }
@@ -253,19 +247,14 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
 
-        Map<MailArg, Object> arguments = new HashMap<>();
-
         Pet pet = request.getPet();
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.REQUESTURL, contextURL + MailUrl.REQUESTS.getUrl());
-        arguments.put(MailArg.OWNERNAME, contact.getUsername());
-
         String userLocale = recipient.getLocale();
 
-        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_CANCEL);
+        mailService.sendRequestCancelMail(recipient.getMail(), userLocale, pet.getPetName(),
+                contextURL + MailUrl.REQUESTS.getUrl(), contact.getUsername());
 
         LOGGER.debug("Request {} canceled by user {}", request.getId(), user.getId());
         return true;
@@ -328,15 +317,10 @@ public class RequestServiceImpl implements RequestService {
         Pet pet = request.getPet();
         User contact = pet.getUser();
 
-        Map<MailArg, Object> arguments = new HashMap<>();
-
-        arguments.put(MailArg.URL, contextURL);
-        arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.OWNERNAME, contact.getUsername());
-
         String userLocale = recipient.getLocale();
 
-        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_REJECT);
+        mailService.sendRequestRejectMail(recipient.getMail(), userLocale, contextURL, pet.getPetName(),
+                contact.getUsername());
 
         LOGGER.debug("Request {} rejected by user {}", request.getId(), user.getId());
         return true;
@@ -370,15 +354,10 @@ public class RequestServiceImpl implements RequestService {
         User contact = request.getUser();
         User recipient = pet.getUser();
 
-        Map<MailArg, Object> arguments = new HashMap<>();
-
-        arguments.put(MailArg.PETNAME, pet.getPetName());
-        arguments.put(MailArg.REQUESTURL, contextURL + MailUrl.REQUESTS.getUrl());
-        arguments.put(MailArg.OWNERNAME, contact.getUsername());
-
         String userLocale = recipient.getLocale();
 
-        mailService.sendMail(recipient.getMail(), userLocale, arguments, MailType.REQUEST_RECOVER);
+        mailService.sendRequestRecoverMail(recipient.getMail(), userLocale, pet.getPetName(),  contextURL + MailUrl.REQUESTS.getUrl(),
+                contact.getUsername());
 
 //        final Contact contact = opContact.get();
 //        final User recipient = request.getUser();
