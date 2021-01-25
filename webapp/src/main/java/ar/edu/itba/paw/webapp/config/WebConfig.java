@@ -44,13 +44,12 @@ import org.springframework.web.servlet.resource.ResourceResolverChain;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-@EnableWebMvc
 @EnableTransactionManagement
 @EnableScheduling
 @EnableAsync
 @ComponentScan({ "ar.edu.itba.paw.webapp.controller", "ar.edu.itba.paw.services", "ar.edu.itba.paw.persistence"})
 @Configuration
-public class WebConfig extends WebMvcConfigurerAdapter {
+public class WebConfig {
 
     @Value("classpath:sql/schema.sql")
     private Resource schemaSql;
@@ -155,55 +154,5 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         entityFactory.setJpaProperties(jpaProperties);
 
         return entityFactory;
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("/WEB-INF/classes/static/static/");
-
-        registry.addResourceHandler("/locales/**")
-                .addResourceLocations("/WEB-INF/classes/static/locales/");
-
-        registry.addResourceHandler("*.png", "/**.ico", "*.json", "*.txt")
-                .addResourceLocations("/WEB-INF/classes/static/");
-
-        registry.addResourceHandler("/**", "", "/")
-                .resourceChain(false)
-                .addResolver(new IndexResolver());
-    }
-
-    private class IndexResolver implements ResourceResolver {
-        private Resource index = new ClassPathResource("static/index.html");
-
-        @Override
-        public Resource resolveResource(HttpServletRequest request, String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
-            return resolve(requestPath, locations);
-        }
-
-        @Override
-        public String resolveUrlPath(String resourcePath, List<? extends Resource> locations, ResourceResolverChain chain) {
-            Resource resolvedResource = resolve(resourcePath, locations);
-            if (resolvedResource == null) {
-                return null;
-            }
-            try {
-                return resolvedResource.getURL().toString();
-            } catch (IOException e) {
-                return resolvedResource.getFilename();
-            }
-        }
-
-        private Resource resolve(String requestPath, List<? extends Resource> locations) {
-
-            if(requestPath == null) return null;
-
-            return index;
-        }
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/", "/index.html");
     }
 }
