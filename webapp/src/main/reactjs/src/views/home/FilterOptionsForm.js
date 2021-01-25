@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {Form, Select} from "formik-antd";
 import {Formik} from "formik";
 import {Button, Spin} from "antd";
@@ -25,6 +25,8 @@ const initialValues = {
     };
 
 const FilterOptionsForm = () => {
+    const formRef = useRef(null);
+
     const {
         filters,
         onSubmitFilters,
@@ -59,6 +61,15 @@ const FilterOptionsForm = () => {
         fetchFilters(filters);
     }, []);
 
+    useEffect(()=>{
+        if(_.isNil(filters))
+            return;
+
+        const {setValues} = formRef.current;
+
+        setValues(Object.assign({}, initialValues, filters));
+    }, [filters]);
+
     const {speciesList, breedList, departmentList, provinceList, genderList, rangeList} = availableFilters;
 
     const _onSubmit = async values => {
@@ -68,6 +79,7 @@ const FilterOptionsForm = () => {
     };
 
     return <Formik
+            innerRef={formRef}
             validationSchema={
                 Yup.object().shape({
                     species: Yup.string(),
