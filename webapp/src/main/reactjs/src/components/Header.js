@@ -14,7 +14,6 @@ import {getNotifications} from "../api/requests";
 import _ from 'lodash';
 import Logo from '../images/logo.png';
 
-
 function LoggedInMenuItems() {
     const {t} = useTranslation('header');
     const {state} = useLogin();
@@ -112,7 +111,6 @@ function UsernameAndLogout() {
 }
 
 function SearchBar() {
-    const history = useHistory();
     const {t} = useTranslation('header');
     const ref = useRef(null);
 
@@ -163,23 +161,33 @@ function SearchBar() {
 }
 
 function Header() {
+    const history = useHistory();
+
+    const {clearFilters} = useContext(FilterAndSearchContext);
+
     const {t} = useTranslation('header');
 
     const {state} = useLogin();
 
     const {isLoggedIn} = state;
 
+    const onHomeClick = () => {
+        clearFilters();
+
+        history.push(HOME);
+    }
+
     return <header>
 
-        <Link to={HOME} className={"header__logo"} >
+        <a onClick={onHomeClick} className={"header__logo"} >
             <img src={Logo} alt={"logo"} width={70} height={70}/>
-        </Link>
+        </a>
 
-        <Link to={HOME} className={"header__title"}>
+        <a onClick={onHomeClick} className={"header__title"}>
             <span>
                 PET SOCIETY
             </span>
-        </Link>
+        </a>
 
 
         <div className={"header__menu-items"}>
