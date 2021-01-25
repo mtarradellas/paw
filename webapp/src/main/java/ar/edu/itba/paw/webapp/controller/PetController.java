@@ -148,7 +148,9 @@ public class PetController{
                     .entity(new GenericEntity<ErrorDto>(body){}).build();
         }
 
-        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, petList, null);
+        String query = httpRequest.getQueryString();
+        query = query == null? null : query.replaceAll("&?page=.*&?", "");
+        return ApiUtils.paginatedListResponse(amount, PET_PAGE_SIZE, page, uriInfo, petList, query, null);
     }
 
     @GET

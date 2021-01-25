@@ -13,11 +13,13 @@ import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import com.google.gson.Gson;
 
+import org.omg.CosNaming._BindingIteratorImplBase;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -57,7 +59,7 @@ public class ApiUtils {
         return str.substring(0, idx);
     }
 
-    public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Collection<?> list, Map<String, Object> data) {
+    public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Collection<?> list, String query, Map<String, Object> data) {
         int lastPage = (int) Math.ceil((double) amount / (double) pageSize);
         if (lastPage == 0) lastPage = 1;
 
@@ -72,10 +74,13 @@ public class ApiUtils {
         final int prevPage  = (page == 1) ? lastPage : page - 1;
         final int nextPage  = (page == lastPage) ? firstPage : page + 1;
 
-        final URI first = uriInfo.getAbsolutePathBuilder().queryParam("page", firstPage).build();
-        final URI last  = uriInfo.getAbsolutePathBuilder().queryParam("page", lastPage).build();
-        final URI prev  = uriInfo.getAbsolutePathBuilder().queryParam("page", prevPage).build();
-        final URI next  = uriInfo.getAbsolutePathBuilder().queryParam("page", nextPage).build();
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        if (query != null) uriBuilder.replaceQuery(query);
+
+        final URI first = uriBuilder.clone().queryParam("page", firstPage).build();
+        final URI last  = uriBuilder.clone().queryParam("page", lastPage).build();
+        final URI prev  = uriBuilder.clone().queryParam("page", prevPage).build();
+        final URI next  = uriBuilder.clone().queryParam("page", nextPage).build();
 
         return javax.ws.rs.core.Response.ok(new Gson().toJson(json))
                 .link(first, "first")
