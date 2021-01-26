@@ -44,7 +44,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CORSFilter getCorsFilter(){
+    public CORSFilter getCorsFilter(){
         return new CORSFilter();
     }
 
@@ -86,7 +86,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

@@ -3,7 +3,7 @@ import '../css/header.css';
 import {Link} from "react-router-dom";
 import {LOGIN, REGISTER, HOME, REQUESTS, INTERESTS, ADD_PET, USER} from "../constants/routes";
 import {useTranslation} from "react-i18next";
-import {Badge, Button, Row} from "antd";
+import {Badge, Button, Col, Drawer, Row} from "antd";
 import useLogin from "../hooks/useLogin";
 import * as Yup from 'yup';
 import {Formik} from "formik";
@@ -13,6 +13,8 @@ import {useHistory} from 'react-router-dom';
 import {getNotifications} from "../api/requests";
 import _ from 'lodash';
 import Logo from '../images/logo.png';
+import DrawerIcon from '../images/drawer_icon.svg';
+import {MenuOutlined, SearchOutlined} from "@ant-design/icons";
 
 function LoggedInMenuItems() {
     const {t} = useTranslation('header');
@@ -40,27 +42,29 @@ function LoggedInMenuItems() {
 
     return <>
 
-        <div className={"header__menu-items__item lower__item"}>
-            <Badge count={_.isNil(requests) ? 0 : requests}>
+        <li className={"header__menu-items__item"}>
+            <Badge className={"badge"} count={_.isNil(requests) ? 0 : requests}>
                 <Link to={REQUESTS}>
                     {t('requests')}
                 </Link>
             </Badge>
-        </div>
+        </li>
 
-        <div className={"header__menu-items__item lower__item"}>
-            <Badge count={_.isNil(interests) ? 0 : interests}>
+        <li className={"header__menu-items__item"}>
+            <Badge className={"badge"} count={_.isNil(interests) ? 0 : interests}>
                 <Link to={INTERESTS}>
                     {t('interests')}
                 </Link>
             </Badge>
-        </div>
+        </li>
 
-        <div className={"header__menu-items__item"}>
-            <Link to={USER + id}>
-                {t('profile')}
-            </Link>
-        </div>
+        <li className={"header__menu-items__item"}>
+            <Badge className={"badge"} count={0}>
+                    <Link to={USER + id}>
+                        {t('profile')}
+                    </Link>
+            </Badge>
+        </li>
 
     </>
 }
@@ -69,13 +73,13 @@ function RegisterAndLogin() {
     const {t} = useTranslation('header');
 
     return <>
-        <div className={"header__register-and-login"}>
+        <div>
             <Link className={"header__register"} to={REGISTER}>
-                {t('register')}
+                <strong>{t('register')}</strong>
             </Link>
 
             <Link className={"header__login"} to={LOGIN}>
-                {t('login')}
+                <strong>{t('login')}</strong>
             </Link>
         </div>
     </>
@@ -94,19 +98,10 @@ function UsernameAndLogout() {
     };
 
     return <>
-        <div className={"header__username-and-logout upper__item"}>
-
-            <Row>
-                <p className={"header__username-and-logout__username"}>
-                    <Link style={{margin: '1rem'}} to={USER + id}>{username}</Link>
-                </p>
-
-                <Button className={"header__username-and-logout__logout"} onClick={_onLogout}>
-                    {t('logout')}
-                </Button>
-            </Row>
-
-        </div>
+        <Link className={"header__username"} to={USER + id}><strong>{username}</strong></Link>
+        <Button onClick={_onLogout}>
+            {t('logout')}
+        </Button>
     </>
 }
 
@@ -152,9 +147,7 @@ function SearchBar() {
             </Form.Item>
 
             <Form.Item name>
-                <Button type="primary" htmlType="submit" loading={fetching}>
-                    {t('searchButton')}
-                </Button>
+                <Button type="primary" htmlType="submit" loading={fetching} icon={<SearchOutlined/>}/>
             </Form.Item>
         </Form>
     </Formik>;
@@ -167,7 +160,7 @@ function Header() {
 
     const {t} = useTranslation('header');
 
-    const {state} = useLogin();
+    const {state, logout} = useLogin();
 
     const {isLoggedIn} = state;
 
@@ -177,35 +170,117 @@ function Header() {
         history.push(HOME);
     }
 
+    const [drawerVisible, setDrawerVisible] = useState(false);
+
+    const onOpen = () => setDrawerVisible(true);
+
+    const onClose = () => setDrawerVisible(false);
+
+    const _onLogout = () => {
+        logout();
+    };
+
     return <header>
+        <nav className={"desktop__nav"}>
+            <ul className={"header__nav"}>
+                <li>
+                    <a onClick={onHomeClick} className={"header__logo"}>
+                        <img src={Logo} alt={"logo"}/>
+                    </a>
+                </li>
+                <li>
+                    <a onClick={onHomeClick} className={"header__title"}>
+                        <span> PET SOCIETY </span>
+                    </a>
+                </li>
+                <li>
+                    <div className={"header__menu-items__item"}>
+                        <Badge className={"badge"} count={0}>
+                            <Link to={ADD_PET}>
+                                {t('addPet')}
+                            </Link>
+                        </Badge>
+                    </div>
+                </li>
 
-        <a onClick={onHomeClick} className={"header__logo"} >
-            <img src={Logo} alt={"logo"} width={70} height={70}/>
-        </a>
+                {isLoggedIn && <LoggedInMenuItems/>}
 
-        <a onClick={onHomeClick} className={"header__title"}>
-            <span>
-                PET SOCIETY
-            </span>
-        </a>
+                <li className={"align__right searchbar"}>
+                    <SearchBar/>
+                </li>
+                <li className={"align__right user__actions"}>
+                    {isLoggedIn ? <UsernameAndLogout/> : <RegisterAndLogin/>}
+                </li>
+            </ul>
+        </nav>
+        <nav className={"phone__nav"}>
+            <Row>
+                <Col span={4}>
+                    <Link to={HOME} className={"header__logo"}>
+                        <img src={Logo} alt={"logo"}/>
+                    </Link>
+                </Col>
+                <Col span={15}>
+                    <div className={"searchbar"}>
+                        <SearchBar/>
+                    </div>
+                </Col>
+                <Col span={5}>
+                    <Button icon={<MenuOutlined/>} className={"header__drawer"} onClick={onOpen}/>
+                </Col>
+            </Row>
+        </nav>
+        <Drawer
+            drawerStyle={{background: '#222831'}}
+            key="left"
+            placement="left"
+            visible={drawerVisible}
+            onClose={onClose}
+            closable={true}
+            title={
+                <div style={{display: 'block', fontSize: '1.2rem'}}>
+                    <img src={Logo} alt={"logo"} width={35} height={35}/>
+                    <span> PET SOCIETY </span>
+                </div>
+            }>
+            <ul className={"drawer__nav"}>
+                <li>
+                    <div className={"header__menu-items__item"}>
+                        <Badge className={"badge"} count={0}>
+                            <Link to={ADD_PET}>
+                                {t('addPet')}
+                            </Link>
+                        </Badge>
+                    </div>
+                </li>
 
+                {isLoggedIn && <LoggedInMenuItems/>}
 
-        <div className={"header__menu-items"}>
-            <div className={"header__menu-items__item"}>
-                <Link to={ADD_PET}>
-                    {t('addPet')}
-                </Link>
-            </div>
+                {isLoggedIn ?
+                    (
+                        <li className={"header__menu-items__item"}>
+                            <Link to="#" onClick={_onLogout && onClose}><strong>{t('logout')}</strong></Link>
+                        </li>
+                    )
+                    :
+                    (
+                        <>
+                            <li className={"header__menu-items__item"}>
+                                <Link to={LOGIN} onClick={onClose}>
+                                    <strong>{t('login')}</strong>
+                                </Link>
+                            </li>
+                            <li className={"header__menu-items__item"}>
+                                <Link to={REGISTER} onClick={onClose}>
+                                    <strong>{t('register')}</strong>
+                                </Link>
+                            </li>
+                        </>
 
-            {isLoggedIn && <LoggedInMenuItems/>}
-        </div>
+                    )}
+            </ul>
 
-        <div className={"header__search-bar"}>
-            <SearchBar/>
-        </div>
-
-
-        {isLoggedIn ? <UsernameAndLogout/> : <RegisterAndLogin/>}
+        </Drawer>
     </header>;
 }
 

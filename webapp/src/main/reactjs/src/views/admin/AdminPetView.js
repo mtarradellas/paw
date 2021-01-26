@@ -235,7 +235,9 @@ function AdminPetView(){
         actionComponents={
             [
                 modalButton,
-                <Button href={ADMIN_EDIT_PET + id} key={"edit"}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_PET + id}>
+                    <Button key={"edit"}>{t("buttons.edit")}</Button>
+                </Link>
             ]
         }
         title={petName ? petName + " (" + statusLocale[pet.status] + ")" : <Spin/>}

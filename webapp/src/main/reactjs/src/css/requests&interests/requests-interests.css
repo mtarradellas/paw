@@ -37,7 +37,10 @@
 
 .button-container button {
     padding-right: 1rem;
-    color: black;
+    color: white;
+    background: darkblue;
+    border: darkblue;
+
 }
 
 .shaded-div {
@@ -67,4 +70,21 @@
 
 .requests-interests__empty div {
     margin-bottom: 1rem;
+}
+
+@media (max-width: 400px){
+    .requests-container p{
+        font-size: 0.9rem;
+    }
+
+    .button-container {
+        vertical-align: auto;
+        padding-left: 1rem;
+        justify-content: center;
+    }
+
+    .button-container button {
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
 }

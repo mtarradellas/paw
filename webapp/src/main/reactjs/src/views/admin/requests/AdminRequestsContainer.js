@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Button, List, Modal} from "antd";
 import {useTranslation} from "react-i18next";
+import {Link} from 'react-router-dom';
 
 import ListContainer from "../../../components/ListContainer";
 import {ADMIN_PET, ADMIN_USER, ADMIN_EDIT_REQUEST} from "../../../constants/routes";
@@ -27,7 +28,7 @@ function Request(
 
     let reqTarget = (
         <p>{t("requestsList.isInterested", {petName: petName, username: username})}
-            <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")}</small>
+            <small className={"date-text"}> {moment(updateDate).format("DD/MM/YYYY")} </small>
             (id: {id})
         </p>
 
@@ -52,13 +53,19 @@ function Request(
         reqStatus = <p>{t("status.rejected")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={ADMIN_PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={ADMIN_USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_REQUEST + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_REQUEST + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger
+                <Button type={"primary"} style={{background: 'limegreen', borderColor: 'limegreen'}}
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )
@@ -78,11 +85,17 @@ function Request(
         reqStatus = <p>{t("status.pending")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={ADMIN_PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={ADMIN_USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_REQUEST + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_REQUEST + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.cancel")}</Button>
@@ -105,13 +118,19 @@ function Request(
         reqStatus = <p>{t("status.canceled")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={ADMIN_PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={ADMIN_USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_REQUEST + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_REQUEST + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger
+                <Button type={"primary"} style={{background: 'limegreen', borderColor: 'limegreen'}}
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )
@@ -132,13 +151,19 @@ function Request(
         reqStatus = <p>{t("status.sold")}</p>
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + petId}>{t("buttons.visitPet")}</Button>
+                <Link to={ADMIN_PET + petId}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitUser")}</Button>
+                <Link to={ADMIN_USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_REQUEST + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_REQUEST + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger
+                <Button type={"primary"} style={{background: 'limegreen', borderColor: 'limegreen'}}
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )

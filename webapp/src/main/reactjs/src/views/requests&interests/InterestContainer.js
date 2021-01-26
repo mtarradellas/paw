@@ -86,7 +86,10 @@ function InterestNotification(
                     <Button type={"primary"}>{t("buttons.visitUser")}</Button>
                 </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger onClick={() => modal(onConfirmAccept, modalMessageAccept)}>{t("buttons.accept")}</Button>
+                <Button
+                    type={"primary"}
+                    style={{background: 'limegreen', borderColor: 'limegreen'}}
+                    onClick={() => modal(onConfirmAccept, modalMessageAccept)}>{t("buttons.accept")}</Button>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger onClick={() => modal(onConfirmReject, modalMessageReject)}>{t("buttons.reject")}</Button>
             </div>
@@ -133,7 +136,6 @@ function InterestNotification(
 
     return (
         <ListContainer target={reqTarget} status={reqStatus} buttons={reqButtons} shaded={shaded} />
-
     )
 }
 
@@ -158,6 +160,9 @@ function InterestContainer({interests, fetchFilters}) {
             <List split={false}>
                 {
                     interests
+                        .filter(req => (
+                            req.status !== 1
+                        ))
                         .map(
                             (request) => (
                                 <List.Item key={request.id}>

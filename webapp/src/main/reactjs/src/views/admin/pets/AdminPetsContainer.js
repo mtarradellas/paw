@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {useTranslation} from "react-i18next";
 import {Button, List, Modal} from "antd";
+import {Link} from 'react-router-dom';
 
 import {ADMIN_USER, ADMIN_PET, ADMIN_EDIT_PET} from "../../../constants/routes";
 import ListContainer from "../../../components/ListContainer";
@@ -18,13 +19,6 @@ function Pet({id, petName, userId, status, modal, fetchFilters}){
         t("status.unavailable")
     ]
 
-    let reqTarget = (
-
-        <p>
-            &nbsp;&nbsp;{petName} (id: {id}, {statusLocale[status]})</p>
-
-    );
-
     const {jwt} = useLogin().state;
 
     const PET_STATUS = {
@@ -36,16 +30,22 @@ function Pet({id, petName, userId, status, modal, fetchFilters}){
 
     const [petStatus, setPetStatus] = useState(status)
 
+    let reqTarget = (
+
+        <p>
+            &nbsp;&nbsp;{petName} (id: {id}, {statusLocale[petStatus]})</p>
+
+    );
+
     let reqStatus = null;
     let reqButtons = null;
-    let shaded = false;
 
     if (petStatus === PET_STATUS.AVAILABLE || petStatus === PET_STATUS.UNAVAILABLE) {
         const onConfirm = async () => {
             try{
                 await removePetAdmin(id, jwt)
-                fetchFilters();
                 setPetStatus(PET_STATUS.REMOVED);
+                fetchFilters();
             }catch (e){
                 console.log(e)
             }
@@ -54,11 +54,17 @@ function Pet({id, petName, userId, status, modal, fetchFilters}){
 
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + id}>{t("buttons.visitPet")}</Button>
+                <Link to={ADMIN_PET + id}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitOwner")}</Button>
+                <Link to={ADMIN_USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitOwner")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_PET + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_PET + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.remove")}</Button>
@@ -68,8 +74,8 @@ function Pet({id, petName, userId, status, modal, fetchFilters}){
         const onConfirm = async () => {
             try{
                 await recoverPetAdmin(id, jwt)
-                fetchFilters();
                 setPetStatus(PET_STATUS.AVAILABLE);
+                fetchFilters();
             }catch (e){
                 console.log(e)
             }
@@ -79,20 +85,26 @@ function Pet({id, petName, userId, status, modal, fetchFilters}){
 
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_PET + id}>{t("buttons.visitPet")}</Button>
+                <Link to={ADMIN_PET + id}>
+                    <Button type={"primary"}>{t("buttons.visitPet")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_USER + userId}>{t("buttons.visitOwner")}</Button>
+                <Link to={ADMIN_USER + userId}>
+                    <Button type={"primary"}>{t("buttons.visitOwner")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_PET + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_PET + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger
+                <Button type={"primary"} style={{background: 'limegreen', borderColor: 'limegreen'}}
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )
     }
 
     return (
-        <ListContainer target={reqTarget} status={reqStatus} buttons={reqButtons} shaded={shaded}/>
+        <ListContainer target={reqTarget} status={reqStatus} buttons={reqButtons} shaded={false}/>
 
     )
 

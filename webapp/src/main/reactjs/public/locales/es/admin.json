@@ -145,5 +145,6 @@
     "default": "Error de conexión: la solicitud no pudo ser completada",
     "unchanged": "Estás cambiando el estado a el estado existente",
     "noMatch": "Las contraseñas no concuerdan"
-  }
+  },
+  "logout": "Cerrar Sesión"
 }

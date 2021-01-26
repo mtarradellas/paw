@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {useTranslation} from "react-i18next";
 import {Button, List, Modal} from "antd";
+import {Link} from 'react-router-dom';
 
 import {ADMIN_USER, ADMIN_EDIT_USER} from "../../../constants/routes";
 import ListContainer from "../../../components/ListContainer";
@@ -28,7 +29,7 @@ function User({id, username,status, modal, fetchFilters}){
     const [userStatus, setUserStatus] = useState(status)
 
     let reqTarget = (
-        <p>{username} (id: {id}, {statusLocale[status]})</p>
+        <p>{username} (id: {id}, {statusLocale[userStatus]})</p>
 
     );
     let reqStatus = null;
@@ -49,9 +50,13 @@ function User({id, username,status, modal, fetchFilters}){
 
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_USER + id}>{t("buttons.visitUser")}</Button>
+                <Link to={ADMIN_USER + id}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_USER + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_USER + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
                 <Button type={"primary"} danger
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.remove")}</Button>
@@ -72,11 +77,15 @@ function User({id, username,status, modal, fetchFilters}){
 
         reqButtons = (
             <div className={"button-container"}>
-                <Button type={"primary"} href={ADMIN_USER + id}>{t("buttons.visitUser")}</Button>
+                <Link to={ADMIN_USER + id}>
+                    <Button type={"primary"}>{t("buttons.visitUser")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} href={ADMIN_EDIT_USER + id}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_USER + id}>
+                    <Button type={"primary"}>{t("buttons.edit")}</Button>
+                </Link>
                 &nbsp;&nbsp;
-                <Button type={"primary"} danger
+                <Button type={"primary"} style={{background: 'limegreen', borderColor: 'limegreen'}}
                         onClick={() => modal(onConfirm, modalMessage)}>{t("buttons.recover")}</Button>
             </div>
         )

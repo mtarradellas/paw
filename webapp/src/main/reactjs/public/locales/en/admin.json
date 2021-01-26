@@ -145,5 +145,6 @@
     "default": "Connection error: the request couldn't be completed",
     "unchanged": "You are trying to change the status to the existing one",
     "noMatch": "Passwords don't match"
-  }
+  },
+  "logout": "Logout"
 }
