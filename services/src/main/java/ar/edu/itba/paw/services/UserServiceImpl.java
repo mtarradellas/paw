@@ -108,15 +108,10 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
 
-        Map<MailArg, Object> arguments = new HashMap<>();
         String urlToken = contextURL + MailUrl.ACTIVATE_AC.getUrl() + uuid;
-
-        arguments.put(MailArg.TOKEN, urlToken );
-        arguments.put(MailArg.USERNAME,user.getUsername());
-
         String userLocale = user.getLocale();
 
-        mailService.sendMail(user.getMail(), userLocale, arguments, MailType.ACTIVATE_ACCOUNT);
+        mailService.sendActivateAccountMail(user.getMail(), userLocale, urlToken, user.getUsername());
 
         LOGGER.debug("Successfully created user; id: {} username: {},  mail: {}", user.getId(), user.getUsername(), user.getMail());
         return Optional.of(user);
@@ -231,16 +226,11 @@ public class UserServiceImpl implements UserService {
         UUID token = UUID.randomUUID();
         createToken(token, user);
 
-        Map<MailArg, Object> arguments = new HashMap<>();
-
         String urlToken = contextURL + MailUrl.RESET_PASS.getUrl() + token;
-
-        arguments.put(MailArg.TOKEN, urlToken );
-        arguments.put(MailArg.USERNAME,user.getUsername());
 
         String userLocale = user.getLocale();
 
-        mailService.sendMail(user.getMail(), userLocale, arguments, MailType.RESET_PASSWORD);
+        mailService.sendResetPasswordMail(user.getMail(), userLocale, urlToken, user.getUsername());
         return opUser;
     }
 

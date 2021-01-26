@@ -1,11 +1,13 @@
 package ar.edu.itba.paw.services;
 
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import ar.edu.itba.paw.interfaces.MailService;
 import ar.edu.itba.paw.models.constants.MailArg;
 import ar.edu.itba.paw.models.constants.MailType;
+import ar.edu.itba.paw.models.constants.MailUrl;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +31,7 @@ public class MailServiceImpl implements MailService {
     @Autowired
     private MessageSource messageSource;
 
-    @Async
-    public void sendMail(String recipient, String recipientLocale, Map<MailArg, Object> arguments, MailType mailType) {
+    private void sendMail(String recipient, String recipientLocale, Map<MailArg, Object> arguments, MailType mailType) {
 
         MimeMessagePreparator preparator = mimeMessage -> {
 
@@ -61,10 +62,107 @@ public class MailServiceImpl implements MailService {
         mailSender.send(preparator);
     }
 
-    /** TODO methond not used */
-    // private String getMailTemplateName(MailType mailType){
-    //     return mailType.getName() + ".ftl";
-    // }
+    @Async
+    public void sendActivateAccountMail(String recipient, String recipientLocale, String token, String username){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.TOKEN, token);
+        arguments.put(MailArg.USERNAME, username);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.ACTIVATE_ACCOUNT);
+    }
+
+    @Async
+    public void sendPetSoldMail(String recipient, String recipientLocale, String petURL, String petName, String ownerURL, String ownerName, String username){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.PETURL, petURL);
+        arguments.put(MailArg.PETNAME, petName);
+        arguments.put(MailArg.OWNERURL, ownerURL);
+        arguments.put(MailArg.OWNERNAME, ownerURL);
+        arguments.put(MailArg.USERNAME, username);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.PET_SOLD);
+    }
+
+    @Async
+    public void sendQuestionAnswerMail(String recipient, String recipientLocale, String petURL, String petName, String username, String question, String answer){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.PETURL, petURL);
+        arguments.put(MailArg.PETNAME, petName);
+        arguments.put(MailArg.USERNAME, username); // User who answered the question (pet owner)
+        arguments.put(MailArg.QUESTION, question);
+        arguments.put(MailArg.ANSWER, answer);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.QUESTION_ANSWER);
+    }
+
+    @Async
+    public void sendQuestionAskMail(String recipient, String recipientLocale, String petURL, String petName, String username, String question){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.PETURL, petURL);
+        arguments.put(MailArg.PETNAME, petName);
+        arguments.put(MailArg.USERNAME, username); // User who asked the question
+        arguments.put(MailArg.QUESTION, question);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.QUESTION_ASK);
+    }
+
+    @Async
+    public void sendRequestMail(String recipient, String recipientLocale, String petName, String ownerName, String requestURL){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.PETNAME, petName);
+        arguments.put(MailArg.OWNERNAME, ownerName);
+        arguments.put(MailArg.REQUESTURL, requestURL);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.REQUEST);
+    }
+
+    @Async
+    public void sendRequestCancelMail(String recipient, String recipientLocale, String petName, String requestURL, String ownerName){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.PETNAME, petName);
+        arguments.put(MailArg.REQUESTURL, requestURL);
+        arguments.put(MailArg.OWNERNAME, ownerName);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.REQUEST_CANCEL);
+    }
+
+    @Async
+    public void sendRequestRecoverMail(String recipient, String recipientLocale, String petName, String requestURL, String ownerName){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.PETNAME, petName);
+        arguments.put(MailArg.REQUESTURL, requestURL);
+        arguments.put(MailArg.OWNERNAME, ownerName);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.REQUEST_RECOVER);
+    }
+
+    @Async
+    public void sendRequestRejectMail(String recipient, String recipientLocale, String url, String petName, String ownerName){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.URL, url);
+        arguments.put(MailArg.PETNAME,petName);
+        arguments.put(MailArg.OWNERNAME, ownerName);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.REQUEST_REJECT);
+    }
+
+    @Async
+    public void sendResetPasswordMail(String recipient, String recipientLocale, String token, String username){
+        Map<MailArg, Object> arguments = new HashMap<>();
+
+        arguments.put(MailArg.TOKEN, token);
+        arguments.put(MailArg.USERNAME,username);
+
+        sendMail(recipient, recipientLocale, arguments, MailType.RESET_PASSWORD);
+    }
 
     private Locale getLocaleForMail(String recipientLocale){
         if(recipientLocale == null){
