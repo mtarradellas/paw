@@ -93,7 +93,7 @@ public class Pet {
     @OneToMany(orphanRemoval = true, mappedBy = "petId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ImageDTO> images;
 
-    public Pet() {
+    protected Pet() {
         // Hibernate
     }
 
