@@ -216,9 +216,9 @@ function Header() {
         <nav className={"phone__nav"}>
             <Row>
                 <Col span={4}>
-                    <Link to={HOME} className={"header__logo"}>
+                    <a onClick={onHomeClick} className={"header__logo"}>
                         <img src={Logo} alt={"logo"}/>
-                    </Link>
+                    </a>
                 </Col>
                 <Col span={15}>
                     <div className={"searchbar"}>
