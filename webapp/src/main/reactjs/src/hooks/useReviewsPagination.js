@@ -6,14 +6,14 @@ import queryString from 'query-string';
 
 
 function parseQuery(location){
-    return parseInt(queryString.parse(location.search)['reviewsPage']);
+    return parseInt(queryString.parse(location.search)['reviewsPage']) || 1;
 }
 
 function useReviewsPagination({userId}){
     const location = useLocation();
     const history = useHistory();
     const [reviews, setReviews] = useState(null);
-    const [currentPage, setCurrentPage] = useState(parseQuery(location));
+    const [currentPage, setCurrentPage] = useState(Object.assign(parseQuery(location)));
     const [fetching, setFetching] = useState(false);
     const [paginationInfo, setPaginationInfo] = useState({pages: null, amount: null, pageSize: null, average: null});
     const {state} = useLogin();
