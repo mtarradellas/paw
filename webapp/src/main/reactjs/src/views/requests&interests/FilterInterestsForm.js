@@ -8,7 +8,14 @@ import _ from 'lodash';
 
 const FormItem = Form.Item;
 
-const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrentPage, fetchFilters, initialFilters}) => {
+const FilterInterestsForm = ({
+                                 filters,
+                                 fetchInterests,
+                                 changeFilters,
+                                 setCurrentPage,
+                                 fetchFilters,
+                                 initialFilters
+                             }) => {
     const {t} = useTranslation('interests');
 
     const statusLocale = [
@@ -25,8 +32,10 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
         changeFilters(values)
     }
 
-    if(_.isNil(filters) ||  filters.length === 0) {
-        filters = [0, 2, 3, 4]
+    console.log(filters)
+
+    if (!_.isNil(filters) && filters.statusList.length === 0) {
+        filters.statusList = [0, 2, 3, 4]
     }
 
     return <Formik
@@ -43,10 +52,10 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
         render={({values, setFieldValue}) => {
             const resetFields = () => {
                 setFieldValue("status", "-1");
-                setFieldValue("petId","0");
+                setFieldValue("petId", "0");
                 setFieldValue("searchCriteria", "date");
                 setFieldValue("searchOrder", "desc");
-                fetchFilters({petId:0, status:-1})
+                fetchFilters({petId: 0, status: -1})
 
                 _onSubmit({status: '-1', petId: '0', searchCriteria: 'date', searchOrder: 'desc'});
             }
@@ -54,11 +63,11 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
             const filterOtherValue = (value, filter) => {
                 let params;
 
-                if(filter === "petId"){
+                if (filter === "petId") {
                     params = {
-                        petId:value
+                        petId: value
                     }
-                }else {
+                } else {
                     params = {
                         status: value
                     }
@@ -70,7 +79,7 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
             return <Form layout={"vertical"} className={"requests-interests__container"}>
                 <div className={"form-content"}>
                     <FormItem name={"status"} label={t("filterForm.labels.status")}>
-                        <Select name={"status"} >
+                        <Select name={"status"}>
                             <Select.Option value={'' + -1}>{t("filterForm.values.any")}</Select.Option>
                             {
                                 filters && filters.statusList.map((status) => {

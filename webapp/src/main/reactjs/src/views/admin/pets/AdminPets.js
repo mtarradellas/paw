@@ -94,7 +94,7 @@ function MainContent({
             <Divider style={{margin: 0, padding: 0}}/>
             {
                 petCount === 0 ?
-                    (<p>{t("noResults")} <Link to={ADMIN_PETS}>{t("fetchAll")}</Link></p>)
+                    (<p>{t("noResults")} <Link to={ADMIN_PETS} onClick={() => window.location.reload()}>{t("fetchAll")}</Link></p>)
                     :
                     (_.isNil(pets) || fetching ?
                         <Spin/>
@@ -103,7 +103,7 @@ function MainContent({
             }
             <Divider orientation={"left"}>
                 {
-                    pageSize && petCount &&
+                    pageSize && petCount !== 0  &&
                     <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize}
                                 onChange={_onChangePagination}/>
                 }

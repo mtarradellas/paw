@@ -13,7 +13,7 @@ import {HOME} from "../../constants/routes";
 import {Link, useLocation, useHistory} from "react-router-dom";
 import queryString from "query-string";
 
-function SideContent({filters,fetchRequests,changeFilters,setCurrentPage, initialFilters}) {
+function SideContent({filters, fetchRequests, changeFilters, setCurrentPage, initialFilters}) {
     return (<div>
         <FilterRequestsForm
             filters={filters}
@@ -26,8 +26,8 @@ function SideContent({filters,fetchRequests,changeFilters,setCurrentPage, initia
 }
 
 function MainContent(
-    {requestsCount, requests, fetching, pages, pageSize, fetchPage, fetchFilters, currentPage,setCurrentPage}
-    ) {
+    {requestsCount, requests, fetching, pages, pageSize, fetchPage, fetchFilters, currentPage, setCurrentPage}
+) {
     const {t} = useTranslation('requests');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -50,74 +50,75 @@ function MainContent(
 
     return (<>{
         fetching ? <Spin/> :
-        requestsCount === 0 ? <div className={"requests-interests__empty"}> 
-            <div>{t('noResultsText')}</div> 
-            <Link to={HOME}><Button type='primary'>{t('noResultsBtn')}</Button></Link>
-        </div> :        
-        <div>
-        <Row style={{margin: 0, padding: 0}}>
-            <Col span={23}>
-                <h1><b>
+            requestsCount === 0 ? <div className={"requests-interests__empty"}>
+                    <div>{t('noResultsText')}</div>
+                    <Link to={HOME}><Button type='primary'>{t('noResultsBtn')}</Button></Link>
+                </div> :
+                <div>
+                    <Row style={{margin: 0, padding: 0}}>
+                        <Col span={23}>
+                            <h1><b>
+                                {
+                                    !_.isNil(requestsCount) && t("requests.title", {count: requestsCount})
+                                }
+                            </b>
+                            </h1>
+                        </Col>
+                        <Col>
+                            <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
+                        </Col>
+                    </Row>
+                    <Row style={{margin: 0, padding: 0}}>
+                        <Col span={12}>
+                            <h3><b>{t("requests.request")}</b></h3>
+                        </Col>
+                        <Col span={4}>
+                            <h3><b>{t("requests.requestStatus")}</b></h3>
+                        </Col>
+                        <Col span={8}>
+                            <div className={"centered"}>
+
+                                <h3><b>{t("requests.actions")}</b></h3>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Divider style={{margin: 0, padding: 0}}/>
                     {
-                        !_.isNil(requestsCount) && t("requests.title", {count: requestsCount})
+                        _.isNil(requests) || fetching ?
+                            <Spin/>
+                            :
+                            <RequestContainer requests={requests} fetchFilters={fetchFilters}/>
                     }
-                </b>
-                </h1>
-            </Col>
-            <Col>
-                <Button type="primary" shape="circle" size={"large"} onClick={showModal}>?</Button>
-            </Col>
-        </Row>
-        <Row style={{margin: 0, padding: 0}}>
-            <Col span={12}>
-                <h3><b>{t("requests.request")}</b></h3>
-            </Col>
-            <Col span={4}>
-                <h3><b>{t("requests.requestStatus")}</b></h3>
-            </Col>
-            <Col span={8}>
-                <div className={"centered"}>
 
-                    <h3><b>{t("requests.actions")}</b></h3>
-                </div>
-            </Col>
-        </Row>
-        <Divider style={{margin: 0, padding: 0}}/>
-        {
-            _.isNil(requests) || fetching ?
-                <Spin/>
-                :
-                <RequestContainer requests={requests} fetchFilters={fetchFilters}/>
-        }
-
-        <Divider orientation={"left"}>
-            {
-                pageSize && requestsCount && requestsCount > pageSize &&
-                <Pagination showSizeChanger={false} current={currentPage} total={requestsCount} pageSize={pageSize}
-                            onChange={_onChangePagination}/>
-            }
-        </Divider>
-        <Modal
-            title={t("modals.helpModal.title")}
-            visible={isModalVisible}
-            onCancel={handleCancel}
-            footer={[
-                <Button key="submit" type="primary" onClick={handleOk}>
-                    {t("buttons.close")}
-                </Button>
-            ]}
-        >
-            <div>
-                <h2>{t("modals.helpModal.firstTitle")} </h2>
-                <p>{t("modals.helpModal.firstDesc")}</p>
-                <h2>{t("modals.helpModal.secondTitle")}</h2>
-                <p>{t("modals.helpModal.secondDesc")}</p>
-            </div>
-        </Modal>
-    </div>}</>)
+                    <Divider orientation={"left"}>
+                        {
+                            pageSize && requestsCount && requestsCount > pageSize &&
+                            <Pagination showSizeChanger={false} current={currentPage} total={requestsCount}
+                                        pageSize={pageSize}
+                                        onChange={_onChangePagination}/>
+                        }
+                    </Divider>
+                    <Modal
+                        title={t("modals.helpModal.title")}
+                        visible={isModalVisible}
+                        onCancel={handleCancel}
+                        footer={[
+                            <Button key="submit" type="primary" onClick={handleOk}>
+                                {t("buttons.close")}
+                            </Button>
+                        ]}
+                    >
+                        <div>
+                            <h2>{t("modals.helpModal.firstTitle")} </h2>
+                            <p>{t("modals.helpModal.firstDesc")}</p>
+                            <h2>{t("modals.helpModal.secondTitle")}</h2>
+                            <p>{t("modals.helpModal.secondDesc")}</p>
+                        </div>
+                    </Modal>
+                </div>}</>)
 }
 
-function parseQuery(location){
+function parseQuery(location) {
     const params = queryString.parse(location.search);
 
     return Object.assign(params, {page: parseInt(params.page || 1)})
@@ -130,7 +131,10 @@ function RequestsView() {
 
     const params = parseQuery(location);
 
-    const [appliedFilters, setAppliedFilters] = useState(Object.assign({searchCriteria:"date", searchOrder:"desc"}, params));
+    const [appliedFilters, setAppliedFilters] = useState(Object.assign({
+        searchCriteria: "date",
+        searchOrder: "desc"
+    }, params));
     const {requests, fetching, fetchRequests, pages, amount, pageSize} = useRequests(appliedFilters);
 
     const [currentPage, setCurrentPage] = useState(params.page);
@@ -157,19 +161,19 @@ function RequestsView() {
 
     const [filters, setFilters] = useState(null);
     const fetchFilters = async () => {
-        try{
+        try {
             const newFilters = await getRequestsFilters(jwt);
 
             setFilters(newFilters);
-        }catch (e) {
+        } catch (e) {
             //TODO: conn error
         }
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchFilters();
     }, []);
-    
+
     return <ContentWithSidebar
         sideContent={
             <SideContent

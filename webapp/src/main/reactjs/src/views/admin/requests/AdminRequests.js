@@ -89,7 +89,7 @@ function MainContent(
             <Divider style={{margin: 0, padding: 0}}/>
             {
                 requestsCount === 0 ?
-                    (<p>{t("noResults")} <Link to={ADMIN_REQUESTS}>{t("fetchAll")}</Link></p>)
+                    (<p>{t("noResults")} <Link to={ADMIN_REQUESTS} onClick={() => window.location.reload()}>{t("fetchAll")}</Link></p>)
                     :
                     (_.isNil(requests) || fetching ?
                         <Spin/>

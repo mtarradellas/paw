@@ -94,7 +94,7 @@ function MainContent({
             <Divider style={{margin: 0, padding: 0}}/>
             {
                 userCount === 0 ?
-                    (<p>{t("noResults")} <Link to={ADMIN_USERS}>{t("fetchAll")}</Link></p>)
+                    (<p>{t("noResults")} <Link to={ADMIN_USERS} onClick={() => window.location.reload()}>{t("fetchAll")}</Link></p>)
                     :
                     (_.isNil(users) || fetching ?
                         <Spin/>
