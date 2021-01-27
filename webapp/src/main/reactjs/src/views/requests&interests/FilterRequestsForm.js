@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Form, Select} from "formik-antd";
 import {Formik} from "formik";
 import {Button} from "antd";
 import {useTranslation} from "react-i18next";
+import _ from 'lodash';
 
 import * as Yup from 'yup';
 
@@ -25,6 +26,10 @@ const FilterRequestsForm = ({filters, fetchRequests, changeFilters, setCurrentPa
         setCurrentPage(1)
         changeFilters(values)
     };
+
+    if(_.isNil(filters) ||  filters.length === 0) {
+        filters = [0, 2, 3, 4]
+    }
 
     return <Formik
         initialValues={Object.assign({status: '' + -1}, initialFilters)}
