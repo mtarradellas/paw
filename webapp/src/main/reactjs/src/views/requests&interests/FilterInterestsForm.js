@@ -4,6 +4,7 @@ import {Formik} from "formik";
 import {Button} from "antd";
 import {useTranslation} from "react-i18next";
 import * as Yup from "yup";
+import _ from 'lodash';
 
 const FormItem = Form.Item;
 
@@ -22,6 +23,10 @@ const FilterInterestsForm = ({filters, fetchInterests, changeFilters, setCurrent
         fetchInterests({...values, page: 1})
         setCurrentPage(1)
         changeFilters(values)
+    }
+
+    if(_.isNil(filters) ||  filters.length === 0) {
+        filters = [0, 2, 3, 4]
     }
 
     return <Formik
