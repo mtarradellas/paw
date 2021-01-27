@@ -20,7 +20,7 @@ public class ImageDTO {
     @Column
     private Long petId;
 
-    public ImageDTO() {
+    protected ImageDTO() {
         //Hibernate
     }
     public ImageDTO(long imageId, long petId) {
