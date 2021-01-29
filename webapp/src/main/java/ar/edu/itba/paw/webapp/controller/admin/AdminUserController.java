@@ -61,7 +61,8 @@ public class AdminUserController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getUserList(@QueryParam("page") @DefaultValue("1") int page,
+    public Response getUserList(@Context HttpServletRequest httpRequest,
+                                @QueryParam("page") @DefaultValue("1") int page,
                                 @QueryParam("status") @DefaultValue("-1") int status,
                                 @QueryParam("find") String find,
                                 @QueryParam("searchCriteria") String searchCriteria,
@@ -84,7 +85,9 @@ public class AdminUserController {
                 .stream().map(u -> UserDto.fromUserForList(u, uriInfo)).collect(Collectors.toList());
         final int amount = userService.getFilteredAmount(findList, userStatus);
 
-        return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, userList, null);
+        String query = httpRequest.getQueryString();
+        query = query == null? null : query.replaceAll("&?page=.*&?", "");
+        return ApiUtils.paginatedListResponse(amount, USR_PAGE_SIZE, page, uriInfo, userList, query, null);
     }
 
     @GET

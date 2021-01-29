@@ -23,7 +23,17 @@ function SideContent({filters, changeFilters, setCurrentPage, fetchAdminUsers}) 
     />
 }
 
-function MainContent({users, userCount, fetching, pages, pageSize, fetchPage, currentPage, setCurrentPage, fetchFilters}) {
+function MainContent({
+                         users,
+                         userCount,
+                         fetching,
+                         pages,
+                         pageSize,
+                         fetchPage,
+                         currentPage,
+                         setCurrentPage,
+                         fetchFilters
+                     }) {
     const {t} = useTranslation('admin');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -57,8 +67,11 @@ function MainContent({users, userCount, fetching, pages, pageSize, fetchPage, cu
                             }
                         </b>
                         </h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
-                                href={ADMIN_ADD_USER}>{t('addUser')}</Button>
+                        <Link to={ADMIN_ADD_USER}>
+                            <Button
+                                style={{marginTop: "0.5rem", marginLeft: "1rem"}}
+                                type={"primary"}>{t('addUser')}</Button>
+                        </Link>
                     </Row>
                 </Col>
                 <Col>
@@ -80,13 +93,13 @@ function MainContent({users, userCount, fetching, pages, pageSize, fetchPage, cu
             </Row>
             <Divider style={{margin: 0, padding: 0}}/>
             {
-                userCount === 0?
-                    (<p>{t("noResults")} <Link to={ADMIN_USERS}>{t("fetchAll")}</Link></p>)
+                userCount === 0 ?
+                    (<p>{t("noResults")} <Link to={ADMIN_USERS} onClick={() => window.location.reload()}>{t("fetchAll")}</Link></p>)
                     :
                     (_.isNil(users) || fetching ?
-                    <Spin/>
-                    :
-                    <AdminUsersContainer users={users} fetchFilters={fetchFilters}/>)
+                        <Spin/>
+                        :
+                        <AdminUsersContainer users={users} fetchFilters={fetchFilters}/>)
             }
             <Divider orientation={"left"}>
                 {

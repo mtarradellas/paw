@@ -108,7 +108,7 @@
     "help": {
       "title": "Help",
       "myRole": "My Role",
-      "myRoleDesc": "As admin, you posess an array of tools to aid you in the management of the pets, users and requests in the website. You have the power to create, delete, recover and update them.",
+      "myRoleDesc": "As admin, you possess an array of tools to aid you in the management of the pets, users and requests in the website. You have the power to create, delete, recover and update them.",
       "meaning": "What does the color mean?",
       "meaningDesc": "If an item is darker, it means that it was deleted. To recover it, just press on the green \"recover\" button."
     }
@@ -145,5 +145,6 @@
     "default": "Connection error: the request couldn't be completed",
     "unchanged": "You are trying to change the status to the existing one",
     "noMatch": "Passwords don't match"
-  }
+  },
+  "logout": "Logout"
 }

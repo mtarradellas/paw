@@ -61,8 +61,11 @@ function MainContent(
                             }
                         </b>
                         </h1>
-                        <Button style={{marginTop: "0.5rem", marginLeft: "1rem"}} type={"primary"}
-                                href={ADMIN_ADD_REQUEST}>{t('addRequest')}</Button>
+                        <Link to={ADMIN_ADD_REQUEST}>
+                            <Button
+                                style={{marginTop: "0.5rem", marginLeft: "1rem"}}
+                                type={"primary"}>{t('addRequest')}</Button>
+                        </Link>
                     </Row>
                 </Col>
                 <Col>
@@ -86,7 +89,7 @@ function MainContent(
             <Divider style={{margin: 0, padding: 0}}/>
             {
                 requestsCount === 0 ?
-                    (<p>{t("noResults")} <Link to={ADMIN_REQUESTS}>{t("fetchAll")}</Link></p>)
+                    (<p>{t("noResults")} <Link to={ADMIN_REQUESTS} onClick={() => window.location.reload()}>{t("fetchAll")}</Link></p>)
                     :
                     (_.isNil(requests) || fetching ?
                         <Spin/>

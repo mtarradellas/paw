@@ -3,12 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
+import {Spin} from 'antd';
 import './i18n';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+      <React.Suspense fallback={<Spin/>}>
+          <App />
+      </React.Suspense>
   </React.StrictMode>,
   document.getElementById('root')
 );

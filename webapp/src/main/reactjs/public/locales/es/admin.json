@@ -40,8 +40,8 @@
     "any": "Cualquiera",
     "date": "Fecha",
     "petName": "Nombre de mascota",
-    "asc": "Ascendiente",
-    "desc": "Descendiente",
+    "asc": "Ascendente",
+    "desc": "Descendente",
     "username": "Nombre de Usuario",
     "mail": "Correo Electrónico",
     "species": "Especie",
@@ -58,7 +58,7 @@
     "rejected": "Rechazada",
     "sold": "Vendida",
     "canceled": "Cancelada",
-    "notSold": "Acceptada (No Vendida)",
+    "notSold": "Aceptada (No Vendida)",
     "soldTo": "Vendida a {{ownerName}}",
     "active": "Activo",
     "inactive": "Inactivo",
@@ -102,15 +102,15 @@
     "cancelRequest": "¿Estás seguro que deseas cancelar esta solicitud?",
     "recoverRequest": "¿Estás seguro que deseas recuperar esta solicitud?",
     "deleteUser": "¿Estás seguro que deseas borrar este usuario?",
-    "recoverUser": "¿Estás seguro quedeseas recuperar este usuario?",
+    "recoverUser": "¿Estás seguro que deseas recuperar este usuario?",
     "deletePet": "¿Estás seguro que deseas borrar esta mascota?",
-    "recoverPet": "¿Estás seguro quedeseas recuperar esta mascota?",
+    "recoverPet": "¿Estás seguro que deseas recuperar esta mascota?",
     "help": {
       "title": "Ayuda",
       "myRole": "Mi Rol",
       "myRoleDesc": "Como administrador, posees una serie de herramientas que te ayudarán en el control de mascotas, usuarios y solicitudes en el sitio. Tenés el poder de crearlas, borrarlas, recuperarlas y actualizarlas.",
       "meaning": "¿Qué significa el color?",
-      "meaningDesc": "Si un ítem es mas oscuro, significa que fue borrado. Para recuperarlo, presioná el boton \"recuperar\"."
+      "meaningDesc": "Si un ítem es mas oscuro, significa que fue borrado. Para recuperarlo, presioná el botón \"recuperar\"."
     }
   },
   "date": "{{day}}-{{month}}-{{year}}",
@@ -145,5 +145,6 @@
     "default": "Error de conexión: la solicitud no pudo ser completada",
     "unchanged": "Estás cambiando el estado a el estado existente",
     "noMatch": "Las contraseñas no concuerdan"
-  }
+  },
+  "logout": "Cerrar Sesión"
 }

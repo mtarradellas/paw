@@ -6,7 +6,7 @@
   "offeredPetsTitle": "Mascotas que este usuario ofrece",
   "offeredPetsError": "Este usuario no ofrece ninguna mascota",
   "adoptedPetsTitle": "Mascotas que este usuario adoptó",
-  "adoptedPetsError": "Este usuario no adopto ninguna mascota",
+  "adoptedPetsError": "Este usuario no adoptó ninguna mascota",
   "totalResults": "Resultados totales: {{count}}",
   "reviewsTitle": "Reseñas hechas a este usuario",
   "reviews": {
@@ -23,16 +23,16 @@
     "form": {
       "score": {
         "label": "Calificación",
-        "required": "Porfavor ingrese una calificación"
+        "required": "Por favor ingrese una calificación"
       },
       "description": {
         "label": "Descripción",
-        "required": "Porfavor ingrese una descripción",
+        "required": "Por favor ingrese una descripción",
         "max": "La descripción no debe superar los {{max}} caracteres"
       },
       "submit": "Calificar"
     },
-    "connError": "Error de conexion"
+    "connError": "Error de conexión"
   },
   "edit": "Editar usuario"
 }

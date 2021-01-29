@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -51,7 +52,9 @@ public class AdminQuestionController {
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getQuestions(@QueryParam("petId") @DefaultValue("0") Long petId, @QueryParam("page") @DefaultValue("1") int page) {
+    public Response getQuestions(@Context HttpServletRequest httpRequest,
+                                 @QueryParam("petId") @DefaultValue("0") Long petId,
+                                 @QueryParam("page") @DefaultValue("1") int page) {
         try {
             petId = ParseUtils.parsePetId(petId);
             ParseUtils.parsePage(page);
@@ -73,8 +76,10 @@ public class AdminQuestionController {
             LOGGER.warn(ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
-        
-        return ApiUtils.paginatedListResponse(amount, QUESTION_PAGE_SIZE, page, uriInfo, questions, null);
+
+        String query = httpRequest.getQueryString();
+        query = query == null? null : query.replaceAll("&?page=.*&?", "");
+        return ApiUtils.paginatedListResponse(amount, QUESTION_PAGE_SIZE, page, uriInfo, questions, query, null);
     }
 
     @POST

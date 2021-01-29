@@ -1,161 +1,161 @@
 header {
     background-color: #222831;
-    height: 150px;
+    width: 100%;
+}
 
-    display: grid;
-    grid-template-areas: "logo title menu-items search login";
-    grid-template-rows: auto;
+.header__nav {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    height: 100%;
+}
 
-    grid-auto-columns: 200px 250px 1fr 400px 300px;
+.phone__nav {
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .header__logo {
-    grid-area: logo;
-
-    margin: auto auto auto auto;
+    margin-left: 1rem;
 }
 
-.header__logo > img {
+.header__logo img {
     width: 100px;
     height: 100px;
 }
 
 .header__title {
-    grid-area: title;
-
-    margin-top: auto;
-    margin-bottom: auto;
-
-    font-size: 2rem;
-
+    font-size: 2.5rem;
+    margin-left: 1rem;
     color: white;
-}
-
-.header__menu-items {
-    grid-area: menu-items;
-
-    margin-top: auto;
-    margin-bottom: auto;
-
-    display: flex;
+    white-space: nowrap;
 }
 
 .header__menu-items__item a {
     display: block;
-    margin-left: 1rem;
+    margin-left: 2rem;
     color: white;
-    font-size: 1.5rem
-}
-
-.lower__item{
-    margin-top: 0.44rem;
-}
-
-.upper__item{
-    margin-bottom:2rem;
-}
-
-.header__search-bar {
-    grid-area: search;
-
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-.header__username-and-logout,.header__register-and-login {
-    grid-area: login;
-
-    margin-top: auto;
-    margin-bottom: auto;
-
-    display: flex;
-}
-
-.header__username-and-logout,.header__register-and-login a {
-    display: block;
-    margin: 0 1rem 0 1rem;
-}
-
-.header__username-and-logout {
-    color: white;
-    display: flex;
-}
-
-.header__username-and-logout {
     font-size: 1.5rem;
-    margin: 4rem 3rem auto auto;
+    white-space: nowrap;
 }
 
-.header__username-and-logout__username {
+.searchbar {
+    margin-left: 1rem;
+}
+
+.header__register, .header__login, .header__username {
     margin-right: 1rem;
+    color: white;
+    font-size: 1.3rem;
 }
 
-@media only screen and (max-width: 1400px) {
-    header {
-        height: 250px;
-
-        display: grid;
-        grid-template-areas: "logo        title       login   login" "menu-items  menu-items  search  search";
-
-        grid-template-rows: 130px auto;
-
-        grid-auto-columns: 200px 2fr 1fr 200px;
-    }
-
-    .header__menu-items {
-        margin: 1.5rem auto 0 2rem;
-    }
-
-    .header__username-and-logout, .header__register-and-login a {
-        margin: 3rem auto auto auto;
-    }
-
-    .header__search-bar {
-        margin: 0 auto 0 auto;
-    }
-
-    .header__username-and-logout__username {
-        margin: inherit;
-    }
+.badge {
+    margin-top: 0.2rem;
 }
 
-@media only screen and (max-width: 700px) {
-    header {
-        height: 350px;
+.align__right {
+    margin-left: auto;
+    margin-right: 3rem;
+}
 
-        display: grid;
-        grid-template-areas: "logo"
-                             "login"
-                             "menu-items"
-                             "search";
+.header__drawer {
+    width: 50px;
+    height: 50px;
+    margin-top: 1rem;
+}
 
-        grid-template-rows: 130px 4fr 3fr 3fr;
+.drawer__nav{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    width: 100%;
+}
 
-        grid-auto-columns: 1fr 1fr;
-    }
+.phone__nav {
+    display: none;
+}
 
-    .header__logo {
-        margin: 0.5rem auto 0 auto;
-    }
-
+@media(max-width: 1450px) {
     .header__title {
+        font-size: 2rem;
+    }
+
+    .header__menu-items__item a {
+        margin-left: 1rem;
+        font-size: 1rem;
+    }
+
+    .header__register, .header__login, .header__username {
+        font-size: 1rem;
+    }
+
+    .header__logo img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .searchbar {
+        margin-left: 2rem;
+    }
+
+    .searchbar input{
+        width: 90px;
+    }
+
+}
+
+@media(max-width: 1200px) {
+    .desktop__nav {
         display: none;
     }
 
-    .header__search-bar {
-        margin: 0 auto 0 auto;
+    .header__menu-items__item a {
+        margin-bottom: 0.6rem;
+        font-size: 1.5rem;
     }
 
-    .header__menu-items {
-        margin: 0 auto 0 auto;
+    .phone__nav{
+        display: inline;
     }
 
-    .header__username-and-logout,.header__register-and-login a {
-        margin: 0 auto 0 auto;
+    .searchbar {
+        margin-top: 1.5rem;
+        padding-left: 1.2rem;
     }
 
-    .header__username-and-logout__username {
-        margin: inherit;
+    .searchbar input{
+        width: 150px;
     }
 
+}
+
+@media(max-width: 600px) {
+    .searchbar {
+        margin-top: 1.5rem;
+        padding-left: 1.2rem;
+    }
+
+    .searchbar input{
+        width: 60px;
+    }
+
+}
+
+@media(max-width: 400px){
+    .searchbar {
+        margin-top: 1.5rem;
+        padding-left: 1rem;
+    }
+
+    .searchbar input{
+        width: 30px;
+    }
 }

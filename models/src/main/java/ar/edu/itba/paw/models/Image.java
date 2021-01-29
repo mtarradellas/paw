@@ -17,9 +17,7 @@ public class Image {
     @Column
     private Long petId;
 
-    public Image() {
-        //Hibernate
-    }
+    public Image() {}
 
     public Image(long imageId, byte[] imageData, long petId) {
         this.id = imageId;

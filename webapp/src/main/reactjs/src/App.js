@@ -62,7 +62,7 @@ import {
     ADMIN_ADD_USER,
     ADMIN_EDIT_PET,
     ADMIN_EDIT_USER,
-    ADMIN_EDIT_REQUEST, ACTIVATE_ACCOUNT
+    ADMIN_EDIT_REQUEST, ACTIVATE_ACCOUNT, ADMIN
 } from "./constants/routes";
 import useLoginState from "./hooks/useLoginState";
 import UserView from "./views/user/UserView";
@@ -92,6 +92,7 @@ import AdminAddPet from "./views/admin/pets/AdminAddPet";
 import AdminEditPet from "./views/admin/pets/AdminEditPet";
 import {CONTEXT} from "./config";
 import ActivateAccountView from "./views/ActivateAccountView";
+import ScrollToTop from "./components/ScrollToTop";
 
 function AppSwitch(){
     const {t} = useTranslation('error-pages');
@@ -100,285 +101,161 @@ function AppSwitch(){
 
     return <FilterAndSearchContext.Provider value={formAndSearch}>
         <Switch>
-            <Route exact path={HOME}>
+            <Route path={ADMIN}>
+                <AdminLayout>
+                    <Switch>
+
+                        <PrivateRoute adminPage path={ADMIN_HOME}
+                                      component={AdminHome}
+                        />
+                        <PrivateRoute adminPage path={ADMIN_REQUESTS}
+                                      component={AdminRequests}
+                        />
+                        <PrivateRoute adminPage path={ADMIN_USERS}
+                                      component={AdminUsers}
+                        />
+                        <PrivateRoute adminPage path={ADMIN_PETS}
+                                      component={AdminPets}
+                        />
+
+                        <PrivateRoute adminPage path={ADMIN_USER + ':id'}
+                                      component={AdminUserView}
+                        />
+                        <PrivateRoute adminPage path={ADMIN_PET + ':id'}
+                                      component={AdminPetView}
+                        />
+
+                        <PrivateRoute adminPage path={ADMIN_ADD_REQUEST}
+                                      component={AdminAddRequest}
+                        />
+
+                        <PrivateRoute adminPage path={ADMIN_EDIT_REQUEST + ':id'}
+                                      component={AdminEditRequest}
+                        />
+
+                        <PrivateRoute adminPage path={ADMIN_ADD_USER}
+                                      component={AdminAddUser}
+                        />
+
+                        <PrivateRoute adminPage path={ADMIN_EDIT_USER + ':id'}
+                                      component={AdminEditUser}
+                        />
+
+                        <PrivateRoute adminPage path={ADMIN_ADD_PET}
+                                      component={AdminAddPet}
+                        />
+
+                        <PrivateRoute adminPage path={ADMIN_EDIT_PET + ':id'}
+                                      component={AdminEditPet}
+                        />
+
+
+                        <Route exact path={"/admin"}>
+                            <Redirect to={ADMIN_HOME}/>
+                        </Route>
+
+                    </Switch>
+                </AdminLayout>
+            </Route>
+
+            <Route>
                 <BasicLayout>
-                    <HomeView/>
+                    <Switch>
+
+                        <Route exact path={HOME}>
+                            <HomeView/>
+                        </Route>
+
+                        <Route exact path={REGISTER}>
+                                <RegisterView/>
+                        </Route>
+
+                        <Route exact path={LOGIN}>
+                            <LoginView/>
+                        </Route>
+
+                        <Route exact path={FORGOT_PASSWORD}>
+                            <ForgotPasswordView/>
+                        </Route>
+
+                        <Route path={RESET_PASSWORD + ':token'}
+                               component={ResetPasswordView}/>
+
+                        <Route path={ACTIVATE_ACCOUNT + ':token'}
+                               component={ActivateAccountView}/>
+
+                        <Route exact path={VERIFY_EMAIL}>
+                            <EmailSent/>
+                        </Route>
+
+                        <Route exact path={SUCCESS}>
+                            <OperationSuccessful/>
+                        </Route>
+
+                        <PrivateRoute exact path={EDIT_USER}
+                                      component={EditUserView}
+                        />
+
+                        <PrivateRoute exact path={USER + ':id'}
+                                      component={UserView}
+                        />
+
+                        <PrivateRoute path={ADD_PET}
+                                      component={AddPetView}
+                        />
+
+                        <PrivateRoute path={REQUESTS}
+                                      component={RequestsView}
+                        />
+                        <PrivateRoute path={INTERESTS}
+                                      component={InterestsView}
+                        />
+                        <Route exact path={PET + ':id'}
+                               component={PetView}
+                        />
+
+                        <Route exact path={EDIT_PET(':id')}
+                               component={EditPetView}
+                        />
+                        <Route path={ERROR_404}>
+                            <ErrorWithImage title={t('error404')} image={"/images/page_not_found.png"}
+                                            text={t('pageNotFound')}/>
+                        </Route>
+                        <Route path={ERROR_404_PET}>
+                            <ErrorWithImage title={t('error404')} image={"/images/pet_not_found.png"}
+                                            text={t('petNotFound')}/>
+                        </Route>
+                        <Route path={ERROR_404_USER}>
+                            <ErrorWithImage title={t('error404')} image={"/images/user_not_found.png"}
+                                            text={t('userNotFound')}/>
+                        </Route>
+                        <Route path={ACCESS_DENIED}>
+                            <ErrorWithImage title={t('error403')} image={"/images/access_denied.png"}
+                                            text={t('accessDenied')}/>
+                        </Route>
+                        <Route path={WRONG_METHOD}>
+                            <ErrorWithImage title={t('error405')} image={"/images/access_denied.png"}
+                                            text={t('wrongMethod')}/>
+                        </Route>
+                        <Route path={BAD_REQUEST}>
+                            <ErrorWithImage title={t('error400')} image={"/images/access_denied.png"}
+                                            text={t('badRequest')}/>
+                        </Route>
+                        <Route path={INTERNAL_SERVER_ERROR}>
+                            <ErrorWithImage title={t('error500')}
+                                            image={"/images/internal_server_error.png"}
+                                            text={t('serverError')}/>
+                        </Route>
+                        <Route path={'/index.html'}>
+                            <Redirect to={HOME}/>
+                        </Route>
+                        <Redirect to={ERROR_404}/>
+
+                    </Switch>
                 </BasicLayout>
             </Route>
-            <Route exact path={REGISTER}>
-                <BasicLayout>
-                    <RegisterView/>
-                </BasicLayout>
-            </Route>
-
-            <Route exact path={LOGIN}>
-                <BasicLayout>
-                    <LoginView/>
-                </BasicLayout>
-            </Route>
-
-            <Route exact path={FORGOT_PASSWORD}>
-                <BasicLayout>
-                    <ForgotPasswordView/>
-                </BasicLayout>
-            </Route>
-
-            <Route path={RESET_PASSWORD + ':token'}
-                   component={
-                       () => {
-                           return <BasicLayout>
-                               <ResetPasswordView/>
-                           </BasicLayout>
-                       }
-                   }/>
-
-            <Route path={ACTIVATE_ACCOUNT + ':token'}
-                   component={
-                       () => {
-                           return <BasicLayout>
-                               <ActivateAccountView/>
-                           </BasicLayout>
-                       }
-                   }/>
-
-            <Route exact path={VERIFY_EMAIL}>
-                <BasicLayout>
-                    <EmailSent/>
-                </BasicLayout>
-            </Route>
-
-            <Route exact path={SUCCESS}>
-                <BasicLayout>
-                    <OperationSuccessful/>
-                </BasicLayout>
-            </Route>
-
-            <PrivateRoute exact path={EDIT_USER}
-                          component={
-                              () => (<BasicLayout>
-                                  <EditUserView/>
-                              </BasicLayout>)
-                          }
-            />
-
-            <PrivateRoute path={USER + ':id'}
-                          component={
-                              () => (<BasicLayout>
-                                  <UserView/>
-                              </BasicLayout>)
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_HOME}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminHome/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-            <PrivateRoute adminPage path={ADMIN_REQUESTS}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminRequests/>
-                                  </AdminLayout>
-                              )}
-            />
-            <PrivateRoute adminPage path={ADMIN_USERS}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminUsers/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-            <PrivateRoute adminPage path={ADMIN_PETS}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminPets/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_USER + ':id'}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminUserView/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-            <PrivateRoute adminPage path={ADMIN_PET + ':id'}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminPetView/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_ADD_REQUEST}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminAddRequest/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_EDIT_REQUEST + ':id'}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminEditRequest/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_ADD_USER}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminAddUser/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_EDIT_USER + ':id'}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminEditUser/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_ADD_PET}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminAddPet/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute adminPage path={ADMIN_EDIT_PET + ':id'}
-                          component={
-                              () => (
-                                  <AdminLayout>
-                                      <AdminEditPet/>
-                                  </AdminLayout>
-                              )
-                          }
-            />
-
-            <PrivateRoute path={ADD_PET}
-                          component={
-                              () => (<BasicLayout>
-                                  <AddPetView/>
-                              </BasicLayout>)
-                          }
-            />
-            <PrivateRoute path={REQUESTS}
-                          component={
-                              () => (
-                                  <BasicLayout>
-                                      <RequestsView/>
-                                  </BasicLayout>
-                              )
-
-                          }
-            />
-            <PrivateRoute path={INTERESTS}
-                          component={
-                              () => (
-                                  <BasicLayout>
-                                      <InterestsView/>
-                                  </BasicLayout>
-                              )
-                          }
-            />
-            <Route exact path={PET + ':id'}
-                   render={
-                       () => (
-                           <BasicLayout>
-                               <PetView/>
-                           </BasicLayout>
-                       )
-                   }
-            />
-            <Route exact path={"/admin"}>
-                <Redirect to={ADMIN_HOME}/>
-            </Route>
-            <Route exact path={EDIT_PET(':id')}
-                   render={
-                       () => (
-                           <BasicLayout>
-                               <EditPetView/>
-                           </BasicLayout>
-                       )
-                   }
-            />
-            <Route path={ERROR_404}>
-                <BasicLayout>
-                    <ErrorWithImage title={t('error404')} image={"/images/page_not_found.png"}
-                                    text={t('pageNotFound')}/>
-                </BasicLayout>
-            </Route>
-            <Route path={ERROR_404_PET}>
-                <BasicLayout>
-                    <ErrorWithImage title={t('error404')} image={"/images/pet_not_found.png"}
-                                    text={t('petNotFound')}/>
-                </BasicLayout>
-            </Route>
-            <Route path={ERROR_404_USER}>
-                <BasicLayout>
-                    <ErrorWithImage title={t('error404')} image={"/images/user_not_found.png"}
-                                    text={t('userNotFound')}/>
-                </BasicLayout>
-            </Route>
-            <Route path={ACCESS_DENIED}>
-                <BasicLayout>
-                    <ErrorWithImage title={t('error403')} image={"/images/access_denied.png"}
-                                    text={t('accessDenied')}/>
-                </BasicLayout>
-            </Route>
-            <Route path={WRONG_METHOD}>
-                <BasicLayout>
-                    <ErrorWithImage title={t('error405')} image={"/images/access_denied.png"}
-                                    text={t('wrongMethod')}/>
-                </BasicLayout>
-            </Route>
-            <Route path={BAD_REQUEST}>
-                <BasicLayout>
-                    <ErrorWithImage title={t('error400')} image={"/images/access_denied.png"}
-                                    text={t('badRequest')}/>
-                </BasicLayout>
-            </Route>
-            <Route path={INTERNAL_SERVER_ERROR}>
-                <BasicLayout>
-                    <ErrorWithImage title={t('error500')}
-                                    image={"/images/internal_server_error.png"}
-                                    text={t('serverError')}/>
-                </BasicLayout>
-            </Route>
-            <Route path={'/index.html'}>
-                <Redirect to={HOME}/>
-            </Route>
-            <Redirect to={ERROR_404}/>
         </Switch>
+
     </FilterAndSearchContext.Provider>
 }
 
@@ -391,7 +268,8 @@ function App() {
         <LoginContext.Provider value={login}>
             <ConstantsContext.Provider value={constants}>
                 <Router basename={CONTEXT}>
-                            <AppSwitch/>
+                    <ScrollToTop/>
+                    <AppSwitch/>
                 </Router>
             </ConstantsContext.Provider>
         </LoginContext.Provider>

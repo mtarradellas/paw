@@ -51,7 +51,7 @@
     "helpModal": {
       "title": "Help",
       "firstTitle": "Interests page",
-      "firstDesc": "Welcome to the interests page, here you can see the status of all the requests you were made by other users. There are four states: pending (it means you have not decided yet), sold or rejected (you have decided to give the user that made the request the pet, using the corresponding buttons) and canceled (user has decided to cancel the request).",
+      "firstDesc": "Welcome to the interests page, here you can see the status of all the requests you received from other users. There are four states: pending (it means you have not decided yet), sold or rejected (you have decided to give the user that made the request the pet, using the corresponding buttons) and canceled (user has decided to cancel the request).",
       "secondTitle": "Filter Tools",
       "secondDesc": "To aid you in organizing the interests, fell free to use the filter tools on the left side."
     },

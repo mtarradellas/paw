@@ -15,16 +15,16 @@ function SideContent(){
     </div>;
 }
 
-function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setCurrentPage, currentPage}){
+function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, currentPage}){
     const {t} = useTranslation("home");
 
     const {clearFilters} = useContext(FilterAndSearchContext);
 
     const _onChangePagination = newValue => {
-        setCurrentPage(newValue);
-
         fetchPage(newValue);
     };
+
+    const shouldShowPagination = !_.isNil(pageSize) && !_.isNil(petCount) && petCount > pageSize;
 
     return <div className={"home__pets"}>{
 
@@ -45,7 +45,7 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
 
         <Divider orientation={"left"}>
             {
-                !_.isNil(pageSize) && !_.isNil(petCount) &&
+                shouldShowPagination &&
                     <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
             }
         </Divider>
@@ -60,8 +60,12 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
                                 (pet) => <PetCard key={pet.id} pet={pet}/>
                             )
                         }
+
                         <Divider orientation={"left"}>
-                            <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
+                            {
+                                shouldShowPagination &&
+                                    <Pagination showSizeChanger={false} current={currentPage} total={petCount} pageSize={pageSize} onChange={_onChangePagination}/>
+                            }
                         </Divider>
                     </>
             }
@@ -72,7 +76,6 @@ function MainContent({petCount, pets, fetching, fetchPage, pages, pageSize, setC
 
 
 function HomeView(){
-    const [currentPage, setCurrentPage] = useState(1);
 
     const {
         pets,
@@ -80,7 +83,8 @@ function HomeView(){
         pages,
         amount,
         pageSize,
-        onChangePage
+        onChangePage,
+        currentPage,
     } = useContext(FilterAndSearchContext);
 
     return <ContentWithSidebar
@@ -96,7 +100,6 @@ function HomeView(){
                             fetchPage={onChangePage}
                             pageSize={pageSize}
                             currentPage={currentPage}
-                            setCurrentPage={setCurrentPage}
                         />
                     }
                 />;

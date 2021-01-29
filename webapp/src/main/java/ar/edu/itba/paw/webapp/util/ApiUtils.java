@@ -13,11 +13,13 @@ import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import ar.edu.itba.paw.webapp.exception.BadRequestException;
 import com.google.gson.Gson;
 
+import org.omg.CosNaming._BindingIteratorImplBase;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -57,7 +59,7 @@ public class ApiUtils {
         return str.substring(0, idx);
     }
 
-    public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Collection<?> list, Map<String, Object> data) {
+    public static Response paginatedListResponse(int amount, int pageSize, int page, UriInfo uriInfo, Collection<?> list, String query, Map<String, Object> data) {
         int lastPage = (int) Math.ceil((double) amount / (double) pageSize);
         if (lastPage == 0) lastPage = 1;
 
@@ -69,20 +71,28 @@ public class ApiUtils {
         if (data != null) json.putAll(data);
 
         final int firstPage = 1;
-        final int prevPage  = (page == 1) ? lastPage : page - 1;
-        final int nextPage  = (page == lastPage) ? firstPage : page + 1;
+        final int prevPage  = (page == 1) ? 0 : page - 1;
+        final int nextPage  = (page == lastPage) ? 0 : page + 1;
 
-        final URI first = uriInfo.getAbsolutePathBuilder().queryParam("page", firstPage).build();
-        final URI last  = uriInfo.getAbsolutePathBuilder().queryParam("page", lastPage).build();
-        final URI prev  = uriInfo.getAbsolutePathBuilder().queryParam("page", prevPage).build();
-        final URI next  = uriInfo.getAbsolutePathBuilder().queryParam("page", nextPage).build();
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        if (query != null) uriBuilder.replaceQuery(query);
 
-        return javax.ws.rs.core.Response.ok(new Gson().toJson(json))
-                .link(first, "first")
-                .link(last, "last")
-                .link(prev, "prev")
-                .link(next, "next")
-                .build();
+        final URI first = uriBuilder.clone().queryParam("page", firstPage).build();
+        final URI last  = uriBuilder.clone().queryParam("page", lastPage).build();
+
+        Response.ResponseBuilder responseBuilder = Response.ok(new Gson().toJson(json));
+        responseBuilder = responseBuilder.link(first, "first").link(last, "last");
+
+        if (prevPage != 0 ) {
+            final URI prev  = uriBuilder.clone().queryParam("page", prevPage).build();
+            responseBuilder = responseBuilder.link(prev, "prev");
+        }
+        if (nextPage != 0 ) {
+            final URI next  = uriBuilder.clone().queryParam("page", nextPage).build();
+            responseBuilder = responseBuilder.link(next, "next");
+        }
+
+        return responseBuilder.build();
     }
 
     public static String readToken(Resource token) {

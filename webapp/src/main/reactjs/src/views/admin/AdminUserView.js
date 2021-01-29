@@ -40,7 +40,10 @@ function Content({user, id, email}) {
         <p>
             {
                 reviewsPagination.amount !== 0 && reviewsPagination.amount !== null &&
-                '(' + t('average', {rating: (Math.floor(reviewsPagination.average * 10) / 10), reviewCount: reviewsPagination.amount}) + ') '
+                '(' + t('average', {
+                    rating: (Math.floor(reviewsPagination.average * 10) / 10),
+                    reviewCount: reviewsPagination.amount
+                }) + ') '
             }
             {t('averageClarification')}
         </p>
@@ -164,7 +167,9 @@ function AdminUserView() {
         actionComponents={
             [
                 modalButton,
-                <Button href={ADMIN_EDIT_USER + id} key={"edit"}>{t("buttons.edit")}</Button>
+                <Link to={ADMIN_EDIT_USER + id}>
+                    <Button key={"edit"}>{t("buttons.edit")}</Button>
+                </Link>
             ]
         }
         content={
