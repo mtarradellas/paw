@@ -211,24 +211,18 @@
 
   <build>
     <finalName>webapp</finalName>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-          <configuration>
-            <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
-          </configuration>
-        </plugin>
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-          <configuration>
-            <!--            TODO uncomment for production-->
-            <packagingExcludes>**/logback-test.xml</packagingExcludes>
-          </configuration>
-          <version>3.2.2</version>
-        </plugin>
+<!--    TODO add for production-->
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>logback-test.xml</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+      <plugins>
 
         <!--nuevo-->
         <plugin>
