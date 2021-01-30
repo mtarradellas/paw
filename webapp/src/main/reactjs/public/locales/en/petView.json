@@ -1,72 +1,72 @@
 {
-  "title": "Meet {{name}}!",
-  "someInformationAboutHer": "Some information about her",
-  "someInformationAboutHim": "Some information about him",
-  "buttons": {
-    "editPet": "Edit",
-    "deletePet": "Delete",
-    "deleteModal": {
-      "title": "Are you sure?",
-      "content": "You are about to delete {{name}}, are you sure?",
-      "confirm": "Delete",
-      "cancel": "Cancel"
+    "title": "Meet {{name}}!",
+    "someInformationAboutHer": "Some information about her",
+    "someInformationAboutHim": "Some information about him",
+    "buttons": {
+        "editPet": "Edit",
+        "deletePet": "Delete",
+        "deleteModal": {
+            "title": "Are you sure?",
+            "content": "You are about to delete {{name}}, are you sure?",
+            "confirm": "Delete",
+            "cancel": "Cancel"
+        },
+        "requestBtn": {
+            "request": "Request",
+            "loading": "Loading...",
+            "sent": "Sent!",
+            "acquired": "Pet acquired!",
+            "unavailable": "Pet unavailable",
+            "recover": "Recover request",
+            "pending": "Pending request",
+            "rejected": "Request rejected"
+        }
     },
-    "requestBtn": {
-        "request": "Request",
-        "loading": "Loading...",
-        "sent": "Sent!",
-        "acquired": "Pet acquired!",
-        "unavailable": "Pet unavailable",
-        "recover": "Recover request",
-        "pending": "Pending request",
-        "rejected": "Request rejected"
-    }
-  },
-  "details": {
-    "name": "Name",
-    "dateOfBirth": "Date of birth",
-    "specie": "Specie",
-    "breed": "Breed",
-    "sex": "Sex",
-    "province": "Province",
-    "department": "Department",
-    "uploadDate": "Upload date",
-    "owner": "Owner",
-    "female": "Female",
-    "male": "Male"
-  },
-  "status": {
-    "header": "Status",
-    "vaccinated": "Vaccinated",
-    "onAdoption": "On adoption",
-    "onSale": "On sale",
-    "sold": "Sold",
-    "removed": "Unavailable"
-  },
-  "questions": {
-    "header": "Questions",
-    "askSomething": "Ask something",
-    "noQuestionsYet": "No questions yet",
-    "noAnswerYet": "No answer yet",
-    "askButton": "Ask",
-    "owner": "Owner",
-    "errors": {
-      "min": "Question must be at least {{min}} characters long",
-      "max": "Question must be at most {{max}} characters long",
-      "required": "Please enter a question"
+    "details": {
+        "name": "Name",
+        "dateOfBirth": "Date of birth",
+        "species": "Species",
+        "breed": "Breed",
+        "sex": "Sex",
+        "province": "Province",
+        "department": "Department",
+        "uploadDate": "Upload date",
+        "owner": "Owner",
+        "female": "Female",
+        "male": "Male"
     },
-    "loadMore": "Load more"
-  },
-  "answers": {
-    "answer": "Answer",
-    "answerButton": "Answer",
-    "errors": {
-      "min": "Answer must be at least {{min}} characters long",
-      "max": "Answer must be at most {{max}} characters long",
-      "required": "Please enter an answer"
-    }
-  },
-  "goToOwnersPage": "Go to owner's page",
-  "backToHome": "< Back to home",
-  "connError": "Connection error"
+    "status": {
+        "header": "Status",
+        "vaccinated": "Vaccinated",
+        "onAdoption": "On adoption",
+        "onSale": "On sale",
+        "sold": "Sold",
+        "removed": "Unavailable"
+    },
+    "questions": {
+        "header": "Questions",
+        "askSomething": "Ask something",
+        "noQuestionsYet": "No questions yet",
+        "noAnswerYet": "No answer yet",
+        "askButton": "Ask",
+        "owner": "Owner",
+        "errors": {
+            "min": "Question must be at least {{min}} characters long",
+            "max": "Question must be at most {{max}} characters long",
+            "required": "Please enter a question"
+        },
+        "loadMore": "Load more"
+    },
+    "answers": {
+        "answer": "Answer",
+        "answerButton": "Answer",
+        "errors": {
+            "min": "Answer must be at least {{min}} characters long",
+            "max": "Answer must be at most {{max}} characters long",
+            "required": "Please enter an answer"
+        }
+    },
+    "goToOwnersPage": "Go to owner's page",
+    "backToHome": "< Back to home",
+    "connError": "Connection error"
 }

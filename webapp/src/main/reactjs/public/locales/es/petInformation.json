@@ -1,16 +1,16 @@
 {
-  "name": "Nombre",
-  "specie": "Especie",
-  "breed": "Raza",
-  "price": "Precio",
-  "sex": "Género",
-  "owner": "Dueño",
-  "uploadDate": "Fecha de subida",
-  "female": "Hembra",
-  "male": "Macho",
-  "statuses": {
-    "unavailable": "No disponible",
-    "sold": "Vendido",
-    "removed": "Removido"
-  }
+    "name": "Nombre",
+    "species": "Especie",
+    "breed": "Raza",
+    "price": "Precio",
+    "sex": "Género",
+    "owner": "Dueño",
+    "uploadDate": "Fecha de subida",
+    "female": "Hembra",
+    "male": "Macho",
+    "statuses": {
+        "unavailable": "No disponible",
+        "sold": "Vendido",
+        "removed": "Removido"
+    }
 }

@@ -1,16 +1,16 @@
 {
-  "name": "Name",
-  "specie": "Species",
-  "breed": "Breed",
-  "price": "Price",
-  "sex": "Gender",
-  "owner": "Owner",
-  "uploadDate": "Upload date",
-  "female": "Female",
-  "male": "Male",
-  "statuses": {
-    "unavailable": "Unavailable",
-    "sold": "Sold",
-    "removed": "Removed"
-  }
+    "name": "Name",
+    "species": "Species",
+    "breed": "Breed",
+    "price": "Price",
+    "sex": "Gender",
+    "owner": "Owner",
+    "uploadDate": "Upload date",
+    "female": "Female",
+    "male": "Male",
+    "statuses": {
+        "unavailable": "Unavailable",
+        "sold": "Sold",
+        "removed": "Removed"
+    }
 }
