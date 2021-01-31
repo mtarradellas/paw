@@ -46,7 +46,6 @@ const AdminFilterPetsForm = ({filters, changeFilters, setCurrentPage, fetchAdmin
             }
 
             const updateFilters = (value, param) => {
-                console.log(value)
                 if (param === "breed") {
                     fetchFilters({breed:value})
                 } else if (param === "species") {
