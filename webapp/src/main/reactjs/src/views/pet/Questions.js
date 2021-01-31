@@ -154,10 +154,11 @@ function Questions({petId, ownerId, isLogged, isAvailable}){
 
     const isOwner = loggedUserId === ownerId;
 
-    const createQuestion = async values => {
+    const createQuestion = async (values, {resetForm}) => {
         setSubmitting(true);
         try{
             await createQuestionApi({content: values.question, petId}, jwt);
+            resetForm({});
         }catch (e) {
             switch (e) {
                 case CREATE_QUESTION_ERRORS.NOT_FOUND:
