@@ -100,6 +100,9 @@ public class Breed implements Comparable<Breed>{
         } else {
             name = es_ar;
         }
+        if(species != null) {
+            species.setLocale(locale);
+        }
     }
 
     @Override
