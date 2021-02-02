@@ -1,72 +1,72 @@
 {
-  "title": "Add pet",
-  "form": {
-    "petName": {
-      "label": "Name",
-      "placeholder": "Pet name",
-      "required": "Pet name is required"
-    },
-    "price": {
-      "label": "Price",
-      "placeholder": "Price",
-      "required": "Price is required if pet is not for adoption"
-    },
-    "isAdoption": {
-      "label": "Put in adoption"
-    },
-    "description": {
-      "label": "Description",
-      "placeholder": "Description",
-      "required": "Description is required"
-    },
-    "province": {
-      "label": "Province",
-      "placeholder": "Province",
-      "required": "Province is required"
-    },
-    "department": {
-      "label": "Department",
-      "placeholder": "Department",
-      "required": "Department is required"
-    },
-    "species": {
-      "label": "Species",
-      "placeholder": "Species",
-      "required": "Specie is required"
-    },
-    "breed": {
-      "label": "Breed",
-      "placeholder": "Breed",
-      "required": "Breed is required"
-    },
-    "dateOfBirth": {
-      "label": "Date of birth",
-      "placeholder": "Date of birth",
-      "required": "Date of birth is required"
-    },
-    "isVaccinated": {
-      "label": "Is vaccinated"
-    },
-    "gender": {
-      "label": "Gender",
-      "placeholder": "Gender",
-      "required": "Gender is required",
-      "male": "Male",
-      "female": "Female"
-    },
-    "images": {
-      "min": "Please upload at least one image",
-      "errorType": "Images must be .jpeg or .jpg"
-    },
-    "userId": {
-      "label": "User",
-      "required": "User is required"
-    },
-    "upload": "Upload image",
-    "addPet": "Add pet",
-    "send": "Enviar",
-    "filesToDelete": {
-      "atLeastOneImage": "The pet must have at least one image"
+    "title": "Add pet",
+    "form": {
+        "petName": {
+            "label": "Name",
+            "placeholder": "Pet name",
+            "required": "Pet name is required"
+        },
+        "price": {
+            "label": "Price",
+            "placeholder": "Price",
+            "required": "Price is required if pet is not for adoption"
+        },
+        "isAdoption": {
+            "label": "Put in adoption"
+        },
+        "description": {
+            "label": "Description",
+            "placeholder": "Description",
+            "required": "Description is required"
+        },
+        "province": {
+            "label": "Province",
+            "placeholder": "Province",
+            "required": "Province is required"
+        },
+        "department": {
+            "label": "Department",
+            "placeholder": "Department",
+            "required": "Department is required"
+        },
+        "species": {
+            "label": "Species",
+            "placeholder": "Species",
+            "required": "Species is required"
+        },
+        "breed": {
+            "label": "Breed",
+            "placeholder": "Breed",
+            "required": "Breed is required"
+        },
+        "dateOfBirth": {
+            "label": "Date of birth",
+            "placeholder": "Date of birth",
+            "required": "Date of birth is required"
+        },
+        "isVaccinated": {
+            "label": "Is vaccinated"
+        },
+        "gender": {
+            "label": "Gender",
+            "placeholder": "Gender",
+            "required": "Gender is required",
+            "male": "Male",
+            "female": "Female"
+        },
+        "images": {
+            "min": "Please upload at least one image",
+            "errorType": "Images must be .jpeg or .jpg"
+        },
+        "userId": {
+            "label": "User",
+            "required": "User is required"
+        },
+        "upload": "Upload image",
+        "addPet": "Add pet",
+        "send": "Enviar",
+        "filesToDelete": {
+            "atLeastOneImage": "The pet must have at least one image"
+        }
     }
-  }
 }

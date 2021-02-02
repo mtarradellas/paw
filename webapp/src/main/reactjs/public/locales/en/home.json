@@ -1,46 +1,46 @@
 {
-  "filterForm": {
-    "labels": {
-      "specie": "Species",
-      "breed": "Breed",
-      "price": "Price",
-      "sex": "Sex",
-      "state": "Province",
-      "department": "Department",
-      "criteria": "Criteria",
-      "order": "Order",
-      "any": "Any",
-      "priceRange": {
-        "range": "${{min}} to ${{max}}",
-        "free": "Free",
-        "max": "More than ${{min}}"
-      }
+    "filterForm": {
+        "labels": {
+            "species": "Species",
+            "breed": "Breed",
+            "price": "Price",
+            "sex": "Sex",
+            "state": "Province",
+            "department": "Department",
+            "criteria": "Criteria",
+            "order": "Order",
+            "any": "Any",
+            "priceRange": {
+                "range": "${{min}} to ${{max}}",
+                "free": "Free",
+                "max": "More than ${{min}}"
+            }
+        },
+        "filterButtons": {
+            "filter": "Filter",
+            "clear": "Clear"
+        },
+        "criteria": {
+            "uploadDate": "Upload date",
+            "gender": "Gender",
+            "species": "Species",
+            "breed": "Breed",
+            "price": "Price"
+        },
+        "asc": "Ascending",
+        "desc": "Descending"
     },
-    "filterButtons": {
-      "filter": "Filter",
-      "clear": "Clear"
+    "pets": {
+        "title": "Take a look at the available pets!",
+        "results-count": "Total results: {{count}}",
+        "petsCard": {
+            "goToPage": "Visit pet"
+        }
     },
-    "criteria": {
-      "uploadDate": "Upload date",
-      "gender": "Gender",
-      "species": "Species",
-      "breed": "Breed",
-      "price": "Price"
+    "sex": {
+        "female": "Female",
+        "male": "Male"
     },
-    "asc": "Ascending",
-    "desc": "Descending"
-  },
-  "pets": {
-    "title": "Take a look at the available pets!",
-    "results-count": "Total results: {{count}}",
-    "petsCard": {
-      "goToPage": "Visit pet"
-    }
-  },
-  "sex": {
-    "female": "Female",
-    "male": "Male"
-  },
-  "noResultsText": "No matching items where found",
-  "noResultsBtn": "Back to Home"
+    "noResultsText": "No matching items where found",
+    "noResultsBtn": "Back to Home"
 }

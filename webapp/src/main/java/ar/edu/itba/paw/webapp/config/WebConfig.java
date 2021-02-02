@@ -68,9 +68,9 @@ public class WebConfig {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.postgresql.Driver.class);
-        ds.setUrl("jdbc:postgresql://localhost/paw");
-        ds.setUsername("root");
-        ds.setPassword("root");
+        ds.setUrl("jdbc:postgresql://localhost/paw-2020a-7");
+        ds.setUsername("paw-2020a-7");
+        ds.setPassword("VsuS2lm7c");
 
         return ds;
     }
@@ -148,8 +148,8 @@ public class WebConfig {
         jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
 
         // TODO remove for production
-        jpaProperties.setProperty("hibernate.show_sql", "true");
-        jpaProperties.setProperty("format_sql", "true");
+//        jpaProperties.setProperty("hibernate.show_sql", "true");
+//        jpaProperties.setProperty("format_sql", "true");
 
         entityFactory.setJpaProperties(jpaProperties);
 

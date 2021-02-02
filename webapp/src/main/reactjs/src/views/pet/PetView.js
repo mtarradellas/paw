@@ -1,54 +1,69 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, { useEffect, useState, useContext } from "react";
 import ContentWithHeader from "../../components/ContentWithHeader";
-import {useTranslation} from "react-i18next";
-import {Button, Divider, List, message, Modal, Spin} from "antd";
+import { useTranslation } from "react-i18next";
+import { Button, Divider, List, message, Modal, Spin } from "antd";
 import Questions from "./Questions";
-import {Link} from "react-router-dom";
-import {EDIT_PET, ERROR_404_PET, HOME, USER} from "../../constants/routes";
-import {requestStatus} from '../../constants/requestStatus';
-import _ from 'lodash';
-import {DELETE_PET_ERRORS, getPet, deletePet as deletePetApi} from "../../api/pets";
-import {postRequest, getRequests} from "../../api/requests";
-import {useParams} from 'react-router-dom';
-import {petImageSrc} from "../../api/images";
-import ConstantsContext from '../../constants/constantsContext';
-import {petStatus} from '../../constants/petStatus';
-import {CloseOutlined, CheckOutlined} from '@ant-design/icons';
+import { Link } from "react-router-dom";
+import { EDIT_PET, ERROR_404_PET, HOME, USER } from "../../constants/routes";
+import { requestStatus } from "../../constants/requestStatus";
+import _ from "lodash";
+import {
+    DELETE_PET_ERRORS,
+    getPet,
+    deletePet as deletePetApi,
+} from "../../api/pets";
+import { postRequest, getRequests } from "../../api/requests";
+import { useParams } from "react-router-dom";
+import { petImageSrc } from "../../api/images";
+import ConstantsContext from "../../constants/constantsContext";
+import { petStatus } from "../../constants/petStatus";
+import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import useLogin from "../../hooks/useLogin";
-import {useHistory} from 'react-router-dom';
-import '../../css/pet/petView.css';
-import moment from 'moment';
+import { useHistory } from "react-router-dom";
+import "../../css/pet/petView.css";
+import moment from "moment";
 
 const ListItem = List.Item;
 
-function isMale(sex){
-    return _.toLower(sex) === 'male';
+function isMale(sex) {
+    return _.toLower(sex) === "male";
 }
 
-function ListItemRow({name, value}){
-    return <ListItem>
-        <b>{name}</b>: {_.isNil(value) ? <Spin/> : value}
-    </ListItem>;
+function ListItemRow({ name, value }) {
+    return (
+        <ListItem>
+            <b>{name}</b>: {_.isNil(value) ? <Spin /> : value}
+        </ListItem>
+    );
 }
 
-function ImgModal({id, onClose}) {
-    return <Modal onCancel={onClose} visible={!_.isNil(id)} showOk={false} footer={null}>
-        <img className={"pet-view__modal"} src={petImageSrc(id)} alt={""}/>
-    </Modal>
+function ImgModal({ id, onClose }) {
+    return (
+        <Modal
+            onCancel={onClose}
+            visible={!_.isNil(id)}
+            showOk={false}
+            footer={null}
+        >
+            <img className={"pet-view__modal"} src={petImageSrc(id)} alt={""} />
+        </Modal>
+    );
 }
 
-function Content({pet, id, isLogged}){
+function Content({ pet, id, isLogged }) {
     const [selectedImg, setSelectedImg] = useState(null);
     const isAvailable = pet.status === petStatus.AVAILABLE;
     const sold = pet.status === petStatus.SOLD;
 
-    const {t} = useTranslation('petView');
+    const { t } = useTranslation("petView");
 
     const onCloseModal = () => {
         setSelectedImg(null);
     };
 
-    const {breeds, species, provinces, departments} = useContext(ConstantsContext);
+    const { breeds, species, provinces, departments } = useContext(
+        ConstantsContext
+    );
 
     const {
         petName,
@@ -64,119 +79,159 @@ function Content({pet, id, isLogged}){
         breedId,
         provinceId,
         departmentId,
-        images
+        images,
     } = pet;
 
-    return <>
-            <ImgModal id={selectedImg} onClose={onCloseModal}/>
+    return (
+        <>
+            <ImgModal id={selectedImg} onClose={onCloseModal} />
 
-            {
-                _.isNil(description) ?
-                    <Spin/>
-                    :
-                    <>
-                        <div className={"pet-view__images"}>
-                            {
-                                images.map(id => <img onClick={() => setSelectedImg(id)} className={"pet-view__images__image"} src={petImageSrc(id)} alt={""}/>)
-                            }
-                        </div>
+            {_.isNil(description) ? (
+                <Spin />
+            ) : (
+                <>
+                    <div className={"pet-view__images"}>
+                        {images.map((id) => (
+                            <img
+                                onClick={() => setSelectedImg(id)}
+                                className={"pet-view__images__image"}
+                                src={petImageSrc(id)}
+                                alt={""}
+                            />
+                        ))}
+                    </div>
 
-                        <p>{description}</p>
-                    </>
-            }
+                    <p>{description}</p>
+                </>
+            )}
 
+            <Divider />
 
-            <Divider/>
+            {isAvailable ? (
+                price === 0 ? (
+                    <h2>{t("status.onAdoption")}</h2>
+                ) : (
+                    <h2>
+                        {t("status.onSale")}: ${price}
+                    </h2>
+                )
+            ) : sold ? (
+                <h2>{t("status.sold")}</h2>
+            ) : (
+                <h2>{t("status.removed")}</h2>
+            )}
 
-            {
-                isAvailable ? 
-                    price === 0 ?
-                        <h2>{t('status.onAdoption')}</h2>
-                        :
-                        <h2>{t('status.onSale')}: ${price}</h2>
-                    :
-                    sold ? <h2>{t("status.sold")}</h2> : <h2>{t("status.removed")}</h2>
-            }
-
-            <Divider/>
-
+            <Divider />
 
             <h2>
-                { isMale(gender) ? t('someInformationAboutHim') : t('someInformationAboutHer') }:
+                {isMale(gender)
+                    ? t("someInformationAboutHim")
+                    : t("someInformationAboutHer")}
+                :
             </h2>
 
             <List bordered={true}>
-                <ListItemRow name={t('details.name')} value={petName}/>
-                <ListItemRow name={t('details.dateOfBirth')} value={moment(birthDate).format("DD/MM/YYYY")}/>
-                <ListItemRow name={t('details.specie')} value={speciesId && species && species[speciesId].name}/>
-                <ListItemRow name={t('details.breed')} value={breedId && breeds && breeds[breedId].name}/>
-                <ListItemRow name={t('details.sex')} value={t('details.' + _.toLower(gender))}/>
-                <ListItemRow name={t('details.province')} value={provinceId && provinces && provinces[provinceId].name}/>
-                <ListItemRow name={t('details.department')} value={departmentId && departments && departments[departmentId].name}/>
-                <ListItemRow name={t('details.uploadDate')} value={moment(uploadDate).format("DD/MM/YYYY")}/>
-                <ListItemRow name={t('details.owner')} value={<Link to={USER + userId}>{username}</Link>}/>
-                <ListItemRow name={t('status.vaccinated')}
-                             value={
-                                 vaccinated ?
-                                     <CheckOutlined />
-                                     :
-                                     <CloseOutlined />
-                             }
+                <ListItemRow name={t("details.name")} value={petName} />
+                <ListItemRow
+                    name={t("details.dateOfBirth")}
+                    value={moment(birthDate).format("DD/MM/YYYY")}
+                />
+                <ListItemRow
+                    name={t("details.species")}
+                    value={speciesId && species && species[speciesId].name}
+                />
+                <ListItemRow
+                    name={t("details.breed")}
+                    value={breedId && breeds && breeds[breedId].name}
+                />
+                <ListItemRow
+                    name={t("details.sex")}
+                    value={t("details." + _.toLower(gender))}
+                />
+                <ListItemRow
+                    name={t("details.province")}
+                    value={
+                        provinceId && provinces && provinces[provinceId].name
+                    }
+                />
+                <ListItemRow
+                    name={t("details.department")}
+                    value={
+                        departmentId &&
+                        departments &&
+                        departments[departmentId].name
+                    }
+                />
+                <ListItemRow
+                    name={t("details.uploadDate")}
+                    value={moment(uploadDate).format("DD/MM/YYYY")}
+                />
+                <ListItemRow
+                    name={t("details.owner")}
+                    value={<Link to={USER + userId}>{username}</Link>}
+                />
+                <ListItemRow
+                    name={t("status.vaccinated")}
+                    value={vaccinated ? <CheckOutlined /> : <CloseOutlined />}
                 />
             </List>
 
-            <Divider/>
+            <Divider />
 
-            <h2>{t('questions.header')}:</h2>
+            <h2>{t("questions.header")}:</h2>
 
-            <Questions petId={id} ownerId={userId} isLogged={isLogged} isAvailable={isAvailable}/>
+            <Questions
+                petId={id}
+                ownerId={userId}
+                isLogged={isLogged}
+                isAvailable={isAvailable}
+            />
 
-            <Divider/>
+            <Divider />
 
             <div>
                 <Link to={USER + userId}>
-                    <Button>{t('goToOwnersPage')}</Button>
+                    <Button>{t("goToOwnersPage")}</Button>
                 </Link>
             </div>
 
             <div>
-                <Link to={HOME}>
-                    {t('backToHome')}
-                </Link>
+                <Link to={HOME}>{t("backToHome")}</Link>
             </div>
-        </>;
+        </>
+    );
 }
 
-function IsOwnerButtons({petId, petName}){
+function IsOwnerButtons({ petId, petName }) {
     const history = useHistory();
-    const {promptLogin, state} = useLogin();
+    const { promptLogin, state } = useLogin();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [maskClose, setMaskClose] = React.useState(true);
     const [iconClose, setIconClose] = React.useState(true);
     const [cancelProps, setCancelProps] = React.useState();
-    const {t} = useTranslation('petView');
-    const {id: userId, jwt} = state;
+    const { t } = useTranslation("petView");
+    const { id: userId, jwt } = state;
 
     const deletePet = async () => {
         setMaskClose(false);
         setIconClose(false);
-        setCancelProps({disabled: true});
+        setCancelProps({ disabled: true });
         setSubmitting(true);
         try {
-            await deletePetApi({petId}, jwt);
+            await deletePetApi({ petId }, jwt);
 
             setMaskClose(true);
             setIconClose(true);
-            setCancelProps({disabled: false});
+            setCancelProps({ disabled: false });
 
             setIsModalVisible(false);
 
             history.push(USER + userId);
-        }catch (e) {
+        } catch (e) {
             setMaskClose(true);
             setIconClose(true);
-            setCancelProps({disabled: false});
+            setCancelProps({ disabled: false });
             switch (e) {
                 case DELETE_PET_ERRORS.NOT_LOGGED_IN:
                     promptLogin();
@@ -188,59 +243,81 @@ function IsOwnerButtons({petId, petName}){
                     history.push(ERROR_404_PET);
                     break;
                 default:
-                    message.error(t('connError'));
+                    message.error(t("connError"));
                     setSubmitting(false);
             }
         }
     };
 
-    return <>
-            <Button onClick={() => setIsModalVisible(true)} danger={true} loading={submitting}>
-                {t('buttons.deletePet')}
+    return (
+        <>
+            <Button
+                onClick={() => setIsModalVisible(true)}
+                danger={true}
+                loading={submitting}
+            >
+                {t("buttons.deletePet")}
             </Button>
 
             <Link to={EDIT_PET(petId)}>
-                <Button>{t('buttons.editPet')}</Button>
+                <Button>{t("buttons.editPet")}</Button>
             </Link>
 
             <Modal
-                title={t('buttons.deleteModal.title')}
+                title={t("buttons.deleteModal.title")}
                 visible={isModalVisible}
                 cancelButtonProps={cancelProps}
                 onOk={deletePet}
-                okType='danger'
+                okType="danger"
                 onCancel={() => setIsModalVisible(false)}
-                okText={t('buttons.deleteModal.confirm')}
-                cancelTest={t('buttons.deleteModal.cancel')}
+                okText={t("buttons.deleteModal.confirm")}
+                cancelTest={t("buttons.deleteModal.cancel")}
                 confirmLoading={submitting}
                 closable={iconClose}
                 maskClosable={maskClose}
             >
-                <p>{t('buttons.deleteModal.content', {name: petName})}</p>
+                <p>{t("buttons.deleteModal.content", { name: petName })}</p>
             </Modal>
-        </>;
+        </>
+    );
 }
 
-function RequestButton({petId, text, setText, disabled, setDisabled, loading, setLoading}) {
-    const {jwt} =  useLogin().state;
-    const {t} = useTranslation('petView');
+function RequestButton({
+    petId,
+    text,
+    setText,
+    disabled,
+    setDisabled,
+    loading,
+    setLoading,
+}) {
+    const { jwt } = useLogin().state;
+    const { t } = useTranslation("petView");
 
     const requestPet = async () => {
         try {
             setLoading(true);
             await postRequest(petId, jwt);
-            setText('buttons.requestBtn.sent');
+            setText("buttons.requestBtn.sent");
             setLoading(false);
             setDisabled(true);
-
-        } catch(e) {
-            message.error(t('connError'));
+        } catch (e) {
+            message.error(t("connError"));
         }
-    }
+    };
 
-    return <>
-        <Button type="primary" onClick={requestPet} loading={loading} disabled={disabled}>{t(text)}</Button>
-    </>
+    return (
+        <>
+            <Button
+                type="primary"
+                onClick={requestPet}
+                loading={loading}
+                disabled={disabled}
+            >
+                {t(text)}
+            </Button>
+        </>
+    );
 }
 
 const initialStatePet = {
@@ -258,17 +335,17 @@ const initialStatePet = {
     breedId: null,
     provinceId: null,
     departmentId: null,
-    images: null
+    images: null,
 };
 
 function PetView() {
-    const {t} = useTranslation('petView');
-    const {state} = useLogin();
-    const {id} = useParams();
+    const { t } = useTranslation("petView");
+    const { state } = useLogin();
+    const { id } = useParams();
     const [pet, setPet] = useState(initialStatePet);
-    const {id: loggedUserId} = state;
-    const {isLoggedIn} = state; 
-    const {jwt} = useLogin().state;
+    const { id: loggedUserId } = state;
+    const { isLoggedIn } = state;
+    const { jwt } = useLogin().state;
 
     const [reqDisabled, setReqDisabled] = useState(true);
     const [reqText, setReqText] = useState("buttons.requestBtn.loading");
@@ -276,84 +353,98 @@ function PetView() {
 
     const fetchHasRequest = async (available) => {
         try {
-            const {list} = await getRequests(
-                {page: 1, userId: loggedUserId, petId: id, status: null, searchCriteria: null, searchOrder: null}, jwt
+            const { list } = await getRequests(
+                {
+                    page: 1,
+                    userId: loggedUserId,
+                    petId: id,
+                    status: null,
+                    searchCriteria: null,
+                    searchOrder: null,
+                },
+                jwt
             );
             const req = list[0];
             const status = req && req.status;
-            switch(status) {
+            switch (status) {
                 case requestStatus.SOLD:
-                    setReqText('buttons.requestBtn.acquired');
+                    setReqText("buttons.requestBtn.acquired");
                     break;
                 case requestStatus.CANCELED:
                     if (available) {
-                        setReqText('buttons.requestBtn.recover');
+                        setReqText("buttons.requestBtn.recover");
                         setReqDisabled(false);
                     } else {
-                        setReqText('buttons.requestBtn.unavailable');
+                        setReqText("buttons.requestBtn.unavailable");
                     }
                     break;
                 case requestStatus.PENDING:
-                    setReqText('buttons.requestBtn.pending');
+                    setReqText("buttons.requestBtn.pending");
                     break;
                 case requestStatus.REJECTED:
-                    setReqText('buttons.requestBtn.rejected');
+                    setReqText("buttons.requestBtn.rejected");
                     break;
-                default: // No requests sent
+                default:
+                    // No requests sent
                     if (available) {
                         setReqDisabled(false);
-                        setReqText('buttons.requestBtn.request');
+                        setReqText("buttons.requestBtn.request");
                     } else {
-                        setReqText('buttons.requestBtn.unavailable');
+                        setReqText("buttons.requestBtn.unavailable");
                     }
             }
         } catch (e) {
-            message.error(t('connError'));
+            message.error(t("connError"));
         }
-    }
+    };
 
     const fetchPet = async () => {
-        try{
-            const result = await getPet({petId: id});
+        try {
+            const result = await getPet({ petId: id });
 
             setPet(result);
             const isAvailable = result.status === petStatus.AVAILABLE;
 
             if (jwt !== null) {
                 await fetchHasRequest(isAvailable);
-            }else{
-                setReqText('buttons.requestBtn.request');
+            } else {
+                setReqText("buttons.requestBtn.request");
             }
             setReqLoading(false);
-        }catch (e) {
-            message.error(t('connError'));
+        } catch (e) {
+            message.error(t("connError"));
         }
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchPet();
     }, []);
 
-    const {petName, userId} = pet;
+    const { petName, userId } = pet;
 
     const isOwner = loggedUserId === userId;
 
-    return <ContentWithHeader
-        content={
-            <Content id={id} pet={pet} isLogged={isLoggedIn}/>
-        }
-        actionComponents={
-            isOwner ?
-                <IsOwnerButtons petId={id} petName={petName}/>
-                :
-                <RequestButton petId={id} 
-                    text={reqText} setText={setReqText} 
-                    disabled={reqDisabled} setDisabled={setReqDisabled} 
-                    loading={reqLoading} setLoading={setReqLoading}
-                />
-        }
-        title={petName ? t('title', {name: petName}) : <Spin/>}
-    />
+    return (
+        <ContentWithHeader
+            content={<Content id={id} pet={pet} isLogged={isLoggedIn} />}
+            actionComponents={
+                isOwner ? (
+                    <IsOwnerButtons petId={id} petName={petName} />
+                ) : (
+                    <RequestButton
+                        petId={id}
+                        text={reqText}
+                        setText={setReqText}
+                        disabled={reqDisabled}
+                        setDisabled={setReqDisabled}
+                        loading={reqLoading}
+                        setLoading={setReqLoading}
+                    />
+                )
+            }
+            title={petName ? t("title", { name: petName }) : <Spin />}
+        />
+    );
 }
 
 export default PetView;
