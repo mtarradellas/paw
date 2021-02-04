@@ -64,7 +64,7 @@
         },
         "upload": "Upload image",
         "addPet": "Add pet",
-        "send": "Enviar",
+        "send": "Send",
         "filesToDelete": {
             "atLeastOneImage": "The pet must have at least one image"
         }

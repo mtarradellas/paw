@@ -9,12 +9,15 @@ import {
     Select,
     DatePicker,
 } from "formik-antd";
-import { Button, Spin, Upload } from "antd";
+import {Button, ConfigProvider, Spin, Upload} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import * as Yup from "yup";
 import ConstantsContext from "../../constants/constantsContext";
 import DeleteImagesInput from "../editPet/DeleteImagesInput";
 import "../../css/addPet/addPetForm.css";
+
+import 'moment/locale/es';
+import getDatePickerLocale from "../../utils/getDatePickerLocale";
 
 const FormItem = Form.Item;
 
@@ -45,6 +48,7 @@ const defaultValues = {
 };
 
 function AddPetForm({ submitting, onSubmit, editing, initialValues }) {
+
     const { species, breeds, provinces, departments } = useContext(
         ConstantsContext
     );
@@ -292,8 +296,7 @@ function AddPetForm({ submitting, onSubmit, editing, initialValues }) {
                                     name={"dateOfBirth"}
                                     label={t("form.dateOfBirth.label")}
                                 >
-                                    {/*TODO: localizar*/}
-                                    <DatePicker name={"dateOfBirth"} />
+                                    <DatePicker allowClear={false} locale={getDatePickerLocale()} name={"dateOfBirth"} />
                                 </FormItem>
 
                                 <FormItem
