@@ -66,11 +66,11 @@ function RegisterForm({onSubmit, submitting}){
 
             <FormItem name>
                 <Button type="primary" htmlType="submit" loading={submitting}>
-                    {t('form.submit')}
+                    {t('submit')}
                 </Button>
             </FormItem>
 
-            <p>{t("form.existingAccount")} <Link to={LOGIN}>{t("form.login")}</Link></p>
+            <p>{t("existingAccount")} <Link to={LOGIN}>{t("login")}</Link></p>
         </Form>
     </Formik>
 }
