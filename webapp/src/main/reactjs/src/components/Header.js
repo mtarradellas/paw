@@ -135,7 +135,7 @@ function SearchBar() {
         }
         validationSchema={
             Yup.object().shape({
-                find: Yup.string()
+                find: Yup.string().nullable()
             })
         }
         validateOnBlur={false}
