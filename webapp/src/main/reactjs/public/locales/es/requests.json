@@ -13,8 +13,8 @@
       "desc": "Descendente"
     },
     "filterButtons": {
-      "filter": "Filter",
-      "clear": "Clear"
+      "filter": "Filtrar",
+      "clear": "Limpiar"
     }
   },
   "status": {
