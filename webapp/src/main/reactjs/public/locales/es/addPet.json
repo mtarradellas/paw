@@ -25,9 +25,9 @@
       "required": "La provincia es obligatoria"
     },
     "department": {
-      "label": "Department",
-      "placeholder": "Department",
-      "required": "Department is required"
+      "label": "Departmento",
+      "placeholder": "Departmento",
+      "required": "El departamento es obligatorio"
     },
     "species": {
       "label": "Especie",
